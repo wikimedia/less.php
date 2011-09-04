@@ -1,0 +1,8 @@
+.buildpath
+.project
+.settings
+.idea
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
