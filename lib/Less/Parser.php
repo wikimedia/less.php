@@ -106,8 +106,11 @@ class Parser {
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
         $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
+        $root->root = true;
 
-        print_r($root);//
+        $env = new Environment();
+
+        return $root->compile($env)->toCSS(array(), $env);
     }
 
 
@@ -208,10 +211,14 @@ class Parser {
         if ($e) {
             $this->match('~');
         }
-        if ($str = $this->match('/^"((?:[^"\\\\\r\n]|\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\.)*)\'/')) {
-            return new \Less\Node\Quoted($str[0], $str[1] ?: $str[2], $e, $start);
-        }
 
+        if ($str = $this->match('/^"((?:[^"\\\\\r\n]|\\.)*)"|\'((?:[^\'\\\\\r\n]|\\.)*)\'/')) {
+            if ($str[0][0] == '"') {
+                return new \Less\Node\Quoted($str[0], $str[1], $e, $start);
+            } else {
+                return new \Less\Node\Quoted($str[0], $str[2], $e, $start);
+            }
+        }
 
         return;
     }
@@ -312,10 +319,10 @@ class Parser {
                  $this->match('/^[-\w%@$\/.&=:;#+?~]+/') ?: '';
 
         if ( ! $this->match(')')) {
-            throw ParserError("missing closing ) for url()");
+            throw new \Less\Exception\ParserError("missing closing ) for url()");
         }
 
-        return new \Less\Node\URL((isset($value->value) || isset($value->data) || $value instanceof \Less\Node\Variable)
+        return new \Less\Node\Url((isset($value->value) || isset($value->data) || $value instanceof \Less\Node\Variable)
                             ? $value : new \Less\Node\Anonymous($value), '');// TODO: , imports.paths);
     }
 
@@ -323,9 +330,9 @@ class Parser {
     {
         if ($this->match('/^data:/')) {
             $obj = new \stdClass();
-            $obj->mime    = $this->match('/^[^\/]+\/[^,;)]+/')     || '';
-            $obj->charset = $this->match('/^;\s*charset=[^,;)]+/') || '';
-            $obj->base64  = $this->match('/^;\s*base64/')          || '';
+            $obj->mime    = $this->match('/^[^\/]+\/[^,;)]+/')     ?: '';
+            $obj->charset = $this->match('/^;\s*charset=[^,;)]+/') ?: '';
+            $obj->base64  = $this->match('/^;\s*base64/')          ?: '';
             $obj->data    = $this->match('/^,\s*[^)]+/');
             if ($obj->data) {
                 return $obj;
@@ -458,7 +465,7 @@ class Parser {
             return;
         }
 
-        while ($e = $this->match('/^[#.](?:[\w-]|\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/')) {
+        while ($e = $this->match('/^[#.](?:[\w-]|\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/')) {
             $elements[] = new \Less\Node\Element($c, $e);
             $c = $this->match('>');
         }
@@ -514,7 +521,7 @@ class Parser {
                         if ($value = $this->match('parseExpression')) {
                             $params[] = array('name' => $param->name, 'value' => $value);
                         } else {
-                            throw new \Less\ParserError("Expected value");
+                            throw new \Less\Exception\ParserError("Expected value");
                         }
                     } else {
                         $params[] = array('name' => $param->name);
@@ -527,7 +534,7 @@ class Parser {
                 }
             }
             if (! $this->match(')')) {
-                throw new \Less\ParserError("Expected )");
+                throw new \Less\Exception\ParserError("Expected )");
             }
 
             $ruleset = $this->match('parseBlock');
@@ -576,7 +583,7 @@ class Parser {
         }
         if ($value = $this->match('/^\d+/') ?: $this->match('parseEntitiesVariable')) {
             if (! $this->match(')')) {
-                throw new \Less\ParserError("missing closing ) for alpha()");
+                throw new \Less\Exception\ParserError("missing closing ) for alpha()");
             }
             return new \Less\Node\Alpha($value);
         }
@@ -598,7 +605,7 @@ class Parser {
     private function parseElement()
     {
         $c = $this->match('parseCombinator');
-        $e = $this->match('/^(?:[.#]?|:*)(?:[\w-]|\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ?:
+        $e = $this->match('/^(?:[.#]?|:*)(?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ?:
              $this->match('*') ?:
              $this->match('parseAttribute') ?:
              $this->match('/^\([^)@]+\)/') ?:
@@ -626,16 +633,18 @@ class Parser {
     {
         $c = isset($this->input[$this->pos]) ? $this->input[$this->pos] : '';
         if ($c === '>' || $c === '+' || $c === '~') {
+
             $this->pos++;
             while ($this->input[$this->pos] === ' ') {
                 $this->pos++;
             }
-
             return new \Less\Node\Combinator($c);
+
         } else if ($c === '&') {
+
             $match = '&';
             $this->pos++;
-            if($this->input[$this->pos] === ' ') {
+            if ($this->input[$this->pos] === ' ') {
                 $match = '& ';
             }
             while ($this->input[$this->pos] === ' ') {
@@ -643,12 +652,12 @@ class Parser {
             }
             return new \Less\Node\Combinator($match);
         } else if ($c === ':' && $this->input[$this->pos + 1] === ':') {
-            $this->pos += 2;
+             $this->pos += 2;
              while ($this->input[$this->pos] === ' ') {
                 $this->pos++;
             }
             return new \Less\Node\Combinator('::');
-        } else if ($this->pos > 0 && $this->input[$this->pos - 1] === ' ') {
+        } else if ($this->pos > 0 && ($this->input[$this->pos - 1] == ' ' || $this->input[$this->pos - 1] == "\n")) {
             return new \Less\Node\Combinator(' ');
         } else {
             return new \Less\Node\Combinator();
@@ -707,7 +716,7 @@ class Parser {
         }
 
         if ($attr) {
-            return "[" + $attr + "]";
+            return "[" . $attr . "]";
         }
     }
 
@@ -815,10 +824,10 @@ class Parser {
         } else if ($name = $this->match('/^@media|@page/') ?: $this->match('/^@(?:-webkit-|-moz-)?keyframes/')) {
             $types = trim($this->match('/^[^{]+/'));
             if ($rules = $this->match('parseBlock')) {
-                return new \Less\Node\Directive($name + " " + $types, $rules);
+                return new \Less\Node\Directive($name . " " . $types, $rules);
             }
         } else if ($name = $this->match('/^@[-a-z]+/')) {
-            
+
             if ($name === '@font-face') {
                 if ($rules = $this->match('parseBlock')) {
                     return new \Less\Node\Directive($name, $rules);
@@ -905,8 +914,7 @@ class Parser {
     {
         $operation = false;
         if ($m = $this->match('parseMultiplication')) {
-            while (($op = $this->match('/^[-+]\s+/') || ($this->input[$this->pos - 1] != ' ' && ($this->match('+') || $this->match('-')))) &&
-                   ($a = $this->match('parseMultiplication'))) {
+            while (($op = $this->match('/^[-+]\s+/') ?: ( $this->input[$this->pos - 1] != ' ' ? ($this->match('+') ?: $this->match('-')) : false )) && ($a = $this->match('parseMultiplication'))) {
                 $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a));
             }
             return $operation ?: $m;
@@ -921,10 +929,8 @@ class Parser {
     {
         $negate = false;
         $p = $this->input[$this->pos + 1];
-
         if ($this->peek('-') && ($p === '@' || $p === '(')) {
             $negate = $this->match('-');
-            
         }
         $o = $this->match('parseSub') ?:
              $this->match('parseEntitiesDimension') ?:
@@ -932,7 +938,7 @@ class Parser {
              $this->match('parseEntitiesVariable') ?:
              $this->match('parseEntitiesCall');
 
-        return $negate ? new \Less\Node\Operation('*', array( new \Less\Node\Dimension(-1), $o)) : $o;
+        return ($negate ? new \Less\Node\Operation('*', array( new \Less\Node\Dimension(-1), $o)) : $o);
     }
 
     //

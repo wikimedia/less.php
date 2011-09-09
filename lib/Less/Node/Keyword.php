@@ -8,16 +8,14 @@ class Keyword
     {
         $this->value = $value;
     }
+
+    public function toCss()
+    {
+        return $this->value;
+    }
+
+    public function compile($env)
+    {
+        return $this;
+    }
 }
-
-/*`
-(function (tree) {
-
-tree.Keyword = function (value) { this.value = value };
-tree.Keyword.prototype = {
-    eval: function () { return this },
-    toCSS: function () { return this.value }
-};
-
-})(require('less/tree'));
-*/

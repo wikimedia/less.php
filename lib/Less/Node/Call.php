@@ -16,13 +16,7 @@ class Call
         $this->args = $args;
         $this->index = $index;
     }
-}
 
-/*
-(function (tree) {
-
-
-tree.Call.prototype = {
     //
     // When evaluating a function call,
     // we either find the function in `tree.functions` [1],
@@ -35,26 +29,29 @@ tree.Call.prototype = {
     // we try to pass a variable to a function, like: `saturate(@color)`.
     // The function should receive the value, not the variable.
     //
-    eval: function (env) {
-        var args = this.args.map(function (a) { return a.eval(env) });
+    public function compile($env)
+    {
+        $args = array_map(function ($a) use($env) {
+                              return $a->compile($env);
+                          }, $this->args);
 
-        if (this.name in tree.functions) { // 1.
+        $name = $this->name == '%' ? '_percent' : $this->name;
+
+        if (method_exists($env, $name)) { // 1.
             try {
-                return tree.functions[this.name].apply(tree.functions, args);
-            } catch (e) {
-                throw { message: "error evaluating function `" + this.name + "`",
-                        index: this.index };
+                return call_user_func_array(array($env, $name), $args);
+            } catch (Exception $e) {
+                throw \Less\FunctionCallError("error evaluating function `" . $this->name . "`", $this->index);
             }
         } else { // 2.
-            return new(tree.Anonymous)(this.name +
-                   "(" + args.map(function (a) { return a.toCSS() }).join(', ') + ")");
+
+            return new \Less\Node\Anonymous($this->name .
+                   "(" . implode(', ', array_map(function ($a) use ($env) { return $a->toCSS($env); }, $args)) . ")");
         }
-    },
-
-    toCSS: function (env) {
-        return this.eval(env).toCSS();
     }
-};
 
-})(require('less/tree'));
-*/
+    public function toCSS ($env) {
+        return $this->compile($env)->toCSS();
+    }
+
+}

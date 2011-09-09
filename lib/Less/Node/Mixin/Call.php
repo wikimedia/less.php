@@ -6,7 +6,7 @@ class Call
 {
     public function __construct($elements, $args, $index)
     {
-        $this->selector =  \Less\Node\Selector($elements);
+        $this->selector =  new \Less\Node\Selector($elements);
         $this->arguments = $args;
         $this->index = $index;
     }
@@ -18,7 +18,7 @@ class Call
 
         foreach($env->frames as $frame) {
 
-            if ($mixins = $frame->find($this->selector)) {
+            if ($mixins = $frame->find($this->selector, null, $env)) {
 
                 $args = array_map(function ($a) use ($env) {
                     return $a->compile($env);
@@ -27,27 +27,27 @@ class Call
                 foreach ($mixins as $mixin) {
                     if ($mixin->match($args, $env)) {
                         try {
-                            $rules = $mixin->compile($env, $this->arguments)->rules; //TODO: Check how we return rules
+                            $rules = array_merge($rules, $mixin->compile($env, $this->arguments)->rules);
                             $match = true;
                         } catch (Exception $e) {
-                            throw new \Less\CompileError($e->message, $e->index);
+                            throw new \Less\Exception\CompilerException($e->message, $e->index);
                         }
                     }
                 }
                 if ($match) {
                     return $rules;
                 } else {
-                    throw new \Less\CompilerError('No matching definition was found for `'.
-                                                  trim($this->selector->toCSS()) . '(' .
-                                                  implode(', ', array_map(function ($a) {
-                                                    return $a->toCss();
+                    throw new \Less\Exception\CompilerException('No matching definition was found for `'.
+                                                  trim($this->selector->toCSS($env)) . '(' .
+                                                  implode(', ', array_map(function ($a) use($env) {
+                                                    return $a->toCss($env);
                                                   }, $this->arguments)) . ')`',
                                                   $this->index);
                 }
             }
         }
 
-        throw new \Less\CompilerError(trim($this->selector->toCSS()) . " is undefined", $this->index);
+        throw new \Less\Exception\CompilerException(trim($this->selector->toCSS($env)) . " is undefined", $this->index);
     }
 }
 

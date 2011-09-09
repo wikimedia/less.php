@@ -15,36 +15,11 @@ class Color
         }
         $this->alpha = is_numeric($a) ? $a : 1;
     }
-}
 
-/*
-///
-// RGB Colors - #ff0014, #eee
-//
-(function (tree) {
-
-tree.Color = function (rgb, a) {
-    //
-    // The end goal here, is to parse the arguments
-    // into an integer triplet, such as `128, 255, 0`
-    //
-    // This facilitates operations and conversions.
-    //
-    if (Array.isArray(rgb)) {
-        this.rgb = rgb;
-    } else if (rgb.length == 6) {
-        this.rgb = rgb.match(/.{2}/g).map(function (c) {
-            return parseInt(c, 16);
-        });
-    } else {
-        this.rgb = rgb.split('').map(function (c) {
-            return parseInt(c + c, 16);
-        });
+    public function compile($env = null)
+    {
+        return $this;
     }
-    this.alpha = typeof(a) === 'number' ? a : 1;
-};
-tree.Color.prototype = {
-    eval: function () { return this },
 
     //
     // If we have some transparency, the only way to represent it
@@ -52,19 +27,24 @@ tree.Color.prototype = {
     // which has better compatibility with older browsers.
     // Values are capped between `0` and `255`, rounded and zero-padded.
     //
-    toCSS: function () {
-        if (this.alpha < 1.0) {
-            return "rgba(" + this.rgb.map(function (c) {
-                return Math.round(c);
-            }).concat(this.alpha).join(', ') + ")";
+    public function toCSS()
+    {
+        if ($this->alpha < 1.0) {
+            $values = array_map(function ($c) {
+                return round($c);
+            }, $this->rgb);
+            $values[] = $this->alpha;
+
+            return "rgba(" . implode(', ', $values) . ")";
         } else {
-            return '#' + this.rgb.map(function (i) {
-                i = Math.round(i);
-                i = (i > 255 ? 255 : (i < 0 ? 0 : i)).toString(16);
-                return i.length === 1 ? '0' + i : i;
-            }).join('');
+            return '#' . implode('', array_map(function ($i) {
+                $i = round($i);
+                $i = ($i > 255 ? 255 : ($i < 0 ? 0 : $i));
+                $i = dechex($i);
+                return str_pad($i, 2, '0', STR_PAD_LEFT);
+            }, $this->rgb));
         }
-    },
+    }
 
     //
     // Operations have to be done per-channel, if not,
@@ -72,52 +52,53 @@ tree.Color.prototype = {
     // our result, in the form of an integer triplet,
     // we create a new Color node to hold the result.
     //
-    operate: function (op, other) {
-        var result = [];
+    public function operate($op, $other) {
+        $result = array();
 
-        if (! (other instanceof tree.Color)) {
-            other = other.toColor();
+        if (! ($other instanceof \Less\Node\Color)) {
+            $other = $other->toColor();
         }
 
-        for (var c = 0; c < 3; c++) {
-            result[c] = tree.operate(op, this.rgb[c], other.rgb[c]);
+        for ($c = 0; $c < 3; $c++) {
+            $result[$c] = \Less\Environment::operate($op, $this->rgb[$c], $other->rgb[$c]);
         }
-        return new(tree.Color)(result, this.alpha + other.alpha);
-    },
-
-    toHSL: function () {
-        var r = this.rgb[0] / 255,
-            g = this.rgb[1] / 255,
-            b = this.rgb[2] / 255,
-            a = this.alpha;
-
-        var max = Math.max(r, g, b), min = Math.min(r, g, b);
-        var h, s, l = (max + min) / 2, d = max - min;
-
-        if (max === min) {
-            h = s = 0;
-        } else {
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2;               break;
-                case b: h = (r - g) / d + 4;               break;
-            }
-            h /= 6;
-        }
-        return { h: h * 360, s: s, l: l, a: a };
-    },
-    toARGB: function () {
-        var argb = [Math.round(this.alpha * 255)].concat(this.rgb);
-        return '#' + argb.map(function (i) {
-            i = Math.round(i);
-            i = (i > 255 ? 255 : (i < 0 ? 0 : i)).toString(16);
-            return i.length === 1 ? '0' + i : i;
-        }).join('');
+        return new \Less\Node\Color($result, $this->alpha + $other->alpha);
     }
-};
 
+    public function toHSL()
+    {
+        $r = $this->rgb[0] / 255;
+        $g = $this->rgb[1] / 255;
+        $b = $this->rgb[2] / 255;
+        $a = $this->alpha;
 
-})(require('less/tree'));
-*/
+        $max = max($r, $g, $b);
+        $min = min($r, $g, $b);
+        $l = ($max + $min) / 2;
+        $d = $max - $min;
+
+        if ($max === $min) {
+            $h = $s = 0;
+        } else {
+            $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
+
+            switch ($max) {
+                case $r: $h = ($g - $b) / $d + ($g < $b ? 6 : 0); break;
+                case $g: $h = ($b - $r) / $d + 2;                 break;
+                case $b: $h = ($r - $g) / $d + 4;                 break;
+            }
+            $h /= 6;
+        }
+        return array('h' => $h * 360, 's' => $s, 'l' => $l, 'a' => $a );
+    }
+
+    public function toARGB()
+    {
+        $argb = array_merge( (array) round($this->alpha * 255), $this->rgb);
+        return '#' . implode('', array_map(function ($i) {
+            $i = round($i);
+            $i = dechex($i > 255 ? 255 : ($i < 0 ? 0 : $i));
+            return str_pad($i, 2, '0', STR_PAD_LEFT);
+        }, $argb));
+    }
+}

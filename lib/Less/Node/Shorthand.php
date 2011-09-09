@@ -9,22 +9,14 @@ class Shorthand
         $this->a = $a;
         $this->b = $b;
     }
+
+    public function toCss($env)
+    {
+        return $this->a->toCSS($env) . "/" . $this->b->toCSS($env);
+    }
+
+    public function compile($env)
+    {
+        return $this;
+    }
 }
-
-/*`
-
-
-tree.Shorthand = function (a, b) {
-    this.a = a;
-    this.b = b;
-};
-
-tree.Shorthand.prototype = {
-    toCSS: function (env) {
-        return this.a.toCSS(env) + "/" + this.b.toCSS(env);
-    },
-    eval: function () { return this }
-};
-
-})(require('less/tree'));
-*/

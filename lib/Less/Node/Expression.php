@@ -8,30 +8,22 @@ class Expression
     {
         $this->value = $value;
     }
-}
-
-/*`
-(function (tree) {
-
-tree.Expression = function (value) { this.value = value };
-tree.Expression.prototype = {
-    eval: function (env) {
-        if (this.value.length > 1) {
-            return new(tree.Expression)(this.value.map(function (e) {
-                return e.eval(env);
-            }));
-        } else if (this.value.length === 1) {
-            return this.value[0].eval(env);
+    public function compile($env) {
+        if (is_array($this->value) && count($this->value) > 1) {
+            return new \Less\Node\Expression(array_map(function ($e) use ($env) {
+                return $e->compile($env);
+            }, $this->value));
+        } else if (is_array($this->value) && count($this->value) == 1) {
+            return $this->value[0]->compile($env);
         } else {
-            return this;
+            return $this;
         }
-    },
-    toCSS: function (env) {
-        return this.value.map(function (e) {
-            return e.toCSS(env);
-        }).join(' ');
     }
-};
 
-})(require('less/tree'));
-*/
+    public function toCSS ($env) {
+        return implode(' ', array_map(function ($e) use ($env) {
+            return $e->toCSS($env);
+        }, $this->value));
+    }
+
+}

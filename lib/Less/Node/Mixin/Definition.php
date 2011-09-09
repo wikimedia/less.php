@@ -2,77 +2,85 @@
 
 namespace Less\Node\Mixin;
 
-class Definition
+class Definition extends \Less\Node\Ruleset
 {
     public function __construct($name, $params, $rules)
     {
         $this->name = $name;
-        $this->selectors = array(new \Less\Node\Selector( new \Less\Node\Element(null, $name)));
+        $this->selectors = array(new \Less\Node\Selector(array( new \Less\Node\Element(null, $name))));
         $this->params = $params;
+        $this->arity = count($params);
         $this->rules = $rules;
+        $this->lookups = array();
+        $this->required = array_reduce($params, function ($count, $p) {
+            if (! isset($p['name']) || ($p['name'] && !isset($p['value']))) {
+                return $count + 1;
+            } else {
+                return $count;
+            }
+        });
+        $this->frames = array();
     }
-}
 
-/*`
-tree.mixin.Definition = function (name, params, rules) {
-    this.name = name;
-    this.selectors = [new(tree.Selector)([new(tree.Element)(null, name)])];
-    this.params = params;
-    this.arity = params.length;
-    this.rules = rules;
-    this._lookups = {};
-    this.required = params.reduce(function (count, p) {
-        if (!p.name || (p.name && !p.value)) { return count + 1 }
-        else                                 { return count }
-    }, 0);
-    this.parent = tree.Ruleset.prototype;
-    this.frames = [];
-};
-tree.mixin.Definition.prototype = {
-    toCSS:     function ()     { return "" },
-    variable:  function (name) { return this.parent.variable.call(this, name) },
-    variables: function ()     { return this.parent.variables.call(this) },
-    find:      function ()     { return this.parent.find.apply(this, arguments) },
-    rulesets:  function ()     { return this.parent.rulesets.apply(this) },
+    public function toCss()
+    {
+        return '';
+    }
 
-    eval: function (env, args) {
-        var frame = new(tree.Ruleset)(null, []), context, _arguments = [];
+    public function compile($env, $args)
+    {
+        $frame = new \Less\Node\Ruleset(null, array());
 
-        for (var i = 0, val; i < this.params.length; i++) {
-            if (this.params[i].name) {
-                if (val = (args && args[i]) || this.params[i].value) {
-                    frame.rules.unshift(new(tree.Rule)(this.params[i].name, val.eval(env)));
+        foreach($this->params as $i => $param) {
+            if (isset($param['name']) && $param['name']) {
+                if ($val = (isset($args[$i]) ? $args[$i] : $param['value'])) {
+                    $rule = new \Less\Node\Rule($param['name'], $val->compile($env));
+                    array_unshift($frame->rules, $rule);
                 } else {
-                    throw { message: "wrong number of arguments for " + this.name +
-                            ' (' + args.length + ' for ' + this.arity + ')' };
+                    throw new \Less\Exception\CompilerException("wrong number of arguments for " . $this->name . ' (' . count($args) . ' for ' . $this->arity . ')');
                 }
             }
         }
-        for (var i = 0; i < Math.max(this.params.length, args && args.length); i++) {
-            _arguments.push(args[i] || this.params[i].value);
+        $_arguments = array();
+        for ($i = 0; $i < max(count($this->params), count($args)); $i++) {
+            $_arguments[] = isset($args[$i]) ? $args[$i] : $this->params[$i]['value'];
         }
-        frame.rules.unshift(new(tree.Rule)('@arguments', new(tree.Expression)(_arguments).eval(env)));
+        $ex = new \Less\Node\Expression($_arguments);
+        array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
 
-        return new(tree.Ruleset)(null, this.rules.slice(0)).eval({
-            frames: [this, frame].concat(this.frames, env.frames)
-        });
-    },
-    match: function (args, env) {
-        var argsLength = (args && args.length) || 0, len;
+        // duplicate the environment, adding new frames.
+        $ruleSetEnv = new \Less\Environment();
+        $ruleSetEnv->addFrame($this);
+        $ruleSetEnv->addFrame($frame);
+        $ruleSetEnv->addFrames($this->frames);
+        $ruleSetEnv->addFrames($env->frames);
+        $ruleset = new \Less\Node\Ruleset(null, $this->rules);
 
-        if (argsLength < this.required)                               { return false }
-        if ((this.required > 0) && (argsLength > this.params.length)) { return false }
+        return $ruleset->compile($ruleSetEnv);
+    }
 
-        len = Math.min(argsLength, this.arity);
+    public function match($args, $env)
+    {
+        if (count($args) < $this->required) {
+            return false;
+        }
+        if (($this->required > 0) && (count($args) > count($this->params))) {
+            return false;
+        }
 
-        for (var i = 0; i < len; i++) {
-            if (!this.params[i].name) {
-                if (args[i].eval(env).toCSS() != this.params[i].value.eval(env).toCSS()) {
+        $len = min(count($args), $this->arity);
+
+        for ($i = 0; $i < $len; $i++) {
+            if ( ! isset($this->params[$i]['name'])) {
+                if ($args[$i]->compile($env)->toCSS() != $this->params[$i]['value']->compile($env)->toCSS()) {
                     return false;
                 }
             }
         }
+
         return true;
     }
-};
+
+}
+
 

@@ -9,31 +9,22 @@ class Value
         $this->value = $value;
         $this->is = 'value';
     }
-}
 
-/*`
-(function (tree) {
-
-tree.Value = function (value) {
-    this.value = value;
-    this.is = 'value';
-};
-tree.Value.prototype = {
-    eval: function (env) {
-        if (this.value.length === 1) {
-            return this.value[0].eval(env);
+    public function compile($env)
+    {
+        if (count($this->value) == 1) {
+            return $this->value[0]->compile($env);
         } else {
-            return new(tree.Value)(this.value.map(function (v) {
-                return v.eval(env);
-            }));
+            return new \Less\Node\Value(array_map(function ($v) use ($env) {
+                return $v->compile($env);
+            }, $this->value));
         }
-    },
-    toCSS: function (env) {
-        return this.value.map(function (e) {
-            return e.toCSS(env);
-        }).join(env.compress ? ',' : ', ');
     }
-};
 
-})(require('less/tree'));
-*/
+    public function toCSS ($env)
+    {
+        return implode($env->compress ? ',' : ', ', array_map(function ($e) use ($env) {
+            return $e->toCSS($env);
+        }, $this->value));
+    }
+}

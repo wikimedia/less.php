@@ -17,40 +17,41 @@ class Directive
             $this->value = $value;
         }
     }
-}
 
-/*`
-(function (tree) {
-
-tree.Directive = function (name, value) {
-    this.name = name;
-    if (Array.isArray(value)) {
-        this.ruleset = new(tree.Ruleset)([], value);
-    } else {
-        this.value = value;
-    }
-};
-tree.Directive.prototype = {
-    toCSS: function (ctx, env) {
-        if (this.ruleset) {
-            this.ruleset.root = true;
-            return this.name + (env.compress ? '{' : ' {\n  ') +
-                   this.ruleset.toCSS(ctx, env).trim().replace(/\n/g, '\n  ') +
-                               (env.compress ? '}': '\n}\n');
+    public function toCSS($ctx, $env)
+    {
+        if ($this->ruleset) {
+            $this->ruleset->root = true;
+            return $this->name . ($env->compress ? '{' : " {\n  ") .
+                   preg_replace('/\n/', "\n  ", trim($this->ruleset->toCSS($ctx, $env))) .
+                   ($env->compress ? '}': "\n}\n");
         } else {
-            return this.name + ' ' + this.value.toCSS() + ';\n';
+            return $this->name . ' ' . $this->value->toCSS() . ";\n";
         }
-    },
-    eval: function (env) {
-        env.frames.unshift(this);
-        this.ruleset = this.ruleset && this.ruleset.eval(env);
-        env.frames.shift();
-        return this;
-    },
-    variable: function (name) { return tree.Ruleset.prototype.variable.call(this.ruleset, name) },
-    find: function () { return tree.Ruleset.prototype.find.apply(this.ruleset, arguments) },
-    rulesets: function () { return tree.Ruleset.prototype.rulesets.apply(this.ruleset) }
-};
+    }
 
-})(require('less/tree'));
-*/
+    public function compile($env)
+    {
+        $env->unshiftFrame($this);
+        $this->ruleset = $this->ruleset ? $this->ruleset->compile($env) : null;
+        $env->shiftFrame();
+
+        return $this;
+    }
+    // TODO: Not sure if this is right...
+    public function variable($name)
+    {
+        return $this->ruleset->variable($name);
+    }
+
+    public function find($selector)
+    {
+        return $this->ruleset->find($selector, $this);
+    }
+
+    public function rulesets()
+    {
+        return $this->ruleset->rulesets();
+    }
+
+}

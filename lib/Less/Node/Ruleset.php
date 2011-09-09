@@ -7,228 +7,244 @@ class Ruleset
     public $selectors;
     public $rules;
     protected $lookups;
-    
+    public $root;
+    private $_variables;
+    private $_rulesets;
+
     public function __construct($selectors, $rules)
     {
         $this->selectors = $selectors;
-        $this->rules = $rules;
+        $this->rules = (array) $rules;
         $this->lookups = array();
+
     }
-}
 
-/*`
-(function (tree) {
-
-tree.Ruleset = function (selectors, rules) {
-    this.selectors = selectors;
-    this.rules = rules;
-    this._lookups = {};
-};
-tree.Ruleset.prototype = {
-
-    eval: function (env) {
-
-        var ruleset = new(tree.Ruleset)(this.selectors, this.rules.slice(0));
-
-        ruleset.root = this.root;
+    public function compile($env)
+    {
+        $ruleset = new Ruleset($this->selectors, $this->rules);
+        $ruleset->root = $this->root;
 
         // push the current ruleset to the frames stack
-        env.frames.unshift(ruleset);
+        $env->unshiftFrame($ruleset);
 
         // Evaluate imports
-        if (ruleset.root) {
-            for (var i = 0; i < ruleset.rules.length; i++) {
-                if (ruleset.rules[i] instanceof tree.Import) {
-                    Array.prototype.splice
-                         .apply(ruleset.rules, [i, 1].concat(ruleset.rules[i].eval(env)));
+        if ($ruleset->root) {
+            foreach($ruleset->rules as $i => $rule) {
+                if ($rule instanceof \Less\Node\Import) {
+                    // TODO merge import arrays
+                    // Array.prototype.splice.apply(ruleset.rules, [i, 1].concat(ruleset.rules[i].eval(env)));
                 }
             }
         }
 
         // Store the frames around mixin definitions,
         // so they can be evaluated like closures when the time comes.
-        for (var i = 0; i < ruleset.rules.length; i++) {
-            if (ruleset.rules[i] instanceof tree.mixin.Definition) {
-                ruleset.rules[i].frames = env.frames.slice(0);
+        foreach($ruleset->rules as $i => $rule) {
+            if ($rule instanceof \Less\Node\Mixin\Definition) {
+                $ruleset->rules[$i]->frames = $env->frames;
             }
         }
 
         // Evaluate mixin calls.
-        for (var i = 0; i < ruleset.rules.length; i++) {
-            if (ruleset.rules[i] instanceof tree.mixin.Call) {
-                Array.prototype.splice
-                     .apply(ruleset.rules, [i, 1].concat(ruleset.rules[i].eval(env)));
+        for($i = 0; $i < count($ruleset->rules); $i++) {
+            if ($ruleset->rules[$i] instanceof \Less\Node\Mixin\Call) {
+                $newRules = $ruleset->rules[$i]->compile($env);
+                $ruleset->rules = array_merge(
+                    array_slice($ruleset->rules, 0, $i),
+                    $newRules,
+                    array_slice($ruleset->rules, $i + 1)
+                );
             }
         }
 
         // Evaluate everything else
-        for (var i = 0, rule; i < ruleset.rules.length; i++) {
-            rule = ruleset.rules[i];
-
-            if (! (rule instanceof tree.mixin.Definition)) {
-                ruleset.rules[i] = rule.eval ? rule.eval(env) : rule;
+        foreach($ruleset->rules as $i => $rule) {
+            if (! ($rule instanceof \Less\Node\Mixin\Definition)) {
+                $ruleset->rules[$i] = is_string($rule) ? $rule : $rule->compile($env);
             }
         }
 
         // Pop the stack
-        env.frames.shift();
+        $env->shiftFrame();
 
-        return ruleset;
-    },
-    match: function (args) {
-        return !args || args.length === 0;
-    },
-    variables: function () {
-        if (this._variables) { return this._variables }
-        else {
-            return this._variables = this.rules.reduce(function (hash, r) {
-                if (r instanceof tree.Rule && r.variable === true) {
-                    hash[r.name] = r;
+        return $ruleset;
+    }
+
+    public function match($args)
+    {
+        return ! is_array($args) || count($args) === 0;
+    }
+
+    public function variables()
+    {
+        if ( ! $this->_variables) {
+            $this->_variables = array_reduce($this->rules, function ($hash, $r) {
+                if ($r instanceof \Less\Node\Rule && $r->variable === true) {
+                    $hash[$r->name] = $r;
                 }
-                return hash;
-            }, {});
-        }
-    },
-    variable: function (name) {
-        return this.variables()[name];
-    },
-    rulesets: function () {
-        if (this._rulesets) { return this._rulesets }
-        else {
-            return this._rulesets = this.rules.filter(function (r) {
-                return (r instanceof tree.Ruleset) || (r instanceof tree.mixin.Definition);
+                return $hash;
             });
         }
-    },
-    find: function (selector, self) {
-        self = self || this;
-        var rules = [], rule, match,
-            key = selector.toCSS();
 
-        if (key in this._lookups) { return this._lookups[key] }
+        return $this->_variables;
+    }
 
-        this.rulesets().forEach(function (rule) {
-            if (rule !== self) {
-                for (var j = 0; j < rule.selectors.length; j++) {
-                    if (match = selector.match(rule.selectors[j])) {
-                        if (selector.elements.length > rule.selectors[j].elements.length) {
-                            Array.prototype.push.apply(rules, rule.find(
-                                new(tree.Selector)(selector.elements.slice(1)), self));
+    public function variable($name)
+    {
+        $vars = $this->variables();
+
+        return isset($vars[$name]) ? $vars[$name] : null;
+    }
+
+    public function rulesets ()
+    {
+        if ($this->_rulesets) {
+            return $this->_rulesets;
+        } else {
+            return $this->_rulesets = array_filter($this->rules, function ($r) {
+                return ($r instanceof \Less\Node\Ruleset) || ($r instanceof \Less\Node\Mixin\Definition);
+            });
+        }
+    }
+
+    public function find ($selector, $self = null, $env = null)
+    {
+        $self = $self ?: $this;
+        $rules = array();
+        $key = $selector->toCSS($env);
+
+        if (array_key_exists($key, $this->lookups)) {
+            return $this->lookups[$key];
+        }
+
+        foreach($this->rulesets() as $rule) {
+            if ($rule !== $self) {
+                foreach($rule->selectors as $ruleSelector) {
+                    if ($selector->match($ruleSelector)) {
+
+                        if (count($selector->elements) > count($ruleSelector->elements)) {
+                            $rules = array_merge($rules, $rule->find( new \Less\Node\Selector(array_slice($selector->elements, 1)), $self, $env));
                         } else {
-                            rules.push(rule);
+                            $rules[] = $rule;
                         }
                         break;
                     }
                 }
             }
-        });
-        return this._lookups[key] = rules;
-    },
+        }
+
+        $this->lookups[$key] = $rules;
+
+        return $this->lookups[$key];
+    }
+
     //
     // Entry point for code generation
     //
     //     `context` holds an array of arrays.
     //
-    toCSS: function (context, env) {
-        var css = [],      // The CSS output
-            rules = [],    // node.Rule instances
-            rulesets = [], // node.Ruleset instances
-            paths = [],    // Current selectors
-            selector,      // The fully rendered selector
-            rule;
+    public function toCSS ($context, $env)
+    {
+        $css = array();      // The CSS output
+        $rules = array();    // node.Rule instances
+        $rulesets = array(); // node.Ruleset instances
+        $paths = array();    // Current selectors
 
-        if (! this.root) {
-            if (context.length === 0) {
-                paths = this.selectors.map(function (s) { return [s] });
+        if (! $this->root) {
+            if (count($context) === 0) {
+                $paths = array_map(function ($s) { return array($s); }, $this->selectors);
             } else {
-                this.joinSelectors( paths, context, this.selectors );
+                $this->joinSelectors($paths, $context, $this->selectors);
             }
         }
 
         // Compile rules and rulesets
-        for (var i = 0; i < this.rules.length; i++) {
-            rule = this.rules[i];
+        foreach($this->rules as $rule) {
 
-            if (rule.rules || (rule instanceof tree.Directive)) {
-                rulesets.push(rule.toCSS(paths, env));
-            } else if (rule instanceof tree.Comment) {
-                if (!rule.silent) {
-                    if (this.root) {
-                        rulesets.push(rule.toCSS(env));
+            if (isset($rule->rules) || ($rule instanceof \Less\Node\Directive)) {
+                $rulesets[] = $rule->toCSS($paths, $env);
+            } else if ($rule instanceof \Less\Node\Comment) {
+                if (!$rule->silent) {
+                    if ($this->root) {
+                        $rulesets[] = $rule->toCSS($env);
                     } else {
-                        rules.push(rule.toCSS(env));
+                        $rules[] = $rule->toCSS($env);
                     }
                 }
             } else {
-                if (rule.toCSS && !rule.variable) {
-                    rules.push(rule.toCSS(env));
-                } else if (rule.value && !rule.variable) {
-                    rules.push(rule.value.toString());
+                if (method_exists($rule, 'toCSS') && ! $rule->variable) {
+                    $rules[] = $rule->toCSS($env);
+                } else if (isset($rule->value) && $rule->value && ! $rule->variable) {
+                    $rules[] = (string) $rule->value;
                 }
             }
         }
 
-        rulesets = rulesets.join('');
+        $rulesets = implode('', $rulesets);
 
         // If this is the root node, we don't render
         // a selector, or {}.
         // Otherwise, only output if this ruleset has rules.
-        if (this.root) {
-            css.push(rules.join(env.compress ? '' : '\n'));
+        if ($this->root) {
+            $css[] = implode($env->compress ? '' : "\n", $rules);
         } else {
-            if (rules.length > 0) {
-                selector = paths.map(function (p) {
-                    return p.map(function (s) {
-                        return s.toCSS(env);
-                    }).join('').trim();
-                }).join(env.compress ? ',' : (paths.length > 3 ? ',\n' : ', '));
-                css.push(selector,
-                        (env.compress ? '{' : ' {\n  ') +
-                        rules.join(env.compress ? '' : '\n  ') +
-                        (env.compress ? '}' : '\n}\n'));
+            if (count($rules)) {
+                $selector = array_map(function ($p) use ($env) {
+                    return trim(implode('', array_map(function ($s) use ($env) {
+                        return $s->toCSS($env);
+                    }, $p)));
+                }, $paths);
+
+                $selector = implode($env->compress ? ',' : (count($paths) > 3 ? ",\n" : ', '), $selector);
+
+                $css[] = $selector;
+                $css[] = ($env->compress ? '{' : " {\n  ") .
+                         implode($env->compress ? '' : "\n  ", $rules) .
+                         ($env->compress ? '}' : "\n}\n");
             }
         }
-        css.push(rulesets);
+        $css[] = $rulesets;
 
-        return css.join('') + (env.compress ? '\n' : '');
-    },
+        return implode('', $css) . ($env->compress ? "\n" : '');
+    }
 
-    joinSelectors: function (paths, context, selectors) {
-        for (var s = 0; s < selectors.length; s++) {
-            this.joinSelector(paths, context, selectors[s]);
-        }
-    },
-
-    joinSelector: function (paths, context, selector) {
-        var before = [], after = [], beforeElements = [],
-            afterElements = [], hasParentSelector = false, el;
-
-        for (var i = 0; i < selector.elements.length; i++) {
-            el = selector.elements[i];
-            if (el.combinator.value[0] === '&') {
-                hasParentSelector = true;
-            }
-            if (hasParentSelector) afterElements.push(el);
-            else                   beforeElements.push(el);
-        }
-
-        if (! hasParentSelector) {
-            afterElements = beforeElements;
-            beforeElements = [];
-        }
-
-        if (beforeElements.length > 0) {
-            before.push(new(tree.Selector)(beforeElements));
-        }
-
-        if (afterElements.length > 0) {
-            after.push(new(tree.Selector)(afterElements));
-        }
-
-        for (var c = 0; c < context.length; c++) {
-            paths.push(before.concat(context[c]).concat(after));
+    public function joinSelectors (&$paths, $context, $selectors)
+    {
+        foreach($selectors as $selector) {
+            $this->joinSelector($paths, $context, $selector);
         }
     }
-};
-})(require('less/tree'));
-*/
+
+    public function joinSelector (&$paths, $context, $selector)
+    {
+        $before = array();
+        $after = array();
+        $beforeElements = array();
+        $afterElements = array();
+        $hasParentSelector = false;
+
+        foreach($selector->elements as $el) {
+            if (strlen($el->combinator->value) > 0 && $el->combinator->value[0] === '&') {
+                $hasParentSelector = true;
+            }
+            if ($hasParentSelector) {
+                $afterElements[] = $el;
+            } else {
+                $beforeElements[] = $el;
+            }
+        }
+        if (! $hasParentSelector) {
+            $afterElements = $beforeElements;
+            $beforeElements = array();
+        }
+        if (count($beforeElements) > 0) {
+            $before[] = new \Less\Node\Selector($beforeElements);
+        }
+        if (count($afterElements) > 0) {
+            $after[] = new \Less\Node\Selector($afterElements);
+        }
+        foreach($context as $c) {
+            $paths[] = array_merge($before, $c, $after);
+        }
+    }
+}

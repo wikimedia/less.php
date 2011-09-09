@@ -9,28 +9,24 @@ class Dimension
         $this->value = floatval($value);
         $this->unit = $unit;
     }
-}
 
-/*`
-(function (tree) {
+    public function compile($env = null) {
+        return $this;
+    }
 
-//
-// A number with a unit
-//
-tree.Dimension = function (value, unit) {
-    this.value = parseFloat(value);
-    this.unit = unit || null;
-};
+    public function toColor() {
+        return new \Less\Node\Color(array($this->value, $this->value, $this->value));
+    }
 
-tree.Dimension.prototype = {
-    eval: function () { return this },
-    toColor: function () {
-        return new(tree.Color)([this.value, this.value, this.value]);
-    },
-    toCSS: function () {
-        var css = this.value + this.unit;
-        return css;
-    },
+    public function toCSS()
+    {
+        return $this->value . $this->unit;
+    }
+
+    public function __toString()
+    {
+        return $this->toCSS();
+    }
 
     // In an operation between two Dimensions,
     // we default to the first Dimension's unit,
@@ -38,12 +34,8 @@ tree.Dimension.prototype = {
     // In the future, we could implement some unit
     // conversions such that `100cm + 10mm` would yield
     // `101cm`.
-    operate: function (op, other) {
-        return new(tree.Dimension)
-                  (tree.operate(op, this.value, other.value),
-                  this.unit || other.unit);
+    public function operate($op, $other)
+    {
+        return new \Less\Node\Dimension( \Less\Environment::operate($op, $this->value, $other->value), $this->unit ?: $other->unit);
     }
-};
-
-})(require('less/tree'));
-*/
+}

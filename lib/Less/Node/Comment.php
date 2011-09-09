@@ -9,21 +9,15 @@ class Comment
         $this->value = $value;
         $this->silent = !! $silent;
     }
+
+    public function compile($env = null)
+    {
+        return $this;
+    }
+
+    public function toCSS($env)
+    {
+        return $env->compress ? '' : $this->value;
+    }
+
 }
-
-/*`
-(function (tree) {
-
-tree.Comment = function (value, silent) {
-    this.value = value;
-    this.silent = !!silent;
-};
-tree.Comment.prototype = {
-    toCSS: function (env) {
-        return env.compress ? '' : this.value;
-    },
-    eval: function () { return this }
-};
-
-})(require('less/tree'));
-*/

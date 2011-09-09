@@ -5,56 +5,56 @@ namespace Less\Node;
 class Selector
 {
     public $elements;
+    private $_css;
     public function __construct($elements)
     {
         $this->elements = $elements;
-        if (isset($this->elements[0]) && $this->elements[0] instanceof Combinator && $this->elements[0]->combinator->value === "") {
+
+        if (is_array($this->elements) && isset($this->elements[0]) &&
+            $this->elements[0] instanceof \Less\Node\Combinator &&
+            $this->elements[0]->combinator->value === '') {
+
             $this->elements[0]->combinator->value = ' ';
         }
     }
-}
 
-/*`
-(function (tree) {
+    public function match ($other)
+    {
+        $value = $this->elements[0]->value;
+        $len   = count($this->elements);
+        $olen  = count($other->elements);
+        if ($len > $olen) {
+            return $value === $other->elements[0]->value;
+        }
 
-tree.Selector = function (elements) {
-    this.elements = elements;
-    if (this.elements[0].combinator.value === "") {
-        this.elements[0].combinator.value = ' ';
-    }
-};
-tree.Selector.prototype.match = function (other) {
-    var value = this.elements[0].value,
-        len   = this.elements.length,
-        olen  = other.elements.length;
-
-    if (len > olen) {
-        return value === other.elements[0].value;
-    }
-
-    for (var i = 0; i < olen; i ++) {
-        if (value === other.elements[i].value) {
-            for (var j = 1; j < len; j ++) {
-                if (this.elements[j].value !== other.elements[i + j].value) {
-                    return false;
+        for ($i = 0; $i < $olen; $i ++) {
+            if (is_array($other->elements) && $value === $other->elements[$i]->value) {
+                for ($j = 1; $j < $len; $j ++) {
+                    if ($this->elements[$j]->value !== $other->elements[$i + $j]->value) {
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
         }
+        return false;
     }
-    return false;
-};
-tree.Selector.prototype.toCSS = function (env) {
-    if (this._css) { return this._css }
 
-    return this._css = this.elements.map(function (e) {
-        if (typeof(e) === 'string') {
-            return ' ' + e.trim();
-        } else {
-            return e.toCSS(env);
+    public function toCSS ($env)
+    {
+        if ($this->_css) {
+            return $this->_css;
         }
-    }).join('');
-};
 
-})(require('less/tree'));
-*/
+        $this->_css = array_map(function ($e) use ($env) {
+            if (is_string($e)) {
+                return ' ' . trim($e);
+            } else {
+                return $e->toCSS($env);
+            }
+        }, $this->elements);
+        $this->_css = implode('', $this->_css);
+
+        return $this->_css;
+    }
+}
