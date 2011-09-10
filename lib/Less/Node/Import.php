@@ -4,9 +4,58 @@ namespace Less\Node;
 
 class Import
 {
-    public function __construct($path, $imports)
+    public function __construct($path, $includeDir = '')
     {
         $this->_path = $path;
+
+        // The '.less' extension is optional
+        if ($path instanceof \Less\Node\Quoted) {
+            $this->path = preg_match('/\.(le?|c)ss$/', $path->value) ? $path->value : $path->value . '.less';
+        } else {
+            $this->path = isset($path->value->value) ? $path->value->value : $path->value;
+        }
+
+        $this->css = (substr($this->path, -3) == 'css');
+
+        // Only pre-compile .less files
+        if ( ! $this->css) {
+
+            $less = $includeDir . '/' . $this->path;
+            $parser = new \Less\Parser();
+            $this->root = $parser->parseFile($less, false, false);
+
+        }
+    }
+
+    public function toCSS()
+    {
+        if ($this->css) {
+            return "@import " . $this->_path->toCss() . ';\n';
+        } else {
+            return "";
+        }
+    }
+
+    public function compile($env)
+    {
+        if ($this->css) {
+            return array($this);
+        } else {
+            $ruleset = new \Less\Node\Ruleset(null, isset($this->root->rules) ? $this->root->rules : array());
+            for ($i = 0; $i < count($ruleset->rules); $i++) {
+                if ($ruleset->rules[$i] instanceof \Less\Node\Import && ! $ruleset->rules[$i]->css) {
+
+                    $newRules = $ruleset->rules[$i]->compile($env);
+                    $ruleset->rules = array_merge(
+                        array_slice($ruleset->rules, 0, $i),
+                        $newRules,
+                        array_slice($ruleset->rules, $i + 1)
+                    );
+                }
+            }
+            return $ruleset->rules;
+        }
+
     }
 }
 

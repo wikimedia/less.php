@@ -6,8 +6,6 @@ class Quoted
 {
     public $escaped;
     public $content;
-    public $str;
-    public $i;
 
     public function __construct($str, $content, $escaped = false, $i = false)
     {

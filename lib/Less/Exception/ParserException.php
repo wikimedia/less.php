@@ -2,7 +2,7 @@
 
 namespace Less\Exception;
 
-class CompilerException extends \Exception
+class ParserException extends \Exception
 {
-    
+
 }

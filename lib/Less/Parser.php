@@ -13,6 +13,7 @@ class Parser {
     private $input;
     private $current;
     private $pos;
+    private $path;
 
     /**
      *
@@ -101,17 +102,31 @@ class Parser {
         }
     }
 
-    public function parse($str)
+    public function parse($str, $env = false, $returnCss = true)
     {
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
         $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
         $root->root = true;
 
-        $env = new Environment();
+        $env = $env ?: new Environment();
 
-        return $root->compile($env)->toCSS(array(), $env);
+       // print_r($root);
+
+        return $returnCss ? $root->compile($env)->toCSS(array(), $env) : $root;
     }
+
+    public function parseFile($filename, $env = false, $returnCss = true)
+    {
+        if ( ! file_exists($filename)) {
+            throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
+        }
+
+        $this->path = pathinfo($filename, PATHINFO_DIRNAME);
+
+        return $this->parse(file_get_contents($filename), $env, $returnCss);
+    }
+
 
 
     //
@@ -803,7 +818,7 @@ class Parser {
             ($path = $this->match('parseEntitiesQuoted') ?: $this->match('parseEntitiesUrl')) &&
             $this->match(';')
         ) {
-            return new \Less\Node\Import($path, ''); //, imports);
+            return new \Less\Node\Import($path, $this->path); //, imports);
         }
     }
 

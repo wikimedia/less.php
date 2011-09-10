@@ -29,12 +29,17 @@ class Ruleset
 
         // Evaluate imports
         if ($ruleset->root) {
-            foreach($ruleset->rules as $i => $rule) {
-                if ($rule instanceof \Less\Node\Import) {
-                    // TODO merge import arrays
-                    // Array.prototype.splice.apply(ruleset.rules, [i, 1].concat(ruleset.rules[i].eval(env)));
+            for($i = 0; $i < count($ruleset->rules); $i++) {
+                if ($ruleset->rules[$i] instanceof \Less\Node\Import) {
+                    $newRules = $ruleset->rules[$i]->compile($env);
+                    $ruleset->rules = array_merge(
+                        array_slice($ruleset->rules, 0, $i),
+                        $newRules,
+                        array_slice($ruleset->rules, $i + 1)
+                    );
                 }
             }
+            print_r($ruleset->rules);
         }
 
         // Store the frames around mixin definitions,
@@ -46,6 +51,7 @@ class Ruleset
         }
 
         // Evaluate mixin calls.
+
         for($i = 0; $i < count($ruleset->rules); $i++) {
             if ($ruleset->rules[$i] instanceof \Less\Node\Mixin\Call) {
                 $newRules = $ruleset->rules[$i]->compile($env);
@@ -161,6 +167,8 @@ class Ruleset
         // Compile rules and rulesets
         foreach($this->rules as $rule) {
 
+            echo is_object($rule) ? get_class($rule)."\n" : print_r($rule, true);
+
             if (isset($rule->rules) || ($rule instanceof \Less\Node\Directive)) {
                 $rulesets[] = $rule->toCSS($paths, $env);
             } else if ($rule instanceof \Less\Node\Comment) {
@@ -172,7 +180,7 @@ class Ruleset
                     }
                 }
             } else {
-                if (method_exists($rule, 'toCSS') && ! $rule->variable) {
+                if (method_exists($rule, 'toCSS') && ( ! isset($rule->variable) ||  ! $rule->variable)) {
                     $rules[] = $rule->toCSS($env);
                 } else if (isset($rule->value) && $rule->value && ! $rule->variable) {
                     $rules[] = (string) $rule->value;
