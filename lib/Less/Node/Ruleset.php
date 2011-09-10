@@ -39,7 +39,6 @@ class Ruleset
                     );
                 }
             }
-            print_r($ruleset->rules);
         }
 
         // Store the frames around mixin definitions,
@@ -166,9 +165,6 @@ class Ruleset
 
         // Compile rules and rulesets
         foreach($this->rules as $rule) {
-
-            echo is_object($rule) ? get_class($rule)."\n" : print_r($rule, true);
-
             if (isset($rule->rules) || ($rule instanceof \Less\Node\Directive)) {
                 $rulesets[] = $rule->toCSS($paths, $env);
             } else if ($rule instanceof \Less\Node\Comment) {

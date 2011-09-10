@@ -108,10 +108,7 @@ class Parser {
         $this->input = preg_replace('/\r\n/', "\n", $str);
         $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
         $root->root = true;
-
         $env = $env ?: new Environment();
-
-       // print_r($root);
 
         return $returnCss ? $root->compile($env)->toCSS(array(), $env) : $root;
     }
