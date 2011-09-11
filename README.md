@@ -24,6 +24,7 @@ use
 ---
 
 ```php
+<?php
 $parser = new \Less\Parser();
 // parse css from a less source file
 $css = $parser->parseFile($path);
