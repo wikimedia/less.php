@@ -11,19 +11,24 @@ class Environment
     {
         $this->frames = array();
     }
-    public function unshiftFrame($frame) {
+
+    public function unshiftFrame($frame) 
+    {
         array_unshift($this->frames, $frame);
     }
 
-    public function shiftFrame() {
+    public function shiftFrame() 
+    {
         return array_shift($this->frames);
     }
 
-    public function addFrame($frame) {
+    public function addFrame($frame) 
+    {
         $this->frames[] = $frame;
     }
 
-    public function addFrames(array $frames) {
+    public function addFrames(array $frames) 
+    {
         $this->frames = array_merge($this->frames, $frames);
     }
 
@@ -47,6 +52,22 @@ class Environment
             }
         }
         return null;
+    }
+    
+    static public function clamp($val)
+    {
+        return min(1, max(0, $val));
+    }
+
+    static public function number($n)
+    {
+        if ($n instanceof \Less\Node\Dimension) {
+            return floatval($n->unit == '%' ? $n->value / 100 : $n->value);
+        } else if (is_numeric($n)) {
+            return $n;
+        } else {
+            throw new \Less\Exception\CompilerException("color functions take numbers as parameters");
+        }
     }
 
     public function rgb ($r, $g, $b)
@@ -269,25 +290,5 @@ class Environment
     {
         return new \Less\Node\Anonymous($color->toARGB());
     }
-/*
-    static public function hsla($hsla)
-    {
-        return
-    }
-*/
-    static public function clamp($val)
-    {
-        return min(1, max(0, $val));
-    }
-
-    static public function number($n)
-    {
-        if ($n instanceof \Less\Node\Dimension) {
-            return floatval($n->unit == '%' ? $n->value / 100 : $n->value);
-        } else if (is_numeric($n)) {
-            return $n;
-        } else {
-            throw new \Less\Exception\CompilerException("color functions take numbers as parameters");
-        }
-    }
 }
+

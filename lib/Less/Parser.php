@@ -11,15 +11,60 @@ namespace Less;
 class Parser {
 
     private $input;
+
     private $current;
+
     private $pos;
+
     private $path;
 
     /**
-     *
+     * @var \Less\Environment
      */
-    public function __construct()
+    private $env;
+
+    /**
+     * @param Environment|null $env
+     */
+    public function __construct(\Less\Environment $env = null)
     {
+        $this->env = $env ?: new \Less\Environment();
+    }
+
+    /**
+     * Parse a Less string into css
+     *
+     * @param $str The string to convert
+     * @param bool $returnCss Indicates whether the return value should be a css string a root node
+     * @return Node\Ruleset|string
+     */
+    public function parse($str, $returnCss = true)
+    {
+        $this->pos = 0;
+        $this->input = preg_replace('/\r\n/', "\n", $str);
+        $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
+        $root->root = true;
+
+        return $returnCss ? $root->compile($this->env)->toCSS(array(), $this->env) : $root;
+    }
+
+    /**
+     * Parse a Less string from a given file
+     *
+     * @throws Exception\ParserException
+     * @param $filename The file to parse
+     * @param bool $returnCss Indicates whether the return value should be a css string a root node
+     * @return Node\Ruleset|string
+     */
+    public function parseFile($filename, $returnCss = true)
+    {
+        if ( ! file_exists($filename)) {
+            throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
+        }
+
+        $this->path = pathinfo($filename, PATHINFO_DIRNAME);
+
+        return $this->parse(file_get_contents($filename), $returnCss);
     }
 
     /**
@@ -59,12 +104,13 @@ class Parser {
             }
         }
 
-        // The match is confirmed, add the match length to `i`,
+        // The match is confirmed, add the match length to `this::pos`,
         // and consume any extra white-space characters (' ' || '\n')
         // which come after that. The reason for this is that LeSS's
         // grammar is mostly white-space insensitive.
         //
         if ($match) {
+
             $this->pos += $length;
             while ($this->pos < strlen($this->input)) {
                 $c = ord($this->input[$this->pos]);
@@ -86,6 +132,7 @@ class Parser {
     /**
      * Same as match(), but don't change the state of the parser,
      * just return the match.
+     *
      * @param $tok
      * @return bool
      */
@@ -101,30 +148,6 @@ class Parser {
             }
         }
     }
-
-    public function parse($str, $env = false, $returnCss = true)
-    {
-        $this->pos = 0;
-        $this->input = preg_replace('/\r\n/', "\n", $str);
-        $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
-        $root->root = true;
-        $env = $env ?: new Environment();
-
-        return $returnCss ? $root->compile($env)->toCSS(array(), $env) : $root;
-    }
-
-    public function parseFile($filename, $env = false, $returnCss = true)
-    {
-        if ( ! file_exists($filename)) {
-            throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
-        }
-
-        $this->path = pathinfo($filename, PATHINFO_DIRNAME);
-
-        return $this->parse(file_get_contents($filename), $env, $returnCss);
-    }
-
-
 
     //
     // Here in, the parsing rules/functions
@@ -195,12 +218,16 @@ class Parser {
     // over them.
     private function parseComment()
     {
-        if ( ! $this->peek('/')) return;
+        if ( ! $this->peek('/')) {
+            return;
+        }
 
-        if ($this->peek('//')) {
+        if ($this->peek('/', 1)) {
             return new \Less\Node\Comment($this->match('/^\/\/.*/'), true);
-        } else if ($comment = $this->match('/^\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/')) {
-            return new \Less\Node\Comment($comment, false);
+        } else {
+            if ($comment = $this->match('/^\\/\*(?:[^*]|\*+[^\\/*])*\*+\\/\n?/')) {
+                return new \Less\Node\Comment($comment, false);
+            }
         }
     }
 
@@ -335,7 +362,7 @@ class Parser {
         }
 
         return new \Less\Node\Url((isset($value->value) || isset($value->data) || $value instanceof \Less\Node\Variable)
-                            ? $value : new \Less\Node\Anonymous($value), '');// TODO: , imports.paths);
+                            ? $value : new \Less\Node\Anonymous($value), '');
     }
 
     private function parseEntitiesDataURI()
@@ -669,7 +696,7 @@ class Parser {
                 $this->pos++;
             }
             return new \Less\Node\Combinator('::');
-        } else if ($this->pos > 0 && ($this->input[$this->pos - 1] == ' ' || $this->input[$this->pos - 1] == "\n")) {
+        } else if ($this->pos > 0 && (preg_match('/\s/', $this->input[$this->pos - 1]))) {
             return new \Less\Node\Combinator(' ');
         } else {
             return new \Less\Node\Combinator();
@@ -815,7 +842,7 @@ class Parser {
             ($path = $this->match('parseEntitiesQuoted') ?: $this->match('parseEntitiesUrl')) &&
             $this->match(';')
         ) {
-            return new \Less\Node\Import($path, $this->path); //, imports);
+            return new \Less\Node\Import($path, $this->path, $this->env);
         }
     }
 
