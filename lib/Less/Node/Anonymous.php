@@ -4,7 +4,7 @@ namespace Less\Node;
 
 class Anonymous
 {
-    private $value;
+    public $value;
 
     public function __construct($value)
     {

@@ -10,12 +10,12 @@ class Import
 
         // The '.less' extension is optional
         if ($path instanceof \Less\Node\Quoted) {
-            $this->path = preg_match('/\.(le?|c)ss$/', $path->value) ? $path->value : $path->value . '.less';
+            $this->path = preg_match('/\.(le?|c)ss(\?.*)?$/', $path->value) ? $path->value : $path->value . '.less';
         } else {
             $this->path = isset($path->value->value) ? $path->value->value : $path->value;
         }
 
-        $this->css = (substr($this->path, -3) == 'css');
+        $this->css = preg_match('/css(\?.*)?$/', $this->path);
 
         // Only pre-compile .less files
         if ( ! $this->css) {

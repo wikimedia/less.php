@@ -30,11 +30,11 @@ class Ruleset
         // Evaluate imports
         if ($ruleset->root) {
             for($i = 0; $i < count($ruleset->rules); $i++) {
-                if ($ruleset->rules[$i] instanceof \Less\Node\Import) {
+                if ($ruleset->rules[$i] instanceof \Less\Node\Import && ! $ruleset->rules[$i]->css) {
                     $newRules = $ruleset->rules[$i]->compile($env);
                     $ruleset->rules = array_merge(
                         array_slice($ruleset->rules, 0, $i),
-                        $newRules,
+                        (array) $newRules,
                         array_slice($ruleset->rules, $i + 1)
                     );
                 }
@@ -50,7 +50,6 @@ class Ruleset
         }
 
         // Evaluate mixin calls.
-
         for($i = 0; $i < count($ruleset->rules); $i++) {
             if ($ruleset->rules[$i] instanceof \Less\Node\Mixin\Call) {
                 $newRules = $ruleset->rules[$i]->compile($env);
