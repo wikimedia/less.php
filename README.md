@@ -25,11 +25,15 @@ use
 
 ```php
 <?php
+
 $parser = new \Less\Parser();
-// parse css from a less source file
-$css = $parser->parseFile($path);
-// or directly from a string
-$css = $parser->parse("@color: #4D926F; #header { color: @color; } h2 { color: @color; }");
+$parser->getEnvironment()->setCompress(true);
+
+// parse css from a less source file or directly from a string
+$css = $parser
+            ->parseFile($path)
+            ->parse("@color: #4D926F; #header { color: @color; } h2 { color: @color; }")
+            ->getCss();
 ```
 
 license

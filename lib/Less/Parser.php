@@ -1,22 +1,33 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: Matt
- * Date: 30/08/11
- * Time: 7:57 PM
- * To change this template use File | Settings | File Templates.
- */
+
 namespace Less;
 
 class Parser {
 
+    /**
+     * @var string
+     */
     private $input;
 
+    /**
+     * @var string
+     */
     private $current;
 
+    /**
+     * @var int
+     */
     private $pos;
 
+    /**
+     * @var string
+     */
     private $path;
+
+    /**
+     * @var string
+     */
+    private $css;
 
     /**
      * @var \Less\Environment
@@ -29,23 +40,80 @@ class Parser {
     public function __construct(\Less\Environment $env = null)
     {
         $this->env = $env ?: new \Less\Environment();
+        $this->css = '';
+        $this->pos = 0;
+    }
+
+    /**
+     * Get the current parser environment
+     *
+     * @return Environment
+     */
+    public function getEnvironment()
+    {
+        return $this->env;
+    }
+
+    /**
+     * Set the current parser environment
+     *
+     * @param \Less\Envronment $env
+     * @return void
+     */
+    public function setEnvironment(\Less\Envronment $env)
+    {
+        $this->env = $env;
+    }
+
+    /**
+     * Get the current css buffer
+     *
+     * @return string
+     */
+    public function getCss()
+    {
+        return $this->css;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->css;
+    }
+
+    /**
+     * Clear the css buffer
+     *
+     * @return void
+     */
+    public function clearCss()
+    {
+        $this->css = '';
     }
 
     /**
      * Parse a Less string into css
      *
-     * @param $str The string to convert
-     * @param bool $returnCss Indicates whether the return value should be a css string a root node
-     * @return Node\Ruleset|string
+     * @param string $str The string to convert
+     * @param bool $returnRoot Indicates whether the return value should be a css string a root node
+     * @return \Less\Node\Ruleset|\Less\Parser
      */
-    public function parse($str, $returnCss = true)
+    public function parse($str, $returnRoot = false)
     {
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
         $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
         $root->root = true;
 
-        return $returnCss ? $root->compile($this->env)->toCSS(array(), $this->env) : $root;
+        if ($returnRoot) {
+            return $root;
+        } else {
+            $this->css .= $root->compile($this->env)->toCSS(array(), $this->env);
+
+            return $this;
+        }
     }
 
     /**
@@ -53,10 +121,10 @@ class Parser {
      *
      * @throws Exception\ParserException
      * @param $filename The file to parse
-     * @param bool $returnCss Indicates whether the return value should be a css string a root node
-     * @return Node\Ruleset|string
+     * @param bool $returnRoot Indicates whether the return value should be a css string a root node
+     * @return \Less\Node\Ruleset|\Less\Parser
      */
-    public function parseFile($filename, $returnCss = true)
+    public function parseFile($filename, $returnRoot = false)
     {
         if ( ! file_exists($filename)) {
             throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
@@ -64,7 +132,7 @@ class Parser {
 
         $this->path = pathinfo($filename, PATHINFO_DIRNAME);
 
-        return $this->parse(file_get_contents($filename), $returnCss);
+        return $this->parse(file_get_contents($filename), $returnRoot);
     }
 
     /**
@@ -80,8 +148,8 @@ class Parser {
     /**
      * Parse from a token, regexp or string, and move forward if match
      *
-     * @param $tok
-     * @return Parser
+     * @param string $tok
+     * @return null|bool|object
      */
     public function match($tok)
     {
@@ -134,6 +202,7 @@ class Parser {
      * just return the match.
      *
      * @param $tok
+     * @param int $offset
      * @return bool
      */
     public function peek($tok, $offset = 0)
@@ -358,7 +427,7 @@ class Parser {
                  $this->match('/^[-\w%@$\/.&=:;#+?~]+/') ?: '';
 
         if ( ! $this->match(')')) {
-            throw new \Less\Exception\ParserError("missing closing ) for url()");
+            throw new \Less\Exception\ParserException("missing closing ) for url()");
         }
 
         return new \Less\Node\Url((isset($value->value) || isset($value->data) || $value instanceof \Less\Node\Variable)
@@ -540,7 +609,6 @@ class Parser {
     //
     private function parseMixinDefinition()
     {
-        //var name, params = [], match, ruleset, param, value;
         $params = array();
 
         if ((! $this->peek('.') && ! $this->peek('#')) || $this->peek('/^[^{]*(;|})/')) {
@@ -560,7 +628,7 @@ class Parser {
                         if ($value = $this->match('parseExpression')) {
                             $params[] = array('name' => $param->name, 'value' => $value);
                         } else {
-                            throw new \Less\Exception\ParserError("Expected value");
+                            throw new \Less\Exception\ParserException("Expected value");
                         }
                     } else {
                         $params[] = array('name' => $param->name);
@@ -573,7 +641,7 @@ class Parser {
                 }
             }
             if (! $this->match(')')) {
-                throw new \Less\Exception\ParserError("Expected )");
+                throw new \Less\Exception\ParserException("Expected )");
             }
 
             $ruleset = $this->match('parseBlock');
@@ -622,7 +690,7 @@ class Parser {
         }
         if ($value = $this->match('/^\d+/') ?: $this->match('parseEntitiesVariable')) {
             if (! $this->match(')')) {
-                throw new \Less\Exception\ParserError("missing closing ) for alpha()");
+                throw new \Less\Exception\ParserException("missing closing ) for alpha()");
             }
             return new \Less\Node\Alpha($value);
         }
@@ -665,8 +733,7 @@ class Parser {
     // Because our parser isn't white-space sensitive, special care
     // has to be taken, when parsing the descendant combinator, ` `,
     // as it's an empty space. We have to check the previous character
-    // in the input, to see if it's a ` ` character. More info on how
-    // we deal with this in *combinator.js*.
+    // in the input, to see if it's a ` ` character.
     //
     private function parseCombinator()
     {
@@ -831,7 +898,7 @@ class Parser {
     //
     //     @import "lib";
     //
-    // Depending on our environemnt, importing is done differently:
+    // Depending on our environment, importing is done differently:
     // In the browser, it's an XHR request, in Node, it would be a
     // file-system operation. The function used for importing is
     // stored in `import`, which we pass to the Import constructor.
@@ -845,8 +912,6 @@ class Parser {
             return new \Less\Node\Import($path, $this->path, $this->env);
         }
     }
-
-
 
     //
     // A CSS Directive
@@ -876,8 +941,6 @@ class Parser {
             }
         }
     }
-
-
 
     private function parseFont()
     {

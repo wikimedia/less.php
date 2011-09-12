@@ -13,7 +13,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     {
         $parser = new Parser();
 
-        $less = $parser->parseFile($less);
+        $less = $parser->parseFile($less)->getCss();
         $css = file_get_contents($css);
 
         $this->assertEquals($css, $less);

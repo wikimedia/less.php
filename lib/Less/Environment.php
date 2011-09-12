@@ -4,30 +4,55 @@ namespace Less;
 
 class Environment
 {
+    /**
+     * @var array
+     */
     public $frames;
-    public $compress = false;
+
+    /**
+     * @var bool
+     */
+    public $compress;
 
     public function __construct()
     {
         $this->frames = array();
+        $this->compress = false;
     }
 
-    public function unshiftFrame($frame) 
+    /**
+     * @return bool
+     */
+    public function getCompress()
+    {
+        return $this->compress;
+    }
+
+    /**
+     * @param bool $compress
+     * @return void
+     */
+    public function setCompress($compress)
+    {
+        $this->compress = $compress;
+    }
+
+    public function unshiftFrame($frame)
     {
         array_unshift($this->frames, $frame);
     }
 
-    public function shiftFrame() 
+    public function shiftFrame()
     {
         return array_shift($this->frames);
     }
 
-    public function addFrame($frame) 
+    public function addFrame($frame)
     {
         $this->frames[] = $frame;
     }
 
-    public function addFrames(array $frames) 
+    public function addFrames(array $frames)
     {
         $this->frames = array_merge($this->frames, $frames);
     }
@@ -53,7 +78,7 @@ class Environment
         }
         return null;
     }
-    
+
     static public function clamp($val)
     {
         return min(1, max(0, $val));

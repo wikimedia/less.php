@@ -4,7 +4,12 @@ namespace Less\Node;
 
 class Import
 {
-    public function __construct($path, $includeDir = '', $env = false)
+    /**
+     * @param $path
+     * @param string $includeDir
+     * @param \Less\Environment|null $env
+     */
+    public function __construct($path, $includeDir = '', $env = null)
     {
         $this->_path = $path;
 
@@ -22,7 +27,7 @@ class Import
 
             $less = $includeDir . '/' . $this->path;
             $parser = new \Less\Parser($env);
-            $this->root = $parser->parseFile($less, false);
+            $this->root = $parser->parseFile($less, true);
 
         }
     }
