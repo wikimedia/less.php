@@ -1,0 +1,106 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Less class file loader
+ *
+ * @param $className
+ * @return void
+ */
+function loadLessClass($className)
+{
+    $fileName = __DIR__.'/../lib/'.str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php';
+    if (file_exists($fileName)) {
+        require_once $fileName;
+    }
+}
+
+// Register autoload function
+spl_autoload_register('loadLessClass');
+
+// Create our environment
+$env = new \Less\Environment;
+$env->setCompress(false);
+$color = true;
+$silent = false;
+$verbose = false;
+
+// Check for arguments
+array_shift($argv);
+if ( ! count($argv)) {
+    $argv[] = '-h';
+}
+
+foreach($argv as $key => $arg) {
+    if (preg_match('/^--?([a-z][0-9a-z-]*)(?:=([^\s]+))?$/i', $arg, $matches)) {
+
+        $option = $matches[1];
+        $value = isset($matches[2]) ? $matches[2] : false;
+        unset($argv[$key]);
+
+        switch ($option) {
+            case 'v':
+            case 'version':
+                echo "lessc " . \Less\Parser::$version . " (LESS Compiler) [PHP]\n\n";
+                exit();
+            case 's':
+            case 'silent':
+                $silent = true;
+                break;
+            case 'h':
+            case 'help':
+                echo <<<EOD
+Usage: lessc [options] source [destination]
+
+ -h, --help         display this help message
+ -s, --silent       hide error message output
+ -v, --version      display the version number
+ -x, --compress     output compressed css
+
+
+EOD;
+                exit;
+            case 'x':
+            case 'compress':
+                $env->setCompress(true);
+                break;
+        }
+    }
+}
+
+
+if (count($argv) > 1) {
+    $output = array_pop($argv);
+    $inputs = $argv;
+} else {
+    $inputs = $argv;
+    $output = false;
+}
+
+if ( ! count($inputs)) {
+    echo ("lessc: no input files\n");
+    exit;
+}
+
+// parse the selected files (or stdin if '-' is given)
+$parser = new \Less\Parser($env);
+foreach($inputs as $input) {
+    if ($input == '-') {
+        $content = file_get_contents('php://stdin');
+        $parser->parse($content);
+    } else {
+        try {
+            $parser->parseFile($input);
+        } catch (\Exception $e) {
+            if ( ! $silent) {
+                echo ("lessc: ".$e->getMessage()." \n");
+            }
+        }
+    }
+}
+
+if ($output) {
+    file_put_contents($output, $parser->getCss());
+} else {
+    echo $parser->getCss();
+}

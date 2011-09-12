@@ -30,6 +30,11 @@ class Parser {
     private $css;
 
     /**
+     *
+     */
+    static public $version = '0.9.0';
+
+    /**
      * @var \Less\Environment
      */
     private $env;
