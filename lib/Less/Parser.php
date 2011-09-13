@@ -518,7 +518,7 @@ class Parser {
             $this->match('~');
         }
         if ($str = $this->match('/^`([^`]*)`/')) {
-            return new \Less\Node\JavaScript($str[1], $this->pos, $e);
+            return new \Less\Node\Javascript($str[1], $this->pos, $e);
         }
     }
 
