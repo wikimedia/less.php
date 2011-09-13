@@ -204,7 +204,11 @@ class Environment
     {
         $hsl = $color->toHSL();
 
-        $hsl['a'] += $amount->value / 100;
+        if ($amount->unit == '%') {
+            $hsl['a'] += $amount->value / 100;
+        } else {
+            $hsl['a'] += $amount->value;
+        }
         $hsl['a'] = self::clamp($hsl['a']);
 
         return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
@@ -214,7 +218,11 @@ class Environment
     {
         $hsl = $color->toHSL();
 
-        $hsl['a'] -= $amount->value / 100;
+        if ($amount->unit == '%') {
+            $hsl['a'] -= $amount->value / 100;
+        } else {
+            $hsl['a'] -= $amount->value;
+        }
         $hsl['a'] = self::clamp($hsl['a']);
 
         return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
@@ -224,8 +232,12 @@ class Environment
     {
         $hsl = $color->toHSL();
 
-        $hsl['l'] = $amount->value / 100;
-        $hsl['l'] = self::clamp($hsl['l']);
+        if ($amount->unit == '%') {
+            $hsl['a'] = $amount->value / 100;
+        } else {
+            $hsl['a'] = $amount->value;
+        }
+        $hsl['a'] = self::clamp($hsl['a']);
 
         return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
     }
@@ -244,15 +256,19 @@ class Environment
     // Copyright (c) 2006-2009 Hampton Catlin, Nathan Weizenbaum, and Chris Eppstein
     // http://sass-lang.com
     //
-    public function mix($color1, $color2, $weight)
+    public function mix($color1, $color2, $weight = null)
     {
+        if (!$weight) {
+            $weight = new \Less\Node\Dimension('50', '%');
+        }
+
         $p = $weight->value / 100.0;
         $w = $p * 2 - 1;
         $hsl1 = $color1->toHSL();
         $hsl2 = $color2->toHSL();
         $a = $hsl1['a'] - $hsl2['a'];
 
-        $w1 = ((($w * $a == -1) ? $w : ($w + $a) / (1 + $w * $a)) + 1) / 2.0;
+        $w1 = (((($w * $a) == -1) ? $w : ($w + $a) / (1 + $w * $a)) + 1) / 2;
         $w2 = 1 - $w1;
 
         $rgb = array($color1->rgb[0] * $w1 + $color2->rgb[0] * $w2,
