@@ -2,7 +2,7 @@
 
 namespace Less\Node;
 
-class JavaScript
+class Javascript
 {
     public function __construct($string, $index, $escaped)
     {
@@ -11,7 +11,13 @@ class JavaScript
         $this->index = $index;
     }
 
-    public function compile($env) {
-        return '/* No javascript in PHP... :( */';
+    public function compile($env)
+    {
+        return $this;
+    }
+
+    public function toCss($env)
+    {
+        return $env->compress ? '' : '/* Sorry, can not do JavaScript evaluation in PHP... :( */';
     }
 }

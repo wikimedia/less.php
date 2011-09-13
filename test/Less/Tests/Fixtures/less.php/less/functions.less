@@ -1,0 +1,16 @@
+#built-in {
+  mix: mix(#f00, #00f);
+  mix: mix(#f00, #00f, 25%);
+  mix: mix(rgba(255, 0, 0, 0.5), #00f);
+  fade: fade(#00ff00, 0.1);
+  fade: fade(rgba(0, 0, 17, 0.8), 0.2);
+  fade: fade(#00ff00, 100%);
+  fadein: fadein(rgba(0, 0, 0, 0.5), 0.1);
+  fadein: fadein(rgba(0, 0, 17, 0.8), 0.1 + 0.1);
+  fadein: fadein(rgba(0, 0, 0, 0.5), 10%);
+  fadein: fadein(rgba(0, 0, 17, 0.8), 20%);
+  fadeout: fadeout(rgba(0, 0, 0, 0.5), 0.1);
+  fadeout: fadeout(rgba(0, 0, 17, 0.4), 20%);
+  escape: escape('?&=&%!#$');
+  javascript: `"hello".toUpperCase() + '!'`;
+}
