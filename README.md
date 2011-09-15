@@ -23,6 +23,8 @@ A couple of things have been omitted from this initial version:
 use
 ---
 
+### The parser
+
 ```php
 <?php
 
@@ -35,6 +37,26 @@ $css = $parser
             ->parse("@color: #4D926F; #header { color: @color; } h2 { color: @color; }")
             ->getCss();
 ```
+
+### The command line tool
+
+The `bin/lessc` command line tool will accept an input (and optionally an output) file name to process.
+
+```bash
+$ ./bin/lessc input.less output.css
+```
+
+### In your website
+
+The `bin/less.php` file can be moved to the directory containing your less source files. Including a links as follows
+will compile and cache the css.
+
+```html
+<link rel="stylesheet" type="text/css" href="/static/less/css.php?bootstrap.less" />
+```
+
+NB: You'll need to update this file to point to the `lib` directory, and also make sure the `./cache` directory is
+writable by the web server.
 
 license
 -------
