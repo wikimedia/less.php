@@ -837,7 +837,7 @@ class Parser {
     //
     private function parseBlock()
     {
-        if ($this->match('{') && ($content = $this->match('parsePrimary')) && $this->match('}')) {
+        if ($this->match('{') && (is_array($content = $this->match('parsePrimary'))) && $this->match('}')) {
             return $content;
         }
     }
@@ -859,7 +859,7 @@ class Parser {
             $this->match('parseComment');
         }
 
-        if (count($selectors) > 0 && ($rules = $this->match('parseBlock'))) {
+        if (count($selectors) > 0 && (is_array($rules = $this->match('parseBlock')))) {
             return new \Less\Node\Ruleset($selectors, $rules);
         } else {
             // Backtrack
