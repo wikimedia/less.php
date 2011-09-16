@@ -14,10 +14,16 @@ class Environment
      */
     public $compress;
 
+    /**
+     * @var bool
+     */
+    public $debug;
+
     public function __construct()
     {
         $this->frames = array();
         $this->compress = false;
+        $this->debug = false;
     }
 
     /**
@@ -35,6 +41,23 @@ class Environment
     public function setCompress($compress)
     {
         $this->compress = $compress;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @param $debug
+     * @return void
+     */
+    public function setDebug($debug)
+    {
+        $this->debug = $debug;
     }
 
     public function unshiftFrame($frame)

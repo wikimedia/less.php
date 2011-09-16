@@ -4,8 +4,10 @@ namespace Less\Node\Mixin;
 
 class Definition extends \Less\Node\Ruleset
 {
-    public function __construct($name, $params, $rules)
+    public function __construct($name, $params, $rules, $filename, $line)
     {
+        $this->line = $line;
+        $this->filename = $filename;
         $this->name = $name;
         $this->selectors = array(new \Less\Node\Selector(array( new \Less\Node\Element(null, $name))));
         $this->params = $params;

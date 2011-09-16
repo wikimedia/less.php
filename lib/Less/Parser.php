@@ -27,6 +27,11 @@ class Parser {
     /**
      * @var string
      */
+    private $filename;
+
+    /**
+     * @var string
+     */
     private $css;
 
     /**
@@ -136,6 +141,7 @@ class Parser {
         }
 
         $this->path = pathinfo($filename, PATHINFO_DIRNAME);
+        $this->filename = $filename;
 
         return $this->parse(file_get_contents($filename), $returnRoot);
     }
@@ -615,6 +621,7 @@ class Parser {
     private function parseMixinDefinition()
     {
         $params = array();
+        $start = $this->pos;
 
         if ((! $this->peek('.') && ! $this->peek('#')) || $this->peek('/^[^{]*(;|})/')) {
             return;
@@ -652,7 +659,7 @@ class Parser {
             $ruleset = $this->match('parseBlock');
 
             if ($ruleset) {
-                return new \Less\Node\Mixin\Definition($name, $params, $ruleset);
+                return new \Less\Node\Mixin\Definition($name, $params, $ruleset, $this->filename, substr_count($this->input, "\n", 0, $start+1) + 1);
             }
         }
     }

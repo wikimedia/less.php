@@ -58,6 +58,12 @@ class Import
                     );
                 }
             }
+
+            if ($env->getDebug()) {
+                array_unshift($ruleset->rules, new \Less\Node\Comment('/**** Start imported file `' . $this->path."` ****/\n", false));
+                array_push($ruleset->rules,    new \Less\Node\Comment('/**** End imported file `' . $this->path."` ****/\n", false));
+            }
+
             return $ruleset->rules;
         }
 
