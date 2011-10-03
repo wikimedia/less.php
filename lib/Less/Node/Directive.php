@@ -13,6 +13,7 @@ class Directive
         $this->name = $name;
         if (is_array($value)) {
             $this->ruleset = new Ruleset(false, $value);
+            $this->ruleset->root = true;
         } else {
             $this->value = $value;
         }
