@@ -24,12 +24,12 @@ class Definition extends \Less\Node\Ruleset
         $this->frames = array();
     }
 
-    public function toCss()
+    public function toCss($context, $env)
     {
         return '';
     }
 
-    public function compile($env, $args)
+    public function compile($env, $args = array())
     {
         $frame = new \Less\Node\Ruleset(null, array());
 
@@ -61,7 +61,7 @@ class Definition extends \Less\Node\Ruleset
         return $ruleset->compile($ruleSetEnv);
     }
 
-    public function match($args, $env)
+    public function match($args, $env = NULL)
     {
         if (count($args) < $this->required) {
             return false;
@@ -84,5 +84,3 @@ class Definition extends \Less\Node\Ruleset
     }
 
 }
-
-
