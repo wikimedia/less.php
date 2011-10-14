@@ -24,6 +24,7 @@ $env->setCompress(false);
 $color = true;
 $silent = false;
 $verbose = false;
+$watch = false;
 
 // Check for arguments
 array_shift($argv);
@@ -56,6 +57,7 @@ Usage: lessc [options] source [destination]
  -s, --silent       hide error message output
  -v, --version      display the version number
  -x, --compress     output compressed css
+ -w, --watch        watch input files for changes
 
 
 EOD;
@@ -63,6 +65,10 @@ EOD;
             case 'x':
             case 'compress':
                 $env->setCompress(true);
+                break;
+            case 'w':
+            case 'watch':
+                $watch = true;
                 break;
         }
     }
@@ -82,25 +88,74 @@ if ( ! count($inputs)) {
     exit;
 }
 
-// parse the selected files (or stdin if '-' is given)
-$parser = new \Less\Parser($env);
-foreach($inputs as $input) {
-    if ($input == '-') {
-        $content = file_get_contents('php://stdin');
-        $parser->parse($content);
-    } else {
-        try {
-            $parser->parseFile($input);
-        } catch (\Exception $e) {
-            if ( ! $silent) {
-                echo ("lessc: ".$e->getMessage()." \n");
+if ($watch) {
+    if (!$output) {
+        echo ("lessc: you must specify the output file if --watch is given\n");
+        exit;
+    }
+
+    $lastAction = 0;
+
+    echo ("lessc: watching input files\n");
+
+    while(1) {
+        clearstatcache();
+
+        $updated = false;
+        foreach ($inputs as $input) {
+            if ($input == '-') {
+                if (count($inputs) == 1) {
+                    echo ("lessc: during watching files is not possible to watch stdin\n");
+                    exit;
+                } else
+                    continue;
+            }
+
+            if (filemtime($input) > $lastAction) {
+                $updated = true;
+                break;
+            }
+        }
+
+        if ($updated) {
+            $lastAction = time();
+            $parser = new \Less\Parser($env);
+            foreach ($inputs as $input) {
+                try {
+                    $parser->parseFile($input);
+                } catch (\Exception $e) {
+                    echo ("lessc: ".$e->getMessage()." \n");
+                    continue; // Invalid processing
+                }
+            }
+
+            file_put_contents($output, $parser->getCss());
+            echo ("lessc: output file recompilled\n");
+        }
+
+        sleep(2);
+    }
+} else {
+    // parse the selected files (or stdin if '-' is given)
+    $parser = new \Less\Parser($env);
+    foreach($inputs as $input) {
+        if ($input == '-') {
+            $content = file_get_contents('php://stdin');
+            $parser->parse($content);
+        } else {
+            try {
+                $parser->parseFile($input);
+            } catch (\Exception $e) {
+                if ( ! $silent) {
+                    echo ("lessc: ".$e->getMessage()." \n");
+                }
             }
         }
     }
-}
 
-if ($output) {
-    file_put_contents($output, $parser->getCss());
-} else {
-    echo $parser->getCss();
+    if ($output) {
+        file_put_contents($output, $parser->getCss());
+    } else {
+        echo $parser->getCss();
+    }
 }
