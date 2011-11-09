@@ -20,24 +20,21 @@ class Selector
 
     public function match ($other)
     {
-        $value = $this->elements[0]->value;
         $len   = count($this->elements);
         $olen  = count($other->elements);
-        if ($len > $olen) {
-            return $value === $other->elements[0]->value;
-        }
+        $max = min($len, $olen);
 
-        for ($i = 0; $i < $olen; $i ++) {
-            if (is_array($other->elements) && $value === $other->elements[$i]->value) {
-                for ($j = 1; $j < $len; $j ++) {
-                    if ($this->elements[$j]->value !== $other->elements[$i + $j]->value) {
-                        return false;
-                    }
+        if ($len < $olen) {
+            return false;
+        } else {
+            for ($i = 0; $i < $max; $i ++) {
+                if ($this->elements[$i]->value !== $other->elements[$i]->value) {
+                    return false;
                 }
-                return true;
             }
         }
-        return false;
+
+        return true;
     }
 
     public function toCSS ($env)

@@ -133,7 +133,7 @@ if ($watch) {
             echo ("lessc: output file recompilled\n");
         }
 
-        sleep(2);
+        sleep(1);
     }
 } else {
     // parse the selected files (or stdin if '-' is given)
