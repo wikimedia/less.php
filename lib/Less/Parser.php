@@ -331,7 +331,7 @@ class Parser {
             $this->match('~');
         }
 
-        if ($str = $this->match('/^"((?:[^"\\\\\r\n]|\\.)*)"|\'((?:[^\'\\\\\r\n]|\\.)*)\'/')) {
+        if ($str = $this->match('/^"((?:[^"\r\n]|\\.)*)"|\'((?:[^\'\r\n]|\\.)*)\'/')) {
             if ($str[0][0] == '"') {
                 return new \Less\Node\Quoted($str[0], $str[1], $e, $start);
             } else {
