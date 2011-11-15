@@ -1042,7 +1042,7 @@ class Parser {
     private function parseOperand ()
     {
         $negate = false;
-        $p = $this->input[$this->pos + 1];
+        $p = isset($this->input[$this->pos + 1]) ? $this->input[$this->pos + 1] : '';
         if ($this->peek('-') && ($p === '@' || $p === '(')) {
             $negate = $this->match('-');
         }
