@@ -700,7 +700,13 @@ class Parser {
         if ( ! $this->match('/^\(opacity=/i')) {
             return;
         }
-        if ($value = $this->match('/^\d+/') ?: $this->match('parseEntitiesVariable')) {
+
+        $value = $this->match('/^[0-9]+/');
+        if ($value === null) {
+            $value = $this->match('parseEntitiesVariable');
+        }
+
+        if ($value !== null) {
             if (! $this->match(')')) {
                 throw new \Less\Exception\ParserException("missing closing ) for alpha()");
             }
