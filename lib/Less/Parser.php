@@ -331,7 +331,7 @@ class Parser {
             $this->match('~');
         }
 
-        if ($str = $this->match('/^"((?:[^"\\\\\r\n]|\\.)*)"|\'((?:[^\'\\\\\r\n]|\\.)*)\'/')) {
+        if ($str = $this->match('/^"((?:[^"\r\n]|\\.)*)"|\'((?:[^\'\r\n]|\\.)*)\'/')) {
             if ($str[0][0] == '"') {
                 return new \Less\Node\Quoted($str[0], $str[1], $e, $start);
             } else {
@@ -700,7 +700,13 @@ class Parser {
         if ( ! $this->match('/^\(opacity=/i')) {
             return;
         }
-        if ($value = $this->match('/^\d+/') ?: $this->match('parseEntitiesVariable')) {
+
+        $value = $this->match('/^[0-9]+/');
+        if ($value === null) {
+            $value = $this->match('parseEntitiesVariable');
+        }
+
+        if ($value !== null) {
             if (! $this->match(')')) {
                 throw new \Less\Exception\ParserException("missing closing ) for alpha()");
             }
@@ -1042,7 +1048,7 @@ class Parser {
     private function parseOperand ()
     {
         $negate = false;
-        $p = $this->input[$this->pos + 1];
+        $p = isset($this->input[$this->pos + 1]) ? $this->input[$this->pos + 1] : '';
         if ($this->peek('-') && ($p === '@' || $p === '(')) {
             $negate = $this->match('-');
         }

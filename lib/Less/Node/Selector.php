@@ -23,7 +23,6 @@ class Selector
         $len   = count($this->elements);
         $olen  = count($other->elements);
         $max = min($len, $olen);
-
         if ($len < $olen) {
             return false;
         } else {
@@ -33,7 +32,6 @@ class Selector
                 }
             }
         }
-
         return true;
     }
 
