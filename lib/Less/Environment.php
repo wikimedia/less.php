@@ -137,7 +137,7 @@ class Environment
 
     public function hsla($h, $s, $l, $a)
     {
-        $h = (self::number($h) % 360) / 360;
+        $h = fmod(self::number($h), 360) / 360; // Classic % operator will change float to int
         $s = self::number($s);
         $l = self::number($l);
         $a = self::number($a);
@@ -205,7 +205,7 @@ class Environment
 
     public function lighten($color, $amount)
     {
-       $hsl = $color->toHSL();
+        $hsl = $color->toHSL();
 
         $hsl['l'] += $amount->value / 100;
         $hsl['l'] = self::clamp($hsl['l']);
@@ -355,4 +355,3 @@ class Environment
         return new \Less\Node\Anonymous($color->toARGB());
     }
 }
-
