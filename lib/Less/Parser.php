@@ -305,7 +305,7 @@ class Parser {
         if ($this->peek('/', 1)) {
             return new \Less\Node\Comment($this->match('/^\/\/.*/'), true);
         } else {
-            if ($comment = $this->match('/^\\/\*(?:[^*]|\*+[^\\/*])*\*+\\/\n?/')) {
+            if ($comment = $this->match('#/\*.*?\*/\n?#s')) {
                 return new \Less\Node\Comment($comment, false);
             }
         }
