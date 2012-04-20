@@ -47,4 +47,32 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 
         return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
     }
+
+    /**
+     * @dataProvider boostrap202Provider
+     */
+    public function testBoostrap202CssGeneration($less, $css)
+    {
+        $parser = new Parser();
+
+        $less = $parser->parseFile($less)->getCss();
+        $css = file_get_contents($css);
+
+        $this->assertEquals($css, $less);
+    }
+
+    public function boostrap202Provider()
+    {
+		$dir = __DIR__ . "/Fixtures/bootstrap-2.0.2/";
+        $less = array(
+			$dir . 'less/bootstrap.less',
+			$dir . 'less/responsive.less'
+		);
+        $css = array(
+			$dir . 'css/bootstrap.less',
+			$dir . 'css/bootstrap-responsive.less'
+		);
+
+        return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
+    }
 }
