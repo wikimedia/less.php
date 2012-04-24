@@ -1,0 +1,22 @@
+{
+	"name": "Mordred/less.php",
+	"description": "PHP port of the Javascript version of LESS http://lesscss.org",
+	"keywords": [ "less", "css", "php", "stylesheet", "less.js", "lesscss" ],
+	"homepage": "https://github.com/Mordred/less.php",
+	"authors": [
+		{
+			"name": "Matt Agar",
+			"homepage": "https://github.com/agar"
+		},
+		{
+			"name": "Martin Jantošovič",
+			"homepage": "https://github.com/Mordred"
+		}
+	],
+    "require": {
+        "PHP" : ">=5.3.5"
+	},
+    "autoload": {
+        "psr-0": { "Less": "lib/" }
+    }
+}
