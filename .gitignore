@@ -7,3 +7,5 @@ ehthumbs.db
 Icon?
 Thumbs.db
 *.komodoproject
+composer.lock
+vendor/

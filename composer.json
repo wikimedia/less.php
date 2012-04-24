@@ -13,10 +13,10 @@
 			"homepage": "https://github.com/Mordred"
 		}
 	],
-    "require": {
-        "PHP" : ">=5.3.5"
+	"require": {
+		"PHP" : ">=5.3.5"
 	},
-    "autoload": {
-        "psr-0": { "Less": "lib/" }
-    }
+	"autoload": {
+		"psr-0": { "Less": "lib/" }
+	}
 }
