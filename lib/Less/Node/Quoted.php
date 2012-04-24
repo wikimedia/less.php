@@ -4,11 +4,10 @@ namespace Less\Node;
 
 class Quoted
 {
-    public $escaped;
+    public $value;
     public $content;
 
-    public function __construct($str, $content, $escaped = false, $i = false)
-    {
+    public function __construct($str, $content, $escaped = false, $i = false) {
         $this->escaped = $escaped;
         $this->value = $content ?: '';
         $this->quote = $str[0];

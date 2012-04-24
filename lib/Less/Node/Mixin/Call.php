@@ -4,11 +4,20 @@ namespace Less\Node\Mixin;
 
 class Call
 {
-    public function __construct($elements, $args, $index)
+	private $selector;
+	private $arguments;
+	private $index;
+	private $filename;
+
+	public $important;
+
+    public function __construct($elements, $args, $index, $filename, $important = false)
     {
         $this->selector =  new \Less\Node\Selector($elements);
         $this->arguments = $args;
         $this->index = $index;
+		$this->filename = $filename;
+		$this->important = $important;
     }
 
     public function compile($env)
@@ -27,28 +36,23 @@ class Call
                 foreach ($mixins as $mixin) {
                     if ($mixin->match($args, $env)) {
                         try {
-                            if ($env->getDebug() && isset($mixin->name)) {
-                                $rules[] = new \Less\Node\Comment('/**** Start rules from `' . $mixin->name.'` (defined in `'.$mixin->filename.'` on line: ' . $mixin->line.') ****/', false);
-                            }
-                            $rules = array_merge($rules, $mixin->compile($env, $this->arguments)->rules);
-                            if ($env->getDebug() && isset($mixin->name)) {
-                                $rules[] = new \Less\Node\Comment('/**** End rules from `' . $mixin->name.'` ****/', false);
-                            }
+                            $rules = array_merge($rules, $mixin->compile($env, $this->arguments, $this->important)->rules);
                             $match = true;
                         } catch (Exception $e) {
-                            throw new \Less\Exception\CompilerException($e->message, $e->index);
+                            throw new \Less\Exception\CompilerException($e->message, $e->index, null, $this->filename);
                         }
                     }
                 }
+
                 if ($match) {
                     return $rules;
                 } else {
                     throw new \Less\Exception\CompilerException('No matching definition was found for `'.
-                                                  trim($this->selector->toCSS($env)) . '(' .
-                                                  implode(', ', array_map(function ($a) use($env) {
-                                                    return $a->toCss($env);
-                                                  }, $this->arguments)) . ')`',
-                                                  $this->index);
+						trim($this->selector->toCSS($env)) . '(' .
+						implode(', ', array_map(function ($a) use($env) {
+						  return $a->toCss($env);
+						}, $this->arguments)) . ')`',
+						$this->index, null, $this->filename);
                 }
             }
         }
@@ -56,5 +60,3 @@ class Call
         throw new \Less\Exception\CompilerException(trim($this->selector->toCSS($env)) . " is undefined", $this->index);
     }
 }
-
-

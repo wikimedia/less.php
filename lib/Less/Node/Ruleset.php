@@ -4,37 +4,45 @@ namespace Less\Node;
 
 class Ruleset
 {
-    public $selectors;
-    public $rules;
     protected $lookups;
-    public $root;
     private $_variables;
     private $_rulesets;
 
-    public function __construct($selectors, $rules)
+	public $strictImports;
+
+    public $selectors;
+    public $rules;
+    public $root;
+	public $allowImports;
+
+    public function __construct($selectors, $rules, $strictImports = false)
     {
         $this->selectors = $selectors;
         $this->rules = (array) $rules;
         $this->lookups = array();
-
+		$this->strictImports = $strictImports;
     }
 
-    public function compile($env)
-    {
-        $ruleset = new Ruleset($this->selectors, $this->rules);
+    public function compile($env) {
+		$selectors = $this->selectors ? array_map(function($s) use ($env) {
+			return $s->compile($env);
+		}, $this->selectors) : array();
+        $ruleset = new Ruleset($selectors, $this->rules, $this->strictImports);
+
         $ruleset->root = $this->root;
+		$ruleset->allowImports = $this->allowImports;
 
         // push the current ruleset to the frames stack
         $env->unshiftFrame($ruleset);
 
         // Evaluate imports
-        if ($ruleset->root) {
-            for($i = 0; $i < count($ruleset->rules); $i++) {
-                if ($ruleset->rules[$i] instanceof \Less\Node\Import && ! $ruleset->rules[$i]->css) {
+        if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
+            for ($i = 0; $i < count($ruleset->rules); $i++) {
+                if (/*isset($ruleset->rules[$i]) && */$ruleset->rules[$i] instanceof \Less\Node\Import && ! $ruleset->rules[$i]->css) {
                     $newRules = $ruleset->rules[$i]->compile($env);
                     $ruleset->rules = array_merge(
                         array_slice($ruleset->rules, 0, $i),
-                        (array) $newRules,
+                        is_array($newRules) ? $newRules : array($newRules),
                         array_slice($ruleset->rules, $i + 1)
                     );
                 }
@@ -51,7 +59,7 @@ class Ruleset
 
         // Evaluate mixin calls.
         for($i = 0; $i < count($ruleset->rules); $i++) {
-            if ($ruleset->rules[$i] instanceof \Less\Node\Mixin\Call) {
+            if (isset($ruleset->rules[$i]) && $ruleset->rules[$i] instanceof \Less\Node\Mixin\Call) {
                 $newRules = $ruleset->rules[$i]->compile($env);
                 $ruleset->rules = array_merge(
                     array_slice($ruleset->rules, 0, $i),
@@ -79,8 +87,7 @@ class Ruleset
         return ! is_array($args) || count($args) === 0;
     }
 
-    public function variables()
-    {
+    public function variables() {
         if ( ! $this->_variables) {
             $this->_variables = array_reduce($this->rules, function ($hash, $r) {
                 if ($r instanceof \Less\Node\Rule && $r->variable === true) {
@@ -147,10 +154,11 @@ class Ruleset
     //
     //     `context` holds an array of arrays.
     //
-    public function toCSS ($context, $env)
+    public function toCSS($context, $env)
     {
         $css = array();      // The CSS output
         $rules = array();    // node.Rule instances
+		$_rules = array();
         $rulesets = array(); // node.Ruleset instances
         $paths = array();    // Current selectors
 
@@ -164,7 +172,7 @@ class Ruleset
 
         // Compile rules and rulesets
         foreach($this->rules as $rule) {
-            if (isset($rule->rules) || ($rule instanceof \Less\Node\Directive)) {
+            if (isset($rule->rules) || ($rule instanceof \Less\Node\Directive) || ($rule instanceof \Less\Node\Media)) {
                 $rulesets[] = $rule->toCSS($paths, $env);
             } else if ($rule instanceof \Less\Node\Comment) {
                 if (!$rule->silent) {
@@ -198,7 +206,15 @@ class Ruleset
                     }, $p)));
                 }, $paths);
 
-                $selector = implode($env->compress ? ',' : (count($paths) > 3 ? ",\n" : ', '), $selector);
+                $selector = implode($env->compress ? ',' : ",\n", $selector);
+
+				// Remove duplicates
+				for ($i = count($rules) - 1; $i >= 0; $i--) {
+					if (array_search($rules[$i], $_rules) === FALSE) {
+						array_unshift($_rules, $rules[$i]);
+					}
+				}
+				$rules = $_rules;
 
                 $css[] = $selector;
                 $css[] = ($env->compress ? '{' : " {\n  ") .

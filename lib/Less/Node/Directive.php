@@ -13,7 +13,7 @@ class Directive
         $this->name = $name;
         if (is_array($value)) {
             $this->ruleset = new Ruleset(false, $value);
-            $this->ruleset->root = true;
+            $this->ruleset->allowImports = true;
         } else {
             $this->value = $value;
         }

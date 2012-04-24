@@ -2,54 +2,58 @@
 
 namespace Less\Node;
 
-class Selector
-{
-    public $elements;
-    private $_css;
-    public function __construct($elements)
-    {
-        $this->elements = $elements;
+class Selector {
 
-        if (is_array($this->elements) && isset($this->elements[0]) &&
-            $this->elements[0] instanceof \Less\Node\Combinator &&
-            $this->elements[0]->combinator->value === '') {
+	public $elements;
+	private $_css;
 
-            $this->elements[0]->combinator->value = ' ';
-        }
-    }
+	public function __construct($elements) {
+		$this->elements = $elements;
 
-    public function match ($other)
-    {
-        $len   = count($this->elements);
-        $olen  = count($other->elements);
-        $max = min($len, $olen);
-        if ($len < $olen) {
-            return false;
-        } else {
-            for ($i = 0; $i < $max; $i ++) {
-                if ($this->elements[$i]->value !== $other->elements[$i]->value) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+		if (is_array($this->elements) && isset($this->elements[0]) &&
+			$this->elements[0]->combinator instanceof \Less\Node\Combinator &&
+			$this->elements[0]->combinator->value === '') {
+			$this->elements[0]->combinator->value = ' ';
+		}
+	}
 
-    public function toCSS ($env)
-    {
-        if ($this->_css) {
-            return $this->_css;
-        }
+	public function match($other) {
+		$len   = count($this->elements);
+		$olen  = count($other->elements);
+		$max = min($len, $olen);
+		if ($len < $olen) {
+			return false;
+		} else {
+			for ($i = 0; $i < $max; $i ++) {
+				if ($this->elements[$i]->value !== $other->elements[$i]->value) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
-        $this->_css = array_map(function ($e) use ($env) {
-            if (is_string($e)) {
-                return ' ' . trim($e);
-            } else {
-                return $e->toCSS($env);
-            }
-        }, $this->elements);
-        $this->_css = implode('', $this->_css);
+	public function toCSS ($env)
+	{
+		if ($this->_css) {
+			return $this->_css;
+		}
 
-        return $this->_css;
-    }
+		$this->_css = array_map(function ($e) use ($env) {
+			if (is_string($e)) {
+				return ' ' . trim($e);
+			} else {
+				return $e->toCSS($env);
+			}
+		}, $this->elements);
+		$this->_css = implode('', $this->_css);
+
+		return $this->_css;
+	}
+
+	public function compile($env) {
+		return new Selector(array_map(function($e) use ($env) {
+			return $e->compile($env);
+		}, $this->elements));
+	}
 }

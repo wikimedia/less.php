@@ -37,12 +37,14 @@ class Parser {
     /**
      *
      */
-    static public $version = '0.9.0';
+    static public $version = '1.3.0';
 
     /**
      * @var \Less\Environment
      */
     private $env;
+
+	public $imports = array();
 
     /**
      * @param Environment|null $env
@@ -229,6 +231,19 @@ class Parser {
         }
     }
 
+	public function expect($tok, $msg = NULL) {
+		$result = $this->match($tok);
+		if (!$result) {
+			throw new \Less\Exception\ParserException(
+				$msg === NULL
+					? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'"
+					: $msg
+			);
+		} else {
+			return $result;
+		}
+	}
+
     //
     // Here in, the parsing rules/functions
     //
@@ -316,27 +331,26 @@ class Parser {
     //
     //     "milky way" 'he\'s the one!'
     //
-    private function parseEntitiesQuoted()
-    {
-        $e = false;
-        $start = $this->pos;
+    private function parseEntitiesQuoted() {
+		$j = 0;
+		$e = false;
+
         if ($this->peek('~')) {
+			$j++;
             $e = true; // Escaped strings
         }
 
-        if ( ! $this->peek('"', $e) && ! $this->peek("'", $e)) {
+        if ( ! $this->peek('"', $j) && ! $this->peek("'", $j)) {
             return;
         }
+
         if ($e) {
             $this->match('~');
         }
 
-        if ($str = $this->match('/^"((?:[^"\r\n]|\\.)*)"|\'((?:[^\'\r\n]|\\.)*)\'/')) {
-            if ($str[0][0] == '"') {
-                return new \Less\Node\Quoted($str[0], $str[1], $e, $start);
-            } else {
-                return new \Less\Node\Quoted($str[0], $str[2], $e, $start);
-            }
+        if ($str = $this->match('/^"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/')) {
+			$result = $str[0][0] == '"' ? $str[1] : $str[2];
+			return new \Less\Node\Quoted($str[0], $result, $e);
         }
 
         return;
@@ -350,7 +364,11 @@ class Parser {
     private function parseEntitiesKeyword()
     {
         if ($k = $this->match('/^[_A-Za-z-][_A-Za-z0-9-]*/')) {
-            return new \Less\Node\Keyword($k);
+			if (\Less\Colors::hasOwnProperty($k))
+				// detected named color
+				return new \Less\Node\Color(substr(\Less\Colors::color($k), 1));
+			else
+				return new \Less\Node\Keyword($k);
         }
 
         return;
@@ -369,7 +387,7 @@ class Parser {
     private function parseEntitiesCall()
     {
         $index = $this->pos;
-        if ( ! preg_match('/^([\w-]+|%)\(/', $this->current, $name)) {
+        if ( ! preg_match('/^([\w-]+|%|progid:[\w\.]+)\(/', $this->current, $name)) {
             return;
         }
         $name = strtolower($name[1]);
@@ -390,7 +408,7 @@ class Parser {
             return;
         }
         if ($name) {
-            return new \Less\Node\Call($name, $args, $index);
+            return new \Less\Node\Call($name, $args, $index, $this->filename);
         }
     }
 
@@ -402,8 +420,7 @@ class Parser {
     private function parseEntitiesArguments()
     {
         $args = array();
-
-        while ($arg = $this->match('parseExpression')) {
+        while ($arg = $this->match('parseEntitiesAssigment') ?: $this->match('parseExpression')) {
             $args[] = $arg;
             if (! $this->match(',')) {
                 break;
@@ -418,6 +435,17 @@ class Parser {
                $this->match('parseEntitiesColor') ?:
                $this->match('parseEntitiesQuoted');
     }
+
+	// Assignments are argument entities for calls.
+	// They are present in ie filter properties as shown below.
+	//
+	//     filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
+	//
+	private function parseEntitiesAssigment() {
+		if (($key = $this->match('/^\w+(?=\s?=)/i')) && $this->match('=') && ($value = $this->match('parseEntity'))) {
+			return new \Less\Node\Assigment($key, $value);
+		}
+	}
 
     //
     // Parse url() tokens
@@ -437,9 +465,7 @@ class Parser {
                  $this->match('parseEntitiesDataURI') ?:
                  $this->match('/^[-\w%@$\/.&=:;#+?~]+/') ?: '';
 
-        if ( ! $this->match(')')) {
-            throw new \Less\Exception\ParserException("missing closing ) for url()");
-        }
+		$this->expect(')');
 
         return new \Less\Node\Url((isset($value->value) || isset($value->data) || $value instanceof \Less\Node\Variable)
                             ? $value : new \Less\Node\Anonymous($value), '');
@@ -471,7 +497,7 @@ class Parser {
     {
         $index = $this->pos;
         if ($this->peek('@') && ($name = $this->match('/^@@?[\w-]+/'))) {
-            return new \Less\Node\Variable($name, $index);
+            return new \Less\Node\Variable($name, $index, $this->filename);
         }
     }
 
@@ -501,7 +527,7 @@ class Parser {
     return;
         }
 
-        if ($value = $this->match('/^(-?\d*\.?\d+)(px|%|em|pc|ex|in|deg|s|ms|pt|cm|mm|rad|grad|turn)?/')) {
+        if ($value = $this->match('/^(-?\d*\.?\d+)(px|%|em|rem|pc|ex|in|deg|s|ms|pt|cm|mm|rad|grad|turn)?/')) {
             return new \Less\Node\Dimension($value[1], isset($value[2]) ? $value[2] : null);
         }
     }
@@ -559,9 +585,6 @@ class Parser {
         }
     }
 
-
-
-
     //
     // A Mixin call, with an optional argument list
     //
@@ -579,13 +602,14 @@ class Parser {
         $args = array();
         $c = null;
         $index = $this->pos;
+		$important = false;
 
         if ( ! $this->peek('.') && ! $this->peek('#')) {
             return;
         }
 
         while ($e = $this->match('/^[#.](?:[\w-]|\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/')) {
-            $elements[] = new \Less\Node\Element($c, $e);
+            $elements[] = new \Less\Node\Element($c, $e, $index);
             $c = $this->match('>');
         }
 
@@ -594,8 +618,11 @@ class Parser {
             $this->match(')');
         }
 
+		if ($this->match('parseImportant'))
+			$important = true;
+
         if (count($elements) > 0 && ($this->match(';') || $this->peek('}'))) {
-            return new \Less\Node\Mixin\Call($elements, $args, $index);
+            return new \Less\Node\Mixin\Call($elements, $args, $index, $this->filename, $important);
         }
     }
 
@@ -621,46 +648,59 @@ class Parser {
     private function parseMixinDefinition()
     {
         $params = array();
-        $start = $this->pos;
+		$variadic = false;
+		$cond = null;
 
         if ((! $this->peek('.') && ! $this->peek('#')) || $this->peek('/^[^{]*(;|})/')) {
             return;
         }
 
+        $start = $this->pos;
+
         if ($match = $this->match('/^([#.](?:[\w-]|\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+)\s*\(/')) {
             $name = $match[1];
 
-            while ($param = $this->match('parseEntitiesVariable') ?:
+			do {
+				if ($this->peek('.') && $this->match("/^\.{3}/")) {
+					$variadic = true;
+					break;
+				} elseif ($param = $this->match('parseEntitiesVariable') ?:
                             $this->match('parseEntitiesLiteral') ?:
-                            $this->match('parseEntitiesKeyword')
-            ) {
-                // Variable
-                if ($param instanceof \Less\Node\Variable) {
-                    if ($this->match(':')) {
-                        if ($value = $this->match('parseExpression')) {
+                            $this->match('parseEntitiesKeyword')) {
+					// Variable
+					if ($param instanceof \Less\Node\Variable) {
+	                    if ($this->match(':')) {
+							$value = $this->expect('parseExpression', 'Expected expression');
                             $params[] = array('name' => $param->name, 'value' => $value);
-                        } else {
-                            throw new \Less\Exception\ParserException("Expected value");
-                        }
+						} elseif ($this->match("/^\.{3}/")) {
+							$params[] = array('name' => $param->name, 'variadic' => true);
+							$variadic = true;
+							break;
+						} else {
+	                        $params[] = array('name' => $param->name);
+						}
                     } else {
-                        $params[] = array('name' => $param->name);
+                        $params[] = array('value' => $param);
                     }
-                } else {
-                    $params[] = array('value' => $param);
-                }
-                if (! $this->match(',')) {
-                    break;
-                }
-            }
-            if (! $this->match(')')) {
-                throw new \Less\Exception\ParserException("Expected )");
-            }
+				} else {
+					break;
+				}
+			} while ($this->match(','));
+
+			$this->expect(')');
+
+			if ($this->match('/^when/')) { // Guard
+				$cond = $this->expect('parseConditions', 'Expected conditions');
+			}
 
             $ruleset = $this->match('parseBlock');
 
-            if ($ruleset) {
-                return new \Less\Node\Mixin\Definition($name, $params, $ruleset, $this->filename, substr_count($this->input, "\n", 0, $start+1) + 1);
-            }
+            if (is_array($ruleset)) {
+                return new \Less\Node\Mixin\Definition($name, $params, $ruleset, $cond, $variadic);
+            } else {
+				$this->pos = $start;
+				$this->sync();
+			}
         }
     }
 
@@ -707,9 +747,7 @@ class Parser {
         }
 
         if ($value !== null) {
-            if (! $this->match(')')) {
-                throw new \Less\Exception\ParserException("missing closing ) for alpha()");
-            }
+			$this->expect(')');
             return new \Less\Node\Alpha($value);
         }
     }
@@ -730,18 +768,22 @@ class Parser {
     private function parseElement()
     {
         $c = $this->match('parseCombinator');
-        $e = $this->match('/^(?:[.#]?|:*)(?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ?:
+        $e = $this->match('/^(?:\d+\.\d+|\d+)%/') ?:
+			 $this->match('/^(?:[.#]?|:*)(?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ?:
              $this->match('*') ?:
              $this->match('parseAttribute') ?:
-             $this->match('/^\([^)@]+\)/') ?:
-             $this->match('/^(?:\d*\.)?\d+%/');
+             $this->match('/^\([^)@]+\)/');
+
+		if (!$e && $this->match('(') && ($v = $this->match('parseEntitiesVariable')) && $this->match(')')) {
+			$e = new \Less\Node\Paren($v);
+		}
 
         if ($e) {
-            return new \Less\Node\Element($c, $e);
+            return new \Less\Node\Element($c, $e, $this->pos);
         }
 
         if ($c->value && $c->value[0] === '&') {
-          return new \Less\Node\Element($c, null);
+          return new \Less\Node\Element($c, null, $this->pos);
         }
     }
 
@@ -763,8 +805,7 @@ class Parser {
                 $this->pos++;
             }
             return new \Less\Node\Combinator($c);
-
-        } else if ($c === '&') {
+        } elseif ($c === '&') {
 
             $match = '&';
             $this->pos++;
@@ -775,13 +816,7 @@ class Parser {
                 $this->pos++;
             }
             return new \Less\Node\Combinator($match);
-        } else if ($c === ':' && $this->input[$this->pos + 1] === ':') {
-             $this->pos += 2;
-             while ($this->input[$this->pos] === ' ') {
-                $this->pos++;
-            }
-            return new \Less\Node\Combinator('::');
-        } else if ($this->pos > 0 && (preg_match('/\s/', $this->input[$this->pos - 1]))) {
+        } elseif ($this->pos > 0 && (preg_match('/\s/', $this->input[$this->pos - 1]))) {
             return new \Less\Node\Combinator(' ');
         } else {
             return new \Less\Node\Combinator();
@@ -799,6 +834,13 @@ class Parser {
     private function parseSelector()
     {
         $elements = array();
+
+		if ($this->match('(')) {
+			$sel = $this->match('parseEntity');
+			$this->expect(')');
+			return new \Less\Node\Selector(array(new \Less\Node\Element('', $sel, $this->pos)));
+		}
+
         while ($e = $this->match('parseElement')) {
             $elements[] = $e;
             if ($this->peek('{') || $this->peek('}') || $this->peek(';') || $this->peek(',')) {
@@ -873,7 +915,7 @@ class Parser {
         }
 
         if (count($selectors) > 0 && (is_array($rules = $this->match('parseBlock')))) {
-            return new \Less\Node\Ruleset($selectors, $rules);
+            return new \Less\Node\Ruleset($selectors, $rules, $this->env->strictImports);
         } else {
             // Backtrack
             $this->pos = $start;
@@ -923,13 +965,68 @@ class Parser {
     //
     private function parseImport()
     {
-        if ($this->match('/^@import\s+/') &&
-            ($path = $this->match('parseEntitiesQuoted') ?: $this->match('parseEntitiesUrl')) &&
-            $this->match(';')
-        ) {
-            return new \Less\Node\Import($path, $this->path, $this->env);
-        }
+		$index = $this->pos;
+		$dir = $this->match('/^@import(?:-(once))?\s+/');
+
+		if ($dir && ($path = $this->match('parseEntitiesQuoted') ?: $this->match('parseEntitiesUrl'))) {
+			$features = $this->match('parseMediaFeatures');
+			if ($this->match(';'))
+				return new \Less\Node\Import($path, $this->path, $features, ($dir[0] == 'once'));
+		}
     }
+
+	private function parseMediaFeature() {
+		$nodes = array();
+
+		do {
+			if ($e = $this->match('parseEntitiesKeyword')) {
+				$nodes[] = $e;
+			} elseif ($this->match('(')) {
+				$p = $this->match('parseProperty');
+				$e = $this->match('parseEntity');
+				if ($this->match(')')) {
+					if ($p && $e) {
+						$nodes[] = new \Less\Node\Paren(new \Less\Node\Rule($p, $e, null, $this->pos, true));
+					} elseif ($e) {
+						$nodes[] = new \Less\Node\Paren($e);
+					} else {
+						return null;
+					}
+				} else
+					return null;
+			}
+		} while ($e);
+
+		if ($nodes) {
+			return new \Less\Node\Expression($nodes);
+		}
+	}
+
+	private function parseMediaFeatures() {
+		$features = array();
+
+		do {
+			if ($e = $this->match('parseMediaFeature')) {
+				$features[] = $e;
+				if (!$this->match(',')) break;
+			} elseif ($e = $this->match('parseEntitiesVariable')) {
+				$features[] = $e;
+				if (!$this->match(',')) break;
+			}
+		} while ($e);
+
+		return $features ? $features : null;
+	}
+
+	private function parseMedia() {
+		if ($this->match('/^@media/')) {
+			$features = $this->match('parseMediaFeatures');
+
+			if ($rules = $this->match('parseBlock')) {
+				return new \Less\Node\Media($rules, $features);
+			}
+		}
+	}
 
     //
     // A CSS Directive
@@ -941,10 +1038,11 @@ class Parser {
         if (! $this->peek('@')) {
             return;
         }
-        if ($value = $this->match('parseImport')) {
+
+        if ($value = ($this->match('parseImport') ?: $this->match('parseMedia'))) {
             return $value;
-        } else if ($name = $this->match('/^@media|@page/') ?: $this->match('/^@(?:-webkit-|-moz-)?keyframes/')) {
-            $types = trim($this->match('/^[^{]+/'));
+        } elseif ($name = ($this->match('/^@page|^@keyframes/') ?: $this->match('/^@(?:-webkit-|-moz-|-o-|-ms-)[a-z0-9-]+/'))) {
+            $types = trim($this->match('/^[^{]+/') ?: '');
             if ($rules = $this->match('parseBlock')) {
                 return new \Less\Node\Directive($name . " " . $types, $rules);
             }
@@ -1019,11 +1117,10 @@ class Parser {
         }
     }
 
-    private function parseMultiplication ()
-    {
+    private function parseMultiplication() {
         $operation = false;
         if ($m = $this->match('parseOperand')) {
-            while (($op = ($this->match('/') ?: $this->match('*'))) && ($a = $this->match('parseOperand'))) {
+            while (!$this->peek('/^\/\*/') && ($op = ($this->match('/') ?: $this->match('*'))) && ($a = $this->match('parseOperand'))) {
                 $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a));
             }
             return $operation ?: $m;
@@ -1040,6 +1137,38 @@ class Parser {
             return $operation ?: $m;
         }
     }
+
+	private function parseConditions() {
+		$index = $this->pos;
+		$condition = null;
+		if ($a = $this->match('parseCondition')) {
+			while ($this->match(',') && ($b = $this->match('parseCondition'))) {
+				$condition = new \Less\Node\Condition('or', $condition ?: $a, $b, $index);
+			}
+			return $condition ?: $a;
+		}
+	}
+
+	private function parseCondition() {
+		$index = $this->pos;
+		$negate = false;
+
+		if ($this->match('/^not/')) $negate = true;
+		$this->expect('(');
+		if ($a = ($this->match('parseAddition') ?: $this->match('parseEntitiesKeyword') ?: $this->match('parseEntitiesQuoted')) ) {
+			if ($op = $this->match('/^(?:>=|=<|[<=>])/')) {
+				if ($b = ($this->match('parseAddition') ?: $this->match('parseEntitiesKeyword') ?: $this->match('parseEntitiesQuoted'))) {
+					$c = new \Less\Node\Condition($op, $a, $b, $index, $negate);
+				} else {
+					throw new \Less\Exception\ParserException('Unexpected expression');
+				}
+			} else {
+				$c = new \Less\Node\Condition('=', $a, new \Less\Node\Keyword('true'), $index, $negate);
+			}
+			$this->expect(')');
+			return $this->match('/^and/') ? new \Less\Node\Condition('and', $c, $this->match('parseCondition')) : $c;
+		}
+	}
 
     //
     // An operand is anything that can be part of an operation,
@@ -1088,4 +1217,3 @@ class Parser {
     }
 
 }
-

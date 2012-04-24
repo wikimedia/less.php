@@ -147,7 +147,7 @@ if ($watch) {
                 $parser->parseFile($input);
             } catch (\Exception $e) {
                 if ( ! $silent) {
-                    echo ("lessc: ".$e->getMessage()." \n");
+                    echo ("lessc: ". (string) $e." \n");
                 }
             }
         }

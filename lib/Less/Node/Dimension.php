@@ -38,4 +38,18 @@ class Dimension
     {
         return new \Less\Node\Dimension( \Less\Environment::operate($op, $this->value, $other->value), $this->unit ?: $other->unit);
     }
+
+	public function compare($other) {
+		if ($other instanceof Dimension) {
+			if ($other->value > $this->value) {
+				return -1;
+			} elseif ($other->value < $this->value) {
+				return 1;
+			} else {
+				return 0;
+			}
+		} else {
+			return -1;
+		}
+	}
 }

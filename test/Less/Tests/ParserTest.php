@@ -69,8 +69,8 @@ class ParserTest extends \PHPUnit_Framework_TestCase
 			$dir . 'less/responsive.less'
 		);
         $css = array(
-			$dir . 'css/bootstrap.less',
-			$dir . 'css/bootstrap-responsive.less'
+			$dir . 'css/bootstrap.css',
+			$dir . 'css/bootstrap-responsive.css'
 		);
 
         return array_map(function($less, $css) { return array($less, $css); }, $less, $css);

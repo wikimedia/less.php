@@ -18,4 +18,12 @@ class Keyword
     {
         return $this;
     }
+
+	public function compare($other) {
+		if ($other instanceof Keyword) {
+			return $other->value === $this->value ? 0 : 1;
+		} else {
+			return -1;
+		}
+	}
 }

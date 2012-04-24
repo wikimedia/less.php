@@ -2,16 +2,19 @@
 
 namespace Less\Node;
 
-class Variable
-{
-    public function __construct($name, $index)
-    {
+class Variable {
+
+	public $name;
+	public $index;
+	public $file;
+
+    public function __construct($name, $index, $file = null) {
         $this->name = $name;
         $this->index = $index;
+		$this->file = $file;
     }
 
-    public function compile($env)
-    {
+    public function compile($env) {
         $name = $this->name;
         if (strpos($name, '@@') === 0) {
             $v = new \Less\Node\Variable(substr($name, 1), $this->index + 1);
@@ -25,7 +28,7 @@ class Variable
         if ($variable = \Less\Environment::find($env->frames, $callback)) {
             return $variable;
         } else {
-            throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index);
+            throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index, null, $this->file);
         }
     }
 }
