@@ -63,7 +63,7 @@ class Definition extends \Less\Node\Ruleset
 		return $frame;
 	}
 
-	public function compile($env, $args, $important) {
+	public function compile($env, $args = array(), $important = false) {
 		$frame = $this->compileParams($env, $args);
 
 		$_arguments = array();
