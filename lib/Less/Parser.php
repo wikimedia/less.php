@@ -35,6 +35,11 @@ class Parser {
     private $css;
 
     /**
+     * @var length
+     */
+    private $length = 0;
+
+    /**
      *
      */
     static public $version = '1.3.0';
@@ -116,6 +121,7 @@ class Parser {
     {
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
+        $this->length = strlen($this->input);
         $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
         $root->root = true;
 
@@ -138,7 +144,7 @@ class Parser {
      */
     public function parseFile($filename, $returnRoot = false)
     {
-        if ( ! file_exists($filename)) {
+        if ( ! is_file($filename)) {
             throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
         }
 
@@ -170,7 +176,7 @@ class Parser {
         if (is_callable(array($this, $tok))) {
             // Non-terminal, match using a function call
             return $this->$tok();
-        } else if (strlen($tok) == 1) {
+        } else if (!isset($tok[1])) {
             // Match a single character in the input,
             $match = isset($this->input[$this->pos]) && $this->input[$this->pos] === $tok ? $tok : null;
             $length = 1;
@@ -193,10 +199,12 @@ class Parser {
         if ($match) {
 
             $this->pos += $length;
-            while ($this->pos < strlen($this->input)) {
-                $c = ord($this->input[$this->pos]);
-                if ( ! ($c === 32 || $c === 10 || $c === 9)) {
-                    break;
+            while ($this->pos < $this->length) {
+                //$c = ord($this->input[$this->pos]);
+                if ( ! ($this->input[$this->pos] === "\x20"
+                    || $this->input[$this->pos] === "\x0A"
+                    || $this->input[$this->pos] === "\x09")) {
+                        break;
                 }
                 $this->pos++;
 
@@ -220,8 +228,8 @@ class Parser {
      */
     public function peek($tok, $offset = 0)
     {
-        if (strlen($tok) == 1) {
-            return (strlen($this->input) > ($this->pos + $offset)) && $this->input[$this->pos + $offset] === $tok;
+        if (!isset($tok[1])) {
+            return ($this->length > ($this->pos + $offset)) && $this->input[$this->pos + $offset] === $tok;
         } else {
             if (preg_match($tok, $this->current, $matches)) {
                 return true;
