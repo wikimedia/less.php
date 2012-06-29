@@ -117,8 +117,12 @@ class Parser {
      * @param bool $returnRoot Indicates whether the return value should be a css string a root node
      * @return \Less\Node\Ruleset|\Less\Parser
      */
-    public function parse($str, $returnRoot = false)
+    public function parse($str, $returnRoot = false, $filename = NULL)
     {
+        if ($filename) {
+            $this->filename = $filename;
+            $this->path = dirname($filename);
+        }
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
         $this->length = strlen($this->input);
