@@ -1,5 +1,7 @@
 <?php
 
+//less.js : lib/less/tree/element.js
+
 namespace Less\Node;
 
 class Element
@@ -25,8 +27,18 @@ class Element
 		$this->index = $index;
     }
 
+	//less.js : tree.Element.prototype.toCSS
     public function toCSS ($env) {
-        return $this->combinator->toCSS($env) . (is_string($this->value) ? $this->value : $this->value->toCSS($env));
+
+        $value = $this->value;
+        if( !is_string($value) ){
+			$value = $value->toCSS($env);
+		}
+
+		if( $value == '' && $this->combinator->value[0] == '&' ){
+			return '';
+		}
+		return $this->combinator->toCSS($env) . $value;
     }
 
 	public function compile($env) {

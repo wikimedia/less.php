@@ -2,8 +2,8 @@
 
 namespace Less\Node\Mixin;
 
-class Call
-{
+class Call{
+
 	private $selector;
 	private $arguments;
 	private $index;
@@ -11,8 +11,12 @@ class Call
 
 	public $important;
 
-    public function __construct($elements, $args, $index, $filename, $important = false)
-    {
+	/**
+	 * less.js: tree.mixin.Call
+	 *
+	 */
+    public function __construct($elements, $args, $index, $filename, $important = false){
+
         $this->selector =  new \Less\Node\Selector($elements);
         $this->arguments = $args;
         $this->index = $index;
@@ -20,17 +24,21 @@ class Call
 		$this->important = $important;
     }
 
-    public function compile($env)
-    {
+	/**
+	 * less.js: tree.mixin.Call.prototype()
+	 *
+	 */
+    public function compile($env){
+
         $rules = array();
         $match = false;
 
-        foreach($env->frames as $frame) {
+        foreach($env->frames as $frame){
 
-            if ($mixins = $frame->find($this->selector, null, $env)) {
+            if( $mixins = $frame->find($this->selector, null, $env) ){
 
                 $args = array_map(function ($a) use ($env) {
-                    return $a->compile($env);
+					return array('name'=> $a['name'], 'value' => $a['value']->compile($env) );
                 }, $this->arguments);
 
                 foreach ($mixins as $mixin) {

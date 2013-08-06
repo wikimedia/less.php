@@ -15,6 +15,7 @@ class Definition extends \Less\Node\Ruleset
 	public $condition;
 	public $variadic;
 
+	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition
     public function __construct($name, $params, $rules, $condition, $variadic = false)
     {
         $this->name = $name;
@@ -40,20 +41,37 @@ class Definition extends \Less\Node\Ruleset
         return '';
     }
 
+	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.evalParams
     public function compileParams($env, $args = array())
     {
         $frame = new \Less\Node\Ruleset(null, array());
 
+
         foreach($this->params as $i => $param) {
+
+			$arg = null;
+			if( array_key_exists($i,$args) && $args[$i] ){
+				$arg = $args[$i];
+			}
+
+			if( $arg && $arg['name'] ){
+				array_unshift($frame->rules, new \Less\Node\Rule($arg['name'], $arg['value']->compile($env) ));
+				array_splice($args,$i,1);
+				$i--;
+                continue;
+			}
+
+
             if (isset($param['name']) && $param['name']) {
 				if (isset($param['variadic']) && $param['variadic'] && $args) {
 					$varargs = array();
 					for ($j = $i; $j < count($args); $j++) {
-						$varargs[] = $args[$j]->compile($env);
+						$varargs[] = $args[$j]['value']->compile($env);
 					}
 					$expression = new \Less\Node\Expression($varargs);
 					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $expression->compile($env)));
-				} elseif ($val = ($args && isset($args[$i]) ? $args[$i] : $param['value'])) {
+
+				} elseif ( $val = ($arg && $arg['value'] ? $arg['value'] : $param['value']) ){
 					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $val->compile($env)));
 				} else {
 					throw new \Less\Exception\CompilerException("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
@@ -63,12 +81,19 @@ class Definition extends \Less\Node\Ruleset
 		return $frame;
 	}
 
-	public function compile($env, $args = array(), $important = false) {
+	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.eval
+	public function compile($env, $args, $important) {
 		$frame = $this->compileParams($env, $args);
 
 		$_arguments = array();
         for ($i = 0; $i < max(count($this->params), count($args)); $i++) {
-            $_arguments[] = isset($args[$i]) ? $args[$i] : $this->params[$i]['value'];
+
+            if( isset($args[$i]) && $args[$i]['value'] ){
+				$_arguments[] = $args[$i]['value'];
+			}else{
+				$_arguments[] = $this->params[$i]['value'];
+			}
+
         }
         $ex = new \Less\Node\Expression($_arguments);
         array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
@@ -90,6 +115,7 @@ class Definition extends \Less\Node\Ruleset
         return $ruleset->compile($ruleSetEnv);
     }
 
+	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.match
     public function match($args, $env = NULL)
     {
 		if (!$this->variadic) {
@@ -114,7 +140,7 @@ class Definition extends \Less\Node\Ruleset
 
         for ($i = 0; $i < $len; $i++) {
             if ( ! isset($this->params[$i]['name'])) {
-                if ($args[$i]->compile($env)->toCSS() != $this->params[$i]['value']->compile($env)->toCSS()) {
+                if ($args[$i]['value']->compile($env)->toCSS() != $this->params[$i]['value']->compile($env)->toCSS()) {
                     return false;
                 }
             }

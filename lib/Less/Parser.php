@@ -24,6 +24,11 @@ class Parser {
      */
     private $path;
 
+	/**
+	 * @var array
+	 */
+	private $import_dirs = array();
+
     /**
      * @var string
      */
@@ -33,11 +38,6 @@ class Parser {
      * @var string
      */
     private $css;
-
-    /**
-     * @var length
-     */
-    private $length = 0;
 
     /**
      *
@@ -54,12 +54,47 @@ class Parser {
     /**
      * @param Environment|null $env
      */
-    public function __construct(\Less\Environment $env = null)
-    {
+    public function __construct(\Less\Environment $env = null){
+
+		self::IncludeScripts( dirname(__FILE__) );
+
         $this->env = $env ?: new \Less\Environment();
         $this->css = '';
         $this->pos = 0;
     }
+
+
+	/**
+	 * Include the necessary php files
+	 *
+	 */
+	private static function IncludeScripts( $dir ){
+
+		$files = scandir($dir);
+		$dirs = array();
+		foreach($files as $file){
+			if( $file == '.' || $file == '..' ){
+				continue;
+			}
+
+			$full_path = $dir.'/'.$file;
+			if( is_dir($full_path) ){
+				$dirs[] = $full_path;
+				continue;
+			}
+
+			if( (strpos($file,'.php') + 4) !== strlen($file) ){
+				continue;
+			}
+			include_once($full_path);
+		}
+
+		foreach($dirs as $dir){
+			self::IncludeScripts( $dir );
+		}
+
+	}
+
 
     /**
      * Get the current parser environment
@@ -117,15 +152,10 @@ class Parser {
      * @param bool $returnRoot Indicates whether the return value should be a css string a root node
      * @return \Less\Node\Ruleset|\Less\Parser
      */
-    public function parse($str, $returnRoot = false, $filename = NULL)
+    public function parse($str, $returnRoot = false)
     {
-        if ($filename) {
-            $this->filename = $filename;
-            $this->path = dirname($filename);
-        }
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
-        $this->length = strlen($this->input);
         $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
         $root->root = true;
 
@@ -148,7 +178,7 @@ class Parser {
      */
     public function parseFile($filename, $returnRoot = false)
     {
-        if ( ! is_file($filename)) {
+        if ( ! file_exists($filename)) {
             throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
         }
 
@@ -157,6 +187,12 @@ class Parser {
 
         return $this->parse(file_get_contents($filename), $returnRoot);
     }
+
+
+	public function SetImportDirs( $dirs ){
+		$this->import_dirs = (array)$dirs;
+	}
+
 
     /**
      * Update $this->current to reflect $this->input from the $this->pos
@@ -180,7 +216,7 @@ class Parser {
         if (is_callable(array($this, $tok))) {
             // Non-terminal, match using a function call
             return $this->$tok();
-        } else if (!isset($tok[1])) {
+        } else if (strlen($tok) == 1) {
             // Match a single character in the input,
             $match = isset($this->input[$this->pos]) && $this->input[$this->pos] === $tok ? $tok : null;
             $length = 1;
@@ -203,12 +239,10 @@ class Parser {
         if ($match) {
 
             $this->pos += $length;
-            while ($this->pos < $this->length) {
-                //$c = ord($this->input[$this->pos]);
-                if ( ! ($this->input[$this->pos] === "\x20"
-                    || $this->input[$this->pos] === "\x0A"
-                    || $this->input[$this->pos] === "\x09")) {
-                        break;
+            while ($this->pos < strlen($this->input)) {
+                $c = ord($this->input[$this->pos]);
+                if ( ! ($c === 32 || $c === 10 || $c === 9)) {
+                    break;
                 }
                 $this->pos++;
 
@@ -232,8 +266,8 @@ class Parser {
      */
     public function peek($tok, $offset = 0)
     {
-        if (!isset($tok[1])) {
-            return ($this->length > ($this->pos + $offset)) && $this->input[$this->pos + $offset] === $tok;
+        if (strlen($tok) == 1) {
+            return (strlen($this->input) > ($this->pos + $offset)) && $this->input[$this->pos + $offset] === $tok;
         } else {
             if (preg_match($tok, $this->current, $matches)) {
                 return true;
@@ -429,8 +463,7 @@ class Parser {
      *
      * @return array
      */
-    private function parseEntitiesArguments()
-    {
+    private function parseEntitiesArguments(){
         $args = array();
         while ($arg = $this->match('parseEntitiesAssigment') ?: $this->match('parseExpression')) {
             $args[] = $arg;
@@ -441,11 +474,24 @@ class Parser {
         return $args;
     }
 
-    private function parseEntitiesLiteral()
-    {
-        return $this->match('parseEntitiesDimension') ?:
-               $this->match('parseEntitiesColor') ?:
-               $this->match('parseEntitiesQuoted');
+    private function parseEntitiesLiteral(){
+
+		$match = $this->match('parseEntitiesRatio');
+		if( $match ){
+			return $match;
+		}
+
+		$match = $this->match('parseEntitiesDimension');
+		if( $match ){
+			return $match;
+		}
+
+		$match = $this->match('parseEntitiesColor');
+		if( $match ){
+			return $match;
+		}
+
+        return $this->match('parseEntitiesQuoted');
     }
 
 	// Assignments are argument entities for calls.
@@ -487,9 +533,22 @@ class Parser {
     {
         if ($this->match('/^data:/')) {
             $obj = new \stdClass();
-            $obj->mime    = $this->match('/^[^\/]+\/[^,;)]+/')     ?: '';
-            $obj->charset = $this->match('/^;\s*charset=[^,;)]+/') ?: '';
-            $obj->base64  = $this->match('/^;\s*base64/')          ?: '';
+
+            $obj->mime    = $this->match('/^[^\/]+\/[^,;)]+/');
+            if( !$obj->mime ){
+				$obj->mime = '';
+			}
+
+            $obj->charset = $this->match('/^;\s*charset=[^,;)]+/');
+            if( !$obj->charset ){
+				$obj->charset = '';
+			}
+
+            $obj->base64  = $this->match('/^;\s*base64/');
+            if( !$obj->base64 ){
+				$obj->base64 = '';
+			}
+
             $obj->data    = $this->match('/^,\s*[^)]+/');
             if ($obj->data) {
                 return $obj;
@@ -522,7 +581,7 @@ class Parser {
     //
     private function parseEntitiesColor()
     {
-        if ($this->peek('#') && ($rgb = $this->match('/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})/'))) {
+        if ($this->peek('#') && ($rgb = $this->match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/'))) {
             return new \Less\Node\Color($rgb[1]);
         }
     }
@@ -532,17 +591,32 @@ class Parser {
     //
     //     0.5em 95%
     //
-    private function parseEntitiesDimension()
-    {
+    private function parseEntitiesDimension(){
         $c = ord($this->input[$this->pos]);
         if (($c > 57 || $c < 45) || $c === 47) {
-    return;
+			return;
         }
 
-        if ($value = $this->match('/^(-?\d*\.?\d+)(px|%|em|rem|pc|ex|in|deg|s|ms|pt|cm|mm|rad|grad|turn)?/')) {
+        if ($value = $this->match('/^(-?\d*\.?\d+)(px|%|em|rem|pc|ex|in|deg|s|ms|pt|cm|mm|rad|grad|turn|dpi)?/')) {
             return new \Less\Node\Dimension($value[1], isset($value[2]) ? $value[2] : null);
         }
     }
+
+
+	//
+	// A Ratio
+	//
+	//    16/9
+	//
+	private function parseEntitiesRatio(){
+        $c = ord($this->input[$this->pos]);
+        if( $c > 57 || $c < 48 ) return;
+
+        if( $value = $this->match('/^(\d+\/\d+)/') ){
+			return new \Less\Node\Ratio( $value[1] );
+		}
+
+	}
 
     //
     // JavaScript code to be evaluated
@@ -612,23 +686,52 @@ class Parser {
     {
         $elements = array();
         $args = array();
+        $arg = null;
         $c = null;
         $index = $this->pos;
+        $name = null;
+        $value = null;
 		$important = false;
 
-        if ( ! $this->peek('.') && ! $this->peek('#')) {
+
+        if( !$this->peek('.') && !$this->peek('#') ){
             return;
         }
 
-        while ($e = $this->match('/^[#.](?:[\w-]|\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/')) {
+        while ($e = $this->match('/^[#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/')) {
             $elements[] = new \Less\Node\Element($c, $e, $index);
             $c = $this->match('>');
         }
 
-        if ($this->match('(')) {
-            $args = $this->match('parseEntitiesArguments');
-            $this->match(')');
-        }
+
+		if( $this->match('(') ){
+
+			while( $arg = $this->match('parseExpression') ){
+				$value = $arg;
+				$name = null;
+
+				// Variable
+				if( count($arg->value) == 1 ){
+					$val = $arg->value[0];
+					if( $val instanceof \Less\Node\Variable ){
+						if( $this->match(':') ){
+							if( $value = $this->match('parseExpression') ){
+								$name = $val->name;
+							}else{
+								throw new \Less\Exception\ParserException('Expected value');
+							}
+						}
+					}
+				}
+
+				$args[] = array('name'=> $name, 'value'=> $value);
+
+				if( !$this->match(',') ){ break; }
+			}
+
+			if( !$this->match(')') ) throw new \Less\Exception\ParserException('Expected )');
+		}
+
 
 		if ($this->match('parseImportant'))
 			$important = true;
@@ -669,7 +772,7 @@ class Parser {
 
         $start = $this->pos;
 
-        if ($match = $this->match('/^([#.](?:[\w-]|\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+)\s*\(/')) {
+        if ($match = $this->match('/^([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/')) {
             $name = $match[1];
 
 			do {
@@ -781,7 +884,7 @@ class Parser {
     {
         $c = $this->match('parseCombinator');
         $e = $this->match('/^(?:\d+\.\d+|\d+)%/') ?:
-			 $this->match('/^(?:[.#]?|:*)(?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ?:
+			 $this->match('/^(?:[.#]?|:*)(?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/') ?:
              $this->match('*') ?:
              $this->match('parseAttribute') ?:
              $this->match('/^\([^)@]+\)/');
@@ -866,7 +969,7 @@ class Parser {
 
     private function parseTag()
     {
-        return $this->match('/^[a-zA-Z][a-zA-Z-]*[0-9]?/') ?: $this->match('*');
+        return $this->match('/^[A-Za-z][A-Za-z-]*[0-9]?/') ?: $this->match('*');
     }
 
     private function parseAttribute()
@@ -877,7 +980,7 @@ class Parser {
 
         $attr = '';
 
-        if ($key = $this->match('/^[a-zA-Z-]+/') ?: $this->match('parseEntitiesQuoted')) {
+        if ($key = $this->match('/^[_A-Za-z0-9-]+/') ?: $this->match('parseEntitiesQuoted')) {
             if (($op = $this->match('/^[|~*$^]?=/')) &&
                 ($val = $this->match('parseEntitiesQuoted') ?: $this->match('/^[\w-]+/'))) {
                 if ( ! is_string($val)) {
@@ -975,16 +1078,61 @@ class Parser {
     // file-system operation. The function used for importing is
     // stored in `import`, which we pass to the Import constructor.
     //
-    private function parseImport()
-    {
+    private function parseImport(){
 		$index = $this->pos;
 		$dir = $this->match('/^@import(?:-(once))?\s+/');
 
-		if ($dir && ($path = $this->match('parseEntitiesQuoted') ?: $this->match('parseEntitiesUrl'))) {
-			$features = $this->match('parseMediaFeatures');
-			if ($this->match(';'))
-				return new \Less\Node\Import($path, $this->path, $features, ($dir[0] == 'once'));
+		if( !$dir ){
+			return;
 		}
+
+		$path = $this->match('parseEntitiesQuoted');
+		if( !$path ){
+			$path = $this->match('parseEntitiesUrl');
+		}
+
+		if( !$path ){
+			return;
+		}
+
+		$features = $this->match('parseMediaFeatures');
+
+		if( !$this->match(';') ){
+			return;
+		}
+
+
+        // Get the actual path
+        if($path instanceof \Less\Node\Quoted) {
+            $path_str = preg_match('/\.(le?|c)ss(\?.*)?$/', $path->value) ? $path->value : $path->value . '.less';
+        } else {
+            $path_str = isset($path->value->value) ? $path->value->value : $path->value;
+        }
+
+
+		$import_dirs = array_merge( (array)$this->path, $this->import_dirs );
+		$full_path = false;
+		foreach($import_dirs as $dir){
+			$full_path = rtrim($dir,'/').'/'.ltrim($path_str,'/');
+			if( file_exists($full_path) ){
+				break;
+			}
+			$full_path = false;
+		}
+
+
+
+		//once
+		$skip = false;
+		if( $dir[0] == 'once' && in_array($full_path,$this->imports) ){
+			$skip = true;
+		}
+
+		if( $full_path ){
+			$this->imports[] = $full_path;
+		}
+
+		return new \Less\Node\Import($path, $full_path, $features, $skip );
     }
 
 	private function parseMediaFeature() {
@@ -1058,7 +1206,7 @@ class Parser {
             if ($rules = $this->match('parseBlock')) {
                 return new \Less\Node\Directive($name . " " . $types, $rules);
             }
-        } else if ($name = $this->match('/^@[-a-z]+/')) {
+        } else if ($name = $this->match('/^@[a-z-]+/')) {
 
             if ($name === '@font-face') {
                 if ($rules = $this->match('parseBlock')) {
@@ -1223,7 +1371,7 @@ class Parser {
 
     private function parseProperty ()
     {
-        if ($name = $this->match('/^(\*?-?[-a-z_0-9]+)\s*:/')) {
+        if ($name = $this->match('/^(\*?-?[_a-z0-9-]+)\s*:/')) {
             return $name[1];
         }
     }
