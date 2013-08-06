@@ -445,8 +445,11 @@ class Parser {
         }
 
         if ($name === 'alpha') {
-            return $this->match('parseAlpha');
-        }
+			$alpha_ret = $this->match('parseAlpha');
+			if( $alpha_ret ){
+				return $alpha_ret;
+			}
+		}
 
         $this->match('('); // Parse the '(' and consume whitespace.
         $args = $this->match('parseEntitiesArguments');
