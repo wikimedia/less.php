@@ -1,5 +1,7 @@
 <?php
 
+// less.js : lib/less/tree/element.js
+
 namespace Less\Node;
 
 class Combinator {
@@ -9,8 +11,6 @@ class Combinator {
 	public function __construct($value = null) {
 		if ($value == ' ') {
 			$this->value = ' ';
-		} else if ($value == '& ') {
-			$this->value = '& ';
 		} else {
 			$this->value = trim($value);
 		}
@@ -20,8 +20,6 @@ class Combinator {
 		$v = array(
 			''   => '',
 			' '  => ' ',
-			'&'  => '',
-			'& ' => ' ',
 			':'  => ' :',
 			'+'  => $env->compress ? '+' : ' + ',
 			'~'  => $env->compress ? '~' : ' ~ ',

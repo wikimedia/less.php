@@ -1,5 +1,7 @@
 <?php
 
+//less.js : lib/less/tree/selector.js
+
 namespace Less\Node;
 
 class Selector {
@@ -9,12 +11,6 @@ class Selector {
 
 	public function __construct($elements) {
 		$this->elements = $elements;
-
-		if (is_array($this->elements) && isset($this->elements[0]) &&
-			$this->elements[0]->combinator instanceof \Less\Node\Combinator &&
-			$this->elements[0]->combinator->value === '') {
-			$this->elements[0]->combinator->value = ' ';
-		}
 	}
 
 	public function match($other) {
@@ -39,14 +35,22 @@ class Selector {
 			return $this->_css;
 		}
 
-		$this->_css = array_map(function ($e) use ($env) {
+		if (is_array($this->elements) && isset($this->elements[0]) &&
+			$this->elements[0]->combinator instanceof \Less\Node\Combinator &&
+			$this->elements[0]->combinator->value === '') {
+				$this->_css = ' ';
+		}else{
+			$this->_css = '';
+		}
+
+		$temp = array_map(function ($e) use ($env) {
 			if (is_string($e)) {
 				return ' ' . trim($e);
 			} else {
 				return $e->toCSS($env);
 			}
 		}, $this->elements);
-		$this->_css = implode('', $this->_css);
+		$this->_css .= implode('', $temp);
 
 		return $this->_css;
 	}

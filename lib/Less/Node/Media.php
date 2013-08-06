@@ -1,5 +1,7 @@
 <?php
 
+//less.js : lib/less/tree/media.js
+
 namespace Less\Node;
 
 class Media {
@@ -8,8 +10,7 @@ class Media {
 	public $ruleset;
 
 	public function __construct($value = array(), $features = array()) {
-		$el = new Element('&', null, 0);
-		$selectors = array(new Selector(array($el)));
+		$selectors = $this->emptySelectors();
 
 		$this->features = new Value($features);
 		$this->ruleset = new Ruleset($selectors, $value);
@@ -56,12 +57,18 @@ class Media {
 		return $this->ruleset->rulesets();
 	}
 
+	public function emptySelectors(){
+		$el = new Element('','&', 0);
+		return array(new Selector(array($el)));
+	}
+
+
+	// evaltop
 	public function compileTop($env) {
 		$result = $this;
 
 		if (count($env->mediaBlocks) > 1) {
-			$el = new Element('&', null, 0);
-			$selectors = array(new Selector(array($el)));
+			$selectors = $this->emptySelectors();
 			$result = new Ruleset($selectors, $env->mediaBlocks);
 			$result->multiMedia = true;
 		}
@@ -84,10 +91,10 @@ class Media {
 		// Trace all permutations to generate the resulting media-query.
 		//
 		// (a, b and c) with nested (d, e) ->
-		//    a and d
-		//    a and e
-		//    b and c and d
-		//    b and c and e
+		//	a and d
+		//	a and e
+		//	b and c and d
+		//	b and c and e
 		$this->features = new Value(array_map(function($path) {
 			$path = array_map(function($fragment) {
 				return method_exists($fragment, 'toCSS') ? $fragment : new Anonymous($fragment);
@@ -100,8 +107,8 @@ class Media {
 			return new Expression($path);
 		}, $this->permute($path)));
 
-        // Fake a tree-node that doesn't output anything.
-        return new Ruleset(array(), array());
+		// Fake a tree-node that doesn't output anything.
+		return new Ruleset(array(), array());
 	}
 
 	public function permute($arr) {

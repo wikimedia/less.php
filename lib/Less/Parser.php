@@ -880,14 +880,15 @@ class Parser {
     // they are made out of a `Combinator` (see combinator rule),
     // and an element name, such as a tag a class, or `*`.
     //
-    private function parseElement()
-    {
+    private function parseElement(){
         $c = $this->match('parseCombinator');
         $e = $this->match('/^(?:\d+\.\d+|\d+)%/') ?:
 			 $this->match('/^(?:[.#]?|:*)(?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/') ?:
              $this->match('*') ?:
+             $this->match('&') ?:
              $this->match('parseAttribute') ?:
              $this->match('/^\([^)@]+\)/');
+
 
 		if (!$e && $this->match('(') && ($v = $this->match('parseEntitiesVariable')) && $this->match(')')) {
 			$e = new \Less\Node\Paren($v);
@@ -895,10 +896,6 @@ class Parser {
 
         if ($e) {
             return new \Less\Node\Element($c, $e, $this->pos);
-        }
-
-        if ($c->value && $c->value[0] === '&') {
-          return new \Less\Node\Element($c, null, $this->pos);
         }
     }
 
@@ -920,17 +917,6 @@ class Parser {
                 $this->pos++;
             }
             return new \Less\Node\Combinator($c);
-        } elseif ($c === '&') {
-
-            $match = '&';
-            $this->pos++;
-            if ($this->input[$this->pos] === ' ') {
-                $match = '& ';
-            }
-            while ($this->input[$this->pos] === ' ') {
-                $this->pos++;
-            }
-            return new \Less\Node\Combinator($match);
         } elseif ($this->pos > 0 && (preg_match('/\s/', $this->input[$this->pos - 1]))) {
             return new \Less\Node\Combinator(' ');
         } else {
