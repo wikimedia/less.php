@@ -1199,9 +1199,23 @@ class Parser {
             return;
         }
 
-        if ($value = ($this->match('parseImport') ?: $this->match('parseMedia'))) {
+        $value = $this->match('parseImport');
+        if( $value ){
+			return $value;
+		}
+
+		$value = $this->match('parseMedia');
+        if( $value ){
             return $value;
-        } elseif ($name = ($this->match('/^@page|^@keyframes/') ?: $this->match('/^@(?:-webkit-|-moz-|-o-|-ms-)[a-z0-9-]+/'))) {
+		}
+
+		$name = $this->match('/^@page|^@keyframes/');
+		if( !$name ){
+			$name = $this->match('/^@(?:-webkit-|-khtml-|-moz-|-o-|-ms-)[a-z0-9-]+/');
+		}
+
+        if( $name ){
+
             $types = trim($this->match('/^[^{]+/') ?: '');
             if ($rules = $this->match('parseBlock')) {
                 return new \Less\Node\Directive($name . " " . $types, $rules);
