@@ -1,5 +1,7 @@
 <?php
 
+//less.js : lib/less/functions.js
+
 namespace Less;
 
 class Environment
