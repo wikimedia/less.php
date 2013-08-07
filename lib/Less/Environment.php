@@ -246,12 +246,17 @@ class Environment
 
 	public function darken($color, $amount)
 	{
-		$hsl = $color->toHSL();
 
-		$hsl['l'] -= $amount->value / 100;
-		$hsl['l'] = self::clamp($hsl['l']);
+		if( $color instanceof \Less\Node\Color ){
+			$hsl = $color->toHSL();
 
-		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+			$hsl['l'] -= $amount->value / 100;
+			$hsl['l'] = self::clamp($hsl['l']);
+
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		}
+
+		$this->Expected('color',$color);
 	}
 
 	public function fadein($color, $amount)
@@ -466,4 +471,20 @@ class Environment
 	private function _isa($n, $type) {
 		return is_a($n, $type) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
 	}
+
+	private function Expected( $type, $arg ){
+
+		$debug = debug_backtrace();
+		array_shift($debug);
+		$last = array_shift($debug);
+		$last = array_intersect_key($last,array('function'=>'','class'=>'','line'=>''));
+
+		$message = 'Object of type '.get_class($arg).' passed to darken function. Expecting `Color`. '.$arg->toCSS().'. '.print_r($last,true);
+		throw new \Less\Exception\CompilerException($message);
+
+	}
+
+
+
+
 }

@@ -160,6 +160,7 @@ class Parser {
         if ($returnRoot) {
             return $root;
         } else {
+
             $this->css .= $root->compile($this->env)->toCSS(array(), $this->env);
 
             return $this;
