@@ -132,6 +132,6 @@ class Media {
 	}
 
     function bubbleSelectors($selectors) {
-		$this->ruleset = new Less\Node\Ruleset( array_slice($selectors,0), array($this.ruleset) );
+		$this->ruleset = new \Less\Node\Ruleset( array_slice($selectors,0), array($this->ruleset) );
     }
 }
