@@ -33,11 +33,14 @@ class Directive
 
     public function compile($env)
     {
-        $env->unshiftFrame($this);
-        $this->ruleset = $this->ruleset ? $this->ruleset->compile($env) : null;
-        $env->shiftFrame();
-
-        return $this;
+        $evaldDirective = $this;
+        if( $this->ruleset ){
+			$env->unshiftFrame($this);
+            $evaldDirective = new \Less\Node\Directive( $this->name );
+            $evaldDirective->ruleset = $this->ruleset->compile($env);
+            $env->shiftFrame();
+        }
+        return $evaldDirective;
     }
     // TODO: Not sure if this is right...
     public function variable($name)
