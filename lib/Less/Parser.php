@@ -436,15 +436,16 @@ class Parser {
         if ( ! preg_match('/^([\w-]+|%|progid:[\w\.]+)\(/', $this->current, $name)) {
             return;
         }
-        $name = strtolower($name[1]);
+        $name = $name[1];
+        $nameLC = strtolower($name);
 
-        if ($name === 'url') {
+        if ($nameLC === 'url') {
             return null;
         } else {
             $this->pos += strlen($name);
         }
 
-        if ($name === 'alpha') {
+        if ($nameLC === 'alpha') {
 			$alpha_ret = $this->match('parseAlpha');
 			if( $alpha_ret ){
 				return $alpha_ret;
