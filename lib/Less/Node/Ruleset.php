@@ -30,6 +30,7 @@ class Ruleset
 			return $s->compile($env);
 		}, $this->selectors) : array();
 		$ruleset = new Ruleset($selectors, $this->rules, $this->strictImports);
+		$rules = array();
 
 		$ruleset->root = $this->root;
 		$ruleset->allowImports = $this->allowImports;
@@ -39,16 +40,16 @@ class Ruleset
 
 		// Evaluate imports
 		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
-			for ($i = 0; $i < count($ruleset->rules); $i++) {
-				if (/*isset($ruleset->rules[$i]) && */$ruleset->rules[$i] instanceof \Less\Node\Import && ! $ruleset->rules[$i]->css) {
-					$newRules = $ruleset->rules[$i]->compile($env);
-					$ruleset->rules = array_merge(
-						array_slice($ruleset->rules, 0, $i),
-						is_array($newRules) ? $newRules : array($newRules),
-						array_slice($ruleset->rules, $i + 1)
-					);
-				}
+			foreach($ruleset->rules as $rule){
+				if( $rule instanceof \Less\Node\Import  ){
+                    $rules = array_merge($rules, $rule->compile($env));
+                } else {
+                    $rules[] = $rule;
+                }
 			}
+
+            $ruleset->rules = $rules;
+            $rules = array();
 		}
 
 		// Store the frames around mixin definitions,
@@ -60,6 +61,15 @@ class Ruleset
 		}
 
 		// Evaluate mixin calls.
+		foreach($ruleset->rules as $rule){
+			if( $rule instanceof \Less\Node\Mixin\Call ){
+                $rules = array_merge($rules, $rule->compile($env));
+            } else {
+				$rules[] = $rule;
+            }
+        }
+        $ruleset->rules = $rules;
+
 		for($i = 0; $i < count($ruleset->rules); $i++) {
 			if (isset($ruleset->rules[$i]) && $ruleset->rules[$i] instanceof \Less\Node\Mixin\Call) {
 				$newRules = $ruleset->rules[$i]->compile($env);

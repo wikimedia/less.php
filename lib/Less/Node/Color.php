@@ -4,6 +4,9 @@ namespace Less\Node;
 
 class Color
 {
+	var $rgb;
+	var $alpha;
+
     public function __construct($rgb, $a = 1)
     {
         if (is_array($rgb)) {
@@ -100,5 +103,18 @@ class Color
             $i = dechex($i > 255 ? 255 : ($i < 0 ? 0 : $i));
             return str_pad($i, 2, '0', STR_PAD_LEFT);
         }, $argb));
+    }
+
+    public function compare($x){
+
+		if( !property_exists( $x, 'rgb' ) ){
+			return -1;
+		}
+
+
+        return ($x->rgb[0] === $this->rgb[0] &&
+            $x->rgb[1] === $this->rgb[1] &&
+            $x->rgb[2] === $this->rgb[2] &&
+            $x->alpha === $this->alpha) ? 0 : -1;
     }
 }

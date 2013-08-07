@@ -20,4 +20,19 @@ class Anonymous
     {
         return $this;
     }
+
+    function compare($x){
+		if( !method_exists( $x, 'toCSS' ) ){
+            return -1;
+        }
+
+        $left = $this.toCSS();
+        $right = $x.toCSS();
+
+        if( $left === $right ){
+            return 0;
+        }
+
+        return $left < $right ? -1 : 1;
+    }
 }
