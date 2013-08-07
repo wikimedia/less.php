@@ -1185,6 +1185,9 @@ class Parser {
     //
     private function parseDirective()
     {
+		$hasBlock = false;
+		$hasIdentifier = false;
+
         if (! $this->peek('@')) {
             return;
         }
@@ -1199,27 +1202,64 @@ class Parser {
             return $value;
 		}
 
-		$name = $this->match('/^@page|^@keyframes/');
-		if( !$name ){
-			$name = $this->match('/^@(?:-webkit-|-khtml-|-moz-|-o-|-ms-)[a-z0-9-]+/');
+		$name = $this->match('/^@[a-z-]+/');
+
+		$nonVendorSpecificName = $name;
+		if( $name[1] == '-' && strpos($name,'-', 2) > 0 ){
+			$nonVendorSpecificName = "@" + substr($name, strpos($name,'-', 2) + 1);
 		}
 
-        if( $name ){
+		switch($nonVendorSpecificName) {
+			case "@font-face":
+				$hasBlock = true;
+				break;
+			case "@viewport":
+			case "@top-left":
+			case "@top-left-corner":
+			case "@top-center":
+			case "@top-right":
+			case "@top-right-corner":
+			case "@bottom-left":
+			case "@bottom-left-corner":
+			case "@bottom-center":
+			case "@bottom-right":
+			case "@bottom-right-corner":
+			case "@left-top":
+			case "@left-middle":
+			case "@left-bottom":
+			case "@right-top":
+			case "@right-middle":
+			case "@right-bottom":
+				$hasBlock = true;
+				break;
+			case "@page":
+			case "@document":
+			case "@supports":
+			case "@keyframes":
+				$hasBlock = true;
+				$hasIdentifier = true;
+				break;
+		}
 
-            $types = trim($this->match('/^[^{]+/') ?: '');
-            if ($rules = $this->match('parseBlock')) {
-                return new \Less\Node\Directive($name . " " . $types, $rules);
-            }
-        } else if ($name = $this->match('/^@[a-z-]+/')) {
+		if( $hasIdentifier ){
+			$temp = $this->match('/^[^{]+/');
+			if( !$temp ){
+				$temp = '';
+			}
+			$name .= " " + trim($temp);
+		}
 
-            if ($name === '@font-face') {
-                if ($rules = $this->match('parseBlock')) {
-                    return new \Less\Node\Directive($name, $rules);
-                }
-            } else if (($value = $this->match('parseEntity')) && $this->match(';')) {
-                 return new \Less\Node\Directive($name, $value);
-            }
-        }
+
+		if( $hasBlock ){
+
+			if ($rules = $this->match('parseBlock')) {
+				return new \Less\Node\Directive($name, $rules);
+			}
+		} else {
+			if( ($value = $this->match('parseEntity')) && $this->match(';')) {
+				return new \Less\Node\Directive($name, $value);
+			}
+		}
     }
 
     private function parseFont()
