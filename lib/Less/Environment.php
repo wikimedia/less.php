@@ -206,6 +206,14 @@ class Environment
 		return new \Less\Node\Dimension(round($c['a']));
 	}
 
+    function luma ($color) {
+		return new \Less\Node\Dimension(round(
+			(0.2126 * ($color->rgb[0]/255) +
+            0.7152 * ($color->rgb[1]/255) +
+            0.0722 * ($color->rgb[2]/255))
+            * $color->alpha * 100), '%');
+    }
+
 	public function saturate($color, $amount)
 	{
 		$hsl = $color->toHSL();
@@ -330,6 +338,26 @@ class Environment
 	{
 		return $this->desaturate($color, new \Less\Node\Dimension(100));
 	}
+
+    function contrast( $color, $dark = false, $light = false, $threshold = false) {
+		if( $light === false ){
+            $light = $this->rgba(255, 255, 255, 1.0);
+        }
+        if( $darg === false ){
+            $dark = $this->rgba(0, 0, 0, 1.0);
+        }
+        if( $threshold === false ){
+            $threshold = 0.43;
+        } else {
+            $threshold = $threshold->value;
+        }
+
+        if (((0.2126 * ($color->rgb[0]/255) + 0.7152 * ($color->rgb[1]/255) + 0.0722 * ($color->rgb[2]/255)) * $color->alpha) < $threshold) {
+            return $light;
+        } else {
+            return $dark;
+        }
+    }
 
 	public function e ($str)
 	{
