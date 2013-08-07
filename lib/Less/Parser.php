@@ -607,7 +607,7 @@ class Parser {
 			return;
         }
 
-        if ($value = $this->match('/^(-?\d*\.?\d+)(px|%|em|pc|ex|in|deg|s|ms|pt|cm|mm|rad|grad|turn|dpi|dpcm|dppx|rem|vw|vh|vm|ch)?/')) {
+        if ($value = $this->match('/^(-?\d*\.?\d+)(px|%|em|pc|ex|in|deg|s|ms|pt|cm|mm|rad|grad|turn|dpi|dpcm|dppx|rem|vw|vh|vm|vmin|ch)?/')) {
             return new \Less\Node\Dimension($value[1], isset($value[2]) ? $value[2] : null);
         }
     }
