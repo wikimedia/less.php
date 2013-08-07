@@ -130,4 +130,8 @@ class Media {
 		}
 		return $result;
 	}
+
+    function bubbleSelectors($selectors) {
+		$this->ruleset = new Less\Node\Ruleset( array_slice($selectors,0), array($this.ruleset) );
+    }
 }

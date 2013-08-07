@@ -60,6 +60,11 @@ class Ruleset
 			}
 		}
 
+		$mediaBlockCount = 0;
+		if( $env instanceof \Less\Environment ){
+			$mediaBlockCount = count($env->mediaBlocks);
+		}
+
 		// Evaluate mixin calls.
 		foreach($ruleset->rules as $rule){
 			if( $rule instanceof \Less\Node\Mixin\Call ){
@@ -90,6 +95,12 @@ class Ruleset
 
 		// Pop the stack
 		$env->shiftFrame();
+
+        if ($mediaBlockCount) {
+			foreach($env->mediaBlocks as $mediaBlock){
+				$mediaBlock->bubbleSelectors( $selectors );
+            }
+        }
 
 		return $ruleset;
 	}
