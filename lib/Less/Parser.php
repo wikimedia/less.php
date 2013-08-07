@@ -713,6 +713,8 @@ class Parser {
             return;
         }
 
+        $this->save(); // stop us absorbing part of an invalid selector
+
         while ($e = $this->match('/^[#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/')) {
             $elements[] = new \Less\Node\Element($c, $e, $index);
             $c = $this->match('>');
@@ -754,6 +756,8 @@ class Parser {
         if (count($elements) > 0 && ($this->match(';') || $this->peek('}'))) {
             return new \Less\Node\Mixin\Call($elements, $args, $index, $this->filename, $important);
         }
+
+        $this->restore();
     }
 
     //
