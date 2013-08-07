@@ -1084,28 +1084,29 @@ class Parser {
     // stored in `import`, which we pass to the Import constructor.
     //
     private function parseImport(){
+		$dir = $path = false;
 		$index = $this->pos;
+
+		$this->save();
+
 		$dir = $this->match('/^@import(?:-(once))?\s+/');
 
-		if( !$dir ){
+		if( $dir ){
+
+			$path = $this->match('parseEntitiesQuoted');
+			if( !$path ){
+				$path = $this->match('parseEntitiesUrl');
+			}
+
+			if( $path ){
+				$features = $this->match('parseMediaFeatures');
+			}
+		}
+
+		if( !$dir || !$path || !$this->match(';') ){
+			$this->restore();
 			return;
 		}
-
-		$path = $this->match('parseEntitiesQuoted');
-		if( !$path ){
-			$path = $this->match('parseEntitiesUrl');
-		}
-
-		if( !$path ){
-			return;
-		}
-
-		$features = $this->match('parseMediaFeatures');
-
-		if( !$this->match(';') ){
-			return;
-		}
-
 
         // Get the actual path
         if($path instanceof \Less\Node\Quoted) {
@@ -1217,6 +1218,8 @@ class Parser {
             return $value;
 		}
 
+		$this->save();
+
 		$name = $this->match('/^@[a-z-]+/');
 
 		$nonVendorSpecificName = $name;
@@ -1275,6 +1278,8 @@ class Parser {
 				return new \Less\Node\Directive($name, $value);
 			}
 		}
+
+		$this->restore();
     }
 
     private function parseFont()
