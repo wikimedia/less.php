@@ -8,7 +8,7 @@ class Directive
     public $value;
     public $ruleset;
 
-    public function __construct($name, $value)
+    public function __construct($name, $value = null)
     {
         $this->name = $name;
         if (is_array($value)) {

@@ -269,7 +269,7 @@ class Ruleset
 		if( !$hasParentSelector ){
 			if( count($context) > 0 ) {
 				foreach($context as $context_el){
-					$paths[] = array_merge($context_el,$selector);
+					$paths[] = array_merge($context_el, array($selector) );
 				}
 			}else {
 				$paths[] = array($selector);

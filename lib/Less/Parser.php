@@ -790,7 +790,7 @@ class Parser {
             return;
         }
 
-        $start = $this->pos;
+		$this->save();
 
         if ($match = $this->match('/^([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/')) {
             $name = $match[1];
@@ -822,7 +822,13 @@ class Parser {
 				}
 			} while ($this->match(','));
 
-			$this->expect(')');
+
+			// .mixincall("@{a}");
+			// looks a bit like a mixin definition.. so we have to be nice and restore
+			if( !$this->match(')') ){
+				//furthest = i;
+				$this->restore();
+			}
 
 			if ($this->match('/^when/')) { // Guard
 				$cond = $this->expect('parseConditions', 'Expected conditions');
@@ -833,7 +839,7 @@ class Parser {
             if (is_array($ruleset)) {
                 return new \Less\Node\Mixin\Definition($name, $params, $ruleset, $cond, $variadic);
             } else {
-				$this->pos = $start;
+				$this->restore();
 				$this->sync();
 			}
         }
