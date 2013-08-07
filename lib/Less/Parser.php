@@ -4,20 +4,18 @@ namespace Less;
 
 class Parser {
 
-    /**
-     * @var string
-     */
-    private $input;
 
-    /**
-     * @var string
-     */
+    private $input;		// LeSS input string
+    private $pos;		// current index in `input`
+    private $memo;		// temporarily holds `i`, when backtracking
+
+
+	/**
+	 * @var string
+	 *
+	 */
     private $current;
 
-    /**
-     * @var int
-     */
-    private $pos;
 
     /**
      * @var string
@@ -193,6 +191,14 @@ class Parser {
 		$this->import_dirs = (array)$dirs;
 	}
 
+
+    function save() {
+        $this->memo = $this->pos;
+	}
+
+    function restore() {
+        $this->pos = $this->memo;
+	}
 
     /**
      * Update $this->current to reflect $this->input from the $this->pos
@@ -670,9 +676,14 @@ class Parser {
         if (! $this->peek('/^[@\w.%-]+\/[@\w.-]+/')) {
             return;
         }
+
+		$this->save();
+
         if (($a = $this->match('parseEntity')) && $this->match('/') && ($b = $this->match('parseEntity'))) {
             return new \Less\Node\Shorthand($a, $b);
         }
+
+        $this->restore();
     }
 
     //
