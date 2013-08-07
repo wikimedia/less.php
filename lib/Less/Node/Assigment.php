@@ -17,8 +17,8 @@ class Assigment {
     }
 
     public function compile($env) {
-        if ( ! is_string($this->value)) {
-            $this->value = $this->value->compile($env);
+		if( is_object($this->value) && method_exists($this->value,'compile') ){
+			return new \Less\Node\Assignment( $this->key, $this->value->compile($env));
         }
         return $this;
     }
