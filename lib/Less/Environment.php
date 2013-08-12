@@ -484,6 +484,20 @@ class Environment
 		return is_a($n, $type) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
 	}
 
+    /* Blending modes */
+
+    function softlight($color1, $color2) {
+        $t = $color2->rgb[0] * $color1->rgb[0] / 255;
+        $r = $t + $color1->rgb[0] * (255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255 - $t) / 255;
+        $t = $color2->rgb[1] * $color1->rgb[1] / 255;
+        $g = $t + $color1->rgb[1] * (255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255 - $t) / 255;
+        $t = $color2->rgb[2] * $color1->rgb[2] / 255;
+        $b = $t + $color1->rgb[2] * (255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255 - $t) / 255;
+        return $this.rgb($r, $g, $b);
+    }
+
+
+
 	private function Expected( $type, $arg ){
 
 		$debug = debug_backtrace();
