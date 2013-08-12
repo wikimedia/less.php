@@ -256,7 +256,7 @@ class Parser {
         // grammar is mostly white-space insensitive.
         //
         if ($match) {
-            while( $this->skipWhitespace($length)) { $length = 0; }
+            $this->skipWhitespace($length);
 
             $this->sync();
             if (is_string($match)) {
@@ -604,13 +604,9 @@ class Parser {
 	// A variable entity useing the protective {} e.g. @{var}
 	private function parseEntitiesVariableCurly() {
 		$index = $this->pos;
-		if( strlen($this->input) > ($this->pos+1) && $this->input[$this->pos] === '@' && $this->input[$this->pos+1] === '{' ){
-			// {,} start a new chunk, so need to absorb seperately
-			$this->match('@');
-			$this->match('{');
-			$name = $this->match('/^[\w-]+/');
-			$this->match('}');
-			return new \Less\Node\Variable('@'+$name, $index, $this->filename);
+
+		if( strlen($this->input) > ($this->pos+1) && $this->input[$this->pos] === '@' && ($curly = $this->match('/^@\{([\w-]+)\}/')) ){
+			return new \Less\Node\Variable('@'+$curly[1], $index, $this->filename);
 		}
 	}
 
