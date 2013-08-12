@@ -256,13 +256,8 @@ class Parser {
         // grammar is mostly white-space insensitive.
         //
         if ($match) {
+            while( $this->skipWhitespace($length)) { $length = 0; }
 
-            $this->pos += $length;
-            while ($this->pos < strlen($this->input)) {
-				if (! $this->isWhitespace($this->input[$this->pos])) { break; }
-                $this->pos++;
-
-            }
             $this->sync();
             if (is_string($match)) {
                 return $match;
@@ -291,6 +286,19 @@ class Parser {
                 return false;
             }
         }
+    }
+
+
+    public function skipWhitespace($length) {
+
+		$oldpos = $this->pos;
+		$this->pos += $length;
+		while ($this->pos < strlen($this->input)) {
+			if (! $this->isWhitespace($this->input[$this->pos])) { break; }
+			$this->pos++;
+		}
+
+		return $oldpos !== $this->pos;
     }
 
 	public function expect($tok, $msg = NULL) {
@@ -591,6 +599,20 @@ class Parser {
             return new \Less\Node\Variable($name, $index, $this->filename);
         }
     }
+
+
+	// A variable entity useing the protective {} e.g. @{var}
+	private function parseEntitiesVariableCurly() {
+		$index = $this->pos;
+		if( strlen($this->input) > ($this->pos+1) && $this->input[$this->pos] === '@' && $this->input[$this->pos+1] === '{' ){
+			// {,} start a new chunk, so need to absorb seperately
+			$this->match('@');
+			$this->match('{');
+			$name = $this->match('/^[\w-]+/');
+			$this->match('}');
+			return new \Less\Node\Variable('@'+$name, $index, $this->filename);
+		}
+	}
 
     //
     // A Hexadecimal color
@@ -922,11 +944,16 @@ class Parser {
              $this->match('*') ?:
              $this->match('&') ?:
              $this->match('parseAttribute') ?:
-             $this->match('/^\([^)@]+\)/');
+             $this->match('/^\([^)@]+\)/') ?:
+             $this->match('/^[\.#](?=@)/') ?:
+             $this->match('parseEntitiesVariableCurly');
 
 
-		if (!$e && $this->match('(') && ($v = $this->match('parseEntitiesVariable')) && $this->match(')')) {
-			$e = new \Less\Node\Paren($v);
+
+		if( !$e ){
+			if ( $this->match('(') && ($v = ($this->match('parseEntitiesVariableCurly') ?: $this->match('parseEntitiesVariable'))) && $this->match(')')) {
+				$e = new \Less\Node\Paren($v);
+			}
 		}
 
         if ($e) {
