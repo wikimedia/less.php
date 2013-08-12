@@ -918,7 +918,7 @@ class Parser {
     private function parseElement(){
         $c = $this->match('parseCombinator');
         $e = $this->match('/^(?:\d+\.\d+|\d+)%/') ?:
-			 $this->match('/^(?:[.#]?|:*)(?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/') ?:
+			 $this->match('/^(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/') ?:
              $this->match('*') ?:
              $this->match('&') ?:
              $this->match('parseAttribute') ?:
