@@ -548,41 +548,15 @@ class Parser {
 
         $value = $this->match('parseEntitiesQuoted') ?:
                  $this->match('parseEntitiesVariable') ?:
-                 $this->match('parseEntitiesDataURI') ?:
-                 $this->match('/^[-\w%@$\/.&=:;#+?~]+/') ?: '';
+                 $this->match('/^(?:(?:\\[\(\)\'"])|[^\(\)\'"])+/') ?: '';
 
 		$this->expect(')');
 
-        return new \Less\Node\Url((isset($value->value) || isset($value->data) || $value instanceof \Less\Node\Variable)
+
+        return new \Less\Node\Url((isset($value->value) || $value instanceof \Less\Node\Variable)
                             ? $value : new \Less\Node\Anonymous($value), '');
     }
 
-    private function parseEntitiesDataURI()
-    {
-        if ($this->match('/^data:/')) {
-            $obj = new \stdClass();
-
-            $obj->mime    = $this->match('/^[^\/]+\/[^,;)]+/');
-            if( !$obj->mime ){
-				$obj->mime = '';
-			}
-
-            $obj->charset = $this->match('/^;\s*charset=[^,;)]+/');
-            if( !$obj->charset ){
-				$obj->charset = '';
-			}
-
-            $obj->base64  = $this->match('/^;\s*base64/');
-            if( !$obj->base64 ){
-				$obj->base64 = '';
-			}
-
-            $obj->data    = $this->match('/^,\s*[^)]+/');
-            if ($obj->data) {
-                return $obj;
-            }
-        }
-    }
 
     //
     // A Variable entity, such as `@fink`, in
