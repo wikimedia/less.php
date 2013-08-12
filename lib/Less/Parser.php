@@ -709,6 +709,9 @@ class Parser {
         $name = null;
         $value = null;
 		$important = false;
+		$argsComma = array();
+		$argsSemiColon = array();
+		$isSemiColonSeperated = null;
 
 
         if( !$this->peek('.') && !$this->peek('#') ){
@@ -724,32 +727,56 @@ class Parser {
 
 
 		if( $this->match('(') ){
+			//todo remove
+			$name = null;
+			$isSemiColonSeperated = false;
+			$expressions = array();
+
 
 			while( $arg = $this->match('parseExpression') ){
+				$nameLoop = null;
 				$value = $arg;
-				$name = null;
 
 				// Variable
 				if( count($arg->value) == 1 ){
 					$val = $arg->value[0];
 					if( $val instanceof \Less\Node\Variable ){
 						if( $this->match(':') ){
-							if( $value = $this->match('parseExpression') ){
-								$name = $val->name;
-							}else{
-								throw new \Less\Exception\ParserException('Expected value');
+							if ($isSemiColonSeperated && count($expressions) > 1) {
+								throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
 							}
+							$value = $this->expect('parseExpression');
+							$nameLoop = $name = $val->name;
 						}
 					}
 				}
 
-				$args[] = array('name'=> $name, 'value'=> $value);
 
-				if( !$this->match(',') ){ break; }
+				$expressions[] = $value;
+
+				$argsComma[] = array('name'=> $nameLoop, 'value' => $value);
+
+				if ($this->match(',')) {
+					continue;
+				}
+
+				if ($this->match(';') || $isSemiColonSeperated) {
+					$isSemiColonSeperated = true;
+
+					if ( count($expressions) > 1) {
+						$value = new \Less\Node\Expression($expressions);
+					}
+					$argsSemiColon[] = array('name' => $name, 'value' => $value );
+
+					$name = null;
+					$expressions = [];
+				}
 			}
 
 			if( !$this->match(')') ) throw new \Less\Exception\ParserException('Expected )');
 		}
+
+		$args = $isSemiColonSeperated ? $argsSemiColon : $argsComma;
 
 
 		if ($this->match('parseImportant'))
