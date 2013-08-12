@@ -939,7 +939,7 @@ class Parser {
         if ($c === '>' || $c === '+' || $c === '~') {
 
             $this->pos++;
-            while ($this->input[$this->pos] === ' ') {
+			while( preg_match('/\s/', $this->input[$this->pos]) ) {
                 $this->pos++;
             }
             return new \Less\Node\Combinator($c);
