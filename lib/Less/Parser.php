@@ -998,7 +998,7 @@ class Parser {
 
         $attr = '';
 
-        if ($key = $this->match('/^[_A-Za-z0-9-]+/') ?: $this->match('parseEntitiesQuoted')) {
+        if ($key = $this->match('/^(?:[_A-Za-z0-9-]|\\.)+/') ?: $this->match('parseEntitiesQuoted')) {
             if (($op = $this->match('/^[|~*$^]?=/')) &&
                 ($val = $this->match('parseEntitiesQuoted') ?: $this->match('/^[\w-]+/'))) {
                 if ( ! is_string($val)) {
