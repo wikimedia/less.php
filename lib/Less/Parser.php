@@ -799,6 +799,7 @@ class Parser {
 			do {
 				if ($this->peek('.') && $this->match("/^\.{3}/")) {
 					$variadic = true;
+					$params[] = array( 'variadic'=> true );
 					break;
 				} elseif ($param = $this->match('parseEntitiesVariable') ?:
                             $this->match('parseEntitiesLiteral') ?:

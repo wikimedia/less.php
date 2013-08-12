@@ -16,87 +16,113 @@ class Definition extends \Less\Node\Ruleset
 	public $variadic;
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition
-    public function __construct($name, $params, $rules, $condition, $variadic = false)
-    {
-        $this->name = $name;
-        $this->selectors = array(new \Less\Node\Selector(array( new \Less\Node\Element(null, $name))));
-        $this->params = $params;
+	public function __construct($name, $params, $rules, $condition, $variadic = false)
+	{
+		$this->name = $name;
+		$this->selectors = array(new \Less\Node\Selector(array( new \Less\Node\Element(null, $name))));
+		$this->params = $params;
 		$this->condition = $condition;
 		$this->variadic = $variadic;
-        $this->arity = count($params);
-        $this->rules = $rules;
-        $this->lookups = array();
-        $this->required = array_reduce($params, function ($count, $p) {
-            if (! isset($p['name']) || ($p['name'] && !isset($p['value']))) {
-                return $count + 1;
-            } else {
-                return $count;
-            }
-        });
-        $this->frames = array();
-    }
+		$this->arity = count($params);
+		$this->rules = $rules;
+		$this->lookups = array();
+		$this->required = array_reduce($params, function ($count, $p) {
+			if (! isset($p['name']) || ($p['name'] && !isset($p['value']))) {
+				return $count + 1;
+			} else {
+				return $count;
+			}
+		});
+		$this->frames = array();
+	}
 
-    public function toCss($context, $env)
-    {
-        return '';
-    }
+	public function toCss($context, $env)
+	{
+		return '';
+	}
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.evalParams
-    public function compileParams($env, $args = array())
-    {
-        $frame = new \Less\Node\Ruleset(null, array());
+	public function compileParams($env, $args = array(), $evaldArguments = array() )
+	{
+		$frame = new \Less\Node\Ruleset(null, array());
+		$varargs;
+		$params = array_slice($this->params,0);
+		$val;
+		$name;
+		$isNamedFound;
+
+		$args = array_slice($args,0);
+
+		foreach($args as $i => $arg){
+
+			if( $arg && $arg['name'] ){
+				$name = $arg['name'];
+				$isNameFound = false;
+
+				foreach($params as $j => $param){
+					if (!$evaldArguments[$j] && $name === $params[$j]['name']) {
+						$evaldArguments[$j] = $arg['value']->compile($env);
+						array_unshift($frame->rules, new \Less\Node\Rule( $name, $arg['value']->compile($env) ) );
+						$isNamedFound = true;
+						break;
+					}
+				}
+				if ($isNamedFound) {
+					array_splice($args, $i, 1);
+					$i--;
+					continue;
+				} else {
+					throw new \Less\Exception\CompilerException("Named argument for " . $this->name .' '.$args[$i]['name'] . ' not found');
+				}
+			}
+		}
 
 
-        foreach($this->params as $i => $param) {
+		foreach($params as $i => $param){
+
+			if ( isset($evaldArguments[$i]) ) continue;
 
 			$arg = null;
 			if( array_key_exists($i,$args) && $args[$i] ){
 				$arg = $args[$i];
 			}
 
-			if( $arg && $arg['name'] ){
-				array_unshift($frame->rules, new \Less\Node\Rule($arg['name'], $arg['value']->compile($env) ));
-				array_splice($args,$i,1);
-				$i--;
-                continue;
-			}
+			if (isset($param['name']) && $param['name']) {
+				$name = $param['name'];
 
-
-            if (isset($param['name']) && $param['name']) {
-				if (isset($param['variadic']) && $param['variadic'] && $args) {
+				if( isset($param['variadic']) && $args ){
 					$varargs = array();
 					for ($j = $i; $j < count($args); $j++) {
 						$varargs[] = $args[$j]['value']->compile($env);
 					}
 					$expression = new \Less\Node\Expression($varargs);
 					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $expression->compile($env)));
-
 				} elseif ( $val = ($arg && $arg['value'] ? $arg['value'] : $param['value']) ){
 					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $val->compile($env)));
+					$evaldArguments[$i] = $val->compile($env);
 				} else {
 					throw new \Less\Exception\CompilerException("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
 				}
-            }
-        }
+			}
+
+			if ( isset($param['variadic']) && $args) {
+				for ($j = $i; $j < count($args); $j++) {
+					$evaldArguments[$j] = $args[$j]['value']->compile($env);
+				}
+			}
+		}
+
 		return $frame;
 	}
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.eval
 	public function compile($env, $args, $important) {
-		$frame = $this->compileParams($env, $args);
-
 		$_arguments = array();
-        for ($i = 0; $i < max(count($this->params), count($args)); $i++) {
+		$frame = $this->compileParams($env, $args, $_arguments);
 
-            if( isset($args[$i]) && $args[$i]['value'] ){
-				$_arguments[] = $args[$i]['value'];
-			}else{
-				$_arguments[] = $this->params[$i]['value'];
-			}
 
-        }
-        $ex = new \Less\Node\Expression($_arguments);
-        array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
+		$ex = new \Less\Node\Expression($_arguments);
+		array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
 
 		$rules = $important
 			? array_map(function($r) {
@@ -104,20 +130,20 @@ class Definition extends \Less\Node\Ruleset
 				}, $this->rules)
 			: array_slice($this->rules, 0);
 
-        // duplicate the environment, adding new frames.
-        $ruleSetEnv = new \Less\Environment();
-        $ruleSetEnv->addFrame($this);
-        $ruleSetEnv->addFrame($frame);
-        $ruleSetEnv->addFrames($this->frames);
-        $ruleSetEnv->addFrames($env->frames);
-        $ruleset = new \Less\Node\Ruleset(null, $rules);
+		// duplicate the environment, adding new frames.
+		$ruleSetEnv = new \Less\Environment();
+		$ruleSetEnv->addFrame($this);
+		$ruleSetEnv->addFrame($frame);
+		$ruleSetEnv->addFrames($this->frames);
+		$ruleSetEnv->addFrames($env->frames);
+		$ruleset = new \Less\Node\Ruleset(null, $rules);
 
-        return $ruleset->compile($ruleSetEnv);
-    }
+		return $ruleset->compile($ruleSetEnv);
+	}
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.match
-    public function match($args, $env = NULL)
-    {
+	public function match($args, $env = NULL)
+	{
 		if (!$this->variadic) {
 			if (count($args) < $this->required)
 				return false;
@@ -127,26 +153,26 @@ class Definition extends \Less\Node\Ruleset
 				return false;
 		}
 
-        // duplicate the environment, adding new frames.
-        $conditionEnv = new \Less\Environment();
-        $conditionEnv->addFrame($this->compileParams($env, $args));
-        $conditionEnv->addFrames($env->frames);
+		// duplicate the environment, adding new frames.
+		$conditionEnv = new \Less\Environment();
+		$conditionEnv->addFrame($this->compileParams($env, $args));
+		$conditionEnv->addFrames($env->frames);
 
 		if ($this->condition && !$this->condition->compile($conditionEnv)) {
 			return false;
 		}
 
-        $len = min(count($args), $this->arity);
+		$len = min(count($args), $this->arity);
 
-        for ($i = 0; $i < $len; $i++) {
-            if ( ! isset($this->params[$i]['name'])) {
-                if ($args[$i]['value']->compile($env)->toCSS() != $this->params[$i]['value']->compile($env)->toCSS()) {
-                    return false;
-                }
-            }
-        }
+		for ($i = 0; $i < $len; $i++) {
+			if ( !isset($this->params[$i]['name']) && !isset($this->params[$i]['variadic'])  ) {
+				if ($args[$i]['value']->compile($env)->toCSS() != $this->params[$i]['value']->compile($env)->toCSS()) {
+					return false;
+				}
+			}
+		}
 
-        return true;
-    }
+		return true;
+	}
 
 }
