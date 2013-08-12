@@ -971,10 +971,32 @@ class Parser {
     {
         $elements = array();
 
-		if ($this->match('(')) {
+
+		if ($this->peek('/^&?\(/')) {
+			// variable selectors:
+			// allow & before a selector to allow variable selectors
+			// to be at the same level, e.g.
+			// .a {
+			//   &(~".b") {
+			//
+			// Ideally this would be part of the element function.. this would allow
+			//  (@a).b(@c)
+			// however this syntax conflicts with the supported syntax
+			//   :nth-child(@a)
+			// vs
+			//   .a:hover(@a)		//if ($this->match('(')) {
+
+
+			$e = $this->match('&');
+			$this->match('(');
+			if ($e) {
+				$elements[] = new \Less\Node\Element('', $e, $this->pos);
+			}
+
 			$sel = $this->match('parseEntity');
 			$this->expect(')');
-			return new \Less\Node\Selector(array(new \Less\Node\Element('', $sel, $this->pos)));
+			$elements[] = new \Less\Node\Element('', $sel, $this->pos);
+			return new \Less\Node\Selector($elements);
 		}
 
         while ($e = $this->match('parseElement')) {
