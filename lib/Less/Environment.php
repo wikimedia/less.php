@@ -486,6 +486,24 @@ class Environment
 
     /* Blending modes */
 
+    function multiply($color1, $color2) {
+        $r = $color1->rgb[0] * $color2->rgb[0] / 255;
+        $g = $color1->rgb[1] * $color2->rgb[1] / 255;
+        $b = $color1->rgb[2] * $color2->rgb[2] / 255;
+        return $this->rgb($r, $g, $b);
+    }
+    function screen($color1, $color2) {
+        $r = 255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255;
+        $g = 255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255;
+        $b = 255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255;
+        return $this->rgb($r, $g, $b);
+    }
+    function overlay($color1, $color2) {
+        $r = $color1->rgb[0] < 128 ? 2 * $color1->rgb[0] * $color2->rgb[0] / 255 : 255 - 2 * (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255;
+        $g = $color1->rgb[1] < 128 ? 2 * $color1->rgb[1] * $color2->rgb[1] / 255 : 255 - 2 * (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255;
+        $b = $color1->rgb[2] < 128 ? 2 * $color1->rgb[2] * $color2->rgb[2] / 255 : 255 - 2 * (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255;
+        return $this->rgb($r, $g, $b);
+    },
     function softlight($color1, $color2) {
         $t = $color2->rgb[0] * $color1->rgb[0] / 255;
         $r = $t + $color1->rgb[0] * (255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255 - $t) / 255;
@@ -493,7 +511,37 @@ class Environment
         $g = $t + $color1->rgb[1] * (255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255 - $t) / 255;
         $t = $color2->rgb[2] * $color1->rgb[2] / 255;
         $b = $t + $color1->rgb[2] * (255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255 - $t) / 255;
-        return $this.rgb($r, $g, $b);
+        return $this->rgb($r, $g, $b);
+    }
+    function hardlight($color1, $color2) {
+        $r = $color2->rgb[0] < 128 ? 2 * $color2->rgb[0] * $color1->rgb[0] / 255 : 255 - 2 * (255 - $color2->rgb[0]) * (255 - $color1->rgb[0]) / 255;
+        $g = $color2->rgb[1] < 128 ? 2 * $color2->rgb[1] * $color1->rgb[1] / 255 : 255 - 2 * (255 - $color2->rgb[1]) * (255 - $color1->rgb[1]) / 255;
+        $b = $color2->rgb[2] < 128 ? 2 * $color2->rgb[2] * $color1->rgb[2] / 255 : 255 - 2 * (255 - $color2->rgb[2]) * (255 - $color1->rgb[2]) / 255;
+        return $this->rgb($r, $g, $b);
+    }
+    function difference($color1, $color2) {
+        $r = abs($color1->rgb[0] - $color2->rgb[0]);
+        $g = abs($color1->rgb[1] - $color2->rgb[1]);
+        $b = abs($color1->rgb[2] - $color2->rgb[2]);
+        return $this->rgb($r, $g, $b);
+    }
+    function exclusion($color1, $color2) {
+        $r = $color1->rgb[0] + $color2->rgb[0] * (255 - $color1->rgb[0] - $color1->rgb[0]) / 255;
+        $g = $color1->rgb[1] + $color2->rgb[1] * (255 - $color1->rgb[1] - $color1->rgb[1]) / 255;
+        $b = $color1->rgb[2] + $color2->rgb[2] * (255 - $color1->rgb[2] - $color1->rgb[2]) / 255;
+        return $this->rgb($r, $g, $b);
+    }
+    function average($color1, $color2) {
+        $r = ($color1->rgb[0] + $color2->rgb[0]) / 2;
+        $g = ($color1->rgb[1] + $color2->rgb[1]) / 2;
+        $b = ($color1->rgb[2] + $color2->rgb[2]) / 2;
+        return $this->rgb($r, $g, $b);
+    }
+    function negation($color1, $color2) {
+        $r = 255 - abs(255 - $color2->rgb[0] - $color1->rgb[0]);
+        $g = 255 - abs(255 - $color2->rgb[1] - $color1->rgb[1]);
+        $b = 255 - abs(255 - $color2->rgb[2] - $color1->rgb[2]);
+        return $this->rgb($r, $g, $b);
     }
 
 
