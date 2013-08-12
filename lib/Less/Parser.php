@@ -154,6 +154,12 @@ class Parser {
     {
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
+
+        // Remove potential UTF Byte Order Mark
+        //$this->input = preg_replace('/^\uFEFF/', '', $this->input);
+        $this->input = preg_replace('/^\\357\\273\\277/um', '', $this->input);
+
+
         $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
         $root->root = true;
 
