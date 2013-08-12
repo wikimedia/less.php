@@ -557,7 +557,12 @@ class Environment
         $b = 255 - abs(255 - $color2->rgb[2] - $color1->rgb[2]);
         return $this->rgb($r, $g, $b);
     }
-
+    function tint($color, $amount) {
+        return $this->mix( $this->rgb(255,255,255), $color, $amount);
+    }
+    function shade($color, $amount) {
+        return $this->mix($this->rgb(0, 0, 0), $color, $amount);
+    }
 
 
 	private function Expected( $type, $arg ){
