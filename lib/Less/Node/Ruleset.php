@@ -243,7 +243,7 @@ class Ruleset
 		}
 		$css[] = $rulesets;
 
-		return implode('', $css) . ($env->compress ? '' : "\n" );
+		return implode('', $css);
 	}
 
 	public function joinSelectors (&$paths, $context, $selectors)
