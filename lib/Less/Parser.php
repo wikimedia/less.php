@@ -211,6 +211,12 @@ class Parser {
         $this->current = substr($this->input, $this->pos);
     }
 
+    function isWhitespace($c) {
+        // Could change to \s?
+        $code = ord($c);
+        return $code === 32 || $code === 10 || $code === 9;
+    }
+
     /**
      * Parse from a token, regexp or string, and move forward if match
      *
@@ -247,10 +253,7 @@ class Parser {
 
             $this->pos += $length;
             while ($this->pos < strlen($this->input)) {
-                $c = ord($this->input[$this->pos]);
-                if ( ! ($c === 32 || $c === 10 || $c === 9)) {
-                    break;
-                }
+				if (! $this->isWhitespace($this->input[$this->pos])) { break; }
                 $this->pos++;
 
             }
@@ -1362,7 +1365,8 @@ class Parser {
     {
         $operation = false;
         if ($m = $this->match('parseMultiplication')) {
-            while (($op = $this->match('/^[-+]\s+/') ?: ( $this->input[$this->pos - 1] != ' ' ? ($this->match('+') ?: $this->match('-')) : false )) && ($a = $this->match('parseMultiplication'))) {
+            while (($op = $this->match('/^[-+]\s+/') ?: ( !$this->isWhitespace($this->input[$this->pos-1]) ? ($this->match('+') ?: $this->match('-')) : false )) && ($a = $this->match('parseMultiplication'))) {
+
                 $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a));
             }
             return $operation ?: $m;
