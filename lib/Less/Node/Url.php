@@ -24,7 +24,13 @@ class Url
 
     public function compile($ctx)
     {
-        return $this->attrs ? $this : new \Less\Node\URL($this->value->compile($ctx), $this->paths);
+		if( $this->attrs ){
+			return $this;
+		}
+
+		$val = $this->value->compile($ctx);
+
+		return new \Less\Node\URL($val, $this->paths);
     }
 
 }
