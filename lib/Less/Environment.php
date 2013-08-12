@@ -200,6 +200,18 @@ class Environment
 		return new \Less\Node\Dimension(round($c['l'] * 100), '%');
 	}
 
+    public function red($color) {
+		return new \Less\Node\Dimension( $color->rgb[0] );
+    }
+
+    public function green($color) {
+		return new \Less\Node\Dimension( $color->rgb[1] );
+    }
+
+    public function blue($color) {
+		return new \Less\Node\Dimension( $color->rgb[2] );
+    }
+
 	public function alpha($color)
 	{
 		$c = $color->toHSL();
