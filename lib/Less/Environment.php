@@ -407,8 +407,22 @@ class Environment
 		return new \Less\Node\Quoted('"' . $str . '"', $str);
 	}
 
-	public function round($n) {
-		return $this->_math(function($n) { return round($n); }, $n);
+	public function round($n, $f = false) {
+
+		$fraction = 0;
+		if( $f !== false ){
+			$fraction = $f->value;
+		}
+
+		if ($n instanceof \Less\Node\Dimension) {
+			$n = \Less\Environment::number($n);
+			$n = round($n,$fraction);
+			return new \Less\Node\Dimension($n, $n->unit);
+		}elseif( is_numeric($n) ){
+			return round($n,$fraction);
+		}else{
+			throw new \Less\Exception\CompilerException("round function takes numbers as parameters");
+		}
 	}
 
 	public function ceil($n) {
