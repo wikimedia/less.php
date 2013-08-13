@@ -187,7 +187,7 @@ class Environment
 	}
 
 	function hsva($h, $s, $v, $a) {
-		$h = (\Less\Environment::number($h) % 360) / 360;
+		$h = ((\Less\Environment::number($h) % 360) / 360 ) * 360;
 		$s = \Less\Environment::number($s);
 		$v = \Less\Environment::number($v);
 		$a = \Less\Environment::number($a);
