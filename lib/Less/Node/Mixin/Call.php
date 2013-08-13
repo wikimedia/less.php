@@ -55,11 +55,26 @@ class Call{
                 if ($match) {
                     return $rules;
                 } else {
+
+					$message = '';
+					if( $args ){
+						$message = implode(', ',array_map(function($a) use($env){
+							$argValue = '';
+							if( $a['name'] ){
+								$argValue += $a['name']+':';
+							}
+							if( $a['value'] && method_exists($a['value'],'toCSS') ){
+								$argValue += $a['value']->toCSS();
+							}else{
+								$argValue += '???';
+							}
+							return $argValue;
+						}, $args ));
+					}
+
+
                     throw new \Less\Exception\CompilerException('No matching definition was found for `'.
-						trim($this->selector->toCSS($env)) . '(' .
-						implode(', ', array_map(function ($a) use($env) {
-						  return $a->toCss($env);
-						}, $this->arguments)) . ')`',
+						trim($this->selector->toCSS($env)) . '(' .$message.')',
 						$this->index, null, $this->filename);
                 }
             }
