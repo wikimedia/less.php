@@ -712,6 +712,7 @@ class Parser {
 		$argsComma = array();
 		$argsSemiColon = array();
 		$isSemiColonSeperated = null;
+		$expressionContainsNamed = false;
 
 
         if( !$this->peek('.') && !$this->peek('#') ){
@@ -727,11 +728,7 @@ class Parser {
 
 
 		if( $this->match('(') ){
-			//todo remove
-			$name = null;
-			$isSemiColonSeperated = false;
 			$expressions = array();
-
 
 			while( $arg = $this->match('parseExpression') ){
 				$nameLoop = null;
@@ -742,8 +739,11 @@ class Parser {
 					$val = $arg->value[0];
 					if( $val instanceof \Less\Node\Variable ){
 						if( $this->match(':') ){
-							if ($isSemiColonSeperated && count($expressions) > 1) {
-								throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
+							if ( count($expressions) > 0) {
+								if ($isSemiColonSeperated) {
+									throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
+								}
+								$expressionContainsNamed = true;
 							}
 							$value = $this->expect('parseExpression');
 							$nameLoop = $name = $val->name;
@@ -761,6 +761,11 @@ class Parser {
 				}
 
 				if ($this->match(';') || $isSemiColonSeperated) {
+
+					if ($expressionContainsNamed) {
+						throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
+					}
+
 					$isSemiColonSeperated = true;
 
 					if ( count($expressions) > 1) {
@@ -773,7 +778,7 @@ class Parser {
 				}
 			}
 
-			if( !$this->match(')') ) throw new \Less\Exception\ParserException('Expected )');
+			$this->expect(')');
 		}
 
 		$args = $isSemiColonSeperated ? $argsSemiColon : $argsComma;
@@ -814,7 +819,7 @@ class Parser {
 		$variadic = false;
 		$cond = null;
 
-        if ((! $this->peek('.') && ! $this->peek('#')) || $this->peek('/^[^{]*(;|})/')) {
+        if ((! $this->peek('.') && ! $this->peek('#')) || $this->peek('/^[^{]*\}/')) {
             return;
         }
 
@@ -849,7 +854,7 @@ class Parser {
 				} else {
 					break;
 				}
-			} while ($this->match(','));
+			} while ( $this->match(',') || $this->match(';') );
 
 
 			// .mixincall("@{a}");
