@@ -170,21 +170,21 @@ class Environment
 
 		$hue = function ($h) use ($m1, $m2) {
 			$h = $h < 0 ? $h + 1 : ($h > 1 ? $h - 1 : $h);
-			if      ($h * 6 < 1) return $m1 + ($m2 - $m1) * $h * 6;
+			if	  ($h * 6 < 1) return $m1 + ($m2 - $m1) * $h * 6;
 			else if ($h * 2 < 1) return $m2;
 			else if ($h * 3 < 2) return $m1 + ($m2 - $m1) * (2/3 - $h) * 6;
-			else                 return $m1;
+			else				 return $m1;
 		};
 
 		return $this->rgba($hue($h + 1/3) * 255,
-						   $hue($h)       * 255,
+						   $hue($h)	   * 255,
 						   $hue($h - 1/3) * 255,
 						   $a);
 	}
 
-    function hsv($h, $s, $v) {
-        return $this->hsva($h, $s, $v, 1.0);
-    }
+	function hsv($h, $s, $v) {
+		return $this->hsva($h, $s, $v, 1.0);
+	}
 
 	function hsva($h, $s, $v, $a) {
 		$h = (\Less\Environment::number($h) % 360) / 360;
@@ -192,26 +192,26 @@ class Environment
 		$v = \Less\Environment::number($v);
 		$a = \Less\Environment::number($a);
 
-        $i = floor(($h / 60) % 6);
-        $f = ($h / 60) - $i;
+		$i = floor(($h / 60) % 6);
+		$f = ($h / 60) - $i;
 
-        $vs = array( $v,
-                  $v * (1 - $s),
-                  $v * (1 - $f * $s),
-                  $v * (1 - (1 - $f) * $s));
+		$vs = array( $v,
+				  $v * (1 - $s),
+				  $v * (1 - $f * $s),
+				  $v * (1 - (1 - $f) * $s));
 
-        $perm = array(array(0, 3, 1),
-                    array(2, 0, 1),
-                    array(1, 0, 3),
-                    array(1, 2, 0),
-                    array(3, 1, 0),
-                    array(0, 1, 2));
+		$perm = array(array(0, 3, 1),
+					array(2, 0, 1),
+					array(1, 0, 3),
+					array(1, 2, 0),
+					array(3, 1, 0),
+					array(0, 1, 2));
 
-        return $this->rgba($vs[$perm[$i][0]] * 255,
-                         $vs[$perm[$i][1]] * 255,
-                         $vs[$perm[$i][2]] * 255,
-                         $a);
-    }
+		return $this->rgba($vs[$perm[$i][0]] * 255,
+						 $vs[$perm[$i][1]] * 255,
+						 $vs[$perm[$i][2]] * 255,
+						 $a);
+	}
 
 	public function hue($color)
 	{
@@ -231,17 +231,17 @@ class Environment
 		return new \Less\Node\Dimension(round($c['l'] * 100), '%');
 	}
 
-    public function red($color) {
+	public function red($color) {
 		return new \Less\Node\Dimension( $color->rgb[0] );
-    }
+	}
 
-    public function green($color) {
+	public function green($color) {
 		return new \Less\Node\Dimension( $color->rgb[1] );
-    }
+	}
 
-    public function blue($color) {
+	public function blue($color) {
 		return new \Less\Node\Dimension( $color->rgb[2] );
-    }
+	}
 
 	public function alpha($color)
 	{
@@ -249,13 +249,13 @@ class Environment
 		return new \Less\Node\Dimension(round($c['a']));
 	}
 
-    function luma ($color) {
+	function luma ($color) {
 		return new \Less\Node\Dimension(round(
 			(0.2126 * ($color->rgb[0]/255) +
-            0.7152 * ($color->rgb[1]/255) +
-            0.0722 * ($color->rgb[2]/255))
-            * $color->alpha * 100), '%');
-    }
+			0.7152 * ($color->rgb[1]/255) +
+			0.0722 * ($color->rgb[2]/255))
+			* $color->alpha * 100), '%');
+	}
 
 	public function saturate($color, $amount)
 	{
@@ -387,25 +387,25 @@ class Environment
 		return $this->desaturate($color, new \Less\Node\Dimension(100));
 	}
 
-    function contrast( $color, $dark = false, $light = false, $threshold = false) {
+	function contrast( $color, $dark = false, $light = false, $threshold = false) {
 		if( $light === false ){
-            $light = $this->rgba(255, 255, 255, 1.0);
-        }
-        if( $darg === false ){
-            $dark = $this->rgba(0, 0, 0, 1.0);
-        }
-        if( $threshold === false ){
-            $threshold = 0.43;
-        } else {
-            $threshold = $threshold->value;
-        }
+			$light = $this->rgba(255, 255, 255, 1.0);
+		}
+		if( $darg === false ){
+			$dark = $this->rgba(0, 0, 0, 1.0);
+		}
+		if( $threshold === false ){
+			$threshold = 0.43;
+		} else {
+			$threshold = $threshold->value;
+		}
 
-        if (((0.2126 * ($color->rgb[0]/255) + 0.7152 * ($color->rgb[1]/255) + 0.0722 * ($color->rgb[2]/255)) * $color->alpha) < $threshold) {
-            return $light;
-        } else {
-            return $dark;
-        }
-    }
+		if (((0.2126 * ($color->rgb[0]/255) + 0.7152 * ($color->rgb[1]/255) + 0.0722 * ($color->rgb[2]/255)) * $color->alpha) < $threshold) {
+			return $light;
+		} else {
+			return $dark;
+		}
+	}
 
 	public function e ($str)
 	{
@@ -529,71 +529,71 @@ class Environment
 		return is_a($n, $type) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
 	}
 
-    /* Blending modes */
+	/* Blending modes */
 
-    function multiply($color1, $color2) {
-        $r = $color1->rgb[0] * $color2->rgb[0] / 255;
-        $g = $color1->rgb[1] * $color2->rgb[1] / 255;
-        $b = $color1->rgb[2] * $color2->rgb[2] / 255;
-        return $this->rgb($r, $g, $b);
-    }
-    function screen($color1, $color2) {
-        $r = 255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255;
-        $g = 255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255;
-        $b = 255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255;
-        return $this->rgb($r, $g, $b);
-    }
-    function overlay($color1, $color2) {
-        $r = $color1->rgb[0] < 128 ? 2 * $color1->rgb[0] * $color2->rgb[0] / 255 : 255 - 2 * (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255;
-        $g = $color1->rgb[1] < 128 ? 2 * $color1->rgb[1] * $color2->rgb[1] / 255 : 255 - 2 * (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255;
-        $b = $color1->rgb[2] < 128 ? 2 * $color1->rgb[2] * $color2->rgb[2] / 255 : 255 - 2 * (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255;
-        return $this->rgb($r, $g, $b);
-    }
-    function softlight($color1, $color2) {
-        $t = $color2->rgb[0] * $color1->rgb[0] / 255;
-        $r = $t + $color1->rgb[0] * (255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255 - $t) / 255;
-        $t = $color2->rgb[1] * $color1->rgb[1] / 255;
-        $g = $t + $color1->rgb[1] * (255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255 - $t) / 255;
-        $t = $color2->rgb[2] * $color1->rgb[2] / 255;
-        $b = $t + $color1->rgb[2] * (255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255 - $t) / 255;
-        return $this->rgb($r, $g, $b);
-    }
-    function hardlight($color1, $color2) {
-        $r = $color2->rgb[0] < 128 ? 2 * $color2->rgb[0] * $color1->rgb[0] / 255 : 255 - 2 * (255 - $color2->rgb[0]) * (255 - $color1->rgb[0]) / 255;
-        $g = $color2->rgb[1] < 128 ? 2 * $color2->rgb[1] * $color1->rgb[1] / 255 : 255 - 2 * (255 - $color2->rgb[1]) * (255 - $color1->rgb[1]) / 255;
-        $b = $color2->rgb[2] < 128 ? 2 * $color2->rgb[2] * $color1->rgb[2] / 255 : 255 - 2 * (255 - $color2->rgb[2]) * (255 - $color1->rgb[2]) / 255;
-        return $this->rgb($r, $g, $b);
-    }
-    function difference($color1, $color2) {
-        $r = abs($color1->rgb[0] - $color2->rgb[0]);
-        $g = abs($color1->rgb[1] - $color2->rgb[1]);
-        $b = abs($color1->rgb[2] - $color2->rgb[2]);
-        return $this->rgb($r, $g, $b);
-    }
-    function exclusion($color1, $color2) {
-        $r = $color1->rgb[0] + $color2->rgb[0] * (255 - $color1->rgb[0] - $color1->rgb[0]) / 255;
-        $g = $color1->rgb[1] + $color2->rgb[1] * (255 - $color1->rgb[1] - $color1->rgb[1]) / 255;
-        $b = $color1->rgb[2] + $color2->rgb[2] * (255 - $color1->rgb[2] - $color1->rgb[2]) / 255;
-        return $this->rgb($r, $g, $b);
-    }
-    function average($color1, $color2) {
-        $r = ($color1->rgb[0] + $color2->rgb[0]) / 2;
-        $g = ($color1->rgb[1] + $color2->rgb[1]) / 2;
-        $b = ($color1->rgb[2] + $color2->rgb[2]) / 2;
-        return $this->rgb($r, $g, $b);
-    }
-    function negation($color1, $color2) {
-        $r = 255 - abs(255 - $color2->rgb[0] - $color1->rgb[0]);
-        $g = 255 - abs(255 - $color2->rgb[1] - $color1->rgb[1]);
-        $b = 255 - abs(255 - $color2->rgb[2] - $color1->rgb[2]);
-        return $this->rgb($r, $g, $b);
-    }
-    function tint($color, $amount) {
-        return $this->mix( $this->rgb(255,255,255), $color, $amount);
-    }
-    function shade($color, $amount) {
-        return $this->mix($this->rgb(0, 0, 0), $color, $amount);
-    }
+	function multiply($color1, $color2) {
+		$r = $color1->rgb[0] * $color2->rgb[0] / 255;
+		$g = $color1->rgb[1] * $color2->rgb[1] / 255;
+		$b = $color1->rgb[2] * $color2->rgb[2] / 255;
+		return $this->rgb($r, $g, $b);
+	}
+	function screen($color1, $color2) {
+		$r = 255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255;
+		$g = 255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255;
+		$b = 255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255;
+		return $this->rgb($r, $g, $b);
+	}
+	function overlay($color1, $color2) {
+		$r = $color1->rgb[0] < 128 ? 2 * $color1->rgb[0] * $color2->rgb[0] / 255 : 255 - 2 * (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255;
+		$g = $color1->rgb[1] < 128 ? 2 * $color1->rgb[1] * $color2->rgb[1] / 255 : 255 - 2 * (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255;
+		$b = $color1->rgb[2] < 128 ? 2 * $color1->rgb[2] * $color2->rgb[2] / 255 : 255 - 2 * (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255;
+		return $this->rgb($r, $g, $b);
+	}
+	function softlight($color1, $color2) {
+		$t = $color2->rgb[0] * $color1->rgb[0] / 255;
+		$r = $t + $color1->rgb[0] * (255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255 - $t) / 255;
+		$t = $color2->rgb[1] * $color1->rgb[1] / 255;
+		$g = $t + $color1->rgb[1] * (255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255 - $t) / 255;
+		$t = $color2->rgb[2] * $color1->rgb[2] / 255;
+		$b = $t + $color1->rgb[2] * (255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255 - $t) / 255;
+		return $this->rgb($r, $g, $b);
+	}
+	function hardlight($color1, $color2) {
+		$r = $color2->rgb[0] < 128 ? 2 * $color2->rgb[0] * $color1->rgb[0] / 255 : 255 - 2 * (255 - $color2->rgb[0]) * (255 - $color1->rgb[0]) / 255;
+		$g = $color2->rgb[1] < 128 ? 2 * $color2->rgb[1] * $color1->rgb[1] / 255 : 255 - 2 * (255 - $color2->rgb[1]) * (255 - $color1->rgb[1]) / 255;
+		$b = $color2->rgb[2] < 128 ? 2 * $color2->rgb[2] * $color1->rgb[2] / 255 : 255 - 2 * (255 - $color2->rgb[2]) * (255 - $color1->rgb[2]) / 255;
+		return $this->rgb($r, $g, $b);
+	}
+	function difference($color1, $color2) {
+		$r = abs($color1->rgb[0] - $color2->rgb[0]);
+		$g = abs($color1->rgb[1] - $color2->rgb[1]);
+		$b = abs($color1->rgb[2] - $color2->rgb[2]);
+		return $this->rgb($r, $g, $b);
+	}
+	function exclusion($color1, $color2) {
+		$r = $color1->rgb[0] + $color2->rgb[0] * (255 - $color1->rgb[0] - $color1->rgb[0]) / 255;
+		$g = $color1->rgb[1] + $color2->rgb[1] * (255 - $color1->rgb[1] - $color1->rgb[1]) / 255;
+		$b = $color1->rgb[2] + $color2->rgb[2] * (255 - $color1->rgb[2] - $color1->rgb[2]) / 255;
+		return $this->rgb($r, $g, $b);
+	}
+	function average($color1, $color2) {
+		$r = ($color1->rgb[0] + $color2->rgb[0]) / 2;
+		$g = ($color1->rgb[1] + $color2->rgb[1]) / 2;
+		$b = ($color1->rgb[2] + $color2->rgb[2]) / 2;
+		return $this->rgb($r, $g, $b);
+	}
+	function negation($color1, $color2) {
+		$r = 255 - abs(255 - $color2->rgb[0] - $color1->rgb[0]);
+		$g = 255 - abs(255 - $color2->rgb[1] - $color1->rgb[1]);
+		$b = 255 - abs(255 - $color2->rgb[2] - $color1->rgb[2]);
+		return $this->rgb($r, $g, $b);
+	}
+	function tint($color, $amount) {
+		return $this->mix( $this->rgb(255,255,255), $color, $amount);
+	}
+	function shade($color, $amount) {
+		return $this->mix($this->rgb(0, 0, 0), $color, $amount);
+	}
 
 
 	private function Expected( $type, $arg ){
