@@ -947,15 +947,18 @@ class Parser {
              $this->match('*') ?:
              $this->match('&') ?:
              $this->match('parseAttribute') ?:
-             $this->match('/^\([^)@]+\)/') ?:
+             $this->match('/^\([^()@]+\)/') ?:
              $this->match('/^[\.#](?=@)/') ?:
              $this->match('parseEntitiesVariableCurly');
 
 
 
 		if( !$e ){
-			if ( $this->match('(') && ($v = ($this->match('parseEntitiesVariableCurly') ?: $this->match('parseEntitiesVariable'))) && $this->match(')')) {
-				$e = new \Less\Node\Paren($v);
+			if ($this->match('(')) {
+				$v = $this->MatchMultiple('parseEntitiesVariableCurly','parseEntitiesVariable','parseSelector');
+				if( $v && $this->match(')') ){
+					$e = new \Less\Node\Paren($v);
+				}
 			}
 		}
 
@@ -1009,7 +1012,7 @@ class Parser {
 
         while ($e = $this->match('parseElement')) {
             $elements[] = $e;
-            if ($this->peek('{') || $this->peek('}') || $this->peek(';') || $this->peek(',')) {
+            if ($this->peek('{') || $this->peek('}') || $this->peek(';') || $this->peek(',') || $this->peek(')') ) {
                 break;
             }
         }
@@ -1486,5 +1489,23 @@ class Parser {
             return $name[1];
         }
     }
+
+
+	/**
+	 * Function for php implementation to reduce the usage of the Ternary Operator "?:"
+	 *
+	 */
+    private function MatchMultiple(){
+		$args = func_get_args();
+		foreach($args as $arg){
+
+			$v = $this->match($arg);
+			if( $v ){
+				return $v;
+			}
+		}
+
+		return null;
+	}
 
 }
