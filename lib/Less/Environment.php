@@ -182,6 +182,37 @@ class Environment
 						   $a);
 	}
 
+    function hsv($h, $s, $v) {
+        return $this->hsva($h, $s, $v, 1.0);
+    }
+
+	function hsva($h, $s, $v, $a) {
+		$h = (\Less\Environment::number($h) % 360) / 360;
+		$s = \Less\Environment::number($s);
+		$v = \Less\Environment::number($v);
+		$a = \Less\Environment::number($a);
+
+        $i = floor(($h / 60) % 6);
+        $f = ($h / 60) - $i;
+
+        $vs = array( $v,
+                  $v * (1 - $s),
+                  $v * (1 - $f * $s),
+                  $v * (1 - (1 - $f) * $s));
+
+        $perm = array(array(0, 3, 1),
+                    array(2, 0, 1),
+                    array(1, 0, 3),
+                    array(1, 2, 0),
+                    array(3, 1, 0),
+                    array(0, 1, 2));
+
+        return $this->rgba($vs[$perm[$i][0]] * 255,
+                         $vs[$perm[$i][1]] * 255,
+                         $vs[$perm[$i][2]] * 255,
+                         $a);
+    }
+
 	public function hue($color)
 	{
 		$c = $color->toHSL();
