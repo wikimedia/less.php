@@ -137,6 +137,7 @@ class Definition extends \Less\Node\Ruleset
 		$ruleSetEnv->addFrames($this->frames);
 		$ruleSetEnv->addFrames($env->frames);
 		$ruleset = new \Less\Node\Ruleset(null, $rules);
+		$ruleset->originalRuleset = $this;
 
 		return $ruleset->compile($ruleSetEnv);
 	}

@@ -42,6 +42,17 @@ class Call{
                 }, $this->arguments);
 
                 foreach ($mixins as $mixin) {
+                    $isRecursive = false;
+                    foreach($env->frames as $recur_frame){
+						if( (isset($recur_frame->originalRuleset) && $mixin === $recur_frame->originalRuleset) || ($mixin === $recur_frame) ){
+							$isRecursive = true;
+							break;
+						}
+					}
+					if( $isRecursive ){
+						continue;
+					}
+
                     if ($mixin->match($args, $env)) {
                         try {
                             $rules = array_merge($rules, $mixin->compile($env, $this->arguments, $this->important)->rules);

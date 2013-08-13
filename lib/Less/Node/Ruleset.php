@@ -32,6 +32,7 @@ class Ruleset
 		$ruleset = new Ruleset($selectors, $this->rules, $this->strictImports);
 		$rules = array();
 
+		$ruleset->originalRuleset = $this;
 		$ruleset->root = $this->root;
 		$ruleset->allowImports = $this->allowImports;
 
