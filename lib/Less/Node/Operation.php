@@ -25,6 +25,10 @@ class Operation
             }
         }
 
+		if ( !$a || !method_exists($a,'operate') ) {
+			throw new \Less\CompilerError("Operation on an invalid type");
+		}
+
         return $a->operate($this->op, $b);
     }
 }
