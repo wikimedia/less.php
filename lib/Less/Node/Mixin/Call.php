@@ -59,7 +59,7 @@ class Call{
 					if ($mixin->matchArgs($args, $env)) {
 						if ( method_exists($mixin,'matchCondition') && $mixin->matchCondition($args, $env)) {
 							try {
-								$rules = array_merge($rules, $mixin->compile($env, $this->arguments, $this->important)->rules);
+								$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
 							} catch (Exception $e) {
 								throw new \Less\Exception\CompilerException($e->message, $e->index, null, $this->filename);
 							}
