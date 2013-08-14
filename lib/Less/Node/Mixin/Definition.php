@@ -125,9 +125,7 @@ class Definition extends \Less\Node\Ruleset
 		array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
 
 		$rules = $important
-			? array_map(function($r) {
-					return new \Less\Node\Rule($r->name, $r->value, '!important', $r->index);
-				}, $this->rules)
+			? \Less\Node\Ruleset::makeImportant($this->selectors, $this->rules)
 			: array_slice($this->rules, 0);
 
 		// duplicate the environment, adding new frames.

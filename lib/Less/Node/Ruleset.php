@@ -106,6 +106,20 @@ class Ruleset
 		return $ruleset;
 	}
 
+	static function makeImportant($selectors, $rules, $strictImports = false) {
+
+		$important_rules = array();
+		foreach($rules as $rule){
+			if( method_exists($rule,'makeImportant') ){
+				$important_rules[] = $rule->makeImportant();
+			}else{
+				$important_rules[] = $rule;
+			}
+		}
+
+		return new \Less\Node\Ruleset($selectors, $important_rules, $strictImports );
+	}
+
 	public function match($args)
 	{
 		return ! is_array($args) || count($args) === 0;

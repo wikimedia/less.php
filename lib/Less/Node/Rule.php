@@ -42,4 +42,8 @@ class Rule
         return new \Less\Node\Rule($this->name, $this->value->compile($context), $this->important, $this->index, $this->inline);
     }
 
+	function makeImportant(){
+		return new \Less\Node\Rule($this->name, $this->value, '!important', $this->index, $this->inline);
+	}
+
 }
