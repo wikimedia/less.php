@@ -77,14 +77,14 @@ class Definition extends \Less\Node\Ruleset
 			}
 		}
 
-
+		$argIndex = 0;
 		foreach($params as $i => $param){
 
 			if ( isset($evaldArguments[$i]) ) continue;
 
 			$arg = null;
-			if( array_key_exists($i,$args) && $args[$i] ){
-				$arg = $args[$i];
+			if( array_key_exists($argIndex,$args) && $args[$argIndex] ){
+				$arg = $args[$argIndex];
 			}
 
 			if (isset($param['name']) && $param['name']) {
@@ -92,7 +92,7 @@ class Definition extends \Less\Node\Ruleset
 
 				if( isset($param['variadic']) && $args ){
 					$varargs = array();
-					for ($j = $i; $j < count($args); $j++) {
+					for ($j = $argIndex; $j < count($args); $j++) {
 						$varargs[] = $args[$j]['value']->compile($env);
 					}
 					$expression = new \Less\Node\Expression($varargs);
@@ -106,10 +106,11 @@ class Definition extends \Less\Node\Ruleset
 			}
 
 			if ( isset($param['variadic']) && $args) {
-				for ($j = $i; $j < count($args); $j++) {
+				for ($j = $argIndex; $j < count($args); $j++) {
 					$evaldArguments[$j] = $args[$j]['value']->compile($env);
 				}
 			}
+			$argIndex++;
 		}
 
 		return $frame;
