@@ -15,13 +15,16 @@ class Selector {
 
 	public function match($other) {
 		$len   = count($this->elements);
-		$olen  = count($other->elements);
+
+		$oelements = array_slice( $other->elements, (count($other->elements) && $other->elements[0]->value === "&") ? 1 : 0);
+		$olen = count($oelements);
+
 		$max = min($len, $olen);
 		if ($len < $olen) {
 			return false;
 		} else {
 			for ($i = 0; $i < $max; $i ++) {
-				if ($this->elements[$i]->value !== $other->elements[$i]->value) {
+				if ($this->elements[$i]->value !== $oelements[$i]->value) {
 					return false;
 				}
 			}
