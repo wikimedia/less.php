@@ -206,8 +206,24 @@ class Ruleset
 
 		// Compile rules and rulesets
 		foreach($this->rules as $rule) {
-			if (isset($rule->rules) || ($rule instanceof \Less\Node\Directive) || ($rule instanceof \Less\Node\Media)) {
+			if (isset($rule->rules) || ($rule instanceof \Less\Node\Media)) {
 				$rulesets[] = $rule->toCSS($paths, $env);
+
+			} else if ( $rule instanceof \Less\Node\Directive ){
+				$cssValue = $rule->toCSS($paths, $env);
+                // Output only the first @charset definition as such - convert the others
+                // to comments in case debug is enabled
+                if ($rule->name === "@charset") {
+                    // Only output the debug info together with subsequent @charset definitions
+                    // a comment (or @media statement) before the actual @charset directive would
+                    // be considered illegal css as it has to be on the first line
+                    if ($env->charset) {
+                        continue;
+                    }
+                    $env->charset = true;
+                }
+                $rulesets[] = $cssValue;
+
 			} else if ($rule instanceof \Less\Node\Comment) {
 				if (!$rule->silent) {
 					if ($this->root) {

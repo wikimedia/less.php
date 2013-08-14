@@ -41,6 +41,9 @@ class Environment
 	 */
 	public $paths = array();
 
+
+	public $charset;
+
 	public function __construct()
 	{
 		$this->frames = array();
