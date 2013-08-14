@@ -42,7 +42,7 @@ class Definition extends \Less\Node\Ruleset
 	}
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.evalParams
-	public function compileParams($env, $args = array(), $evaldArguments = array() )
+	public function compileParams($env, $mixinEnv, $args = array(), $evaldArguments = array() )
 	{
 		$frame = new \Less\Node\Ruleset(null, array());
 		$varargs;
@@ -97,11 +97,18 @@ class Definition extends \Less\Node\Ruleset
 					}
 					$expression = new \Less\Node\Expression($varargs);
 					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $expression->compile($env)));
-				} elseif ( $val = ($arg && $arg['value'] ? $arg['value'] : $param['value']) ){
-					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $val->compile($env)));
-					$evaldArguments[$i] = $val->compile($env);
-				} else {
-					throw new \Less\Exception\CompilerException("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
+				}else{
+					$val = ($arg && $arg['value']) ? $arg['value'] : false;
+					if ($val) {
+						$val = $val->compile($env);
+					} else if ( isset($param['value']) ) {
+						$val = $param['value']->compile($mixinEnv);
+					} else {
+						throw new \Less\Exception\CompilerException("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
+					}
+
+					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $val));
+					$evaldArguments[$i] = $val;
 				}
 			}
 
@@ -119,8 +126,12 @@ class Definition extends \Less\Node\Ruleset
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.eval
 	public function compile($env, $args, $important) {
 		$_arguments = array();
-		$frame = $this->compileParams($env, $args, $_arguments);
 
+		$mixinFrames = array_merge($this->frames, $env->frames);
+
+		$mixinEnv = new \Less\Environment();
+		$mixinEnv->addFrames($mixinFrames);
+		$frame = $this->compileParams($env, $mixinEnv, $args, $_arguments);
 
 		$ex = new \Less\Node\Expression($_arguments);
 		array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
@@ -133,8 +144,7 @@ class Definition extends \Less\Node\Ruleset
 		$ruleSetEnv = new \Less\Environment();
 		$ruleSetEnv->addFrame($this);
 		$ruleSetEnv->addFrame($frame);
-		$ruleSetEnv->addFrames($this->frames);
-		$ruleSetEnv->addFrames($env->frames);
+		$ruleSetEnv->addFrames($mixinFrames);
 		$ruleset = new \Less\Node\Ruleset(null, $rules);
 		$ruleset->originalRuleset = $this;
 
@@ -144,9 +154,13 @@ class Definition extends \Less\Node\Ruleset
 
 	public function matchCondition($args, $env) {
 
+		$mixinEnv = new \Less\Environment();
+		$mixinEnv->addFrames($this->frames);
+		$mixinEnv->addFrames($env->frames);
+
 		// duplicate the environment, adding new frames.
 		$conditionEnv = new \Less\Environment();
-		$conditionEnv->addFrame($this->compileParams($env, $args));
+		$conditionEnv->addFrame($this->compileParams($env, $mixinEnv, $args));
 		$conditionEnv->addFrames($env->frames);
 
 		if ($this->condition && !$this->condition->compile($conditionEnv)) {
