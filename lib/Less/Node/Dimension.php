@@ -46,6 +46,9 @@ class Dimension
 			} elseif ($other->value < $this->value) {
 				return 1;
 			} else {
+				if ($other->unit && $this->unit !== $other->unit) {
+					return -1;
+				}
 				return 0;
 			}
 		} else {
