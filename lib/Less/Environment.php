@@ -459,6 +459,10 @@ class Environment
 		}
 	}
 
+    function unit($val, $unit) {
+        return \Less\Node\Dimension($val->value, $unit ? $unit->toCSS() : "");
+    }
+
 	public function ceil($n) {
 		return $this->_math(function($n) { return ceil($n); }, $n);
 	}
