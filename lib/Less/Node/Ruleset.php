@@ -120,7 +120,7 @@ class Ruleset
 		return new \Less\Node\Ruleset($selectors, $important_rules, $strictImports );
 	}
 
-	public function match($args)
+	public function matchArgs($args)
 	{
 		return ! is_array($args) || count($args) === 0;
 	}

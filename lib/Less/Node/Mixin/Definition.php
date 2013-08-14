@@ -140,17 +140,8 @@ class Definition extends \Less\Node\Ruleset
 		return $ruleset->compile($ruleSetEnv);
 	}
 
-	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.match
-	public function match($args, $env = NULL)
-	{
-		if (!$this->variadic) {
-			if (count($args) < $this->required)
-				return false;
-			if (count($args) > count($this->params))
-				return false;
-			if (($this->required > 0) && (count($args) > count($this->params)))
-				return false;
-		}
+
+	public function matchCondition($args, $env) {
 
 		// duplicate the environment, adding new frames.
 		$conditionEnv = new \Less\Environment();
@@ -159,6 +150,19 @@ class Definition extends \Less\Node\Ruleset
 
 		if ($this->condition && !$this->condition->compile($conditionEnv)) {
 			return false;
+		}
+
+		return true;
+	}
+
+	public function matchArgs($args, $env = NULL){
+		if (!$this->variadic) {
+			if (count($args) < $this->required)
+				return false;
+			if (count($args) > count($this->params))
+				return false;
+			if (($this->required > 0) && (count($args) > count($this->params)))
+				return false;
 		}
 
 		$len = min(count($args), $this->arity);
