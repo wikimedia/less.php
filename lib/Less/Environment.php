@@ -144,6 +144,14 @@ class Environment
 		}
 	}
 
+	static public function scaled($n, $size) {
+		if ($n instanceof \Less\Node\Dimension && $n->unit == '%') {
+			return (float)$n->value * $size / 100;
+		} else {
+			return \Less\Environment::number($n);
+		}
+	}
+
 	public function rgb ($r, $g, $b)
 	{
 		return $this->rgba($r, $g, $b, 1.0);
@@ -151,7 +159,7 @@ class Environment
 
 	public function rgba($r, $g, $b, $a)
 	{
-		$rgb = array_map(function ($c) { return \Less\Environment::number($c); }, array($r, $g, $b));
+		$rgb = array_map(function ($c) { return \Less\Environment::scaled($c,256); }, array($r, $g, $b));
 		$a = self::number($a);
 		return new \Less\Node\Color($rgb, $a);
 	}
