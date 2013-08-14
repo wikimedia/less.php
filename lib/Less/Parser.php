@@ -368,7 +368,8 @@ class Parser {
                         $this->match('parseMixinCall') ?:
                         $this->match('parseComment') ?:
                         $this->match('parseDirective')) ?:
-                        $this->match('/^[\s\n]+/')
+                        $this->match('/^[\s\n]+/') ?:
+                        $this->match('/^;+/')
         ) {
             if ($node) {
                 $root[] = $node;
