@@ -977,7 +977,7 @@ class Parser {
     private function parseCombinator()
     {
         $c = isset($this->input[$this->pos]) ? $this->input[$this->pos] : '';
-        if ($c === '>' || $c === '+' || $c === '~') {
+        if ($c === '>' || $c === '+' || $c === '~' || $c === '|') {
 
             $this->pos++;
 			while( preg_match('/\s/', $this->input[$this->pos]) ) {
@@ -1251,17 +1251,13 @@ class Parser {
     {
 		$hasBlock = false;
 		$hasIdentifier = false;
+		$hasExpression = false;
 
         if (! $this->peek('@')) {
             return;
         }
 
-        $value = $this->match('parseImport');
-        if( $value ){
-			return $value;
-		}
-
-		$value = $this->match('parseMedia');
+		$value = $this->matchMultiple('parseImport','parseMedia');
         if( $value ){
             return $value;
 		}
@@ -1305,6 +1301,9 @@ class Parser {
 				$hasBlock = true;
 				$hasIdentifier = true;
 				break;
+			case "@namespace":
+				$hasExpression = true;
+				break;
 		}
 
 		if( $hasIdentifier ){
@@ -1322,7 +1321,7 @@ class Parser {
 				return new \Less\Node\Directive($name, $rules);
 			}
 		} else {
-			if( ($value = $this->match('parseEntity')) && $this->match(';')) {
+			if (($value = $hasExpression ? $this->match('parseExpression') : $this->match('parseEntity')) && $this->match(';')) {
 				return new \Less\Node\Directive($name, $value);
 			}
 		}
