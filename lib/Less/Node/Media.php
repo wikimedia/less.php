@@ -27,18 +27,17 @@ class Media {
 	}
 
 	public function compile($env) {
-		$blockIndex = count($env->mediaBlocks);
-		$env->mediaPath[] = $this;
-		$env->mediaBlocks[] = $this;
 
 		$media = new Media(array(), array());
 		$media->features = $this->features->compile($env);
+
+		$env->mediaPath[] = $media;
+		$env->mediaBlocks[] = $media;
 
 		array_unshift($env->frames, $this->ruleset);
 		$media->ruleset = $this->ruleset->compile($env);
 		array_shift($env->frames);
 
-		$env->mediaBlocks[$blockIndex] = $media;
 		array_pop($env->mediaPath);
 
 		return count($env->mediaPath) == 0 ? $media->compileTop($env) : $media->compileNested($env);
