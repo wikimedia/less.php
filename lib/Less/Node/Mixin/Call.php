@@ -45,9 +45,11 @@ class Call{
                 foreach ($mixins as $mixin) {
                     $isRecursive = false;
                     foreach($env->frames as $recur_frame){
-						if( (isset($recur_frame->originalRuleset) && $mixin === $recur_frame->originalRuleset) || ($mixin === $recur_frame) ){
-							$isRecursive = true;
-							break;
+						if( !($mixin instanceof \Less\Node\Mixin\Definition) ){
+							if( (isset($recur_frame->originalRuleset) && $mixin === $recur_frame->originalRuleset) || ($mixin === $recur_frame) ){
+								$isRecursive = true;
+								break;
+							}
 						}
 					}
 					if( $isRecursive ){
