@@ -504,23 +504,7 @@ class Parser {
     }
 
     private function parseEntitiesLiteral(){
-
-		$match = $this->match('parseEntitiesRatio');
-		if( $match ){
-			return $match;
-		}
-
-		$match = $this->match('parseEntitiesDimension');
-		if( $match ){
-			return $match;
-		}
-
-		$match = $this->match('parseEntitiesColor');
-		if( $match ){
-			return $match;
-		}
-
-        return $this->match('parseEntitiesQuoted');
+		return $this->MatchMultiple('parseEntitiesRatio','parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor');
     }
 
 	// Assignments are argument entities for calls.
@@ -630,6 +614,20 @@ class Parser {
 		}
 
 	}
+
+
+	//
+	// A unicode descriptor, as is used in unicode-range
+	//
+	// U+0?? or U+00A1-00A9
+	//
+	function parseUnicodeDescriptor() {
+
+		if ($ud = $this->match('/^U\+[0-9a-fA-F?]+(\-[0-9a-fA-F?]+)?/')) {
+			return \Less\Node\UnicodeDescriptor($ud[0]);
+		}
+	}
+
 
     //
     // JavaScript code to be evaluated
