@@ -362,9 +362,9 @@ class Parser {
     private function parsePrimary(){
         $root = array();
 
-        while( ($node = $this->matchMultiple('parseMixinDefinition', 'parseRule', 'parseRuleset',
-							'parseMixinCall', 'parseComment', 'parseDirective', 'parseExtend' ))
-						 ?: $this->match('/^[\s\n]+/') ?: $this->match('/^;+/')
+        while( ($node = $this->matchMultiple('parseExtend', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
+							'parseMixinCall', 'parseComment', 'parseDirective' ))
+							?: $this->match('/^[\s\n]+/') ?: $this->match('/^;+/')
         ) {
             if ($node) {
                 $root[] = $node;
@@ -691,16 +691,16 @@ class Parser {
 
 		$index = $this->pos;
 		$elements = array();
-        if( !$this->peek('+')  ){ return; }
 
-        while( $e = $this->match('/^\+\+[#.](?:[\w-]|\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
-			$elements[] = new \Less\Node\Element( null, array_slice($e,1), $this->pos );
+        if( !$this->match('/^&:extend\(/')) { return; }
+
+        while( $e = $this->match('/^[#.](?:[\w-]|\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
+			$elements[] = new \Less\Node\Element( null, $e, $this->pos );
 		}
 
-		if( count($elements) && ( $this->match(';') || $this->peek('}') ) ){
-			return new \Less\Node\Extend( $elements, $index );
-		}
+		$this->expect('/^\);/');
 
+		return new \Less\Node\Extend( $elements, $index );
 	}
 
 
