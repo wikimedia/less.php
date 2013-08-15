@@ -1160,8 +1160,9 @@ class Parser {
 		}
 
         // Get the actual path
+        // The '.less' extension is optional
         if($path instanceof \Less\Node\Quoted) {
-            $path_str = preg_match('/\.(le?|c)ss(\?.*)?$/', $path->value) ? $path->value : $path->value . '.less';
+            $path_str = preg_match('/(\.[a-z]*$)|([\?;].*)?$/', $path->value) ? $path->value : $path->value . '.less';
         } else {
             $path_str = isset($path->value->value) ? $path->value->value : $path->value;
         }
