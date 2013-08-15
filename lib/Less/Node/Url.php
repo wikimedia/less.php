@@ -6,12 +6,12 @@ class Url
 {
     public $attrs;
     public $value;
-    public $paths;
+    public $rootpath;
 
-    public function __construct($value, $paths)
+    public function __construct($value, $rootpath)
     {
 		$this->value = $value;
-		$this->paths = $paths;
+		$this->rootpath = $rootpath;
     }
     public function toCSS()
     {
@@ -22,7 +22,7 @@ class Url
     {
 		$val = $this->value->compile($ctx);
 
-		return new \Less\Node\URL($val, $this->paths);
+		return new \Less\Node\URL($val, $this->rootpath);
     }
 
 }
