@@ -1147,10 +1147,7 @@ class Parser {
 
 		if( $dir ){
 
-			$path = $this->match('parseEntitiesQuoted');
-			if( !$path ){
-				$path = $this->match('parseEntitiesUrl');
-			}
+			$path = $this->matchMultiple('parseEntitiesQuoted','parseEntitiesUrl');
 
 			if( $path ){
 				$features = $this->match('parseMediaFeatures');
