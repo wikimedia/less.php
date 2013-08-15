@@ -22,6 +22,10 @@ class Unit{
 		return $css;
 	}
 
+	function compare($other) {
+		return $this->is( $other->toCSS() ) ? 0 : -1;
+	}
+
 	function is($unitString){
 		return $this->toCSS() === $unitString;
 	}
