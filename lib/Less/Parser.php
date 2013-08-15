@@ -40,7 +40,7 @@ class Parser {
     /**
      *
      */
-    static public $version = '1.3.0';
+    static public $version = '1.3.2';
 
     /**
      * @var \Less\Environment
