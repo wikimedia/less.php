@@ -1272,6 +1272,8 @@ class Parser {
 
 		$name = $this->match('/^@[a-z-]+/');
 
+		if( !$name ) return;
+
 		$nonVendorSpecificName = $name;
 		if( $name[1] == '-' && strpos($name,'-', 2) > 0 ){
 			$nonVendorSpecificName = "@" + substr($name, strpos($name,'-', 2) + 1);
