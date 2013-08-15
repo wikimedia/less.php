@@ -1011,7 +1011,7 @@ class Parser {
 
 		if ($this->match('(')) {
 			$sel = $this->match('parseEntity');
-			$this->expect(')');
+			if (!$this->match(')')) { return null; }
 			return new \Less\Node\Selector(array(new \Less\Node\Element('', $sel, $this->pos)));
 		}
 
