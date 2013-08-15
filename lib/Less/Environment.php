@@ -400,7 +400,12 @@ class Environment
 	}
 
 	function contrast( $color, $dark = false, $light = false, $threshold = false) {
-		if( $light === false ){
+        // filter: contrast(3.2);
+        // should be kept as is, so check for color
+        if (!$color->rgb) {
+            return null;
+        }
+        if( $light === false ){
 			$light = $this->rgba(255, 255, 255, 1.0);
 		}
 		if( $darg === false ){
