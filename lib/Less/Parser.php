@@ -830,6 +830,8 @@ class Parser {
             $name = $match[1];
 
 			do {
+				$this->match('parseComment');
+
 				if ($this->peek('.') && $this->match("/^\.{3}/")) {
 					$variadic = true;
 					$params[] = array( 'variadic'=> true );
@@ -864,6 +866,8 @@ class Parser {
 				//furthest = i;
 				$this->restore();
 			}
+
+			$this->match('parseComment');
 
 			if ($this->match('/^when/')) { // Guard
 				$cond = $this->expect('parseConditions', 'Expected conditions');
@@ -1393,7 +1397,7 @@ class Parser {
     private function parseMultiplication() {
         $operation = false;
         if ($m = $this->match('parseOperand')) {
-            while (!$this->peek('/^\/\*/') && ($op = ($this->match('/') ?: $this->match('*'))) && ($a = $this->match('parseOperand'))) {
+            while (!$this->peek('/^\/[*\/]/') && ($op = ($this->match('/') ?: $this->match('*'))) && ($a = $this->match('parseOperand'))) {
                 $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a));
             }
             return $operation ?: $m;
