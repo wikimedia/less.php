@@ -456,15 +456,7 @@ class Environment
 			$fraction = $f->value;
 		}
 
-		if ($n instanceof \Less\Node\Dimension) {
-			$n = \Less\Environment::number($n);
-			$n = round($n,$fraction);
-			return new \Less\Node\Dimension($n, $n->unit);
-		}elseif( is_numeric($n) ){
-			return round($n,$fraction);
-		}else{
-			throw new \Less\Exception\CompilerException("round function takes numbers as parameters");
-		}
+		return $this->_math('round',$n, $fraction);
 	}
 
     function unit($val, $unit) {
@@ -472,18 +464,23 @@ class Environment
     }
 
 	public function ceil($n) {
-		return $this->_math(function($n) { return ceil($n); }, $n);
+		return $this->_math('ceil',$n);
 	}
 
 	public function floor($n) {
-		return $this->_math(function($n) { return floor($n); }, $n);
+		return $this->_math('floor',$n);
 	}
 
-	private function _math($fn, $n) {
-		if ($n instanceof \Less\Node\Dimension) {
-			return new \Less\Node\Dimension($fn(self::number($n)), $n->unit);
-		} else if (is_numeric($n)) {
-			return $fn($n);
+	private function _math() {
+		$args = func_get_args();
+		$fn = array_shift($args);
+
+		if ($args[0] instanceof \Less\Node\Dimension) {
+			$unit = $args[0]->unit;
+			$args[0] = (float)$arg[0]->value;
+			return new \Less\Node\Dimension( call_user_func_array($fn,$args), $unit);
+		} else if (is_numeric($args[0])) {
+			return call_user_func_array($fn,$args);
 		} else {
 			throw new \Less\Exception\CompilerException("math functions take numbers as parameters");
 		}
