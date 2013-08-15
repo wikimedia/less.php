@@ -11,7 +11,7 @@ class Paren {
 	}
 
 	public function toCSS($env) {
-		return '(' . $this->value->toCSS($env) . ')';
+		return '(' . trim($this->value->toCSS($env)) . ')';
 	}
 
 	public function compile($env) {

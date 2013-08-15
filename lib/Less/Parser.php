@@ -947,20 +947,14 @@ class Parser {
     //
     private function parseElement(){
         $c = $this->match('parseCombinator');
-        $e = $this->match('/^(?:\d+\.\d+|\d+)%/') ?:
-			 $this->match('/^(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/') ?:
-             $this->match('*') ?:
-             $this->match('&') ?:
-             $this->match('parseAttribute') ?:
-             $this->match('/^\([^()@]+\)/') ?:
-             $this->match('/^[\.#](?=@)/') ?:
-             $this->match('parseEntitiesVariableCurly');
 
+        $e = $this->matchMultiple( '/^(?:\d+\.\d+|\d+)%/', '/^(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
+			'*', '&', 'parseAttribute', '/^\([^()@]+\)/', '/^[\.#](?=@)/', 'parseEntitiesVariableCurly');
 
 
 		if( !$e ){
 			if ($this->match('(')) {
-				$v = $this->MatchMultiple('parseEntitiesVariableCurly','parseEntitiesVariable','parseSelector');
+				$v = $this->match('parseSelector');
 				if( $v && $this->match(')') ){
 					$e = new \Less\Node\Paren($v);
 				}
