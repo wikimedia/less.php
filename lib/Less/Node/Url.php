@@ -22,6 +22,16 @@ class Url
     {
 		$val = $this->value->compile($ctx);
 
+		// Add the base path if the URL is relative
+		if( is_string($val->value) && !preg_match('/^(?:[a-z-]+:|\/)/',$val->value) ){
+			$rootpath = $this->rootpath;
+			if ( !$val->quote ){
+				$rootpath = preg_replace('/[\(\)\'"\s]/', '\\$1', $rootpath );
+			}
+			$val->value = $rootpath . $val->value;
+		}
+
+
 		return new \Less\Node\URL($val, $this->rootpath);
     }
 

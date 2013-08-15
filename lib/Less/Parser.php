@@ -539,7 +539,7 @@ class Parser {
 
 
         return new \Less\Node\Url((isset($value->value) || $value instanceof \Less\Node\Variable)
-                            ? $value : new \Less\Node\Anonymous($value), '');
+                            ? $value : new \Less\Node\Anonymous($value), $this->env->rootpath);
     }
 
 
