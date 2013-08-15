@@ -359,17 +359,12 @@ class Parser {
     // Only at one point is the primary rule not called from the
     // block rule: at the root level.
     //
-    private function parsePrimary()
-    {
+    private function parsePrimary(){
         $root = array();
-        while (($node = $this->match('parseMixinDefinition') ?:
-                        $this->match('parseRule') ?:
-                        $this->match('parseRuleset') ?:
-                        $this->match('parseMixinCall') ?:
-                        $this->match('parseComment') ?:
-                        $this->match('parseDirective')) ?:
-                        $this->match('/^[\s\n]+/') ?:
-                        $this->match('/^;+/')
+
+        while( ($node = $this->matchMultiple('parseMixinDefinition', 'parseRule', 'parseRuleset',
+							'parseMixinCall', 'parseComment', 'parseDirective', 'parseExtend' ))
+						 ?: $this->match('/^[\s\n]+/') ?: $this->match('/^;+/')
         ) {
             if ($node) {
                 $root[] = $node;
@@ -382,8 +377,8 @@ class Parser {
     // We create a Comment node for CSS comments `/* */`,
     // but keep the LeSS comments `//` silent, by just skipping
     // over them.
-    private function parseComment()
-    {
+    private function parseComment(){
+
         if ( ! $this->peek('/')) {
             return;
         }
@@ -686,8 +681,29 @@ class Parser {
             return new \Less\Node\Shorthand($a, $b);
         }
 
-        $this->restore();
     }
+
+	//
+	// extend
+	//
+	function parseExtend(){
+
+		$c = null;
+		$index = $this->pos;
+		$elements = array();
+        if( !$this->peek('+')  ){ return; }
+
+        while( $e = $this->match('/^\+[#.](?:[\w-]|\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
+			$elements[] = new \Less\Node\Element( $c, array_slice($e,1), $this->pos );
+		}
+
+		if( count($elements) && ( $this->match(';') || $this->peek('}') ) ){
+			return new \Less\Node\Extend( $elements, $index );
+		}
+
+		$this->restore();
+	}
+
 
     //
     // A Mixin call, with an optional argument list
