@@ -590,11 +590,13 @@ class Parser {
     //
     private function parseEntitiesDimension(){
         $c = ord($this->input[$this->pos]);
-        if (($c > 57 || $c < 45) || $c === 47) {
+
+		//Is the first char of the dimension 0-9, '.', '+' or '-'
+		if (($c > 57 || $c < 43) || $c === 47 || $c == 44){
 			return;
         }
 
-        if ($value = $this->match('/^(-?\d*\.?\d+)(px|%|em|pc|ex|in|deg|s|ms|pt|cm|mm|rad|grad|turn|dpi|dpcm|dppx|rem|vw|vh|vmin|vm|ch)?/')) {
+        if ($value = $this->match('/^([+-]?\d*\.?\d+)(px|%|em|pc|ex|in|deg|s|ms|pt|cm|mm|rad|grad|turn|dpi|dpcm|dppx|rem|vw|vh|vmin|vm|ch)?/')) {
             return new \Less\Node\Dimension($value[1], isset($value[2]) ? $value[2] : null);
         }
     }
