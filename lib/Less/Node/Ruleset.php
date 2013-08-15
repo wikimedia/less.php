@@ -39,6 +39,7 @@ class Ruleset
 		// push the current ruleset to the frames stack
 		$env->unshiftFrame($ruleset);
 
+
 		// Evaluate imports
 		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
 			$ruleset->evalImports($env);
@@ -160,15 +161,10 @@ class Ruleset
 		return isset($vars[$name]) ? $vars[$name] : null;
 	}
 
-	public function rulesets ()
-	{
-		if ($this->_rulesets) {
-			return $this->_rulesets;
-		} else {
-			return $this->_rulesets = array_filter($this->rules, function ($r) {
-				return ($r instanceof \Less\Node\Ruleset) || ($r instanceof \Less\Node\Mixin\Definition);
-			});
-		}
+	public function rulesets (){
+		return array_filter($this->rules, function ($r) {
+			return ($r instanceof \Less\Node\Ruleset) || ($r instanceof \Less\Node\Mixin\Definition);
+		});
 	}
 
 	public function find ($selector, $self = null, $env = null)

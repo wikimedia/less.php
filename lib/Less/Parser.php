@@ -681,6 +681,7 @@ class Parser {
             return new \Less\Node\Shorthand($a, $b);
         }
 
+		$this->restore();
     }
 
 	//
@@ -688,20 +689,18 @@ class Parser {
 	//
 	function parseExtend(){
 
-		$c = null;
 		$index = $this->pos;
 		$elements = array();
         if( !$this->peek('+')  ){ return; }
 
-        while( $e = $this->match('/^\+[#.](?:[\w-]|\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
-			$elements[] = new \Less\Node\Element( $c, array_slice($e,1), $this->pos );
+        while( $e = $this->match('/^\+\+[#.](?:[\w-]|\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
+			$elements[] = new \Less\Node\Element( null, array_slice($e,1), $this->pos );
 		}
 
 		if( count($elements) && ( $this->match(';') || $this->peek('}') ) ){
 			return new \Less\Node\Extend( $elements, $index );
 		}
 
-		$this->restore();
 	}
 
 
