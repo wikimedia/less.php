@@ -1152,7 +1152,7 @@ class Parser {
 
 		$this->save();
 
-		$dir = $this->match('/^@import(?:-(once))?\s+/');
+		$dir = $this->match('/^@import(?:-(once|multiple))?\s+/');
 
 		if( $dir ){
 
@@ -1191,7 +1191,8 @@ class Parser {
 
 		//once
 		$skip = false;
-		if( $dir[0] == 'once' && in_array($full_path,$this->imports) ){
+		$importOnce = $dir[1] !== 'multiple';
+		if( $importOnce && in_array($full_path,$this->imports) ){
 			$skip = true;
 		}
 
