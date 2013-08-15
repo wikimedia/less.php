@@ -22,7 +22,7 @@ class Import
 
         // The '.less' extension is optional
         if ($path instanceof \Less\Node\Quoted) {
-            $this->path = preg_match('/(\.[a-z]*$)|([\?;].*)?$/', $path->value) ? $path->value : $path->value . '.less';
+            $this->path = preg_match('/(\.[a-z]*$)|([\?;].*)$/', $path->value) ? $path->value : $path->value . '.less';
         } else {
             $this->path = isset($path->value->value) ? $path->value->value : $path->value;
         }
