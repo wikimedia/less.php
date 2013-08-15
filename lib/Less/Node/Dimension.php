@@ -76,15 +76,17 @@ class Dimension{
 	public function compare($other) {
 		if ($other instanceof Dimension) {
 
-			$a = $this->unify()->value;
-			$b = $other->unify()->value;
+			$a = $this->unify();
+			$b = $other->unify();
+			$aValue = $a->value;
+			$bValue = $b->value;
 
-			if ($b > $a) {
+			if ($bValue > $aValue) {
 				return -1;
-			} elseif ($b < $a) {
+			} elseif ($bValue < $aValue) {
 				return 1;
 			} else {
-				if ($other->unit && $this->unit !== $other->unit) {
+				if( !$b->unit->isEmpty() && $a->unit->compare($b) !== 0) {
 					return -1;
 				}
 				return 0;
