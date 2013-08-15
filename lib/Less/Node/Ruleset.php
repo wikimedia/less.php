@@ -41,16 +41,7 @@ class Ruleset
 
 		// Evaluate imports
 		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
-			for($i=0; $i < count($ruleset->rules); $i++){
-				$rule = $ruleset->rules[$i];
-
-				if( $rule instanceof \Less\Node\Import  ){
-					$rules = $rule->compile($env);
-					array_splice($ruleset->rules, $i, 1, $rules);
-					$i += count($rules)-1;
-					$ruleset->resetCache();
-                }
-			}
+			$ruleset->evalImports($env);
 		}
 
 
@@ -92,7 +83,7 @@ class Ruleset
 		// Evaluate everything else
 		foreach($ruleset->rules as $i => $rule) {
 			if (! ($rule instanceof \Less\Node\Mixin\Definition)) {
-				$ruleset->rules[$i] = is_string($rule) ? $rule : $rule->compile($env);
+				$ruleset->rules[$i] = method_exists($rule,'compile') ? $rule->compile($env) : $rule;
 			}
 		}
 
@@ -107,6 +98,22 @@ class Ruleset
 
 		return $ruleset;
 	}
+
+    function evalImports($env) {
+
+		for($i=0; $i < count($this->rules); $i++){
+			$rule = $this->rules[$i];
+
+			if( $rule instanceof \Less\Node\Import  ){
+				$rules = $rule->compile($env);
+				array_splice($this->rules, $i, 1, $rules);
+				if( count($rules) ){
+					$i += count($rules)-1;
+				}
+				$this->resetCache();
+			}
+		}
+    }
 
 	static function makeImportant($selectors, $rules, $strictImports = false) {
 

@@ -43,29 +43,22 @@ class Import
 
 		$features = $this->features ? $this->features->compile($env) : null;
 
+
+		if( $this->skip || !$this->full_path ){
+			return array();
+		}
+
 		// Only pre-compile .less files
         if ($this->css) {
             return $this;
 		}
 
-		if( $this->skip || !$this->full_path ){
-			return $this;
-		}
-
 		$parser = new \Less\Parser($env);
 		$this->root = $parser->parseFile($this->full_path, true);
 
-		$ruleset = new \Less\Node\Ruleset(array(), isset($this->root->rules) ? $this->root->rules : array());
-		for ($i = 0; $i < count($ruleset->rules); $i++) {
-			if ($ruleset->rules[$i] instanceof \Less\Node\Import && ! $ruleset->rules[$i]->css) {
-				$newRules = $ruleset->rules[$i]->compile($env);
-				$ruleset->rules = array_merge(
-					array_slice($ruleset->rules, 0, $i),
-					is_array($newRules) ? $newRules : array($newRules),
-					array_slice($ruleset->rules, $i + 1)
-				);
-			}
-		}
+		$ruleset = new \Less\Node\Ruleset(array(), $this->root->rules );
+
+		$ruleset->evalImports($env);
 
 		if ($env->getDebug()) {
 			array_unshift($ruleset->rules, new \Less\Node\Comment('/**** Start imported file `' . $this->path."` ****/\n", false));
