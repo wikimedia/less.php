@@ -47,7 +47,7 @@ class Color
 				$color .= str_pad($i, 2, '0', STR_PAD_LEFT);
 			}
 
-			if( $env && $env->compress ){
+			if( $env && $env->compress && $this->compress !== false ){
 
 				// Convert color to short format
 				if( $color[0] == $color[1] && $color[2] == $color[3] && $color[4] == $color[5]) {
