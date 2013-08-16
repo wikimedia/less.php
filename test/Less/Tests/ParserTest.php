@@ -20,7 +20,9 @@ class ParserTest{
 
 		$pairs = $this->lessJsProvider();
 		foreach($pairs as $files){
-			echo '<h3>'.basename($files[0]).'</h3>';
+			$basename = basename($files[0]);
+			$basename = substr($basename,0,-5); //remove .less extension
+			echo '<h3><a href="?file='.$basename.'">'.$basename.'</a></h3>';
 			$this->testLessJsCssGeneration($files[0], $files[1]);
 		}
 
@@ -55,10 +57,16 @@ class ParserTest{
 		echo $diff->Render($renderer);
     }
 
-    public function lessJsProvider()
-    {
-        $less = glob(__DIR__."/Fixtures/less.js/less/*.less");
-        $css = glob(__DIR__."/Fixtures/less.js/css/*.css");
+    public function lessJsProvider(){
+
+		$dir = __DIR__.'/Fixtures/less.js';
+		if( isset($_GET['file']) ){
+			$less = (array)($dir.'/less/'.$_GET['file'].'.less');
+			$css = (array)($dir.'/css/'.$_GET['file'].'.css');
+		}else{
+			$less = glob($dir."/less/*.less");
+			$css = glob($dir."/css/*.css");
+		}
 
         return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
     }
@@ -76,10 +84,10 @@ class ParserTest{
         $this->assertEquals($css, $less);
     }
 
-    public function lessPhpProvider()
-    {
-        $less = glob(__DIR__."/Fixtures/less.php/less/*.less");
-        $css = glob(__DIR__."/Fixtures/less.php/css/*.css");
+    public function lessPhpProvider(){
+		$dir = __DIR__.'/Fixtures/less.php/less/';
+		$less = glob($dir.'/*.less');
+		$css = glob($dir.'/*.css');
 
         return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
     }
