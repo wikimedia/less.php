@@ -626,8 +626,14 @@ class Environment
 	function tint($color, $amount) {
 		return $this->mix( $this->rgb(255,255,255), $color, $amount);
 	}
+
 	function shade($color, $amount) {
 		return $this->mix($this->rgb(0, 0, 0), $color, $amount);
+	}
+
+	function extract($index, $values) {
+		$index = $index->value - 1; // (1-based index)
+		return $values->value[$index];
 	}
 
 	function datauri($mimetype, $path = null ) {
