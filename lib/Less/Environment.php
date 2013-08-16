@@ -479,6 +479,17 @@ class Environment
 		return \Less\Node\Dimension( $a->value % $b->value, $a->unit);
 	}
 
+    function pow($x, $y) {
+		if( is_numeric($x) && is_numeric($y) ){
+			$x = new \Less\Node\Dimension($x);
+			$y = new \Less\Node\Dimension($y);
+		}elseif( !($x instanceof \Less\Node\Dimension) || !($y instanceof \Less\Node\Dimension) ){
+			throw new \Less\Exception\CompilerException('Arguments must be numbers');
+		}
+
+		return new \Less\Node\Dimension( pow($x->value, $y->value), $x->unit );
+    }
+
 	// var mathFunctions = [{name:"ce ...
 	public function ceil( $n ){		return $this->_math('ceil', null, $n); }
 	public function floor( $n ){	return $this->_math('floor', null, $n); }
