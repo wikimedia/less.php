@@ -617,6 +617,19 @@ class Environment
 		return $this->mix($this->rgb(0, 0, 0), $color, $amount);
 	}
 
+	function datauri($mimetype, $path) {
+		$data = file_get_contents($path->value);
+		$mimetype = $mimetype->value;
+
+		if( preg_match('/;base64$/',$mimetype) ){
+			$data = base64_encode($data);
+		}
+
+		$contents = new \Less\Node\Anonymous('data:'+$mimetype+','+$data);
+
+		return \Less\Node\Url($contents);
+	}
+
 
 	private function Expected( $type, $arg ){
 
