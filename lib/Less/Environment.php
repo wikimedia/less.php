@@ -258,10 +258,9 @@ class Environment
 		return new \Less\Node\Dimension( $color->rgb[2] );
 	}
 
-	public function alpha($color)
-	{
+	public function alpha($color){
 		$c = $color->toHSL();
-		return new \Less\Node\Dimension(round($c['a']));
+		return new \Less\Node\Dimension($c['a']);
 	}
 
 	function luma ($color) {

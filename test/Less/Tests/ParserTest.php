@@ -35,6 +35,10 @@ class ParserTest{
         $less = $parser->parseFile($less)->getCss();
         $css = file_get_contents($css);
 
+		if( empty($less) ){
+			echo '<b>----empty----</b>';
+			return;
+		}
 		if( $css === $less ){
 			echo 'equal';
 			return;

@@ -1534,3 +1534,9 @@ class Parser {
 	}
 
 }
+
+if( !function_exists('pre') ){
+	function pre($arg){
+		return '<pre>'.var_export($arg,true).'</pre>';
+	}
+}
