@@ -6,6 +6,7 @@ class Color
 {
 	var $rgb;
 	var $alpha;
+	var $compress;
 
     public function __construct($rgb, $a = 1)
     {

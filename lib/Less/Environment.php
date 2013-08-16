@@ -429,13 +429,17 @@ class Environment
 		return new \Less\Node\Anonymous($str instanceof \Less\Node\JavaScript ? $str->evaluated : $str);
 	}
 
-	public function escape ($str)
-	{
+	public function escape ($str){
 		return new \Less\Node\Anonymous(urlencode($str->value));
 	}
 
-	public function _percent()
-	{
+    public function fullhex($color) {
+		// Foces the color to be a full hex value for MS filter: etc
+		$color->compress = false;
+		return $color;
+    }
+
+	public function _percent(){
 		$numargs = func_num_args();
 		$quoted = func_get_arg(0);
 
