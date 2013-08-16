@@ -1294,8 +1294,9 @@ class Parser {
 		if( !$name ) return;
 
 		$nonVendorSpecificName = $name;
-		if( $name[1] == '-' && strpos($name,'-', 2) > 0 ){
-			$nonVendorSpecificName = "@" + substr($name, strpos($name,'-', 2) + 1);
+		$pos = strpos($name,'-', 2);
+		if( $name[1] == '-' && $pos > 0 ){
+			$nonVendorSpecificName = "@" . substr($name, $pos + 1);
 		}
 
 		switch($nonVendorSpecificName) {
@@ -1338,7 +1339,7 @@ class Parser {
 			if( !$temp ){
 				$temp = '';
 			}
-			$name .= " " + trim($temp);
+			$name .= " " . trim($temp);
 		}
 
 
