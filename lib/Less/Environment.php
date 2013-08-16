@@ -41,6 +41,8 @@ class Environment
 	 */
 	public $paths = array();
 
+	public $selectors = array();
+
 	public $rootpath = '';
 
 	public $charset;

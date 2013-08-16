@@ -12,20 +12,20 @@ class Extend{
 		$this->index = $index;
 	}
 
-	function compile( $env, $selectors ){
+	function compile( $env, $selectors = array() ){
 
 		$selfSelectors = self::findSelfSelectors( (count($selectors) ? $selectors : $env->selectors) );
-		$targetValue = $this->selectors->elements[0]->value;
+		$targetValue = $this->selector->elements[0]->value;
 
 		foreach($env->frames as $frame){
-			foreach($frame->rulesets as $rule){
+			foreach($frame->rulesets() as $rule){
 				foreach($rule->selectors as $selector){
 					foreach($selector->elements as $idx => $element){
 
 						if( $element->value = $targetValue ){
 							foreach($selfSelectors as $_selector){
 
-								$_selector->elements[0] = new tree.Element(
+								$_selector->elements[0] = new \Less\Node\Element(
 									$element->combinator,
 									$_selector->elements[0]->value,
 									$_selector->elements[0]->index
@@ -49,7 +49,7 @@ class Extend{
 		$ret = array();
 		if( isset($selectors[$i]) && count($selectors[$i]) ){
 			foreach($selectors as $s){
-				$ret = array_merge( $ret, self::findSelfSelectorsLoop($selectors, array_merge($s->elements,$elem), $i+1) );
+				$ret = array_merge( $ret, self::findSelfSelectors($selectors, array_merge($s->elements,$elem), $i+1) );
 			}
 		}else{
 			$ret[] = new \Less\Node\Selector($elem);

@@ -243,7 +243,9 @@ class Parser {
         } else {
             // Match a regexp from the current start point
             $this->sync();
-            if (preg_match($tok, $this->current, $match)) {
+
+			$result = preg_match($tok, $this->current, $match);
+            if ($result) {
                 $length = strlen($match[0]);
             } else {
                 return null;
@@ -694,7 +696,7 @@ class Parser {
 
 		if( !$this->match( $isRule ? '/^&:extend\(/' : '/^:extend\(/' ) ){ return; }
 
-        while( $e = $this->match('/^[#.](?:[\w-]|\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
+        while( $e = $this->match('/^[#.](?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
 			$elements[] = new \Less\Node\Element( null, $e, $this->pos );
 		}
 

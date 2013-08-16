@@ -74,7 +74,7 @@ class Ruleset
 		if ($this->selectors) {
 			for ($i = 0; $i < count($this->selectors); $i++) {
 				if ($this->selectors[$i]->extend) {
-					$this->selectors[$i]->extend->combile($env, array_merge(array(array($this->selectors[$i])), array_slice($env->selectors,1)) );
+					$this->selectors[$i]->extend->compile($env, array_merge(array(array($this->selectors[$i])), array_slice($env->selectors,1)) );
 				}
 			}
 		}
