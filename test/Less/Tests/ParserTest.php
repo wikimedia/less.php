@@ -1,22 +1,40 @@
 <?php
 
-namespace Less\Tests;
+error_reporting(E_ALL);
+ini_set('display_errors',1);
 
-use Less\Parser;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
-{
+$dir = dirname(dirname(dirname(__DIR__)));
+require($dir.'/lib/Less/Parser.php');
+
+class ParserTest{
+
+	function __construct(){
+
+		$pairs = $this->lessJsProvider();
+		foreach($pairs as $files){
+			echo '<h3>'.basename($files[0]).'</h3>';
+			$this->testLessJsCssGeneration($files[0], $files[1]);
+		}
+
+	}
+
     /**
      * @dataProvider lessJsProvider
      */
     public function testLessJsCssGeneration($less, $css)
     {
-        $parser = new Parser();
+        $parser = new \Less\Parser();
 
         $less = $parser->parseFile($less)->getCss();
         $css = file_get_contents($css);
 
-        $this->assertEquals($css, $less);
+		if( $css === $less ){
+			echo 'equal';
+			return;
+		}
+		echo '<b>not equal</b>';
+        //$this->assertEquals($css, $less);
     }
 
     public function lessJsProvider()
@@ -76,3 +94,5 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
     }
 }
+
+new ParserTest();
