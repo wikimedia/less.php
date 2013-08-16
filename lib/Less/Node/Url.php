@@ -15,7 +15,7 @@ class Url
     }
     public function toCSS()
     {
-        return "url(" + $this->value->toCSS() + ")";
+        return "url(" . $this->value->toCSS() . ")";
     }
 
     public function compile($ctx)
