@@ -6,16 +6,22 @@ namespace Less\Node;
 // A function call node.
 //
 
-class Call
-{
+class Call{
     private $value;
 
-    public function __construct($name, $args, $index)
-    {
-        $this->name = $name;
-        $this->args = $args;
-        $this->index = $index;
-    }
+    var $name;
+    var $args;
+    var $index;
+    var $filename;
+    var $rootpath;
+
+	public function __construct($name, $args, $index, $filename, $rootpath){
+		$this->name = $name;
+		$this->args = $args;
+		$this->index = $index;
+		$this->filename = $filename;
+		$this->rootpath = $rootpath;
+	}
 
     //
     // When evaluating a function call,
@@ -29,25 +35,29 @@ class Call
     // we try to pass a variable to a function, like: `saturate(@color)`.
     // The function should receive the value, not the variable.
     //
-    public function compile($env)
-    {
-        $args = array_map(function ($a) use($env) {
-                              return $a->compile($env);
-                          }, $this->args);
+    public function compile($env){
+		$args = array_map(function ($a) use($env) {
+							  return $a->compile($env);
+						  }, $this->args);
 
-        $name = $this->name == '%' ? '_percent' : $this->name;
+		$name = $this->name == '%' ? '_percent' : $this->name;
 
-        if (method_exists($env, $name)) { // 1.
-            try {
-                return call_user_func_array(array($env, $name), $args);
-            } catch (Exception $e) {
-                throw \Less\FunctionCallError("error evaluating function `" . $this->name . "`", $this->index);
-            }
-        } else { // 2.
+		if (method_exists($env, $name)) { // 1.
+			try {
 
-            return new \Less\Node\Anonymous($this->name .
-                   "(" . implode(', ', array_map(function ($a) use ($env) { return $a->toCSS($env); }, $args)) . ")");
-        }
+				$result = call_user_func_array( array($env, $name), $args);
+				if( $result != null ){
+					return $result;
+				}
+
+			} catch (Exception $e) {
+				throw \Less\Exception\CompilerException('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
+			}
+		}
+
+		// 2.
+		return new \Less\Node\Anonymous($this->name .
+				   "(" . implode(', ', array_map(function ($a) use ($env) { return $a->toCSS($env); }, $args)) . ")");
     }
 
     public function toCSS ($env) {

@@ -478,7 +478,7 @@ class Parser {
             return;
         }
         if ($name) {
-            return new \Less\Node\Call($name, $args, $index, $this->filename);
+            return new \Less\Node\Call($name, $args, $index, $this->filename, $this->env->rootpath );
         }
     }
 
