@@ -229,8 +229,8 @@ class Parser {
      * @param string $tok
      * @return null|bool|object
      */
-    public function match($tok)
-    {
+    public function match($tok){
+
         $match = null;
         if (is_callable(array($this, $tok))) {
             // Non-terminal, match using a function call
@@ -622,7 +622,7 @@ class Parser {
 	//
 	function parseUnicodeDescriptor() {
 
-		if ($ud = $this->match('/^U\+[0-9a-fA-F?]+(\-[0-9a-fA-F?]+)?/')) {
+		if ($ud = $this->match('/^(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/')) {
 			return new \Less\Node\UnicodeDescriptor($ud[0]);
 		}
 	}
