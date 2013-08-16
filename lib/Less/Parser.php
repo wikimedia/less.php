@@ -621,7 +621,7 @@ class Parser {
 	function parseUnicodeDescriptor() {
 
 		if ($ud = $this->match('/^U\+[0-9a-fA-F?]+(\-[0-9a-fA-F?]+)?/')) {
-			return \Less\Node\UnicodeDescriptor($ud[0]);
+			return new \Less\Node\UnicodeDescriptor($ud[0]);
 		}
 	}
 
