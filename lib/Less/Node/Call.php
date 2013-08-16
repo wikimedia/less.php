@@ -40,7 +40,12 @@ class Call{
 							  return $a->compile($env);
 						  }, $this->args);
 
-		$name = $this->name == '%' ? '_percent' : $this->name;
+		$name = $this->name;
+		if( $name == '%' ){
+			$name = '_percent';
+		}elseif( $name == 'data-uri' ){
+			$name = 'datauri';
+		}
 
 		if (method_exists($env, $name)) { // 1.
 			try {

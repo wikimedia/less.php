@@ -4,7 +4,7 @@ namespace Less\Node;
 
 class UnitConversions{
 
-	static $groups = array('length','duration');
+	static $groups = array('length','duration','angle');
 
 	static $length = array(
 		'm'=> 1,
@@ -20,5 +20,11 @@ class UnitConversions{
 		'ms'=> 0.001
 		);
 
+	static $angle = array(
+		'rad' => 0.1591549430919,	// 1/(2*M_PI),
+		'deg' => 0.002777778, 		// 1/360,
+		'grad'=> 0.0025,			// 1/400,
+		'turn'=> 1
+		);
 
 }

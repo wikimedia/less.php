@@ -31,7 +31,7 @@ class Dimension{
 
 		if( $env && $env->compress ){
 			// Zero values doesn't need a unit
-			if( $value === 0 ){
+			if( $value === 0 && !$this->unit->isAngle() ){
 				return $strValue;
 			}
 
@@ -112,12 +112,23 @@ class Dimension{
 	}
 
 	function unify() {
-		return $this->convertTo(array('length'=> 'm', 'duration'=> 's' ));
+		return $this->convertTo(array('length'=> 'm', 'duration'=> 's', 'angle' => 'rad' ));
 	}
 
     function convertTo($conversions) {
 		$value = $this->value;
 		$unit = clone $this->unit;
+
+		if( is_string($conversions) ){
+			$derivedConversions = array();
+			foreach( \Less\Node\UnitConversions::$groups as $i ){
+				if( isset(\Less\Node\UnitConversions::$$i[$conversions]) ){
+					$derivedConversions = array( $i => $conversions);
+				}
+			}
+			$conversions = $derivedConversions;
+		}
+
 
 		foreach($conversions as $groupName => $targetUnit){
 			$group = \Less\Node\UnitConversions::$$groupName;

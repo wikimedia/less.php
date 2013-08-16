@@ -30,6 +30,10 @@ class Unit{
 		return $this->toCSS() === $unitString;
 	}
 
+	function isAngle() {
+		return isset( \Less\Node\UnitConversions::$angle[$this->toCSS()] );
+	}
+
 	function isEmpty(){
 		return count($this->numerator) === 0 && count($this->denominator) === 0;
 	}

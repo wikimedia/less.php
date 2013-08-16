@@ -453,6 +453,14 @@ class Environment
 		return new \Less\Node\Quoted('"' . $str . '"', $str);
 	}
 
+    function unit($val, $unit) {
+        return \Less\Node\Dimension($val->value, $unit ? $unit->toCSS() : "");
+    }
+
+	public function convert($val, $unit){
+		return $val->convertTo($unit->value);
+	}
+
 	public function round($n, $f = false) {
 
 		$fraction = 0;
@@ -460,28 +468,35 @@ class Environment
 			$fraction = $f->value;
 		}
 
-		return $this->_math('round',$n, $fraction);
+		return $this->_math('round',null, $n, $fraction);
 	}
 
-    function unit($val, $unit) {
-        return \Less\Node\Dimension($val->value, $unit ? $unit->toCSS() : "");
-    }
-
-	public function ceil($n) {
-		return $this->_math('ceil',$n);
+	public function pi(){
+		return \Less\Node\Dimension(M_PI);
 	}
 
-	public function floor($n) {
-		return $this->_math('floor',$n);
+	public function mod($a, $b) {
+		return \Less\Node\Dimension( $a->value % $b->value, $a->unit);
 	}
 
-	function sqrt($n) {
-		return $this->_math('sqrt', $n);
-	}
+	// var mathFunctions = [{name:"ce ...
+	public function ceil( $n ){		return $this->_math('ceil', null, $n); }
+	public function floor( $n ){	return $this->_math('floor', null, $n); }
+	public function sqrt( $n ){		return $this->_math('sqrt', null, $n); }
+	public function abs( $n ){		return $this->_math('abs', null, $n); }
+
+	public function tan( $n ){		return $this->_math('tan', '', $n);	}
+	public function sin( $n ){		return $this->_math('sin', '', $n);	}
+	public function cos( $n ){		return $this->_math('cos', '', $n);	}
+
+	public function atan( $n ){		return $this->_math('atan', 'rad', $n);	}
+	public function asin( $n ){		return $this->_math('atan', 'rad', $n);	}
+	public function acos( $n ){		return $this->_math('atan', 'rad', $n);	}
 
 	private function _math() {
 		$args = func_get_args();
 		$fn = array_shift($args);
+		$unit = array_shift($args);
 
 		if ($args[0] instanceof \Less\Node\Dimension) {
 			$unit = $args[0]->unit;
