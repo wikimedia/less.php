@@ -12,8 +12,9 @@ class Extend{
 		$this->index = $index;
 	}
 
-	function compile($env){
-		$selfSelectors = self::findSelfSelectors($env->selectors);
+	function compile( $env, $selectors ){
+
+		$selfSelectors = self::findSelfSelectors( (count($selectors) ? $selectors : $env->selectors) );
 		$targetValue = $this->selectors->elements[0]->value;
 
 		foreach($env->frames as $frame){

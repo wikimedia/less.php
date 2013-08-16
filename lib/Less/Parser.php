@@ -362,7 +362,7 @@ class Parser {
     private function parsePrimary(){
         $root = array();
 
-        while( ($node = $this->matchMultiple('parseExtend', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
+        while( ($node = $this->matchMultiple('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
 							'parseMixinCall', 'parseComment', 'parseDirective' ))
 							?: $this->match('/^[\s\n]+/') ?: $this->match('/^;+/')
         ) {
@@ -685,22 +685,30 @@ class Parser {
     }
 
 	//
-	// extend
+	// extend syntax - used to extend selectors
 	//
-	function parseExtend(){
+	function parseExtend($isRule = false){
 
 		$index = $this->pos;
 		$elements = array();
 
-        if( !$this->match('/^&:extend\(/')) { return; }
+		if( !$this->match( $isRule ? '/^&:extend\(/' : '/^:extend\(/' ) ){ return; }
 
         while( $e = $this->match('/^[#.](?:[\w-]|\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
 			$elements[] = new \Less\Node\Element( null, $e, $this->pos );
 		}
 
-		$this->expect('/^\);/');
+		$this->expect('/^\)/');
+
+		if( $isRule ){
+			$this->expect('/^;/');
+		}
 
 		return new \Less\Node\Extend( $elements, $index );
+	}
+
+	function parseExtendRule(){
+		return $this->parseExtend(true);
 	}
 
 
@@ -1014,25 +1022,25 @@ class Parser {
     //
     // Selectors are made out of one or more Elements, see above.
     //
-    private function parseSelector()
-    {
-        $elements = array();
+    private function parseSelector(){
+		$elements = array();
 
-		if ($this->match('(')) {
-			$sel = $this->match('parseEntity');
-			if (!$this->match(')')) { return null; }
-			return new \Less\Node\Selector(array(new \Less\Node\Element('', $sel, $this->pos)));
+		while( ($extend = $this->match('parseExtend')) ?: ($e = $this->match('parseElement')) ){
+			if( !$e ){
+				break;
+			}
+			$c = $this->input[$this->pos];
+			$elements[] = $e;
+			$e = null;
+			if ($c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')') { break; }
 		}
 
-        while ($e = $this->match('parseElement')) {
-            $elements[] = $e;
-            if ($this->peek('{') || $this->peek('}') || $this->peek(';') || $this->peek(',') || $this->peek(')') ) {
-                break;
-            }
-        }
-        if (count($elements) > 0) {
-            return new \Less\Node\Selector($elements);
-        }
+		if( count($elements) > 0){
+			return new \Less\Node\Selector($elements, $extend);
+		}
+		if( $extend ){
+			throw new \Less\Exception\ParserException('Extend must be used to extend a selector');
+		}
     }
 
     private function parseTag()

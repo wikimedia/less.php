@@ -7,10 +7,12 @@ namespace Less\Node;
 class Selector {
 
 	public $elements;
+	public $extend;
 	private $_css;
 
-	public function __construct($elements) {
+	public function __construct($elements, $extend = null) {
 		$this->elements = $elements;
+		$this->extend = $extend;
 	}
 
 	public function match($other) {
@@ -59,8 +61,8 @@ class Selector {
 	}
 
 	public function compile($env) {
-		return new Selector(array_map(function($e) use ($env) {
+		return new \Less\Node\Selector(array_map(function($e) use ($env) {
 			return $e->compile($env);
-		}, $this->elements));
+		}, $this->elements), $this->extend);
 	}
 }

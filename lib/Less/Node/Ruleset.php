@@ -70,6 +70,15 @@ class Ruleset
             }
         }
 
+
+		if ($this->selectors) {
+			for ($i = 0; $i < count($this->selectors); $i++) {
+				if ($this->selectors[$i]->extend) {
+					$this->selectors[$i]->extend->combile($env, array_merge(array(array($this->selectors[$i])), array_slice($env->selectors,1)) );
+				}
+			}
+		}
+
 		for($i = 0; $i < count($ruleset->rules); $i++) {
 			if (isset($ruleset->rules[$i]) && $ruleset->rules[$i] instanceof \Less\Node\Mixin\Call) {
 				$newRules = $ruleset->rules[$i]->compile($env);
