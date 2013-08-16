@@ -404,13 +404,13 @@ class Environment
 	function contrast( $color, $dark = false, $light = false, $threshold = false) {
         // filter: contrast(3.2);
         // should be kept as is, so check for color
-        if (!$color->rgb) {
+		if( !property_exists($color,'rgb') ){
             return null;
         }
         if( $light === false ){
 			$light = $this->rgba(255, 255, 255, 1.0);
 		}
-		if( $darg === false ){
+		if( $dark === false ){
 			$dark = $this->rgba(0, 0, 0, 1.0);
 		}
 		if( $threshold === false ){
@@ -455,8 +455,8 @@ class Environment
 		return new \Less\Node\Quoted('"' . $str . '"', $str);
 	}
 
-    function unit($val, $unit) {
-        return \Less\Node\Dimension($val->value, $unit ? $unit->toCSS() : "");
+    function unit($val, $unit = null ){
+        return new \Less\Node\Dimension($val->value, $unit ? $unit->toCSS() : "");
     }
 
 	public function convert($val, $unit){
@@ -474,11 +474,11 @@ class Environment
 	}
 
 	public function pi(){
-		return \Less\Node\Dimension(M_PI);
+		return new \Less\Node\Dimension(M_PI);
 	}
 
 	public function mod($a, $b) {
-		return \Less\Node\Dimension( $a->value % $b->value, $a->unit);
+		return new \Less\Node\Dimension( $a->value % $b->value, $a->unit);
 	}
 
     function pow($x, $y) {
@@ -503,8 +503,8 @@ class Environment
 	public function cos( $n ){		return $this->_math('cos', '', $n);	}
 
 	public function atan( $n ){		return $this->_math('atan', 'rad', $n);	}
-	public function asin( $n ){		return $this->_math('atan', 'rad', $n);	}
-	public function acos( $n ){		return $this->_math('atan', 'rad', $n);	}
+	public function asin( $n ){		return $this->_math('asin', 'rad', $n);	}
+	public function acos( $n ){		return $this->_math('acos', 'rad', $n);	}
 
 	private function _math() {
 		$args = func_get_args();
@@ -512,9 +512,14 @@ class Environment
 		$unit = array_shift($args);
 
 		if ($args[0] instanceof \Less\Node\Dimension) {
-			$unit = $args[0]->unit;
+
+			if( $unit === null ){
+				$unit = $args[0]->unit;
+			}else{
+				$args[0] = $args[0]->unify();
+			}
 			$args[0] = (float)$args[0]->value;
-			return new \Less\Node\Dimension( call_user_func_array($fn,$args), $unit);
+			return new \Less\Node\Dimension( call_user_func_array($fn, $args), $unit);
 		} else if (is_numeric($args[0])) {
 			return call_user_func_array($fn,$args);
 		} else {
@@ -559,17 +564,17 @@ class Environment
 	}
 
 	public function ispixel($n) {
-		return $n instanceof \Less\Node\Dimension && $n->unit === 'px'
+		return $n instanceof \Less\Node\Dimension && $n->unit->is('px')
 			? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
 	}
 
 	public function ispercentage($n) {
-		return $n instanceof \Less\Node\Dimension && $n->unit === '%'
+		return $n instanceof \Less\Node\Dimension && $n->unit->is('%')
 			? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
 	}
 
 	public function isem($n) {
-		return $n instanceof \Less\Node\Dimension && $n->unit === 'em'
+		return $n instanceof \Less\Node\Dimension && $n->unit->is('em')
 			? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
 	}
 

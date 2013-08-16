@@ -1540,7 +1540,11 @@ if( !function_exists('pre') ){
 	function pre($arg){
 		ob_start();
 		echo '<pre>';
-		var_dump($arg);
+		if( !$arg ){
+			var_dump($arg);
+		}else{
+			print_r($arg);
+		}
 		echo '</pre>';
 		return ob_get_clean();
 	}

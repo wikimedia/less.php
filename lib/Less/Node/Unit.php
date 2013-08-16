@@ -54,7 +54,7 @@ class Unit{
 		$result = array();
 
 		foreach(\Less\Node\UnitConversions::$groups as $groupName){
-			$group = \Less\Node\UnitConversions::$$groupName;
+			$group = \Less\Node\UnitConversions::${$groupName};
 
 			for($i=0; $i < count($this->numerator); $i++ ){
 				$atomicUnit = $this->numerator[$i];

@@ -122,7 +122,7 @@ class Dimension{
 		if( is_string($conversions) ){
 			$derivedConversions = array();
 			foreach( \Less\Node\UnitConversions::$groups as $i ){
-				if( isset(\Less\Node\UnitConversions::$$i[$conversions]) ){
+				if( isset(\Less\Node\UnitConversions::${$i}[$conversions]) ){
 					$derivedConversions = array( $i => $conversions);
 				}
 			}
@@ -131,7 +131,7 @@ class Dimension{
 
 
 		foreach($conversions as $groupName => $targetUnit){
-			$group = \Less\Node\UnitConversions::$$groupName;
+			$group = \Less\Node\UnitConversions::${$groupName};
 
 			//numerator
 			for($i=0; $i < count($unit->numerator); $i++ ){

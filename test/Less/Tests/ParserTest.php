@@ -61,7 +61,9 @@ class ParserTest{
 		$pos = strpos($less,'/less.php');
 
 		global $head;
-		$head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
+		if( isset($_GET['file']) ){
+			$head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
+		}
 		//echo '<textarea>'.htmlspecialchars(file_get_contents($less)).'</textara>';
 
     }
@@ -143,6 +145,12 @@ $content = ob_get_clean();
 <?php echo $head ?>
 </head>
 <body>
-<?php echo $content; ?>
-<script src="/less.php/test/Less/Tests/less-1.4.0.js" ></script>
+<?php
+
+echo $content;
+
+if( isset($_GET['file']) ){
+	echo '<script src="/less.php/test/Less/Tests/less-1.4.0.js" ></script>';
+}
+?>
 </body></html>
