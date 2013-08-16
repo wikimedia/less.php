@@ -261,6 +261,14 @@ class Ruleset
 			}
 		}
 
+        // Remove last semicolon
+		if( $env->compress && count($rules) ){
+			$rule =& $rules[ count($rules)-1 ];
+			if( substr($rule, -1 ) === ';' ){
+				$rule = substr($rule,0,-1);
+			}
+		}
+
 		$rulesets = implode('', $rulesets);
 
 		// If this is the root node, we don't render
