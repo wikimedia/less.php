@@ -2,9 +2,9 @@
 
 namespace Less\Node;
 
-class Anonymous
-{
+class Anonymous{
     public $value;
+    public $quote;
 
     public function __construct($value)
     {

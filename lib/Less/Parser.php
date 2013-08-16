@@ -489,7 +489,7 @@ class Parser {
      */
     private function parseEntitiesArguments(){
         $args = array();
-        while ($arg = $this->match('parseEntitiesAssigment') ?: $this->match('parseExpression')) {
+        while ($arg = $this->match('parseEntitiesAssignment') ?: $this->match('parseExpression')) {
             $args[] = $arg;
             if (! $this->match(',')) {
                 break;
@@ -507,9 +507,9 @@ class Parser {
 	//
 	//     filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
 	//
-	private function parseEntitiesAssigment() {
+	private function parseEntitiesAssignment() {
 		if (($key = $this->match('/^\w+(?=\s?=)/i')) && $this->match('=') && ($value = $this->match('parseEntity'))) {
-			return new \Less\Node\Assigment($key, $value);
+			return new \Less\Node\Assignment($key, $value);
 		}
 	}
 

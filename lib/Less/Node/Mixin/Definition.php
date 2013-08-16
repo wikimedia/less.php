@@ -137,7 +137,7 @@ class Definition extends \Less\Node\Ruleset
 		array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
 
 		$rules = $important
-			? \Less\Node\Ruleset::makeImportant($this->selectors, $this->rules)
+			? \Less\Node\Ruleset::makeImportant($this->selectors, $this->rules)->rules
 			: array_slice($this->rules, 0);
 
 		// duplicate the environment, adding new frames.

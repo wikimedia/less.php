@@ -30,7 +30,7 @@ class Color
     // which has better compatibility with older browsers.
     // Values are capped between `0` and `255`, rounded and zero-padded.
     //
-    public function toCSS($env, $doNotCompress = false ){
+    public function toCSS($env = null, $doNotCompress = false ){
 		$compress = $env && $env->compress && !$doNotCompress;
 		if ($this->alpha < 1.0) {
 			$values = array_map('round', $this->rgb);

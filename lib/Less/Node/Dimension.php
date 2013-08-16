@@ -24,7 +24,7 @@ class Dimension{
         return new \Less\Node\Color(array($this->value, $this->value, $this->value));
     }
 
-	public function toCSS($env){
+	public function toCSS( $env = null ){
 
 		$value = $this->value;
 		$strValue = (string)$value;
@@ -135,7 +135,7 @@ class Dimension{
 
 			//numerator
 			for($i=0; $i < count($unit->numerator); $i++ ){
-				$atomicUnit = $this->numerator[$i];
+				$atomicUnit = $unit->numerator[$i];
 				if( !isset($group[$atomicUnit]) ){
 					continue;
 				}
@@ -147,7 +147,7 @@ class Dimension{
 
 			//denominator
 			for($i=0; $i < count($unit->denominator); $i++ ){
-				$atomicUnit = $this->denominator[$i];
+				$atomicUnit = $unit->denominator[$i];
 				if( !isset($group[$atomicUnit]) ){
 					continue;
 				}

@@ -511,7 +511,7 @@ class Environment
 
 		if ($args[0] instanceof \Less\Node\Dimension) {
 			$unit = $args[0]->unit;
-			$args[0] = (float)$arg[0]->value;
+			$args[0] = (float)$args[0]->value;
 			return new \Less\Node\Dimension( call_user_func_array($fn,$args), $unit);
 		} else if (is_numeric($args[0])) {
 			return call_user_func_array($fn,$args);

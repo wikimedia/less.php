@@ -2,7 +2,7 @@
 
 namespace Less\Node;
 
-class Assigment {
+class Assignment {
 
 	private $key;
 	private $value;

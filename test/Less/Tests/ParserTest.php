@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_STRICT);
 ini_set('display_errors',1);
 
 
@@ -22,8 +22,7 @@ class ParserTest{
     /**
      * @dataProvider lessJsProvider
      */
-    public function testLessJsCssGeneration($less, $css)
-    {
+    public function testLessJsCssGeneration($less, $css){
         $parser = new \Less\Parser();
 
         $less = $parser->parseFile($less)->getCss();
