@@ -146,7 +146,7 @@ class Environment
 	}
 
 	static public function scaled($n, $size) {
-		if ($n instanceof \Less\Node\Dimension && $n->unit == '%') {
+		if( $n instanceof \Less\Node\Dimension && $n->unit->is('%') ){
 			return (float)$n->value * $size / 100;
 		} else {
 			return \Less\Environment::number($n);
