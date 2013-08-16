@@ -160,7 +160,7 @@ class Parser {
         $this->input = preg_replace('/^\\357\\273\\277/um', '', $this->input);
 
 
-        $root = new \Less\Node\Ruleset(false, $this->match('parsePrimary'));
+        $root = new \Less\Node\Ruleset(null, $this->match('parsePrimary'));
         $root->root = true;
 
         if ($returnRoot) {
@@ -1538,6 +1538,10 @@ class Parser {
 
 if( !function_exists('pre') ){
 	function pre($arg){
-		return '<pre>'.var_export($arg,true).'</pre>';
+		ob_start();
+		echo '<pre>';
+		var_dump($arg);
+		echo '</pre>';
+		return ob_get_clean();
 	}
 }

@@ -14,6 +14,8 @@ require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/SideBySide.php'
 require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/Inline.php');
 
 
+global $head;
+
 class ParserTest{
 
 	function __construct(){
@@ -32,29 +34,36 @@ class ParserTest{
      * @dataProvider lessJsProvider
      */
     public function testLessJsCssGeneration($less, $css){
-        $parser = new \Less\Parser();
+		$parser = new \Less\Parser();
 
-        $less = $parser->parseFile($less)->getCss();
-        $css = file_get_contents($css);
+		$compiled = $parser->parseFile($less)->getCss();
+		$css = file_get_contents($css);
 
-		if( empty($less) ){
+		if( empty($compiled) ){
 			echo '<b>----empty----</b>';
 			return;
 		}
-		if( $css === $less ){
+		if( $css === $compiled ){
 			echo 'equal';
 			return;
 		}
 
-		$less = explode("\n", $less );
+		$compiled = explode("\n", $compiled );
 		$css = explode("\n", $css );
 
 
 		$options = array();
-		$diff = new Diff($less, $css, $options);
-		//$renderer = new Diff_Renderer_Html_SideBySide();
-		$renderer = new Diff_Renderer_Html_Inline();
+		$diff = new Diff($compiled, $css, $options);
+		$renderer = new Diff_Renderer_Html_SideBySide();
+		//$renderer = new Diff_Renderer_Html_Inline();
 		echo $diff->Render($renderer);
+
+		$pos = strpos($less,'/less.php');
+
+		global $head;
+		$head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
+		//echo '<textarea>'.htmlspecialchars(file_get_contents($less)).'</textara>';
+
     }
 
     public function lessJsProvider(){
@@ -121,16 +130,19 @@ class ParserTest{
     }
 }
 
+ob_start();
+new ParserTest();
+$content = ob_get_clean();
 
 ?>
 <!DOCTYPE html>
 <html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>Parser Tests</title>
 <link rel="stylesheet" href="/less.php/test/Less/Tests/php-diff/styles.css" type="text/css" />
+<?php echo $head ?>
 </head>
 <body>
-<?php
-new ParserTest();
-
-?>
+<?php echo $content; ?>
+<script src="/less.php/test/Less/Tests/less-1.4.0.js" ></script>
 </body></html>

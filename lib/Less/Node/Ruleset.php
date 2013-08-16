@@ -29,7 +29,7 @@ class Ruleset
 		$selectors = $this->selectors ? array_map(function($s) use ($env) {
 			return $s->compile($env);
 		}, $this->selectors) : array();
-		$ruleset = new Ruleset($selectors, $this->rules, $this->strictImports);
+		$ruleset = new \Less\Node\Ruleset($selectors, $this->rules, $this->strictImports);
 		$rules = array();
 
 		$ruleset->originalRuleset = $this;
@@ -38,6 +38,9 @@ class Ruleset
 
 		// push the current ruleset to the frames stack
 		$env->unshiftFrame($ruleset);
+
+		// currrent selectors
+		array_unshift($env->selectors,$this->selectors);
 
 
 		// Evaluate imports
@@ -90,6 +93,7 @@ class Ruleset
 			}
 		}
 
+
 		// Evaluate everything else
 		foreach($ruleset->rules as $i => $rule) {
 			if (! ($rule instanceof \Less\Node\Mixin\Definition)) {
@@ -99,6 +103,7 @@ class Ruleset
 
 		// Pop the stack
 		$env->shiftFrame();
+		array_shift($env->selectors);
 
         if ($mediaBlockCount) {
 			foreach($env->mediaBlocks as $mediaBlock){

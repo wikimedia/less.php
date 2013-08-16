@@ -7,6 +7,8 @@ class Extend{
 	var $selector;
 	var $index;
 
+	static $selfSelectors;
+
 	function __construct($elements, $index){
 		$this->selector = new \Less\Node\Selector($elements);
 		$this->index = $index;
@@ -14,16 +16,25 @@ class Extend{
 
 	function compile( $env, $selectors = array() ){
 
-		$selfSelectors = self::findSelfSelectors( (count($selectors) ? $selectors : $env->selectors) );
+		self::findSelfSelectors( (count($selectors) ? $selectors : $env->selectors) );
 		$targetValue = $this->selector->elements[0]->value;
 
-		foreach($env->frames as $frame){
-			foreach($frame->rulesets() as $rule){
+		foreach($env->frames as &$frame){
+			foreach($frame->rules as &$rule){
+
+				if( !($rule instanceof \Less\Node\Ruleset) && !($rule instanceof \Less\Node\Mixin\Definition) ){
+					continue;
+				}
+
+				$changed = false;
+				$before = $rule->selectors;
+
 				foreach($rule->selectors as $selector){
 					foreach($selector->elements as $idx => $element){
 
-						if( $element->value = $targetValue ){
-							foreach($selfSelectors as $_selector){
+						if( $element->value == $targetValue ){
+
+							foreach(self::$selfSelectors as $_selector){
 
 								$_selector->elements[0] = new \Less\Node\Element(
 									$element->combinator,
@@ -46,16 +57,15 @@ class Extend{
 	}
 
 	static function findSelfSelectors( $selectors, $elem = array(), $i = 0){
-		$ret = array();
-		if( isset($selectors[$i]) && count($selectors[$i]) ){
-			foreach($selectors as $s){
-				$ret = array_merge( $ret, self::findSelfSelectors($selectors, array_merge($s->elements,$elem), $i+1) );
+
+		if( isset($selectors[$i]) && is_array($selectors[$i]) && count($selectors[$i]) ){
+			foreach($selectors[$i] as $s){
+				self::findSelfSelectors($selectors, array_merge($s->elements,$elem), $i+1 );
 			}
 		}else{
-			$ret[] = new \Less\Node\Selector($elem);
+			self::$selfSelectors[] = new \Less\Node\Selector($elem);
 		}
-
-		return $ret;
 	}
+
 
 }
