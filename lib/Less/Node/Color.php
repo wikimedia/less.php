@@ -30,23 +30,32 @@ class Color
     // which has better compatibility with older browsers.
     // Values are capped between `0` and `255`, rounded and zero-padded.
     //
-    public function toCSS()
-    {
-        if ($this->alpha < 1.0) {
-            $values = array_map(function ($c) {
-                return round($c);
-            }, $this->rgb);
-            $values[] = $this->alpha;
+    public function toCSS($env){
+		if ($this->alpha < 1.0) {
+			$values = array_map('round', $this->rgb);
+			$values[] = $this->alpha;
 
-            return "rgba(" . implode(', ', $values) . ")";
-        } else {
-            return '#' . implode('', array_map(function ($i) {
-                $i = round($i);
-                $i = ($i > 255 ? 255 : ($i < 0 ? 0 : $i));
-                $i = dechex($i);
-                return str_pad($i, 2, '0', STR_PAD_LEFT);
-            }, $this->rgb));
-        }
+			return "rgba(" . implode(', ', $values) . ")";
+		} else {
+
+			$color = '';
+			foreach($this->rgb as $i){
+				$i = round($i);
+				$i = ($i > 255 ? 255 : ($i < 0 ? 0 : $i));
+				$i = dechex($i);
+				$color .= str_pad($i, 2, '0', STR_PAD_LEFT);
+			}
+
+			if( $env && $env->compress ){
+
+				// Convert color to short format
+				if( $color[0] == $color[1] && $color[2] == $color[3] && $color[4] == $color[5]) {
+					$color = $color[0] . $color[2] . $color[4];
+				}
+			}
+
+			return '#'.$color;
+		}
     }
 
     //
