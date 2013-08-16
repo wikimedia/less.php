@@ -1124,7 +1124,8 @@ class Parser {
         }
 
         if ($name = $this->match('parseVariable') ?: $this->match('parseProperty')) {
-            if (($name[0] != '@') && preg_match('/^([^@+\/\'"*`(;{}-]*);/', $this->current, $match)) {
+
+			if( !$this->env->compress && ($name[0] != '@') && preg_match('/^([^@+\/\'"*`(;{}-]*);/', $this->current, $match) ){
                 $this->pos += strlen($match[0]) - 1;
                 $value = new \Less\Node\Anonymous($match[1]);
             } else if ($name === "font") {

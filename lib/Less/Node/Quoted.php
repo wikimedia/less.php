@@ -23,18 +23,26 @@ class Quoted
         }
     }
 
-    public function compile($env)
-    {
-        $that = $this;
-        $value = preg_replace_callback('/`([^`]+)`/', function ($matches) use ($env, $that) {
-                    $js = \Less\Node\JavaScript($matches[1], $that->index, true);
-                    return $js->eval($env)->value;
-                 }, $this->value);
-        $value = preg_replace_callback('/@\{([\w-]+)\}/', function ($matches) use ($env, $that) {
-                    $v = new \Less\Node\Variable('@' . $matches[1], $that->index);
-                    $v = $v->compile($env);
-                    return ($v instanceof \Less\Tree\Quoted) ? $v->value : $v->toCSS($env);
-                 }, $value);
+	public function compile($env){
+		$that = $this;
+
+		$value = $this->value;
+		if( preg_match_all('/`([^`]+)`/', $this->value, $matches) ){
+			foreach($matches as $i => $match){
+				$js = \Less\Node\JavaScript($matches[1], $that->index, true);
+				$js = $js->compile($env)->value;
+				$value = str_replace($matches[0][$i], $js, $value);
+			}
+		}
+
+		if( preg_match_all('/@\{([\w-]+)\}/',$value,$matches) ){
+			foreach($matches[1] as $i => $match){
+				$v = new \Less\Node\Variable('@' . $match, $that->index);
+				$v = $v->compile($env,true);
+				$v = ($v instanceof \Less\Tree\Quoted) ? $v->value : $v->toCSS($env);
+				$value = str_replace($matches[0][$i], $v, $value);
+			}
+		}
 
         return new \Less\Node\Quoted($this->quote . $value . $this->quote, $value, $this->escaped, $this->index);
     }

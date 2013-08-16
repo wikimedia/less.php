@@ -6,7 +6,6 @@ class Color
 {
 	var $rgb;
 	var $alpha;
-	var $compress;
 
     public function __construct($rgb, $a = 1)
     {
@@ -31,12 +30,14 @@ class Color
     // which has better compatibility with older browsers.
     // Values are capped between `0` and `255`, rounded and zero-padded.
     //
-    public function toCSS($env){
+    public function toCSS($env, $doNotCompress = false ){
+		$compress = $env && $env->compress && !$doNotCompress;
 		if ($this->alpha < 1.0) {
 			$values = array_map('round', $this->rgb);
 			$values[] = $this->alpha;
 
-			return "rgba(" . implode(', ', $values) . ")";
+			$glue = ($compress ? ',' : ', ');
+			return "rgba(" . implode($glue, $values) . ")";
 		} else {
 
 			$color = '';
@@ -47,7 +48,7 @@ class Color
 				$color .= str_pad($i, 2, '0', STR_PAD_LEFT);
 			}
 
-			if( $env && $env->compress && $this->compress !== false ){
+			if( $compress ){
 
 				// Convert color to short format
 				if( $color[0] == $color[1] && $color[2] == $color[3] && $color[4] == $color[5]) {
