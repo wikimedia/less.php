@@ -33,7 +33,7 @@ class Quoted
         $value = preg_replace_callback('/@\{([\w-]+)\}/', function ($matches) use ($env, $that) {
                     $v = new \Less\Node\Variable('@' . $matches[1], $that->index);
                     $v = $v->compile($env);
-                    return ($v instanceof \Less\Tree\Quoted) ? $v->value : $v->toCSS();
+                    return ($v instanceof \Less\Tree\Quoted) ? $v->value : $v->toCSS($env);
                  }, $value);
 
         return new \Less\Node\Quoted($this->quote . $value . $this->quote, $value, $this->escaped, $this->index);

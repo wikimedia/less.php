@@ -24,10 +24,25 @@ class Dimension{
         return new \Less\Node\Color(array($this->value, $this->value, $this->value));
     }
 
-    public function toCSS(){
-        return $this->unit->isEmpty() ? $this->value :
-			$this->value . $this->unit->toCSS();
-    }
+	public function toCSS($env){
+
+		$value = $this->value;
+		$strValue = (string)$value;
+
+		if( $env && $env->compress ){
+			// Zero values doesn't need a unit
+			if( $value === 0 ){
+				return $strValue;
+			}
+
+			// Float values doesn't need a leading zero
+			if( $value > 0 && $value < 1 && $strValue[0] === '0' ){
+				$strValue = substr($strValue,1);
+			}
+		}
+
+		return $this->unit->isEmpty() ? $strValue : $strValue . $this->unit->toCSS();
+	}
 
     public function __toString(){
         return $this->toCSS();
