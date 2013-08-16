@@ -4,8 +4,15 @@ error_reporting(E_ALL ^ E_STRICT);
 ini_set('display_errors',1);
 
 
+//get parser
 $dir = dirname(dirname(dirname(__DIR__)));
 require($dir.'/lib/Less/Parser.php');
+
+//get diff
+require( $dir. '/test/Less/Tests/php-diff/lib/Diff.php');
+require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/SideBySide.php');
+require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/Inline.php');
+
 
 class ParserTest{
 
@@ -32,8 +39,16 @@ class ParserTest{
 			echo 'equal';
 			return;
 		}
-		echo '<b>not equal</b>';
-        //$this->assertEquals($css, $less);
+
+		$less = explode("\n", $less );
+		$css = explode("\n", $css );
+
+
+		$options = array();
+		$diff = new Diff($less, $css, $options);
+		//$renderer = new Diff_Renderer_Html_SideBySide();
+		$renderer = new Diff_Renderer_Html_Inline();
+		echo $diff->Render($renderer);
     }
 
     public function lessJsProvider()
@@ -94,4 +109,16 @@ class ParserTest{
     }
 }
 
+
+?>
+<!DOCTYPE html>
+<html><head>
+<title>Parser Tests</title>
+<link rel="stylesheet" href="/less.php/test/Less/Tests/php-diff/styles.css" type="text/css" />
+</head>
+<body>
+<?php
 new ParserTest();
+
+?>
+</body></html>

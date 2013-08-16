@@ -134,10 +134,10 @@ class Environment
 		return min(1, max(0, $val));
 	}
 
-	static public function number($n)
-	{
+	static public function number($n){
+
 		if ($n instanceof \Less\Node\Dimension) {
-			return floatval($n->unit == '%' ? $n->value / 100 : $n->value);
+			return floatval( $n->unit->is('%') ? $n->value / 100 : $n->value);
 		} else if (is_numeric($n)) {
 			return $n;
 		} else {
@@ -165,19 +165,19 @@ class Environment
 		return new \Less\Node\Color($rgb, $a);
 	}
 
-	public function hsl($h, $s, $l)
-	{
+	public function hsl($h, $s, $l){
 		return $this->hsla($h, $s, $l, 1.0);
 	}
 
-	public function hsla($h, $s, $l, $a)
-	{
+	public function hsla($h, $s, $l, $a){
+
 		$h = fmod(self::number($h), 360) / 360; // Classic % operator will change float to int
 		$s = self::number($s);
 		$l = self::number($l);
 		$a = self::number($a);
 
 		$m2 = $l <= 0.5 ? $l * ($s + 1) : $l + $s - $l * $s;
+
 		$m1 = $l * 2 - $m2;
 
 		$hue = function ($h) use ($m1, $m2) {
@@ -187,6 +187,7 @@ class Environment
 			else if ($h * 3 < 2) return $m1 + ($m2 - $m1) * (2/3 - $h) * 6;
 			else				 return $m1;
 		};
+
 
 		return $this->rgba($hue($h + 1/3) * 255,
 						   $hue($h)	   * 255,
