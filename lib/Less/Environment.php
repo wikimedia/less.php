@@ -477,6 +477,10 @@ class Environment
 		return $this->_math('floor',$n);
 	}
 
+	function sqrt($n) {
+		return $this->_math('sqrt', $n);
+	}
+
 	private function _math() {
 		$args = func_get_args();
 		$fn = array_shift($args);
