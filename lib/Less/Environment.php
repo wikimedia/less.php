@@ -617,17 +617,40 @@ class Environment
 		return $this->mix($this->rgb(0, 0, 0), $color, $amount);
 	}
 
-	function datauri($mimetype, $path) {
-		$data = file_get_contents($path->value);
-		$mimetype = $mimetype->value;
+	function datauri($mimetype, $path = null ) {
 
-		if( preg_match('/;base64$/',$mimetype) ){
-			$data = base64_encode($data);
+		if( $path ){
+			$path = $path->value;
+		}
+		$mimetype = $mimetype->value;
+		$useBase64 = false;
+
+		// detect the mimetype if not given
+		if( !$path ){
+			$path = $mimetype;
+
+			/*
+			$mime = require('mime');
+			mimetype = mime.lookup(path);
+
+			// use base 64 unless it's an ASCII or UTF-8 format
+			var charset = mime.charsets.lookup(mimetype);
+			useBase64 = ['US-ASCII', 'UTF-8'].indexOf(charset) < 0;
+			if (useBase64) mimetype += ';base64';
+			*/
+
+		}else{
+			$useBase64 = preg_match('/;base64$/',$mimetype);
 		}
 
-		$contents = new \Less\Node\Anonymous('data:'+$mimetype+','+$data);
+		$buf = file_get_contents($path);
 
-		return \Less\Node\Url($contents);
+		$buf = $useBase64 ? base64_encode($buf)
+						: rawurlencode($buf);
+
+		$uri = "'data:"+$mimetype+','+$buf+"'";
+
+		return \Less\Node\Url( new \Less\Node\Anonymous($uri) );
 	}
 
 
