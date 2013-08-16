@@ -23,7 +23,9 @@ class Combinator {
 			':'  => ' :',
 			'+'  => $env->compress ? '+' : ' + ',
 			'~'  => $env->compress ? '~' : ' ~ ',
-			'>'  => $env->compress ? '>' : ' > '
+			'>'  => $env->compress ? '>' : ' > ',
+			'|'  => $env->compress ? '|' : ' | '
+
 		);
 
 		return $v[$this->value];

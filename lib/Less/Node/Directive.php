@@ -27,7 +27,7 @@ class Directive
                    preg_replace('/\n/', "\n  ", trim($this->ruleset->toCSS($ctx, $env))) .
                    ($env->compress ? '}': "\n}\n");
         } else {
-            return $this->name . ' ' . $this->value->toCSS() . ";\n";
+            return $this->name . ' ' . $this->value->toCSS($env) . ";\n";
         }
     }
 
