@@ -31,6 +31,7 @@ class Import
     }
 
     public function toCSS($env){
+
 		$features = $this->features ? ' ' . $this->features->toCSS($env) : '';
         if( $this->css || !$this->full_path ){
             return "@import " . $this->_path->toCss() . $features . ";\n";
@@ -43,15 +44,19 @@ class Import
 
 		$features = $this->features ? $this->features->compile($env) : null;
 
-
-		if( $this->skip || !$this->full_path ){
-			return array();
-		}
-
 		// Only pre-compile .less files
         if ($this->css) {
             return $this;
 		}
+
+		if( !$this->full_path ){
+			return $this;
+		}
+
+		if( $this->skip ){
+			return array();
+		}
+
 
 		$parser = new \Less\Parser($env);
 		$this->root = $parser->parseFile($this->full_path, true);
@@ -65,7 +70,7 @@ class Import
 			array_push($ruleset->rules,    new \Less\Node\Comment('/**** End imported file `' . $this->path."` ****/\n", false));
 		}
 
-		return $this->features ? new Media($ruleset->rules, $this->features->value) : $ruleset->rules;
+		return $this->features ? new \Less\Node\Media($ruleset->rules, $this->features->value) : $ruleset->rules;
 
     }
 }

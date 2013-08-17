@@ -167,7 +167,8 @@ class Parser {
             return $root;
         } else {
 
-            $this->css .= $root->compile($this->env)->toCSS(array(), $this->env);
+			$temp = $root->compile($this->env);
+            $this->css .= $temp->toCSS(array(), $this->env);
 
             return $this;
         }
@@ -252,6 +253,7 @@ class Parser {
             }
         }
 
+
         // The match is confirmed, add the match length to `this::pos`,
         // and consume any extra white-space characters (' ' || '\n')
         // which come after that. The reason for this is that LeSS's
@@ -259,6 +261,12 @@ class Parser {
         //
         if ($match) {
             $this->skipWhitespace($length);
+
+	        static $i = 0;
+	        $i++;
+	        echo $i.':: '.$tok.'<br/>';
+	        echo \Less\Pre($match);
+
 
             $this->sync();
             if (is_string($match)) {
@@ -1058,7 +1066,7 @@ class Parser {
 
         $attr = '';
 
-        if ($key = $this->match('/^(?:[_A-Za-z0-9-]|\\.)+/') ?: $this->match('parseEntitiesQuoted')) {
+        if ($key = $this->match('/^(?:[_A-Za-z0-9-]|\\\\.)+/') ?: $this->match('parseEntitiesQuoted')) {
             if (($op = $this->match('/^[|~*$^]?=/')) &&
                 ($val = $this->match('parseEntitiesQuoted') ?: $this->match('/^[\w-]+/'))) {
                 if ( ! is_string($val)) {

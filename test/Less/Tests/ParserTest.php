@@ -45,18 +45,24 @@ class ParserTest{
 		}
 		if( $css === $compiled ){
 			echo 'equal';
-			return;
+
+			if( !isset($_GET['file']) ){
+				return;
+			}
+
+		}else{
+
+			$compiled = explode("\n", $compiled );
+			$css = explode("\n", $css );
+
+
+			$options = array();
+			$diff = new Diff($compiled, $css, $options);
+			$renderer = new Diff_Renderer_Html_SideBySide();
+			//$renderer = new Diff_Renderer_Html_Inline();
+			echo $diff->Render($renderer);
 		}
 
-		$compiled = explode("\n", $compiled );
-		$css = explode("\n", $css );
-
-
-		$options = array();
-		$diff = new Diff($compiled, $css, $options);
-		$renderer = new Diff_Renderer_Html_SideBySide();
-		//$renderer = new Diff_Renderer_Html_Inline();
-		echo $diff->Render($renderer);
 
 		$pos = strpos($less,'/less.php');
 

@@ -181,8 +181,8 @@ class Ruleset
 		});
 	}
 
-	public function find ($selector, $self = null, $env = null)
-	{
+	public function find( $selector, $self = null, $env = null){
+
 		$self = $self ?: $this;
 		$rules = array();
 		$key = $selector->toCSS($env);
@@ -217,8 +217,7 @@ class Ruleset
 	//
 	//	 `context` holds an array of arrays.
 	//
-	public function toCSS($context, $env)
-	{
+	public function toCSS($context, $env){
 		$css = array();	  // The CSS output
 		$rules = array();	// node.Rule instances
 		$_rules = array();
