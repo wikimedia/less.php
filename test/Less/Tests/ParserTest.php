@@ -39,7 +39,7 @@ class ParserTest{
 		$compiled = $parser->parseFile($less)->getCss();
 		$css = file_get_contents($css);
 
-		if( empty($compiled) ){
+		if( empty($compiled) && empty($css) ){
 			echo '<b>----empty----</b>';
 			return;
 		}

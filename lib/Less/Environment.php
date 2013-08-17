@@ -679,14 +679,13 @@ class Environment
 			$useBase64 = preg_match('/;base64$/',$mimetype);
 		}
 
-		$buf = file_get_contents($path);
+		$buf = @file_get_contents($path);
+		if( $buf ){
+			$buf = $useBase64 ? base64_encode($buf) : rawurlencode($buf);
+			$path = "'data:"+$mimetype+','+$buf+"'";
+		}
 
-		$buf = $useBase64 ? base64_encode($buf)
-						: rawurlencode($buf);
-
-		$uri = "'data:"+$mimetype+','+$buf+"'";
-
-		return \Less\Node\Url( new \Less\Node\Anonymous($uri) );
+		return new \Less\Node\Url( new \Less\Node\Anonymous($path) );
 	}
 
 

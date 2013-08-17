@@ -261,6 +261,8 @@ class Parser {
         //
         if ($match) {
             $this->skipWhitespace($length);
+            $this->sync();
+
             if (is_string($match)) {
                 return $match;
             } else {
