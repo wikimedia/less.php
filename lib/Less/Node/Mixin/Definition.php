@@ -41,8 +41,7 @@ class Definition extends \Less\Node\Ruleset
 	}
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.evalParams
-	public function compileParams($env, $mixinEnv, $args = array(), $evaldArguments = array() )
-	{
+	public function compileParams($env, $mixinEnv, $args = array() , &$evaldArguments = array() ){
 		$frame = new \Less\Node\Ruleset(null, array());
 		$varargs;
 		$params = array_slice($this->params,0);
@@ -59,7 +58,7 @@ class Definition extends \Less\Node\Ruleset
 				$isNameFound = false;
 
 				foreach($params as $j => $param){
-					if (!$evaldArguments[$j] && $name === $params[$j]['name']) {
+					if( !isset($evaldArguments[$j]) && $name === $params[$j]['name']) {
 						$evaldArguments[$j] = $arg['value']->compile($env);
 						array_unshift($frame->rules, new \Less\Node\Rule( $name, $arg['value']->compile($env) ) );
 						$isNamedFound = true;
@@ -171,6 +170,7 @@ class Definition extends \Less\Node\Ruleset
 	}
 
 	public function matchArgs($args, $env = NULL){
+
 		if (!$this->variadic) {
 			if (count($args) < $this->required)
 				return false;

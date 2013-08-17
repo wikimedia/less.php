@@ -21,10 +21,12 @@ class Value
         }
     }
 
-    public function toCSS ($env)
-    {
-        return implode($env->compress ? ',' : ', ', array_map(function ($e) use ($env) {
-            return $e->toCSS($env);
-        }, $this->value));
+    public function toCSS ($env){
+
+		$ret = array();
+		foreach($this->value as $e){
+			$ret[] = $e->toCSS($env);
+		}
+		return implode($env->compress ? ',' : ', ', $ret);
     }
 }
