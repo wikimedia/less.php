@@ -16,6 +16,8 @@ class Expression {
                 return $e->compile($env);
             }, $this->value));
         } else if (is_array($this->value) && count($this->value) == 1) {
+
+			echo \Less\Pre($this->value);
             return $this->value[0]->compile($env);
         } else {
             return $this;

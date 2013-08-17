@@ -801,7 +801,7 @@ class Parser {
 					$isSemiColonSeperated = true;
 
 					if ( count($expressions) > 1) {
-						$value = new \Less\Node\Expression($expressions);
+						$value = new \Less\Node\Value($expressions);
 					}
 					$argsSemiColon[] = array('name' => $name, 'value' => $value );
 
