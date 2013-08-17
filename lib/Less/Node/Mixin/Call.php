@@ -16,7 +16,6 @@ class Call{
 	 *
 	 */
     public function __construct($elements, $args, $index, $filename, $important = false){
-
         $this->selector =  new \Less\Node\Selector($elements);
         $this->arguments = $args;
         $this->index = $index;
@@ -57,7 +56,7 @@ class Call{
 					}
 
 					if ($mixin->matchArgs($args, $env)) {
-						if ( method_exists($mixin,'matchCondition') && $mixin->matchCondition($args, $env)) {
+						if( !method_exists($mixin,'matchCondition') || $mixin->matchCondition($args, $env) ){
 							try {
 								$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
 

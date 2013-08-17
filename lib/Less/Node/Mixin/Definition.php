@@ -16,8 +16,7 @@ class Definition extends \Less\Node\Ruleset
 	public $variadic;
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition
-	public function __construct($name, $params, $rules, $condition, $variadic = false)
-	{
+	public function __construct($name, $params, $rules, $condition, $variadic = false){
 		$this->name = $name;
 		$this->selectors = array(new \Less\Node\Selector(array( new \Less\Node\Element(null, $name))));
 		$this->params = $params;

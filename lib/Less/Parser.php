@@ -175,7 +175,6 @@ class Parser {
 
 			$temp = $root->compile($this->env);
             $this->css .= $temp->toCSS(array(), $this->env);
-
             return $this;
         }
     }
@@ -265,8 +264,8 @@ class Parser {
         // which come after that. The reason for this is that LeSS's
         // grammar is mostly white-space insensitive.
         //
-        if ($match) {
-            $this->skipWhitespace($length);
+        if( $match ){
+			$this->skipWhitespace($length);
             $this->sync();
 
             if (is_string($match)) {
@@ -374,7 +373,7 @@ class Parser {
 
         while( ($node = $this->matchMultiple('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
 							'parseMixinCall', 'parseComment', 'parseDirective' ))
-							?: $this->match('/^[\s\n]+/') ?: $this->match('/^;+/')
+							?: $this->match("/^[\s\n]+/") ?: $this->match('/^;+/')
         ) {
             if ($node) {
                 $root[] = $node;
@@ -733,8 +732,7 @@ class Parser {
     // namespaced, but we only support the child and descendant
     // selector for now.
     //
-    private function parseMixinCall()
-    {
+    private function parseMixinCall(){
         $elements = array();
         $args = array();
         $arg = null;
@@ -847,8 +845,7 @@ class Parser {
     // Once we've got our params list, and a closing `)`, we parse
     // the `{...}` block.
     //
-    private function parseMixinDefinition()
-    {
+    private function parseMixinDefinition(){
         $params = array();
 		$variadic = false;
 		$cond = null;
@@ -908,7 +905,7 @@ class Parser {
 
             $ruleset = $this->match('parseBlock');
 
-            if (is_array($ruleset)) {
+            if( is_array($ruleset) ){
                 return new \Less\Node\Mixin\Definition($name, $params, $ruleset, $cond, $variadic);
             } else {
 				$this->restore();
@@ -1545,11 +1542,12 @@ class Parser {
 
 }
 
-if( !function_exists('pre') ){
 	function pre($arg){
 		ob_start();
 		echo '<pre>';
-		if( !$arg ){
+		if( $arg === 0 ){
+			echo '0';
+		}elseif( !$arg ){
 			var_dump($arg);
 		}else{
 			print_r($arg);
@@ -1557,4 +1555,3 @@ if( !function_exists('pre') ){
 		echo '</pre>';
 		return ob_get_clean();
 	}
-}

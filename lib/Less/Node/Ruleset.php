@@ -17,8 +17,7 @@ class Ruleset
 	public $root;
 	public $allowImports;
 
-	public function __construct($selectors, $rules, $strictImports = false)
-	{
+	public function __construct($selectors, $rules, $strictImports = false){
 		$this->selectors = $selectors;
 		$this->rules = (array) $rules;
 		$this->lookups = array();
@@ -46,12 +45,10 @@ class Ruleset
 		// currrent selectors
 		array_unshift($env->selectors,$this->selectors);
 
-
 		// Evaluate imports
 		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
 			$ruleset->evalImports($env);
 		}
-
 
 		// Store the frames around mixin definitions,
 		// so they can be evaluated like closures when the time comes.
@@ -86,6 +83,7 @@ class Ruleset
 			}
 		}
 
+
 		for($i = 0; $i < count($ruleset->rules); $i++) {
 			if (isset($ruleset->rules[$i]) && $ruleset->rules[$i] instanceof \Less\Node\Mixin\Call) {
 				$newRules = $ruleset->rules[$i]->compile($env);
@@ -100,10 +98,12 @@ class Ruleset
 
 		// Evaluate everything else
 		foreach($ruleset->rules as $i => $rule) {
-			if (! ($rule instanceof \Less\Node\Mixin\Definition)) {
+			if(! ($rule instanceof \Less\Node\Mixin\Definition) ){
 				$ruleset->rules[$i] = method_exists($rule,'compile') ? $rule->compile($env) : $rule;
 			}
 		}
+
+
 
 		// Pop the stack
 		$env->shiftFrame();
@@ -232,6 +232,8 @@ class Ruleset
 			$this->joinSelectors($paths, $context);
 		}
 
+
+
 		// Compile rules and rulesets
 		foreach($this->rules as $rule) {
 			if (isset($rule->rules) || ($rule instanceof \Less\Node\Media)) {
@@ -268,6 +270,7 @@ class Ruleset
 				}
 			}
 		}
+
 
         // Remove last semicolon
 		if( $env->compress && count($rules) ){
