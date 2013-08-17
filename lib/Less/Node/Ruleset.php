@@ -228,8 +228,8 @@ class Ruleset
 		$rulesets = array(); // node.Ruleset instances
 		$paths = array();	// Current selectors
 
-		if (! $this->root) {
-			$this->joinSelectors($paths, $context, $this->selectors);
+		if( !$this->root ){
+			$this->joinSelectors($paths, $context);
 		}
 
 		// Compile rules and rulesets
@@ -313,9 +313,8 @@ class Ruleset
 		return implode('', $css) . ($env->compress ? "\n" : '' );
 	}
 
-	public function joinSelectors (&$paths, $context, $selectors)
-	{
-		foreach($selectors as $selector) {
+	public function joinSelectors( &$paths, $context ){
+		foreach($this->selectors as $selector) {
 			$this->joinSelector($paths, $context, $selector);
 		}
 	}
@@ -343,6 +342,7 @@ class Ruleset
 			}
 			return;
 		}
+
 
 		// The paths are [[Selector]]
 		// The first list is a list of comma seperated selectors
@@ -383,7 +383,7 @@ class Ruleset
 
 					// if we don't have any parent paths, the & might be in a mixin so that it can be used
 					// whether there are parents or not
-					if( count($context) ){
+					if( !count($context) ){
 						// the combinator used on el should now be applied to the next element instead so that
 						// it is not lost
 						if( count($sel) > 0 ){
@@ -391,8 +391,8 @@ class Ruleset
 							$sel[0]->elements[] = new \Less\Node\Element($el->combinator, '', 0); //new Element(el.Combinator,  ""));
 						}
 						$selectorsMultiplied[] = $sel;
-					}
-					else {
+					}else {
+
 						// and the parent selectors
 						foreach($context as $parentSel){
 							// We need to put the current selectors
@@ -458,18 +458,17 @@ class Ruleset
 		foreach( $newSelectors as $new_sel){
 			$paths[] = $new_sel;
 		}
-
 	}
 
-	function mergeElementsOnToSelectors( $elements, $selectors){
-		$i; $sel;
-		if ( count($selectors) == 0) {
+	function mergeElementsOnToSelectors( $elements, &$selectors){
+
+		if( count($selectors) == 0) {
 			$selectors[] = array( new \Less\Node\Selector($elements) );
 			return;
 		}
 
 
-		foreach( $selectors as $sel){
+		foreach( $selectors as &$sel){
 
 			// if the previous thing in sel is a parent this needs to join on to it
 			if ( count($sel) > 0) {

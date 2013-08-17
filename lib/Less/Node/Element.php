@@ -35,7 +35,7 @@ class Element
 			$value = $value->toCSS($env);
 		}
 
-		if( $value == '' && $this->combinator->value[0] == '&' ){
+		if( $value == '' && strlen($this->combinator->value) && $this->combinator->value[0] == '&' ){
 			return '';
 		}
 		return $this->combinator->toCSS($env) . $value;
