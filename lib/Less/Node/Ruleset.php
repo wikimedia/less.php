@@ -459,7 +459,9 @@ class Ruleset
 			$this->mergeElementsOnToSelectors($currentElements, $newSelectors);
 		}
 		foreach( $newSelectors as $new_sel){
-			$paths[] = $new_sel;
+			if( count($new_sel) ){
+				$paths[] = $new_sel;
+			}
 		}
 	}
 
