@@ -61,8 +61,11 @@ class Selector {
 	}
 
 	public function compile($env) {
-		return new \Less\Node\Selector(array_map(function($e) use ($env) {
-			return $e->compile($env);
-		}, $this->elements), $this->extend);
+
+		$elements = array();
+		foreach($this->elements as $e){
+			$elements[] = $e->compile($env);
+		}
+		return new \Less\Node\Selector($elements, $this->extend);
 	}
 }

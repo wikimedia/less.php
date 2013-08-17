@@ -26,9 +26,13 @@ class Ruleset
 	}
 
 	public function compile($env) {
-		$selectors = $this->selectors ? array_map(function($s) use ($env) {
-			return $s->compile($env);
-		}, $this->selectors) : array();
+
+		$selectors = array();
+		if( $this->selectors ){
+			foreach($this->selectors as $s){
+				$selectors[] = $s->compile($env);
+			}
+		}
 		$ruleset = new \Less\Node\Ruleset($selectors, $this->rules, $this->strictImports);
 		$rules = array();
 

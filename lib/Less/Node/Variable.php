@@ -23,7 +23,7 @@ class Variable {
         }
 
 		if ($this->evaluating) {
-            throw new \Less\Exception\CompilerException("Recursive variable definition for " + $name, $this->index, null, $this->file);
+            throw new \Less\Exception\CompilerException("Recursive variable definition for " . $name, $this->index, null, $this->file);
 		}
 
 		$this->evaluating = true;
@@ -34,11 +34,12 @@ class Variable {
             }
         };
 
+
         if ($variable = \Less\Environment::find($env->frames, $callback)) {
 			$this->evaluating = false;
             return $variable;
         } else {
-            throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index, null, $this->file);
+			throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index, null, $this->file);
         }
     }
 }

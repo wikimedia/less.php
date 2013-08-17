@@ -563,7 +563,7 @@ class Parser {
 		$index = $this->pos;
 
 		if( strlen($this->input) > ($this->pos+1) && $this->input[$this->pos] === '@' && ($curly = $this->match('/^@\{([\w-]+)\}/')) ){
-			return new \Less\Node\Variable('@'+$curly[1], $index, $this->filename);
+			return new \Less\Node\Variable('@'.$curly[1], $index, $this->filename);
 		}
 	}
 

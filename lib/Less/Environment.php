@@ -119,8 +119,7 @@ class Environment
 		}
 	}
 
-	static public function find ($obj, $fun)
-	{
+	static public function find($obj, $fun){
 		foreach($obj as $i => $o) {
 
 			if ($r = call_user_func($fun, $o)) {
