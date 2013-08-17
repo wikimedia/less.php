@@ -103,7 +103,7 @@ class Media {
 				array_splice($path, $i, 0, array(new Anonymous('and')));
 			}
 
-			return new Expression($path);
+			return new \Less\Node\Expression($path);
 		}, $this->permute($path)));
 
 		// Fake a tree-node that doesn't output anything.

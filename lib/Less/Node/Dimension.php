@@ -59,8 +59,8 @@ class Dimension{
 		if( $op === '+' || $op === '-' ){
 
 			if( !count($unit->numerator) && !count($unit->denominator) ){
-				$unit->numerator = $other->unit->numerator;
-				$unit->denominator = $other->unit->denominator;
+				$unit->numerator = array_slice($other->unit->numerator,0);
+				$unit->denominator = array_slice($other->unit->denominator,0);
 			}elseif( !count($other->unit->numerator) && !count($other->unit->denominator) ){
 				// do nothing
 			}else{

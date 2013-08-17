@@ -7,10 +7,15 @@ class Unit{
 	var $denominator = array();
 
 	function __construct($numerator = array(), $denominator = array()){
-		$this->numerator = $numerator;
-		$this->denominator = $denominator;
+		$this->numerator = array_slice($numerator,0);
+		$this->denominator = array_slice($denominator,0);
 		sort($this->numerator);
 		sort($this->denominator);
+	}
+
+	function __clone(){
+		$this->numerator = array_slice($this->numerator,0);
+		$this->denominator = array_slice($this->denominator,0);
 	}
 
 	function toCSS(){

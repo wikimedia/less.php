@@ -806,7 +806,7 @@ class Parser {
 					$argsSemiColon[] = array('name' => $name, 'value' => $value );
 
 					$name = null;
-					$expressions = [];
+					$expressions = array();
 				}
 			}
 

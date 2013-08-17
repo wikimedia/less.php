@@ -32,7 +32,7 @@ class Ruleset
 				$selectors[] = $s->compile($env);
 			}
 		}
-		$ruleset = new \Less\Node\Ruleset($selectors, $this->rules, $this->strictImports);
+		$ruleset = new \Less\Node\Ruleset($selectors, array_slice($this->rules,0), $this->strictImports);
 		$rules = array();
 
 		$ruleset->originalRuleset = $this;
@@ -54,7 +54,7 @@ class Ruleset
 		// so they can be evaluated like closures when the time comes.
 		foreach($ruleset->rules as $i => $rule) {
 			if ($rule instanceof \Less\Node\Mixin\Definition) {
-				$ruleset->rules[$i]->frames = $env->frames;
+				$ruleset->rules[$i]->frames = array_slice($env->frames,0);
 			}
 		}
 
