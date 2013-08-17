@@ -12,9 +12,13 @@ class Expression {
 
 	public function compile($env) {
 		if (is_array($this->value) && count($this->value) > 1) {
-			return new \Less\Node\Expression(array_map(function ($e) use ($env) {
-				return $e->compile($env);
-			}, $this->value));
+
+			$ret = array();
+			foreach($this->value as $e){
+				$ret[] = $e->compile($env);
+			}
+			return new \Less\Node\Expression($ret);
+
 		} else if (is_array($this->value) && count($this->value) == 1) {
 
 			if( !isset($this->value[0]) ){
