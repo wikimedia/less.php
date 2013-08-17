@@ -47,7 +47,7 @@ class Parser {
      */
     private $env;
 
-	public $imports = array();
+	static $imports = array();
 
     /**
      * @param Environment|null $env
@@ -56,9 +56,15 @@ class Parser {
 
 		self::IncludeScripts( dirname(__FILE__) );
 
-        $this->env = $env ?: new \Less\Environment();
-        $this->css = '';
-        $this->pos = 0;
+		if( $env ){
+			$this->env = $env;
+		}else{
+			$this->env = new \Less\Environment();
+			self::$imports = array();
+		}
+
+		$this->css = '';
+		$this->pos = 0;
     }
 
 
@@ -1195,6 +1201,7 @@ class Parser {
 		foreach($import_dirs as $dir){
 			$full_path = rtrim($dir,'/').'/'.ltrim($path_str,'/');
 			if( file_exists($full_path) ){
+				$full_path = realpath($full_path);
 				break;
 			}
 			$full_path = false;
@@ -1205,12 +1212,12 @@ class Parser {
 		//once
 		$skip = false;
 		$importOnce = $dir[1] !== 'multiple';
-		if( $importOnce && in_array($full_path,$this->imports) ){
+		if( $importOnce && in_array($full_path,self::$imports) ){
 			$skip = true;
 		}
 
 		if( $full_path ){
-			$this->imports[] = $full_path;
+			self::$imports[] = $full_path;
 		}
 
 		return new \Less\Node\Import($path, $full_path, $features, $skip );
