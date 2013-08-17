@@ -261,13 +261,6 @@ class Parser {
         //
         if ($match) {
             $this->skipWhitespace($length);
-
-	        static $i = 0;
-	        $i++;
-	        echo $i.':: '.$tok.'<br/>';
-	        echo \Less\Pre($match);
-
-
             $this->sync();
             if (is_string($match)) {
                 return $match;
