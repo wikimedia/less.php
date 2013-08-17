@@ -261,7 +261,6 @@ class Parser {
         //
         if ($match) {
             $this->skipWhitespace($length);
-            $this->sync();
             if (is_string($match)) {
                 return $match;
             } else {
@@ -516,29 +515,29 @@ class Parser {
 		}
 	}
 
-    //
-    // Parse url() tokens
-    //
-    // We use a specific rule for urls, because they don't really behave like
-    // standard function calls. The difference is that the argument doesn't have
-    // to be enclosed within a string, so it can't be parsed as an Expression.
-    //
-    private function parseEntitiesUrl()
-    {
-        if (! $this->peek('u') || ! $this->match('/^url\(/')) {
-            return;
-        }
+	//
+	// Parse url() tokens
+	//
+	// We use a specific rule for urls, because they don't really behave like
+	// standard function calls. The difference is that the argument doesn't have
+	// to be enclosed within a string, so it can't be parsed as an Expression.
+	//
+	private function parseEntitiesUrl(){
+		if (! $this->peek('u') || ! $this->match('/^url\(/')) {
+			return;
+		}
 
-        $value = $this->match('parseEntitiesQuoted') ?:
-                 $this->match('parseEntitiesVariable') ?:
-                 $this->match('/^(?:(?:\\[\(\)\'"])|[^\(\)\'"])+/') ?: '';
+		$value = $this->match('parseEntitiesQuoted') ?:
+				 $this->match('parseEntitiesVariable') ?:
+				 $this->match('/^(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/') ?: '';
+
 
 		$this->expect(')');
 
 
-        return new \Less\Node\Url((isset($value->value) || $value instanceof \Less\Node\Variable)
-                            ? $value : new \Less\Node\Anonymous($value), $this->env->rootpath);
-    }
+		return new \Less\Node\Url((isset($value->value) || $value instanceof \Less\Node\Variable)
+							? $value : new \Less\Node\Anonymous($value), $this->env->rootpath);
+	}
 
 
     //

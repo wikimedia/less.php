@@ -38,9 +38,6 @@ class Call{
 			return array('name'=> $a['name'], 'value' => $a['value']->compile($env) );
 		}, $this->arguments);
 
-		//$debug = debug_backtrace();
-		//echo \Less\pre($debug);
-
         foreach($env->frames as $frame){
 
             if( $mixins = $frame->find($this->selector, null, $env) ){
