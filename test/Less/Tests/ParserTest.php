@@ -41,6 +41,7 @@ class ParserTest{
 			$compiled = $parser->parseFile($less)->getCss();
 
 		}catch(\Exception $e){
+			echo '<h1>Parser Error</h1>';
 			echo '<p>'.$e->getMessage().'</p>';
 		}
 

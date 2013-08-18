@@ -734,7 +734,6 @@ class Parser {
 
 		if( $this->match('(') ){
 			$expressions = array();
-			$this->parens++;
 
 			while( $arg = $this->match('parseExpression') ){
 				$nameLoop = null;
@@ -766,7 +765,6 @@ class Parser {
 					continue;
 				}
 
-				$this->parens--;
 				if ($this->match(';') || $isSemiColonSeperated) {
 
 					if ($expressionContainsNamed) {
