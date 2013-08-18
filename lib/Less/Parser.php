@@ -179,10 +179,9 @@ class Parser {
 
             $this->css = $root->compile($this->env)->toCSS(array(), $this->env);
 
+			$this->css = preg_replace('/\s+(\/)\s+/',"$1", $this->css);
 			if( $this->env->compress ){
 				$this->css = preg_replace('/(\s)+/',"$1", $this->css);
-			}else{
-				$this->css = preg_replace('/\s+(\/)\s+/',"$1", $this->css);
 			}
 
             return $this;
