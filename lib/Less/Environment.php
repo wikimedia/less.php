@@ -4,8 +4,8 @@
 
 namespace Less;
 
-class Environment
-{
+class Environment{
+
 	/**
 	 * @var array
 	 */
@@ -47,8 +47,7 @@ class Environment
 
 	public $charset;
 
-	public function __construct()
-	{
+	public function __construct(){
 		$this->frames = array();
 		$this->compress = false;
 		$this->debug = false;
@@ -681,7 +680,7 @@ class Environment
 		if( !$path ){
 			$path = $mimetype;
 
-			/*
+			/* incomplete
 			$mime = require('mime');
 			mimetype = mime.lookup(path);
 
@@ -690,6 +689,12 @@ class Environment
 			useBase64 = ['US-ASCII', 'UTF-8'].indexOf(charset) < 0;
 			if (useBase64) mimetype += ';base64';
 			*/
+
+			$mimetype = \Less\Mime::lookup($path);
+
+			$charset = \Less\Mime::charsets_lookup($mimetype);
+			$useBase64 = !in_array($charset,array('US-ASCII', 'UTF-8'));
+			if ($useBase64) $mimetype += ';base64';
 
 		}else{
 			$useBase64 = preg_match('/;base64$/',$mimetype);
