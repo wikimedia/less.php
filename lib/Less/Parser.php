@@ -491,11 +491,11 @@ class Parser {
         $this->match('('); // Parse the '(' and consume whitespace.
         $this->parens++;
         $args = $this->match('parseEntitiesArguments');
+		$this->parens--;
         if( !$this->match(')') ){
-			$this->parens--;
             return;
         }
-        $this->parens--;
+
         if ($name) {
             return new \Less\Node\Call($name, $args, $index, $this->filename, $this->env->rootpath );
         }

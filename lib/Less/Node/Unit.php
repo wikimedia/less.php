@@ -19,12 +19,15 @@ class Unit{
 	}
 
 	function toCSS(){
-		$css = implode('*',$this->numerator);
-		for( $i = 0; $i < count($this->denominator); $i++ ){
-			$css += '/'.$this->denominator[$i];
+
+		if( count($this->numerator) ){
+			return $this->numerator[0];
+		}
+		if( count($this->denominator) ){
+			return $this->denominator[0];
 		}
 
-		return $css;
+		return "";
 	}
 
 	function compare($other) {
