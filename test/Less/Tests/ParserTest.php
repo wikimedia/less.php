@@ -34,9 +34,16 @@ class ParserTest{
      * @dataProvider lessJsProvider
      */
     public function testLessJsCssGeneration($less, $css){
-		$parser = new \Less\Parser();
 
-		$compiled = $parser->parseFile($less)->getCss();
+		$compiled = '';
+		try{
+			$parser = new \Less\Parser();
+			$compiled = $parser->parseFile($less)->getCss();
+
+		}catch(\Exception $e){
+			echo '<p>'.$e->getMessage().'</p>';
+		}
+
 		$css = file_get_contents($css);
 
 		if( empty($compiled) && empty($css) ){

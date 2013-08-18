@@ -269,6 +269,13 @@ class Parser {
         // grammar is mostly white-space insensitive.
         //
         if( $match ){
+
+			static $z = 0;
+			$z++;
+			echo \Less\Pre($z.' '.$tok);
+			echo \Less\Pre($match);
+
+
 			$this->skipWhitespace($length);
             $this->sync();
 
@@ -396,13 +403,11 @@ class Parser {
             return;
         }
 
-        if ($this->peek('/', 1)) {
-            return new \Less\Node\Comment($this->match('/^\/\/.*/'), true);
-        } else {
-            if ($comment = $this->match('#/\*.*?\*/\n?#s')) {
-                return new \Less\Node\Comment($comment, false);
-            }
-        }
+		if ($this->peek('/', 1)) {
+			return new \Less\Node\Comment($this->match('/^\/\/.*/'), true);
+		}elseif( $comment = $this->match('/^\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/')) {
+			return new \Less\Node\Comment($comment, false);
+		}
     }
 
     //
@@ -488,7 +493,8 @@ class Parser {
         $this->match('('); // Parse the '(' and consume whitespace.
         $this->parens++;
         $args = $this->match('parseEntitiesArguments');
-        if ( ! $this->match(')')) {
+        if( !$this->match(')') ){
+			$this->parens--;
             return;
         }
         $this->parens--;
@@ -514,7 +520,7 @@ class Parser {
     }
 
     private function parseEntitiesLiteral(){
-		return $this->MatchMultiple('parseEntitiesRatio','parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor');
+		return $this->MatchMultiple('parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor');
     }
 
 	// Assignments are argument entities for calls.
@@ -613,22 +619,6 @@ class Parser {
 
 
 	//
-	// A Ratio
-	//
-	//    16/9
-	//
-	private function parseEntitiesRatio(){
-        $c = ord($this->input[$this->pos]);
-        if( $c > 57 || $c < 48 ) return;
-
-        if( $value = $this->match('/^(\d+\/\d+)/') ){
-			return new \Less\Node\Ratio( $value[1] );
-		}
-
-	}
-
-
-	//
 	// A unicode descriptor, as is used in unicode-range
 	//
 	// U+0?? or U+00A1-00A9
@@ -678,28 +668,6 @@ class Parser {
     }
 
     //
-    // A font size/line-height shorthand
-    //
-    //     small/12px
-    //
-    // We need to peek first, or we'll match on keywords and dimensions
-    //
-    private function parseShorthand()
-    {
-        if (! $this->peek('/^[@\w.%-]+\/[@\w.-]+/')) {
-            return;
-        }
-
-		$this->save();
-
-        if (($a = $this->match('parseEntity')) && $this->match('/') && ($b = $this->match('parseEntity'))) {
-            return new \Less\Node\Shorthand($a, $b);
-        }
-
-		$this->restore();
-    }
-
-	//
 	// extend syntax - used to extend selectors
 	//
 	function parseExtend($isRule = false){
@@ -1143,8 +1111,6 @@ class Parser {
 			if( !$this->env->compress && ($name[0] != '@') && preg_match('/^([^@+\/\'"*`(;{}-]*);/', $this->current, $match) ){
                 $this->pos += strlen($match[0]) - 1;
                 $value = new \Less\Node\Anonymous($match[1]);
-            } else if ($name === "font") {
-                $value = $this->match('parseFont');
             } else {
                 $value = $this->match('parseValue');
             }
@@ -1236,7 +1202,7 @@ class Parser {
 				$nodes[] = $e;
 			} elseif ($this->match('(')) {
 				$p = $this->match('parseProperty');
-				$e = $this->match('parseEntity');
+				$e = $this->match('parseValue');
 				if ($this->match(')')) {
 					if ($p && $e) {
 						$nodes[] = new \Less\Node\Paren(new \Less\Node\Rule($p, $e, null, $this->pos, true));
@@ -1371,26 +1337,6 @@ class Parser {
 		$this->restore();
     }
 
-    private function parseFont()
-    {
-        $value = array();
-        $expression = array();
-
-        while ($e = $this->match('parseShorthand') ?: $this->match('parseEntity')) {
-            $expression[] = $e;
-        }
-        $value[] = new \Less\Node\Expression($expression);
-
-        if ($this->match(',')) {
-            while ($e = $this->match('parseExpression')) {
-                $value[] = $e;
-                if (! $this->match(',')) {
-                    break;
-                }
-            }
-        }
-        return new \Less\Node\Value($value);
-    }
 
     //
     // A Value is a comma-delimited list of Expressions
@@ -1427,10 +1373,11 @@ class Parser {
 
 		if( $this->match('(') ){
 			$this->parens++;
-			$e = $this->match('parseExpression');
-			$this->expect(')');
-			$this->parens--;
-			return $e;
+			if( $e = $this->match('parseExpression') ){
+				$this->expect(')');
+				$this->parens--;
+				return $e;
+			}
 		}
 	}
 
@@ -1525,20 +1472,23 @@ class Parser {
     //     1px solid black
     //     @var * 2
     //
-    private function parseExpression ()
-    {
+    private function parseExpression (){
         $entities = array();
 
         while ($e = $this->match('parseAddition') ?: $this->match('parseEntity')) {
             $entities[] = $e;
+
+			if( !$this->peek('/^\/\*/') && ($delim = $this->match('/')) ){
+				$entities[] = new \Less\Node\Anonymous($delim);
+			}
+
         }
         if (count($entities) > 0) {
             return new \Less\Node\Expression($entities);
         }
     }
 
-    private function parseProperty ()
-    {
+    private function parseProperty (){
         if ($name = $this->match('/^(\*?-?[_a-z0-9-]+)\s*:/')) {
             return $name[1];
         }
@@ -1566,7 +1516,7 @@ class Parser {
 
 	function pre($arg){
 		ob_start();
-		echo '<pre>';
+		echo "\n\n<pre>";
 		if( $arg === 0 ){
 			echo '0';
 		}elseif( !$arg ){
@@ -1574,6 +1524,6 @@ class Parser {
 		}else{
 			print_r($arg);
 		}
-		echo '</pre>';
+		echo "</pre>\n";
 		return ob_get_clean();
 	}
