@@ -648,7 +648,7 @@ class Environment
 		return $this->mix($this->rgb(0, 0, 0), $color, $amount);
 	}
 
-	function extract($index, $values) {
+	function extract($values, $index ) {
 		$index = $index->value - 1; // (1-based index)
 		return $values->value[$index];
 	}
