@@ -415,7 +415,7 @@ class Environment
 		if( $threshold === false ){
 			$threshold = 0.43;
 		} else {
-			$threshold = $threshold->value;
+			$threshold = \Less\Environment::number($threshold);
 		}
 
 		if (((0.2126 * ($color->rgb[0]/255) + 0.7152 * ($color->rgb[1]/255) + 0.0722 * ($color->rgb[2]/255)) * $color->alpha) < $threshold) {
