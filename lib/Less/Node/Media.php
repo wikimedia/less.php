@@ -11,15 +11,13 @@ class Media {
 
 	public function __construct($value = array(), $features = array()) {
 		$selectors = $this->emptySelectors();
-
-		$this->features = new Value($features);
-		$this->ruleset = new Ruleset($selectors, $value);
+		$this->features = new \Less\Node\Value($features);
+		$this->ruleset = new \Less\Node\Ruleset($selectors, $value);
 		$this->ruleset->allowImports = true;
 	}
 
 	public function toCSS($ctx, $env) {
 		$features = $this->features->toCSS($env);
-
 		$this->ruleset->root = (count($ctx) === 0 ?: isset($ctx[0]['multiMedia']) && $ctx[0]['multiMedia']);
 		return '@media ' . $features . ($env->compress ? '{' : " {\n  ")
 			. str_replace("\n", "\n  ", trim($this->ruleset->toCSS($ctx, $env)))
@@ -28,7 +26,7 @@ class Media {
 
 	public function compile($env) {
 
-		$media = new Media(array(), array());
+		$media = new \Less\Node\Media(array(), array());
 		$media->features = $this->features->compile($env);
 
 		$env->mediaPath[] = $media;
@@ -57,8 +55,8 @@ class Media {
 	}
 
 	public function emptySelectors(){
-		$el = new Element('','&', 0);
-		return array(new Selector(array($el)));
+		$el = new \Less\Node\Element('','&', 0);
+		return array(new \Less\Node\Selector(array($el)));
 	}
 
 
@@ -68,7 +66,7 @@ class Media {
 
 		if (count($env->mediaBlocks) > 1) {
 			$selectors = $this->emptySelectors();
-			$result = new Ruleset($selectors, $env->mediaBlocks);
+			$result = new \Less\Node\Ruleset($selectors, $env->mediaBlocks);
 			$result->multiMedia = true;
 		}
 
@@ -94,20 +92,20 @@ class Media {
 		//	a and e
 		//	b and c and d
 		//	b and c and e
-		$this->features = new Value(array_map(function($path) {
+		$this->features = new \Less\Node\Value(array_map(function($path) {
 			$path = array_map(function($fragment) {
-				return method_exists($fragment, 'toCSS') ? $fragment : new Anonymous($fragment);
+				return method_exists($fragment, 'toCSS') ? $fragment : new \Less\Node\Anonymous($fragment);
 			}, $path);
 
 			for ($i = count($path) - 1; $i > 0; $i--) {
-				array_splice($path, $i, 0, array(new Anonymous('and')));
+				array_splice($path, $i, 0, array(new \Less\Node\Anonymous('and')));
 			}
 
 			return new \Less\Node\Expression($path);
 		}, $this->permute($path)));
 
 		// Fake a tree-node that doesn't output anything.
-		return new Ruleset(array(), array());
+		return new \Less\Node\Ruleset(array(), array());
 	}
 
 	public function permute($arr) {
@@ -127,6 +125,7 @@ class Media {
 				);
 			}
 		}
+
 		return $result;
 	}
 
