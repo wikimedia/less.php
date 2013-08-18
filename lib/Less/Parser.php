@@ -16,6 +16,8 @@ class Parser {
 	 */
     private $current;
 
+    private $parens = 0;
+
 
     /**
      * @var string
@@ -484,10 +486,12 @@ class Parser {
 		}
 
         $this->match('('); // Parse the '(' and consume whitespace.
+        $this->parens++;
         $args = $this->match('parseEntitiesArguments');
         if ( ! $this->match(')')) {
             return;
         }
+        $this->parens--;
         if ($name) {
             return new \Less\Node\Call($name, $args, $index, $this->filename, $this->env->rootpath );
         }
@@ -763,6 +767,7 @@ class Parser {
 
 		if( $this->match('(') ){
 			$expressions = array();
+			$this->parens++;
 
 			while( $arg = $this->match('parseExpression') ){
 				$nameLoop = null;
@@ -794,6 +799,7 @@ class Parser {
 					continue;
 				}
 
+				$this->parens--;
 				if ($this->match(';') || $isSemiColonSeperated) {
 
 					if ($expressionContainsNamed) {
@@ -1417,25 +1423,39 @@ class Parser {
         }
     }
 
-    private function parseSub ()
-    {
-        if ($this->match('(') && ($e = $this->match('parseExpression')) && $this->match(')')) {
-            return $e;
-        }
-    }
+	private function parseSub (){
 
-    private function parseMultiplication() {
-        $operation = false;
-        if ($m = $this->match('parseOperand')) {
-            while (!$this->peek('/^\/[*\/]/') && ($op = ($this->match('/') ?: $this->match('*'))) && ($a = $this->match('parseOperand'))) {
-                $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a));
-            }
-            return $operation ?: $m;
-        }
-    }
+		if( $this->match('(') ){
+			$this->parens++;
+			$e = $this->match('parseExpression');
+			$this->expect(')');
+			$this->parens--;
+			return $e;
+		}
+	}
 
-    private function parseAddition ()
-    {
+	private function parseMultiplication() {
+		$operation = false;
+		$expression = array();
+
+		if ($m = $this->match('parseOperand')) {
+			while( !$this->peek('/^\/[*\/]/') && ($op = ($this->match('/') ?: $this->match('*'))) ){
+
+				if( $op === '/' && !$this->parens ){
+					$expression[] = ($operation ? $operation : $m);
+					$expression[] = new \Less\Node\Anonymous('/');
+					$operation = new \Less\Node\Expression($expression);
+				}elseif( $a = $this->match('parseOperand') ){
+					$operation = new \Less\Node\Operation( $op, array( $operation ? $operation : $m, $a ) );
+				}else{
+					break;
+				}
+			}
+			return ($operation ? $operation : $m);
+		}
+	}
+
+    private function parseAddition (){
         $operation = false;
         if ($m = $this->match('parseMultiplication')) {
             while (($op = $this->match('/^[-+]\s+/') ?: ( !$this->isWhitespace($this->input[$this->pos-1]) ? ($this->match('+') ?: $this->match('-')) : false )) && ($a = $this->match('parseMultiplication'))) {
