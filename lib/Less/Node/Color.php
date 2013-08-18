@@ -79,32 +79,63 @@ class Color
         return new \Less\Node\Color($result, $this->alpha + $other->alpha);
     }
 
-    public function toHSL()
-    {
-        $r = $this->rgb[0] / 255;
-        $g = $this->rgb[1] / 255;
-        $b = $this->rgb[2] / 255;
-        $a = $this->alpha;
+	public function toHSL(){
+		$r = $this->rgb[0] / 255;
+		$g = $this->rgb[1] / 255;
+		$b = $this->rgb[2] / 255;
+		$a = $this->alpha;
 
-        $max = max($r, $g, $b);
-        $min = min($r, $g, $b);
-        $l = ($max + $min) / 2;
-        $d = $max - $min;
+		$max = max($r, $g, $b);
+		$min = min($r, $g, $b);
+		$l = ($max + $min) / 2;
+		$d = $max - $min;
 
-        if ($max === $min) {
-            $h = $s = 0;
-        } else {
-            $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
+		if( $max === $min ){
+			$h = $s = 0;
+		} else {
+			$s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
 
-            switch ($max) {
-                case $r: $h = ($g - $b) / $d + ($g < $b ? 6 : 0); break;
-                case $g: $h = ($b - $r) / $d + 2;                 break;
-                case $b: $h = ($r - $g) / $d + 4;                 break;
-            }
-            $h /= 6;
-        }
-        return array('h' => $h * 360, 's' => $s, 'l' => $l, 'a' => $a );
-    }
+			switch ($max) {
+				case $r: $h = ($g - $b) / $d + ($g < $b ? 6 : 0); break;
+				case $g: $h = ($b - $r) / $d + 2;                 break;
+				case $b: $h = ($r - $g) / $d + 4;                 break;
+			}
+			$h /= 6;
+		}
+		return array('h' => $h * 360, 's' => $s, 'l' => $l, 'a' => $a );
+	}
+
+	//Adapted from http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
+	function toHSV() {
+		$r = $this->rgb[0] / 255;
+		$g = $this->rgb[1] / 255;
+		$b = $this->rgb[2] / 255;
+		$a = $this->alpha;
+
+		$max = max($r, $g, $b);
+		$min = min($r, $g, $b);
+
+		$v = $max;
+
+		$d = $max - $min;
+		if ($max === 0) {
+			$s = 0;
+		} else {
+			$s = $d / $max;
+		}
+
+		if ($max === $min) {
+			$h = 0;
+		} else {
+			switch($max){
+				case $r: $h = ($g - $b) / $d + ($g < $b ? 6 : 0); break;
+				case $g: $h = ($b - $r) / $d + 2; break;
+				case $b: $h = ($r - $g) / $d + 4; break;
+			}
+			$h /= 6;
+		}
+		return array('h'=> $h * 360, 's'=> $s, 'v'=> $v, 'a' => $a );
+	}
 
     public function toARGB()
     {

@@ -239,10 +239,24 @@ class Environment
 		return new \Less\Node\Dimension(round($c['s'] * 100), '%');
 	}
 
-	public function lightness($color)
-	{
+	public function lightness($color){
 		$c = $color->toHSL();
 		return new \Less\Node\Dimension(round($c['l'] * 100), '%');
+	}
+
+	function hsvhue( $color ){
+		$hsv = $color->toHSV();
+		return new \Less\Node\Dimension( round($hsv['h']) );
+	}
+
+	function hsvsaturation( $color ){
+		$hsv = $color->toHSV();
+		return new \Less\Node\Dimension( round($hsv['s'] * 100), '%' );
+	}
+
+	function hsvvalue( $color ){
+		$hsv = $color->toHSV();
+		return new \Less\Node\Dimension( round($hsv['v'] * 100), '%' );
 	}
 
 	public function red($color) {
