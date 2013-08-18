@@ -56,7 +56,9 @@ class Parser {
 
 		self::IncludeScripts( dirname(__FILE__) );
 
-		if( $env ){
+		// Top parser on an import tree must be sure there is one "env"
+		// which will then be passed around by reference.
+		if( $env instanceof \Less\Environment ){
 			$this->env = $env;
 		}else{
 			$this->env = new \Less\Environment();
