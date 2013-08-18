@@ -4,12 +4,12 @@
 
 .mix (@a: 10) {
   .inner {
-    height: @a * 10;
+    height: (@a * 10);
 
     .innest {
-      width: @a;  
-      .mix-inner(@a * 2);
-    }  
+      width: @a;
+      .mix-inner((@a * 2));
+    }
   }
 }
 

@@ -2,33 +2,40 @@
 
 namespace Less\Node;
 
-class Operation
-{
-    public function __construct($op, $operands)
-    {
-        $this->op = trim($op);
-        $this->operands = $operands;
-    }
+class Operation{
+	public function __construct($op, $operands){
+		$this->op = trim($op);
+		$this->operands = $operands;
 
-    public function compile($env)
-    {
-        $a = $this->operands[0]->compile($env);
-        $b = $this->operands[1]->compile($env);
 
-        if ($a instanceof \Less\Node\Dimension && $b instanceof \Less\Node\Color) {
-            if ($this->op === '*' || $this->op === '+') {
-                $temp = $b;
-                $b = $a;
-                $a = $temp;
-            } else {
-                throw new \Less\CompilerError("Can't subtract or divide a color from a number");
-            }
-        }
+	}
 
-		if ( !$a || !method_exists($a,'operate') ) {
-			throw new \Less\CompilerError("Operation on an invalid type");
-		}
+	public function compile($env){
+		$a = $this->operands[0]->compile($env);
+		$b = $this->operands[1]->compile($env);
 
-        return $a->operate($this->op, $b);
-    }
+
+	    if( count($env->parensStack) ){
+			if( $a instanceof \Less\Node\Dimension && $b instanceof \Less\Node\Color ){
+				if ($this->op === '*' || $this->op === '+') {
+					$temp = $b;
+					$b = $a;
+					$a = $temp;
+				} else {
+					throw new \Less\CompilerError("Can't subtract or divide a color from a number");
+				}
+			}
+			if ( !$a || !method_exists($a,'operate') ) {
+				throw new \Less\CompilerError("Operation on an invalid type");
+			}
+
+	        return $a->operate($this->op, $b);
+	    } else {
+	        return new \Less\Node\Operation($this->op, array($a, $b) );
+	    }
+	}
+
+	function toCSS($env){
+		return $this->operands[0]->toCSS($env) . " " . $this->op . " " . $this->operands[1]->toCSS($env);
+	}
 }

@@ -16,9 +16,6 @@ class Parser {
 	 */
     private $current;
 
-    private $parens = 0;
-
-
     /**
      * @var string
      */
@@ -179,7 +176,6 @@ class Parser {
 
             $this->css = $root->compile($this->env)->toCSS(array(), $this->env);
 
-			$this->css = preg_replace('/\s+(\/)\s+/',"$1", $this->css);
 			if( $this->env->compress ){
 				$this->css = preg_replace('/(\s)+/',"$1", $this->css);
 			}
@@ -489,9 +485,9 @@ class Parser {
 		}
 
         $this->match('('); // Parse the '(' and consume whitespace.
-        $this->parens++;
+
         $args = $this->match('parseEntitiesArguments');
-		$this->parens--;
+
         if( !$this->match(')') ){
             return;
         }
@@ -1368,10 +1364,9 @@ class Parser {
 	private function parseSub (){
 
 		if( $this->match('(') ){
-			$this->parens++;
 			if( $e = $this->match('parseExpression') ){
 				$this->expect(')');
-				$this->parens--;
+				$e->parens = true;
 				return $e;
 			}
 		}
@@ -1384,11 +1379,9 @@ class Parser {
 		if ($m = $this->match('parseOperand')) {
 			while( !$this->peek('/^\/[*\/]/') && ($op = ($this->match('/') ?: $this->match('*'))) ){
 
-				if( $op === '/' && !$this->parens ){
-					$expression[] = ($operation ? $operation : $m);
-					$expression[] = new \Less\Node\Anonymous('/');
-					$operation = new \Less\Node\Expression($expression);
-				}elseif( $a = $this->match('parseOperand') ){
+				if( $a = $this->match('parseOperand') ){
+					$m->parensInOp = true;
+					$a->parensInOp = true;
 					$operation = new \Less\Node\Operation( $op, array( $operation ? $operation : $m, $a ) );
 				}else{
 					break;
@@ -1402,7 +1395,8 @@ class Parser {
         $operation = false;
         if ($m = $this->match('parseMultiplication')) {
             while (($op = $this->match('/^[-+]\s+/') ?: ( !$this->isWhitespace($this->input[$this->pos-1]) ? ($this->match('+') ?: $this->match('-')) : false )) && ($a = $this->match('parseMultiplication'))) {
-
+				$m->parensInOp = true;
+				$a->parensInOp = true;
                 $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a));
             }
             return $operation ?: $m;
@@ -1441,25 +1435,25 @@ class Parser {
 		}
 	}
 
-    //
-    // An operand is anything that can be part of an operation,
-    // such as a Color, or a Variable
-    //
-    private function parseOperand ()
-    {
-        $negate = false;
-        $p = isset($this->input[$this->pos + 1]) ? $this->input[$this->pos + 1] : '';
-        if ($this->peek('-') && ($p === '@' || $p === '(')) {
-            $negate = $this->match('-');
-        }
-        $o = $this->match('parseSub') ?:
-             $this->match('parseEntitiesDimension') ?:
-             $this->match('parseEntitiesColor') ?:
-             $this->match('parseEntitiesVariable') ?:
-             $this->match('parseEntitiesCall');
+	//
+	// An operand is anything that can be part of an operation,
+	// such as a Color, or a Variable
+	//
+	private function parseOperand (){
+		$negate = false;
+		$p = isset($this->input[$this->pos + 1]) ? $this->input[$this->pos + 1] : '';
+		if ($this->peek('-') && ($p === '@' || $p === '(')) {
+			$negate = $this->match('-');
+		}
+		$o = $this->matchMultiple('parseSub','parseEntitiesDimension','parseEntitiesColor','parseEntitiesVariable','parseEntitiesCall');
 
-        return ($negate ? new \Less\Node\Operation('*', array( new \Less\Node\Dimension(-1), $o)) : $o);
-    }
+		if( $negate ){
+			$o->parensInOp = true;
+			$o = new \Less\Node\Negative($o);
+		}
+
+		return $o;
+	}
 
     //
     // Expressions either represent mathematical operations,

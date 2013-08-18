@@ -47,6 +47,8 @@ class Environment{
 
 	public $charset;
 
+	public $parensStack = array();
+
 	public function __construct(){
 		$this->frames = array();
 		$this->compress = false;
