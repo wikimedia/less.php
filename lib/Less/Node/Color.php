@@ -2,13 +2,11 @@
 
 namespace Less\Node;
 
-class Color
-{
+class Color{
 	var $rgb;
 	var $alpha;
 
-    public function __construct($rgb, $a = 1)
-    {
+    public function __construct($rgb, $a = 1){
         if (is_array($rgb)) {
             $this->rgb = $rgb;
         } else if (strlen($rgb) == 6) {
@@ -19,10 +17,13 @@ class Color
         $this->alpha = is_numeric($a) ? $a : 1;
     }
 
-    public function compile($env = null)
-    {
+    public function compile($env = null){
         return $this;
     }
+
+	public function luma(){
+		return (0.2126 * $this->rgb[0] / 255) + (0.7152 * $this->rgb[1] / 255) + (0.0722 * $this->rgb[2] / 255);
+	}
 
     //
     // If we have some transparency, the only way to represent it

@@ -277,11 +277,7 @@ class Environment
 	}
 
 	function luma ($color) {
-		return new \Less\Node\Dimension(round(
-			(0.2126 * ($color->rgb[0]/255) +
-			0.7152 * ($color->rgb[1]/255) +
-			0.0722 * ($color->rgb[2]/255))
-			* $color->alpha * 100), '%');
+		return new \Less\Node\Dimension(round( $color->luma() * $color->alpha * 100), '%');
 	}
 
 	public function saturate($color, $amount)
@@ -426,13 +422,19 @@ class Environment
 		if( $dark === false ){
 			$dark = $this->rgba(0, 0, 0, 1.0);
 		}
+		//Figure out which is actually light and dark!
+		if( $dark->luma() > $light->luma() ){
+			$t = $light;
+			$light = $dark;
+			$dark = $t;
+		}
 		if( $threshold === false ){
 			$threshold = 0.43;
 		} else {
 			$threshold = \Less\Environment::number($threshold);
 		}
 
-		if (((0.2126 * ($color->rgb[0]/255) + 0.7152 * ($color->rgb[1]/255) + 0.0722 * ($color->rgb[2]/255)) * $color->alpha) < $threshold) {
+		if( ($color->luma() * $color->alpha) < $threshold ){
 			return $light;
 		} else {
 			return $dark;
