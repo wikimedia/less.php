@@ -177,8 +177,14 @@ class Parser {
             return $root;
         } else {
 
-			$temp = $root->compile($this->env);
-            $this->css .= $temp->toCSS(array(), $this->env);
+            $this->css = $root->compile($this->env)->toCSS(array(), $this->env);
+
+			if( $this->env->compress ){
+				$this->css = preg_replace('/(\s)+/',"$1", $this->css);
+			}else{
+				$this->css = preg_replace('/\s+(\/)\s+/',"$1", $this->css);
+			}
+
             return $this;
         }
     }
@@ -269,13 +275,6 @@ class Parser {
         // grammar is mostly white-space insensitive.
         //
         if( $match ){
-
-			static $z = 0;
-			$z++;
-			echo \Less\Pre($z.' '.$tok);
-			echo \Less\Pre($match);
-
-
 			$this->skipWhitespace($length);
             $this->sync();
 
