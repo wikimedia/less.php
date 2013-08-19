@@ -27,7 +27,7 @@ class Dimension{
 	public function toCSS( $env = null ){
 
 		if( (!$env || $env->strictUnits !== false) && !$this->unit->isSingular() ){
-			throw new \Less\Exception\CompilerException("multiple units in dimension: ".$this->unit->toString());
+			throw new \Less\Exception\CompilerException("Multiple units in dimension. Correct the units or use the unit function. Bad unit: ".$this->unit->toString());
 		}
 
 		$value = $this->value;
@@ -70,8 +70,8 @@ class Dimension{
 			}else{
 				$other = $other->convertTo( $this->unit->usedUnits());
 
-				if( $env->strictUnits !== false && $other->unit->toCSS() !== $unit->toCSS() ){
-					throw new \Less\Exception\CompilerException("Incompatible units '".$unit->toCSS() . "' and ".$other->unit->toCSS()+"'.");
+				if( $env->strictUnits !== false && $other->unit->toString() !== $unit->toCSS() ){
+					throw new \Less\Exception\CompilerException("Incompatible units. Change the units or use the unit function. Bad units: '".$unit->toString() . "' and ".$other->unit->toString()+"'.");
 				}
 
 				$value = \Less\Environment::operate($env, $op, $this->value, $other->value);
