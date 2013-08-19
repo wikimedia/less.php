@@ -2,80 +2,113 @@
 
 namespace Less\Node;
 
+
+//
+// CSS @import node
+//
+// The general strategy here is that we don't want to wait
+// for the parsing to be completed, before we start importing
+// the file. That's because in the context of a browser,
+// most of the time will be spent waiting for the server to respond.
+//
+// On creation, we push the import path to our import queue, though
+// `import,push`, we also pass it a callback, which it'll call once
+// the file has been fetched, and parsed.
+//
 class Import{
+
 	public $type = 'Import';
-	public $features;
-	public $skip;
-	public $full_path;
+	public $once;
+	public $index;
 	public $path;
+	public $features;
+	public $rootpath;
+	public $css;
+	public $skip;
 
-    /**
-     * @param $path
-     * @param string $imports
-     * @param \Less\Environment|null $env
-     */
-    public function __construct($path, $full_path, $features = null, $skip ) {
-        $this->_path = $path;
-        $this->full_path = $full_path;
-		$this->skip = $skip;
+	function __construct($path, $features, $once, $index, $rootpath = null ){
+		$this->once = $once;
+		$this->index = $index;
+		$this->path = $path;
 		$this->features = $features;
+		$this->rootpath = $rootpath;
 
-        // The '.less' extension is optional
-        if ($path instanceof \Less\Node\Quoted) {
-            $this->path = preg_match('/(\.[a-z]*$)|([\?;].*)$/', $path->value) ? $path->value : $path->value . '.less';
-        } else {
-            $this->path = isset($path->value->value) ? $path->value->value : $path->value;
-        }
-
-        $this->css = preg_match('/css([\?;].*)?$/', $full_path);
+		$pathValue = $this->getPath();
+		if( $pathValue ){
+			$this->css = preg_match('/css([\?;].*)?$/',$pathValue);
+		}
     }
 
-	function accept( $visitor ){
-		$this->features = $visitor->visit( $this->features );
-		$this->_path = $visitor->visit( $this->_path );
+//
+// The actual import node doesn't return anything, when converted to CSS.
+// The reason is that it's used at the evaluation stage, so that the rules
+// it imports can be treated like any other rules.
+//
+// In `eval`, we make sure all Import nodes get evaluated, recursively, so
+// we end up with a flat structure, which can easily be imported in the parent
+// ruleset.
+//
+
+	function accept($visitor) {
+		$this->features = $visitor->visit($this->features);
+		$this->path = $visitor->visit($this->path);
+		$this->root = $visitor->visit($this->root);
 	}
 
-    public function toCSS($env){
-
+	function toCSS($env) {
 		$features = $this->features ? ' ' . $this->features->toCSS($env) : '';
-        if( $this->css || !$this->full_path ){
-            return "@import " . $this->_path->toCss() . $features . ";\n";
-        } else {
-            return "";
-        }
-    }
 
-    public function compile($env) {
+		if ($this->css) {
+			return "@import " . $this->path->toCSS() . $features . ';\n';
+		} else {
+			return "";
+		}
+	}
 
-		$features = $this->features ? $this->features->compile($env) : null;
+	function getPath(){
+		if ($this->path instanceof \Less\Node\Quoted) {
+			$path = $this->path->value;
+			return ($this->css || preg_match('/(\.[a-z]*$)|([\?;].*)$/',$path)) ? $path : $path . '.less';
+		} else if ($this->path instanceof \Less\Node\URL) {
+			return $this->path->value->value;
+		}
+		return null;
+	}
 
-		// Only pre-compile .less files
-        if ($this->css) {
-            return new \Less\Node\Import( $this->_path, $this->full_path, $features, $this->skip );
+	function compileForImport( $env ){
+		return new \Less\Node\Import( $this->path->compile($env), $this->features, $this->once, $this->index);
+	}
+
+	function compilePath($env) {
+		$path = $this->path->compile($env);
+		if ($this->rootpath && !($path instanceof \Less\Node\URL)) {
+			$pathValue = $path->value;
+			// Add the base path if the import is relative
+			if( $pathValue && !preg_match('/^(?:[a-z\-]+:|\/)/', $pathValue) ){
+				$path->value = $this->rootpath . $pathValue;
+			}
+		}
+		return $path;
+	}
+
+	function compile($env) {
+
+		$features = ( $this->features ? $this->features->compile($env) : null );
+
+		if ($this->skip) { return []; }
+
+		if ($this->css) {
+			return new \Less\Node\Import( $this->compilePath( $env), $features, $this->once, $this->index);
 		}
 
-		if( !$this->full_path ){
-			return $this;
-		}
 
-		if( $this->skip ){
-			return array();
-		}
-
-
+		$full_path = $this->rootpath.$this->getPath();
 		$parser = new \Less\Parser($env);
-		$this->root = $parser->parseFile($this->full_path, true);
-
+		$this->root = $parser->parseFile($full_path, true);
 		$ruleset = new \Less\Node\Ruleset(array(), $this->root->rules );
-
 		$ruleset->evalImports($env);
 
-		if ($env->getDebug()) {
-			array_unshift($ruleset->rules, new \Less\Node\Comment('/**** Start imported file `' . $this->path."` ****/\n", false));
-			array_push($ruleset->rules,    new \Less\Node\Comment('/**** End imported file `' . $this->path."` ****/\n", false));
-		}
-
 		return $this->features ? new \Less\Node\Media($ruleset->rules, $this->features->value) : $ruleset->rules;
-
-    }
+	}
 }
+

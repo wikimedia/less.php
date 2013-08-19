@@ -16,7 +16,7 @@ class Selector {
 		$this->extend = $extend;
 	}
 
-	function accept(visitor) {
+	function accept($visitor) {
 		$this->elements = $visitor->visit($this->elements);
 	}
 

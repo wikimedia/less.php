@@ -201,8 +201,7 @@ class Parser {
 		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
 		$this->filename = $filename;
 
-		if( !$this->env->currentDirectory && $this->filename ){
-			// only works for node, only used for node
+		if( $this->filename ){
 			$this->env->currentDirectory = preg_replace('/[^\/\\\\]*$/','',$this->filename);
 		}
 
@@ -1159,50 +1158,17 @@ class Parser {
 
 		if( $dir && ($path = $this->matchMultiple('parseEntitiesQuoted','parseEntitiesUrl')) ){
 			$features = $this->match('parseMediaFeatures');
-			if( $features ){
-				$features = new \Less\Node\Value($features);
+			if( $this->match(';') ){
+				if( $features ){
+					$features = new \Less\Node\Value($features);
+				}
+
+				$importOnce = ($dir[1] !== 'multiple');
+				return new \Less\Node\Import($path, $features, $importOnce, $this->pos, $this->env->currentDirectory );
 			}
 		}
 
-		if( !$dir || !$path || !$this->match(';') ){
-			$this->restore();
-			return;
-		}
-
-        // Get the actual path
-        // The '.less' extension is optional
-        if($path instanceof \Less\Node\Quoted) {
-            $path_str = preg_match('/(\.[a-z]*$)|([\?;].*)$/', $path->value) ? $path->value : $path->value . '.less';
-        } else {
-            $path_str = isset($path->value->value) ? $path->value->value : $path->value;
-        }
-
-
-		$import_dirs = array_merge( (array)$this->path, $this->import_dirs );
-		$full_path = false;
-		foreach($import_dirs as $dir){
-			$full_path = rtrim($dir,'/').'/'.ltrim($path_str,'/');
-			if( file_exists($full_path) ){
-				$full_path = realpath($full_path);
-				break;
-			}
-			$full_path = false;
-		}
-
-
-
-		//once
-		$skip = false;
-		$importOnce = $dir[1] !== 'multiple';
-		if( $importOnce && in_array($full_path,self::$imports) ){
-			$skip = true;
-		}
-
-		if( $full_path ){
-			self::$imports[] = $full_path;
-		}
-
-		return new \Less\Node\Import($path, $full_path, $features, $skip );
+		$this->restore();
     }
 
 	private function parseMediaFeature() {
