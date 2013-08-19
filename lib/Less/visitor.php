@@ -1,48 +1,46 @@
 <?php
 
-/*
-(function (tree) {
+namespace Less;
 
-    tree.visitor = function(implementation) {
-        this._implementation = implementation;
-    };
+class visitor{
 
-    tree.visitor.prototype = {
-        visit: function(node) {
+	function __construct( $implementation ){
+		$this->_implementation = $implementation;
+	}
 
-            if (node instanceof Array) {
-                return this.visitArray(node);
-            }
+	function visit($node){
+		if( is_array($node) ){
+			return $this->visitArray($node);
+		}
 
-            if (!node || !node.type) {
-                return node;
-            }
+		if( !$node || !$node->type ){
+			return $node;
+		}
 
-            var funcName = "visit" + node.type,
-                func = this._implementation[funcName],
-                visitArgs;
-            if (func) {
-                visitArgs = {visitDeeper: true};
-                node = func(node);
-            }
-            if ((!visitArgs || visitArgs.visitDeeper) && node.accept) {
-                node.accept(this);
-            }
-            return node;
-        },
-        visitArray: function(nodes) {
-            var i, newNodes;
-            for(i = 0; i < nodes.length; i++) {
-                var evald = this.visit(nodes[i]);
-                if (evald instanceof Array) {
-                    newNodes = newNodes.concat(evald);
-                } else {
-                    newNodes.push(evald);
-                }
-            }
-            return newNodes;
-        }
-    };
+		$funcName = "visit" + $node->type,
+		if( isset($this->_implementation[$funcName]) ){
+			$func = $this->_implementation[$funcName];
+			$visitArgs = array('visitDeeper'=> true);
+			$node = call_user_func( $func, $node );
+		}
+		if( (!$visitArgs || $visitArgs['visitDeeper']) && method_exists($node,'accept') ){
+			$node->accept($this);
+		}
+		return $node;
+	}
 
-})(require('./tree'));
-*/
+	function visitArray( $nodes ){
+
+		foreach($nodes as $evld){
+			$evald = $this->visit( $nodes[$i] );
+			if( is_array($evald) ){
+				$newNodes = array_merge($newNodes,$evald);
+			} else {
+				$newNodes[] = $evald;
+			}
+		}
+		return $newNodes;
+	}
+
+}
+
