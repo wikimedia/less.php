@@ -12,14 +12,14 @@ class Url{
 		$this->rootpath = $rootpath;
 	}
 	public function toCSS(){
-	return "url(" . $this->value->toCSS() . ")";
+		return "url(" . $this->value->toCSS() . ")";
 	}
 
 	public function compile($ctx){
 		$val = $this->value->compile($ctx);
 
 		// Add the base path if the URL is relative
-		if( is_string($val->value) && !preg_match('/^(?:[a-z-]+:|\/)/',$val->value) ){
+		if( $this->rootpath && is_string($val->value) && !preg_match('/^(?:[a-z-]+:|\/)/',$val->value) ){
 			$rootpath = $this->rootpath;
 			if ( !$val->quote ){
 				$rootpath = preg_replace('/[\(\)\'"\s]/', '\\$1', $rootpath );
@@ -28,7 +28,7 @@ class Url{
 		}
 
 
-		return new \Less\Node\URL($val, $this->rootpath);
+		return new \Less\Node\URL($val, null);
 	}
 
 }
