@@ -707,9 +707,7 @@ class Environment{
 
 	function datauri($mimetypeNode, $filePathNode = null ) {
 
-		if( $filePathNode ){
-			$filePath = $filePathNode->value;
-		}
+		$filePath = ( $filePathNode ? $filePathNode->value : null );
 		$mimetype = $mimetypeNode->value;
 		$useBase64 = false;
 

@@ -5,12 +5,14 @@ namespace Less\Node;
 class Extend{
 
 	var $selector;
+	var $option;
 	var $index;
 
 	static $selfSelectors;
 
-	function __construct($elements, $index){
+	function __construct($elements, $option, $index){
 		$this->selector = new \Less\Node\Selector($elements);
+		$this->option = $option;
 		$this->index = $index;
 	}
 

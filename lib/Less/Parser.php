@@ -671,22 +671,37 @@ class Parser {
 	//
 	function parseExtend($isRule = false){
 
-		$index = $this->pos;
 		$elements = array();
+		$index = $this->pos;
+		$option;
 
 		if( !$this->match( $isRule ? '/^&:extend\(/' : '/^:extend\(/' ) ){ return; }
 
-        while( $e = $this->match('/^[#.](?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/') ){
+
+		while( true ){
+
+			$option = $this->match('/^(any|deep|all)(?=\s*\))/');
+			if( $option ){ break; }
+			$e = $this->match('/^[#.](?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/');
+			if( !$e ){ break; }
 			$elements[] = new \Less\Node\Element( null, $e, $this->pos );
 		}
 
 		$this->expect('/^\)/');
 
+		if( $option ){
+			$option = $option[1];
+		}
+
+		//if( $option != "all" ){
+		//	error(":extend only supports the all option at the moment, please specify it after your selector, e.g. :extend(.a all)");
+		//}
+
 		if( $isRule ){
 			$this->expect('/^;/');
 		}
 
-		return new \Less\Node\Extend( $elements, $index );
+		return new \Less\Node\Extend( $elements, $option, $index );
 	}
 
 	function parseExtendRule(){
