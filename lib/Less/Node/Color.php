@@ -67,7 +67,7 @@ class Color{
     // our result, in the form of an integer triplet,
     // we create a new Color node to hold the result.
     //
-    public function operate($op, $other) {
+    public function operate($env, $op, $other) {
         $result = array();
 
         if (! ($other instanceof \Less\Node\Color)) {
@@ -75,7 +75,7 @@ class Color{
         }
 
         for ($c = 0; $c < 3; $c++) {
-            $result[$c] = \Less\Environment::operate($op, $this->rgb[$c], $other->rgb[$c]);
+            $result[$c] = \Less\Environment::operate($env, $op, $this->rgb[$c], $other->rgb[$c]);
         }
         return new \Less\Node\Color($result, $this->alpha + $other->alpha);
     }

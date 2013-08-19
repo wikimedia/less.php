@@ -30,6 +30,14 @@ class Unit{
 		return "";
 	}
 
+	function toString(){
+		$returnStr = implode('*',$this->numerator);
+		foreach($this->denominator as $d){
+			$returnStr .= '/'.$d;
+		}
+		return $returnStr;
+	}
+
 	function compare($other) {
 		return $this->is( $other->toCSS() ) ? 0 : -1;
 	}
@@ -44,6 +52,10 @@ class Unit{
 
 	function isEmpty(){
 		return count($this->numerator) === 0 && count($this->denominator) === 0;
+	}
+
+	function isSingular() {
+		return count($this->numerator) <= 1 && count($this->denominator) == 0;
 	}
 
 	function map($callback){

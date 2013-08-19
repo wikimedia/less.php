@@ -26,6 +26,10 @@ class Dimension{
 
 	public function toCSS( $env = null ){
 
+		if( (!$env || $env->strictUnits !== false) && !$this->unit->isSingular() ){
+			throw new \Less\Exception\CompilerException("multiple units in dimension: ".$this->unit->toString());
+		}
+
 		$value = $this->value;
 		$strValue = (string)$value;
 
@@ -51,9 +55,9 @@ class Dimension{
     // In an operation between two Dimensions,
     // we default to the first Dimension's unit,
     // so `1px + 2em` will yield `3px`.
-    public function operate($op, $other){
+    public function operate($env, $op, $other){
 
-		$value = \Less\Environment::operate($op, $this->value, $other->value);
+		$value = \Less\Environment::operate($env, $op, $this->value, $other->value);
 		$unit = clone $this->unit;
 
 		if( $op === '+' || $op === '-' ){
@@ -66,11 +70,11 @@ class Dimension{
 			}else{
 				$other = $other->convertTo( $this->unit->usedUnits());
 
-				if( $other->unit->toCSS() != $unit->toCSS() ){
+				if( $env->strictUnits !== false && $other->unit->toCSS() !== $unit->toCSS() ){
 					throw new \Less\Exception\CompilerException("Incompatible units '".$unit->toCSS() . "' and ".$other->unit->toCSS()+"'.");
 				}
 
-				$value = \Less\Environment::operate($op, $this->value, $other->value);
+				$value = \Less\Environment::operate($env, $op, $this->value, $other->value);
 			}
 		}elseif( $op === '*' ){
 			$unit->numerator = array_merge($unit->numerator, $other->unit->numerator);

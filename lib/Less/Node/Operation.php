@@ -29,7 +29,7 @@ class Operation{
 				throw new \Less\CompilerError("Operation on an invalid type");
 			}
 
-			return $a->operate($this->op, $b);
+			return $a->operate($env,$this->op, $b);
 		} else {
 			return new \Less\Node\Operation($this->op, array($a, $b) );
 		}

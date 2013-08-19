@@ -51,6 +51,8 @@ class Environment{
 
 	public $strictMaths;
 
+	public $strictUnits = false;
+
 	public function __construct(){
 		$this->frames = array();
 		$this->compress = false;
@@ -137,8 +139,8 @@ class Environment{
 		$this->frames = array_merge($this->frames, $frames);
 	}
 
-	static public function operate ($op, $a, $b)
-	{
+	//tree.operate()
+	static public function operate ($env, $op, $a, $b){
 		switch ($op) {
 			case '+': return $a + $b;
 			case '-': return $a - $b;
