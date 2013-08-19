@@ -15,6 +15,7 @@ class Expression {
 	public function compile($env) {
 
 		$inParenthesis = $this->parens && !$this->parensInOp;
+		$doubleParen = false;
 		if( $inParenthesis ) {
 			$env->inParenthesis();
 		}
@@ -33,6 +34,10 @@ class Expression {
 				$this->value = array_slice($this->value,0);
 			}
 
+			if( property_exists($this->value[0], 'parens') && $this->value[0]->parens && !$this->value[0]->parensInOp ){
+				$doubleParen = true;
+			}
+
 			$returnValue = $this->value[0]->compile($env);
 		} else {
 			$returnValue = $this;
@@ -40,7 +45,7 @@ class Expression {
 		if( $inParenthesis ){
 			$env->outOfParenthesis();
 		}
-		if( $this->parens && $this->parensInOp && !$env->isMathsOn() ){
+		if( $this->parens && $this->parensInOp && !$env->isMathsOn() && !$doubleParen ){
 			$returnValue = new \Less\Node\Paren($returnValue);
 		}
 		return $returnValue;
