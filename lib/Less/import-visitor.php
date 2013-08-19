@@ -5,9 +5,11 @@ namespace Less;
 class importVisitor{
 
 	public $_visitor;
+	public $_importer;
 
-	function __construct( $root ){
+	function __construct( $root, $importer = null ){
 		$this->_visitor = new \Less\visitor($this);
+		$this->_importer = $importer;
 		$this->_visitor->visit($root);
 	}
 

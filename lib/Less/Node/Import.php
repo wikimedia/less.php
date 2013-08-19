@@ -93,9 +93,17 @@ class Import{
 
 	function compile($env) {
 
+		//import once
+		$full_path = $this->rootpath.$this->getPath();
+		$realpath = realpath($full_path);
+		if( $this->once && $realpath && in_array($realpath,\Less\Parser::$imports) ){
+			$this->skip = true;
+		}
+
+
 		$features = ( $this->features ? $this->features->compile($env) : null );
 
-		if ($this->skip) { return []; }
+		if ($this->skip) { return array(); }
 
 		if ($this->css) {
 			$temp = new \Less\Node\Import( $this->compilePath( $env), $features, $this->once, $this->index);
@@ -103,7 +111,7 @@ class Import{
 		}
 
 
-		$full_path = $this->rootpath.$this->getPath();
+		\Less\Parser::$imports[] = $realpath;
 		$parser = new \Less\Parser($env);
 		$this->root = $parser->parseFile($full_path, true);
 		$ruleset = new \Less\Node\Ruleset(array(), $this->root->rules );
