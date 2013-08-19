@@ -37,9 +37,25 @@ class Rule
         }
     }
 
-    public function compile ($context)
-    {
-        return new \Less\Node\Rule($this->name, $this->value->compile($context), $this->important, $this->index, $this->inline);
+    public function compile ($env){
+
+		$strictMathsBypass = false;
+		if( $this->name === "font" && $env->strictMaths === false ){
+			$strictMathsBypass = true;
+			$env->strictMaths = true;
+		}
+		try {
+			return new \Less\Node\Rule($this->name,
+										$this->value->compile($env),
+										$this->important,
+										$this->index, $this->inline);
+		}
+		catch(\Exception $e){
+			if( $strictMathsBypass ){
+				$env->strictMaths = false;
+			}
+		}
+
     }
 
 	function makeImportant(){

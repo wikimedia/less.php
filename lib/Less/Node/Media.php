@@ -27,7 +27,19 @@ class Media {
 	public function compile($env) {
 
 		$media = new \Less\Node\Media(array(), array());
-		$media->features = $this->features->compile($env);
+
+		$strictMathsBypass = false;
+		if( $env->strictMaths === false) {
+			$strictMathsBypass = true;
+			$env->strictMaths = true;
+		}
+		try {
+			$media->features = $this->features->compile($env);
+		}catch(\Exception $e){
+			if( $strictMathsBypass ){
+				$env->strictMaths = false;
+			}
+		}
 
 		$env->mediaPath[] = $media;
 		$env->mediaBlocks[] = $media;
