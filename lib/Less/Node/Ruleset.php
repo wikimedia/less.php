@@ -50,10 +50,12 @@ class Ruleset{
 		// currrent selectors
 		array_unshift($env->selectors,$this->selectors);
 
+
 		// Evaluate imports
 		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
 			$ruleset->evalImports($env);
 		}
+
 
 		// Store the frames around mixin definitions,
 		// so they can be evaluated like closures when the time comes.
@@ -144,7 +146,11 @@ class Ruleset{
 
 			if( $rule instanceof \Less\Node\Import  ){
 				$rules = $rule->compile($env);
-				array_splice($this->rules, $i, 1, $rules);
+				if( is_array($rules) ){
+					array_splice($this->rules, $i, 1, $rules);
+				}else{
+					array_splice($this->rules, $i, 1, array($rules));
+				}
 				if( count($rules) ){
 					$i += count($rules)-1;
 				}
@@ -252,7 +258,6 @@ class Ruleset{
 		}
 
 
-
 		// Compile rules and rulesets
 		foreach($this->rules as $rule) {
 			if (isset($rule->rules) || ($rule instanceof \Less\Node\Media)) {
@@ -289,7 +294,6 @@ class Ruleset{
 				}
 			}
 		}
-
 
         // Remove last semicolon
 		if( $env->compress && count($rules) ){

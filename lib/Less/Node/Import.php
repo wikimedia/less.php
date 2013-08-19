@@ -59,7 +59,7 @@ class Import{
 		$features = $this->features ? ' ' . $this->features->toCSS($env) : '';
 
 		if ($this->css) {
-			return "@import " . $this->path->toCSS() . $features . ';\n';
+			return "@import " . $this->path->toCSS() . $features . ";\n";
 		} else {
 			return "";
 		}
@@ -98,7 +98,8 @@ class Import{
 		if ($this->skip) { return []; }
 
 		if ($this->css) {
-			return new \Less\Node\Import( $this->compilePath( $env), $features, $this->once, $this->index);
+			$temp = new \Less\Node\Import( $this->compilePath( $env), $features, $this->once, $this->index);
+			return $temp;
 		}
 
 
