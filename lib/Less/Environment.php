@@ -705,12 +705,12 @@ class Environment{
 		return $values->value[$index];
 	}
 
-	function datauri($mimetype, $filePath = null ) {
+	function datauri($mimetypeNode, $filePathNode = null ) {
 
-		if( $filePath ){
-			$filePath = $filePath->value;
+		if( $filePathNode ){
+			$filePath = $filePathNode->value;
 		}
-		$mimetype = $mimetype->value;
+		$mimetype = $mimetypeNode->value;
 		$useBase64 = false;
 
 		$args = 2;
@@ -758,7 +758,8 @@ class Environment{
 		$DATA_URI_MAX_KB = 32;
 		$fileSizeInKB = round( strlen($buf) / 1024 );
 		if( $fileSizeInKB >= $DATA_URI_MAX_KB ){
-			return new \Less\Node\Url( new \Less\Node\Anonymous($filePath) );
+			$url = new \Less\Node\Url( ($filePathNode ? $filePathNode : $mimetypeNode), $this->rootpath);
+			return $url.compile($this);
 		}
 
 		if( $buf ){
