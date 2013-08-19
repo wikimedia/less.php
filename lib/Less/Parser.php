@@ -1365,7 +1365,8 @@ class Parser {
 	private function parseSub (){
 
 		if( $this->match('(') ){
-			if( $e = $this->match('parseExpression') ){
+			if( $a = $this->match('parseAddition') ){
+				$e = new \Less\Node\Expression( array($a) );
 				$this->expect(')');
 				$e->parens = true;
 				return $e;
