@@ -4,7 +4,7 @@ namespace Less\Node;
 
 class Expression {
 
-	public $value;
+	public $value = array();
 	public $parens = false;
 	public $parensInOp = false;
 
@@ -56,4 +56,17 @@ class Expression {
 		return implode(' ',$ret);
 	}
 
+	function throwAwayComments() {
+
+		if( is_array($this->value) ){
+			$new_value = array();
+			foreach($this->value as $v){
+				if( $v instanceof \Less\Node\Comment ){
+					continue;
+				}
+				$new_value[] = $v;
+			}
+			$this->value = $new_value;
+		}
+	}
 }

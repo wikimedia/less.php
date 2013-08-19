@@ -732,6 +732,7 @@ class Parser {
 
 			while( $arg = $this->match('parseExpression') ){
 				$nameLoop = null;
+				$arg->throwAwayComments();
 				$value = $arg;
 
 				// Variable
@@ -1472,8 +1473,8 @@ class Parser {
 
         while ($e = $this->match('parseAddition') ?: $this->match('parseEntity')) {
             $entities[] = $e;
-
-			if( !$this->peek('/^\/\*/') && ($delim = $this->match('/')) ){
+			// operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
+			if( !$this->peek('/^\/[\/*]/') && ($delim = $this->match('/')) ){
 				$entities[] = new \Less\Node\Anonymous($delim);
 			}
 
