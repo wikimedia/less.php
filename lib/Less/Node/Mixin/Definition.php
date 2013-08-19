@@ -49,6 +49,8 @@ class Definition extends \Less\Node\Ruleset
 		$name;
 		$isNamedFound;
 
+		//$mixinEnv = $mixinEnv->copyEvalEnv( array_merge( array($frame), $mixinEnv->frames) );
+
 		$args = array_slice($args,0);
 
 		foreach($args as $i => $arg){
@@ -101,6 +103,7 @@ class Definition extends \Less\Node\Ruleset
 						$val = $val->compile($env);
 					} else if ( isset($param['value']) ) {
 						$val = $param['value']->compile($mixinEnv);
+						$frame->resetCache();
 					} else {
 						throw new \Less\Exception\CompilerException("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
 					}

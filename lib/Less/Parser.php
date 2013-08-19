@@ -203,7 +203,7 @@ class Parser {
 
 		if( !$this->env->currentDirectory && $this->filename ){
 			// only works for node, only used for node
-			$this->env->currentDirectory = preg_replace('/[^\/\\]*$/','',$this->filename);
+			$this->env->currentDirectory = preg_replace('/[^\/\\\\]*$/','',$this->filename);
 		}
 
 		return $this->parse(file_get_contents($filename), $returnRoot);
