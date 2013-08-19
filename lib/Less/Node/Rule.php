@@ -9,6 +9,7 @@ class Rule
 	public $important;
 	public $index;
 	public $inline;
+	public $variable;
 
     public function __construct($name, $value, $important = null, $index = null, $inline = false)
     {

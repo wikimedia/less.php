@@ -68,6 +68,20 @@ class Ruleset
 			$rule = $ruleset->rules[$i];
 			if( $rule instanceof \Less\Node\Mixin\Call ){
 				$rules = $rule->compile($env);
+
+				$temp = array();
+				foreach($rules as $r){
+					if( ($r instanceof \Less\Node\Rule) && $r->variable ){
+						// do not pollute the scope if the variable is
+						// already there. consider returning false here
+						// but we need a way to "return" variable from mixins
+						if( !$ruleset->variable($r->name) ){
+							$temp[] = $r;
+						}
+					}
+				}
+				$rules = $temp;
+
 				array_splice($ruleset->rules, $i, 1, $rules);
 				$i += count($rules)-1;
 				$ruleset->resetCache();
