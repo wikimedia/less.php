@@ -4,6 +4,7 @@ namespace Less\Node;
 
 class Extend{
 
+	public $type = 'Extend';
 	var $selector;
 	var $option;
 	var $index;
@@ -14,6 +15,10 @@ class Extend{
 		$this->selector = new \Less\Node\Selector($elements);
 		$this->option = $option;
 		$this->index = $index;
+	}
+
+	function accept( $visitor ){
+		$this->selector = $visitor->visit( $this->ruleset );
 	}
 
 	function compile( $env, $selectors = array() ){

@@ -2,8 +2,10 @@
 
 namespace Less\Node;
 
-class Comment
-{
+class Comment{
+
+	public $type = 'Comment';
+
     public function __construct($value, $silent)
     {
         $this->value = $value;

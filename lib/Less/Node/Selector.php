@@ -6,6 +6,7 @@ namespace Less\Node;
 
 class Selector {
 
+	public $type = 'Selector';
 	public $elements;
 	public $extend;
 	private $_css;
@@ -13,6 +14,10 @@ class Selector {
 	public function __construct($elements, $extend = null) {
 		$this->elements = $elements;
 		$this->extend = $extend;
+	}
+
+	function accept(visitor) {
+		$this->elements = $visitor->visit($this->elements);
 	}
 
 	public function match($other) {
@@ -34,8 +39,7 @@ class Selector {
 		return true;
 	}
 
-	public function toCSS ($env)
-	{
+	public function toCSS ($env){
 		if ($this->_css) {
 			return $this->_css;
 		}

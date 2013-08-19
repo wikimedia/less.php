@@ -2,14 +2,14 @@
 
 namespace Less\Node;
 
-class Directive
-{
+class Directive{
+
+	public $type = 'Directive';
     public $name;
     public $value;
     public $ruleset;
 
-    public function __construct($name, $value = null)
-    {
+    public function __construct($name, $value = null){
         $this->name = $name;
         if (is_array($value)) {
             $this->ruleset = new Ruleset(false, $value);
@@ -18,6 +18,11 @@ class Directive
             $this->value = $value;
         }
     }
+
+	function accept( $visitor ){
+		$this->ruleset = $visitor->visit( $this->ruleset );
+		$this->value = $visitor->visit( $this->value );
+	}
 
     public function toCSS($ctx, $env)
     {

@@ -3,6 +3,7 @@
 namespace Less\Node;
 
 class Url{
+	public $type = "Url";
 	public $attrs;
 	public $value;
 	public $rootpath;
@@ -11,6 +12,11 @@ class Url{
 		$this->value = $value;
 		$this->rootpath = $rootpath;
 	}
+
+	function accept( $visitor ){
+		$this->value = $visitor->visit($this->value);
+	}
+
 	public function toCSS(){
 		return "url(" . $this->value->toCSS() . ")";
 	}

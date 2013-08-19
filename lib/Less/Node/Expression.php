@@ -4,12 +4,17 @@ namespace Less\Node;
 
 class Expression {
 
+	public $type = 'Expression';
 	public $value = array();
 	public $parens = false;
 	public $parensInOp = false;
 
 	public function __construct($value) {
 		$this->value = $value;
+	}
+
+	function accept( $visitor ){
+		$this->value = $visitor->visit( $this->value );
 	}
 
 	public function compile($env) {

@@ -3,7 +3,7 @@
 namespace Less\Node;
 
 class UnicodeDescriptor{
-
+	public $type = 'UnicodeDescriptor';
 	public function __construct($value){
 		$this->value = $value;
 	}

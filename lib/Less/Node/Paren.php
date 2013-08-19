@@ -4,10 +4,15 @@ namespace Less\Node;
 
 class Paren {
 
+	public $type = 'Paren';
 	public $value;
 
 	public function __construct($value) {
 		$this->value = $value;
+	}
+
+	function accept($visitor){
+		$this->value = $visitor->visit($this->value);
 	}
 
 	public function toCSS($env) {

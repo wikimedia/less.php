@@ -4,12 +4,17 @@ namespace Less\Node;
 
 class Assignment {
 
+	public $type = 'Assignment';
 	private $key;
 	private $value;
 
 	function __construct($key, $val) {
 		$this->key = $key;
 		$this->value = $val;
+	}
+
+	function accept( $visitor ){
+		$this->value = $visitor->visit( $this->value );
 	}
 
     public function toCss($env) {

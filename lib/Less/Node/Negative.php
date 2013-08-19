@@ -4,10 +4,15 @@ namespace Less\Node;
 
 class Negative{
 
+	public $type = 'Negative';
 	public $value;
 
 	function __construct($node){
 		$this->value = $node;
+	}
+
+	function accept($visitor) {
+		$this->value = $visitor->visit($this->value);
 	}
 
 	function toCSS($env){

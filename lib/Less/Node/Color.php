@@ -3,6 +3,7 @@
 namespace Less\Node;
 
 class Color{
+	public $type = 'Color';
 	var $rgb;
 	var $alpha;
 

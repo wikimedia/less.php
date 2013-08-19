@@ -2,8 +2,8 @@
 
 namespace Less\Node;
 
-class Import
-{
+class Import{
+	public $type = 'Import';
 	public $features;
 	public $skip;
 	public $full_path;
@@ -29,6 +29,11 @@ class Import
 
         $this->css = preg_match('/css([\?;].*)?$/', $full_path);
     }
+
+	function accept( $visitor ){
+		$this->features = $visitor->visit( $this->features );
+		$this->_path = $visitor->visit( $this->_path );
+	}
 
     public function toCSS($env){
 

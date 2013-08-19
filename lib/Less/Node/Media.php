@@ -6,6 +6,7 @@ namespace Less\Node;
 
 class Media {
 
+	public $type = 'Media';
 	public $features;
 	public $ruleset;
 
@@ -14,6 +15,11 @@ class Media {
 		$this->features = new \Less\Node\Value($features);
 		$this->ruleset = new \Less\Node\Ruleset($selectors, $value);
 		$this->ruleset->allowImports = true;
+	}
+
+	function accept( $visitor ){
+		$this->features = $visitor->visit($this->features);
+		$this->ruleset = $visitor->visit($this->ruleset);
 	}
 
 	public function toCSS($ctx, $env) {

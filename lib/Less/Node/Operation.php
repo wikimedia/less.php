@@ -3,10 +3,17 @@
 namespace Less\Node;
 
 class Operation{
+
+	public $type = 'Operation';
+
 	public function __construct($op, $operands, $isSpaced = false){
 		$this->op = trim($op);
 		$this->operands = $operands;
 		$this->isSpaced = $isSpaced;
+	}
+
+	function accept($visitor) {
+		$this->operands = $visitor->visit($this->operands);
 	}
 
 	public function compile($env){
@@ -21,7 +28,7 @@ class Operation{
 					$b = $a;
 					$a = $temp;
 				} else {
-					throw new \Less\CompilerError("Can't subtract or divide a color from a number");
+					throw new \Less\CompilerError("Operation on an invalid type");
 				}
 			}
 			if ( !$a || !method_exists($a,'operate') ) {

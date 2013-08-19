@@ -6,6 +6,7 @@ namespace Less\Node;
 
 class Combinator {
 
+	public $type = 'Combinator';
 	public $value;
 
 	public function __construct($value = null) {

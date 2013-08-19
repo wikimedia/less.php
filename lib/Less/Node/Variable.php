@@ -4,6 +4,7 @@ namespace Less\Node;
 
 class Variable {
 
+	public $type = 'Variable';
 	public $name;
 	public $index;
 	public $file;

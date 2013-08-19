@@ -4,6 +4,8 @@ namespace Less\Node;
 
 class Dimension{
 
+	public $type = 'Dimension';
+
     public function __construct($value, $unit = false){
         $this->value = floatval($value);
 
@@ -15,6 +17,10 @@ class Dimension{
 			$this->unit = new \Less\Node\Unit( );
 		}
     }
+
+	function accept( $visitor ){
+		$this->unit = $visitor->visit( $this->unit );
+	}
 
     public function compile($env = null) {
         return $this;

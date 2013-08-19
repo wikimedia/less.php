@@ -4,8 +4,8 @@
 
 namespace Less\Node;
 
-class Element
-{
+class Element{
+	public $type = 'Element';
 	public $combinator;
     public $value;
 	public $index;
@@ -26,6 +26,11 @@ class Element
         $this->combinator = $combinator;
 		$this->index = $index;
     }
+
+	function accept( $visitor ){
+		$this->combinator = $visitor->visit( $this->combinator );
+		$this->value = $visitor->visit( $this->value );
+	}
 
 	//less.js : tree.Element.prototype.toCSS
     public function toCSS ($env) {

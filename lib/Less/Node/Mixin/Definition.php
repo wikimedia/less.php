@@ -2,8 +2,8 @@
 
 namespace Less\Node\Mixin;
 
-class Definition extends \Less\Node\Ruleset
-{
+class Definition extends \Less\Node\Ruleset{
+	public $type = 'MixinDefinition';
 	public $name;
 	public $selectors;
 	public $params;
@@ -35,8 +35,13 @@ class Definition extends \Less\Node\Ruleset
 		$this->frames = array();
 	}
 
-	public function toCss($context, $env)
-	{
+	function accept( $visitor ){
+		$this->params = $visitor->visit($this->params);
+		$this->rules = $visitor->visit($this->rules);
+		$this->condition = $visitor->visit($this->condition);
+	}
+
+	public function toCss($context, $env){
 		return '';
 	}
 

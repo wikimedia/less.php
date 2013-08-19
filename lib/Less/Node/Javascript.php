@@ -2,22 +2,21 @@
 
 namespace Less\Node;
 
-class Javascript
-{
-    public function __construct($string, $index, $escaped)
-    {
-        $this->escaped = $escaped;
-        $this->expression = $string;
-        $this->index = $index;
-    }
+class Javascript{
 
-    public function compile($env)
-    {
-        return $this;
-    }
+	public $type = 'Javascript';
 
-    public function toCss($env)
-    {
-        return $env->compress ? '' : '/* Sorry, can not do JavaScript evaluation in PHP... :( */';
-    }
+	public function __construct($string, $index, $escaped){
+		$this->escaped = $escaped;
+		$this->expression = $string;
+		$this->index = $index;
+	}
+
+	public function compile($env){
+		return $this;
+	}
+
+	public function toCss($env){
+		return $env->compress ? '' : '/* Sorry, can not do JavaScript evaluation in PHP... :( */';
+	}
 }

@@ -3,6 +3,7 @@
 namespace Less\Node;
 
 class Quoted{
+	public $type = 'Quoted';
 	public $value;
 	public $content;
 

@@ -3,6 +3,8 @@
 namespace Less\Node;
 
 class Unit{
+
+	public $type = 'Unit';
 	var $numerator = array();
 	var $denominator = array();
 

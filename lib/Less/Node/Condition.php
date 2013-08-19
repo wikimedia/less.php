@@ -4,6 +4,7 @@ namespace Less\Node;
 
 class Condition {
 
+	public $type = 'Condition';
 	private $op;
 	private $lvalue;
 	private $rvalue;
@@ -16,6 +17,11 @@ class Condition {
 		$this->rvalue = $r;
 		$this->index = $i;
 		$this->negate = $negate;
+	}
+
+	public function accept($visitor){
+		$this->lvalue = $visitor->visit( $this->lvalue );
+		$this->rvalue = $visitor->visit( $this->rvalue );
 	}
 
     public function compile($env) {

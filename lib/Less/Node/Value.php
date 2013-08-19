@@ -4,9 +4,15 @@ namespace Less\Node;
 
 class Value{
 
+	public $type = 'Value';
+
 	public function __construct($value){
 		$this->value = $value;
 		$this->is = 'value';
+	}
+
+	function accept($visitor) {
+		$this->value = $visitor->visit($this->value);
 	}
 
 	public function compile($env){

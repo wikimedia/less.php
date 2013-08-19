@@ -2,8 +2,8 @@
 
 namespace Less\Node;
 
-class Rule
-{
+class Rule{
+	public $type = 'Rule';
 	public $name;
 	public $value;
 	public $important;
@@ -11,34 +11,36 @@ class Rule
 	public $inline;
 	public $variable;
 
-    public function __construct($name, $value, $important = null, $index = null, $inline = false)
-    {
-        $this->name = $name;
-        $this->value = ($value instanceof \Less\Node\Value) ? $value : new \Less\Node\Value(array($value));
-        $this->important = $important ? ' ' . trim($important) : '';
-        $this->index = $index;
+	public function __construct($name, $value, $important = null, $index = null, $inline = false){
+		$this->name = $name;
+		$this->value = ($value instanceof \Less\Node\Value) ? $value : new \Less\Node\Value(array($value));
+		$this->important = $important ? ' ' . trim($important) : '';
+		$this->index = $index;
 		$this->inline = $inline;
 
-        if ($name[0] === '@') {
-            $this->variable = true;
-        } else {
-            $this->variable = false;
-        }
-    }
+		if ($name[0] === '@') {
+			$this->variable = true;
+		} else {
+			$this->variable = false;
+		}
+	}
 
-    public function toCSS ($env)
-    {
-        if ($this->variable) {
-            return "";
-        } else {
+	function accept($visitor) {
+		$this->value = $visitor->visit( $this->value );
+	}
 
-            return $this->name . ($env->compress ? ':' : ': ') . $this->value->toCSS($env)
+	public function toCSS ($env){
+		if ($this->variable) {
+			return "";
+		} else {
+
+			return $this->name . ($env->compress ? ':' : ': ') . $this->value->toCSS($env)
 				. $this->important
 				. ($this->inline ? "" : ";");
-        }
-    }
+		}
+	}
 
-    public function compile ($env){
+	public function compile ($env){
 
 		$strictMathsBypass = false;
 		if( $this->name === "font" && $env->strictMaths === false ){
@@ -57,7 +59,7 @@ class Rule
 			}
 		}
 
-    }
+	}
 
 	function makeImportant(){
 		return new \Less\Node\Rule($this->name, $this->value, '!important', $this->index, $this->inline);

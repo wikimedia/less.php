@@ -4,6 +4,7 @@ namespace Less\Node\Mixin;
 
 class Call{
 
+	public $type = 'MixinCall';
 	private $selector;
 	private $arguments;
 	private $index;
@@ -22,6 +23,12 @@ class Call{
 		$this->filename = $filename;
 		$this->important = $important;
     }
+
+	function accept($visitor){
+		$this->selector = $visitor->visit($this->selector);
+		$this->arguments = $visitor->visit($this->arguments);
+	}
+
 
 	/**
 	 * less.js: tree.mixin.Call.prototype()

@@ -7,6 +7,7 @@ namespace Less\Node;
 //
 
 class Call{
+    public $type = 'Call';
     private $value;
 
     var $name;
@@ -23,6 +24,10 @@ class Call{
 		$this->filename = $filename;
 		$this->rootpath = $rootpath;
 		$this->currentDirectory = $currentDirectory;
+	}
+
+	function accept( $visitor ){
+		$this->args = $visitor->visit( $this->args );
 	}
 
     //

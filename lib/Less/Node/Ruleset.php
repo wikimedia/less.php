@@ -4,8 +4,8 @@
 
 namespace Less\Node;
 
-class Ruleset
-{
+class Ruleset{
+	public $type = 'Ruleset';
 	protected $lookups;
 	private $_variables;
 	private $_rulesets;
@@ -22,6 +22,11 @@ class Ruleset
 		$this->rules = (array) $rules;
 		$this->lookups = array();
 		$this->strictImports = $strictImports;
+	}
+
+	function accept( $visitor ){
+		$this->selectors = $visitor.visit($this->selectors);
+		$this->rules = $visitor.visit($this->rules);
 	}
 
 	public function compile($env) {
