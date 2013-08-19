@@ -14,13 +14,15 @@ class Call{
     var $index;
     var $filename;
     var $rootpath;
+    var $relativePath;
 
-	public function __construct($name, $args, $index, $filename, $rootpath){
+	public function __construct($name, $args, $index, $filename, $rootpath, $relativePath = null ){
 		$this->name = $name;
 		$this->args = $args;
 		$this->index = $index;
 		$this->filename = $filename;
 		$this->rootpath = $rootpath;
+		$this->relativePath = $relativePath;
 	}
 
     //

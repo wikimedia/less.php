@@ -53,6 +53,8 @@ class Environment{
 
 	public $strictUnits = false;
 
+	public $relativePath;
+
 	public function __construct(){
 		$this->frames = array();
 		$this->compress = false;
@@ -83,6 +85,10 @@ class Environment{
 
 	public function isMathsOn() {
 		return $this->strictMaths === false ? true : ($this->parensStack && count($this->parensStack));
+	}
+
+	public function isPathRelative($path){
+		return !preg_match('/^(?:[a-z-]+:|\/)/',$path);
 	}
 
 	/**
@@ -699,17 +705,30 @@ class Environment{
 		return $values->value[$index];
 	}
 
-	function datauri($mimetype, $path = null ) {
+	function datauri($mimetype, $filePath = null ) {
 
-		if( $path ){
-			$path = $path->value;
+		if( $filePath ){
+			$filePath = $filePath->value;
 		}
 		$mimetype = $mimetype->value;
 		$useBase64 = false;
 
+		$args = 2;
+		if( !$filePath ){
+			$filePath = $mimetype;
+			$args = 1;
+		}
+
+		if( $this->relativePath && $this->isPathRelative($filePath) ){
+			$filePath = str_replace('\\','/',$filePath);
+			$filePath = rtrim($this->relativePath,'/').'/'.$filePath;
+		}
+
+
+
 		// detect the mimetype if not given
-		if( !$path ){
-			$path = $mimetype;
+		if( $args < 2 ){
+			$filePath = $mimetype;
 
 			/* incomplete
 			$mime = require('mime');
@@ -721,23 +740,23 @@ class Environment{
 			if (useBase64) mimetype += ';base64';
 			*/
 
-			$mimetype = \Less\Mime::lookup($path);
+			$mimetype = \Less\Mime::lookup($filePath);
 
 			$charset = \Less\Mime::charsets_lookup($mimetype);
 			$useBase64 = !in_array($charset,array('US-ASCII', 'UTF-8'));
-			if ($useBase64) $mimetype += ';base64';
+			if ($useBase64) $mimetype .= ';base64';
 
 		}else{
 			$useBase64 = preg_match('/;base64$/',$mimetype);
 		}
 
-		$buf = @file_get_contents($path);
+		$buf = @file_get_contents($filePath);
 		if( $buf ){
 			$buf = $useBase64 ? base64_encode($buf) : rawurlencode($buf);
-			$path = "'data:"+$mimetype+','+$buf+"'";
+			$filePath = "'data:" . $mimetype . ',' . $buf . "'";
 		}
 
-		return new \Less\Node\Url( new \Less\Node\Anonymous($path) );
+		return new \Less\Node\Url( new \Less\Node\Anonymous($filePath) );
 	}
 
 
