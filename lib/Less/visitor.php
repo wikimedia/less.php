@@ -17,13 +17,14 @@ class visitor{
 			return $node;
 		}
 
-		$funcName = "visit" + $node->type,
-		if( isset($this->_implementation[$funcName]) ){
-			$func = $this->_implementation[$funcName];
+		$visitArgs = null;
+		$funcName = "visit" + $node->type;
+		if( method_exists($this->_implementation,$funcName) ){
+			$func = array($this->_implementation,$funcName);
 			$visitArgs = array('visitDeeper'=> true);
-			$node = call_user_func( $func, $node );
+			$node = call_user_func( $func, $node, $visitArgs );
 		}
-		if( (!$visitArgs || $visitArgs['visitDeeper']) && method_exists($node,'accept') ){
+		if( (!$visitArgs || $visitArgs['visitDeeper']) && $node && method_exists($node,'accept') ){
 			$node->accept($this);
 		}
 		return $node;
@@ -31,8 +32,8 @@ class visitor{
 
 	function visitArray( $nodes ){
 
-		foreach($nodes as $evld){
-			$evald = $this->visit( $nodes[$i] );
+		$newNodes = array();
+		foreach($nodes as $evald){
 			if( is_array($evald) ){
 				$newNodes = array_merge($newNodes,$evald);
 			} else {

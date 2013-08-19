@@ -170,6 +170,8 @@ class Parser {
         $root = new \Less\Node\Ruleset(null, $this->match('parsePrimary'));
         $root->root = true;
 
+		new \Less\importVisitor($root);
+
         if ($returnRoot) {
             return $root;
         } else {

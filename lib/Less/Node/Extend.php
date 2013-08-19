@@ -18,7 +18,7 @@ class Extend{
 	}
 
 	function accept( $visitor ){
-		$this->selector = $visitor->visit( $this->ruleset );
+		$this->selector = $visitor->visit( $this->selector );
 	}
 
 	function compile( $env, $selectors = array() ){

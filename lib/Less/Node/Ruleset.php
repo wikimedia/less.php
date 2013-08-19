@@ -25,8 +25,8 @@ class Ruleset{
 	}
 
 	function accept( $visitor ){
-		$this->selectors = $visitor.visit($this->selectors);
-		$this->rules = $visitor.visit($this->rules);
+		$this->selectors = $visitor->visit($this->selectors);
+		$this->rules = $visitor->visit($this->rules);
 	}
 
 	public function compile($env) {
