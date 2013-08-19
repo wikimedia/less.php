@@ -18,7 +18,7 @@ class Import
         $this->_path = $path;
         $this->full_path = $full_path;
 		$this->skip = $skip;
-		$this->features = $features ? new \Less\Node\Value($features) : null;
+		$this->features = $features;
 
         // The '.less' extension is optional
         if ($path instanceof \Less\Node\Quoted) {
@@ -46,7 +46,7 @@ class Import
 
 		// Only pre-compile .less files
         if ($this->css) {
-            return $this;
+            return new \Less\Node\Import( $this->_path, $this->full_path, $features, $this->skip );
 		}
 
 		if( !$this->full_path ){

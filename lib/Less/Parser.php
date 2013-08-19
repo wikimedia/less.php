@@ -1137,12 +1137,10 @@ class Parser {
 
 		$dir = $this->match('/^@import(?:-(once|multiple))?\s+/');
 
-		if( $dir ){
-
-			$path = $this->matchMultiple('parseEntitiesQuoted','parseEntitiesUrl');
-
-			if( $path ){
-				$features = $this->match('parseMediaFeatures');
+		if( $dir && ($path = $this->matchMultiple('parseEntitiesQuoted','parseEntitiesUrl')) ){
+			$features = $this->match('parseMediaFeatures');
+			if( $features ){
+				$features = new \Less\Node\Value($features);
 			}
 		}
 
