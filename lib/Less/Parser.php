@@ -1377,12 +1377,14 @@ class Parser {
 		$expression = array();
 
 		if ($m = $this->match('parseOperand')) {
+			$isSpaced = $this->isWhitespace( $this->input[$this->pos-1] );
 			while( !$this->peek('/^\/[*\/]/') && ($op = ($this->match('/') ?: $this->match('*'))) ){
 
 				if( $a = $this->match('parseOperand') ){
 					$m->parensInOp = true;
 					$a->parensInOp = true;
-					$operation = new \Less\Node\Operation( $op, array( $operation ? $operation : $m, $a ) );
+					$operation = new \Less\Node\Operation( $op, array( $operation ? $operation : $m, $a ), $isSpaced );
+					$isSpaced = $this->isWhitespace( $this->input[$this->pos-1] );
 				}else{
 					break;
 				}
@@ -1394,10 +1396,13 @@ class Parser {
     private function parseAddition (){
         $operation = false;
         if ($m = $this->match('parseMultiplication')) {
-            while (($op = $this->match('/^[-+]\s+/') ?: ( !$this->isWhitespace($this->input[$this->pos-1]) ? ($this->match('+') ?: $this->match('-')) : false )) && ($a = $this->match('parseMultiplication'))) {
+			$isSpaced = $this->isWhitespace( $this->input[$this->pos-1] );
+
+            while( ($op = $this->match('/^[-+]\s+/') ?: ( !$isSpaced ? ($this->match('+') ?: $this->match('-')) : false )) && ($a = $this->match('parseMultiplication')) ){
 				$m->parensInOp = true;
 				$a->parensInOp = true;
-                $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a));
+                $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a), $isSpaced);
+                $isSpaced = $this->isWhitespace( $this->input[$this->pos-1] );
             }
             return $operation ?: $m;
         }

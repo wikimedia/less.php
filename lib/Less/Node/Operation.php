@@ -3,11 +3,10 @@
 namespace Less\Node;
 
 class Operation{
-	public function __construct($op, $operands){
+	public function __construct($op, $operands, $isSpaced = false){
 		$this->op = trim($op);
 		$this->operands = $operands;
-
-
+		$this->isSpaced = $isSpaced;
 	}
 
 	public function compile($env){
@@ -31,11 +30,12 @@ class Operation{
 
 			return $a->operate($env,$this->op, $b);
 		} else {
-			return new \Less\Node\Operation($this->op, array($a, $b) );
+			return new \Less\Node\Operation($this->op, array($a, $b), $this->isSpaced );
 		}
 	}
 
 	function toCSS($env){
-		return $this->operands[0]->toCSS($env) . " " . $this->op . " " . $this->operands[1]->toCSS($env);
+		$separator = $this->isSpaced ? " " : "";
+		return $this->operands[0]->toCSS($env) . $separator . $this->op . $separator . $this->operands[1]->toCSS($env);
 	}
 }
