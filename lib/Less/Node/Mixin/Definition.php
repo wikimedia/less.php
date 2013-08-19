@@ -138,31 +138,35 @@ class Definition extends \Less\Node\Ruleset
 			? \Less\Node\Ruleset::makeImportant($this->selectors, $this->rules)->rules
 			: array_slice($this->rules, 0);
 
+		$ruleset = new \Less\Node\Ruleset(null, $rules);
+
+
 		// duplicate the environment, adding new frames.
 		$ruleSetEnv = new \Less\Environment();
 		$ruleSetEnv->addFrame($this);
 		$ruleSetEnv->addFrame($frame);
 		$ruleSetEnv->addFrames($mixinFrames);
 		$ruleSetEnv->compress = $env->compress;
-		$ruleset = new \Less\Node\Ruleset(null, $rules);
-		$ruleset->originalRuleset = $this;
+		$ruleset = $ruleset->compile($ruleSetEnv);
 
-		return $ruleset->compile($ruleSetEnv);
+		$ruleset->originalRuleset = $this;
+		return $ruleset;
 	}
 
 
 	public function matchCondition($args, $env) {
 
-		$mixinEnv = new \Less\Environment();
-		$mixinEnv->addFrames($this->frames);
-		$mixinEnv->addFrames($env->frames);
+		if( !$this->condition ){
+			return true;
+		}
 
-		// duplicate the environment, adding new frames.
-		$conditionEnv = new \Less\Environment();
-		$conditionEnv->addFrame($this->compileParams($env, $mixinEnv, $args));
-		$conditionEnv->addFrames($env->frames);
+		$mixinEnv = $env->copyEvalEnv( array_merge($this->frames, $env->frames) );
 
-		if ($this->condition && !$this->condition->compile($conditionEnv)) {
+		$frame = $this->compileParams( $env, $mixinEnv, $args );
+
+		$conditionEnv = $env->copyEvalEnv( array_merge( array($frame) , $env->frames) );
+
+		if( !$this->condition->compile($conditionEnv) ){
 			return false;
 		}
 

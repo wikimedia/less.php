@@ -15,7 +15,7 @@ class Operation{
 		$b = $this->operands[1]->compile($env);
 
 
-	    if( count($env->parensStack) ){
+		if( $env->isMathsOn() ){
 			if( $a instanceof \Less\Node\Dimension && $b instanceof \Less\Node\Color ){
 				if ($this->op === '*' || $this->op === '+') {
 					$temp = $b;
@@ -29,10 +29,10 @@ class Operation{
 				throw new \Less\CompilerError("Operation on an invalid type");
 			}
 
-	        return $a->operate($this->op, $b);
-	    } else {
-	        return new \Less\Node\Operation($this->op, array($a, $b) );
-	    }
+			return $a->operate($this->op, $b);
+		} else {
+			return new \Less\Node\Operation($this->op, array($a, $b) );
+		}
 	}
 
 	function toCSS($env){

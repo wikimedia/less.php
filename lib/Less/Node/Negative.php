@@ -15,7 +15,7 @@ class Negative{
 	}
 
 	function compile($env) {
-		if( count($env->parensStack) ){
+		if( $env->isMathsOn() ){
 			$ret = new \Less\Node\Operation('*', array( new \Less\Node\Dimension(-1), $this->value ) );
 			return $ret->compile($env);
 		}

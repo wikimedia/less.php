@@ -14,8 +14,9 @@ class Expression {
 
 	public function compile($env) {
 
-		if( $this->parens && !$this->parensInOp ){
-			$env->parensStack[] = true;
+		$inParenthesis = $this->parens && !$this->parensInOp;
+		if( $inParenthesis ) {
+			$env->inParenthesis();
 		}
 
 		if (is_array($this->value) && count($this->value) > 1) {
@@ -36,12 +37,10 @@ class Expression {
 		} else {
 			$returnValue = $this;
 		}
-
-
-		if( $this->parens && !$this->parensInOp ){
-			array_pop($env->parensStack);
+		if( $inParenthesis ){
+			$env->outOfParenthesis();
 		}
-		if( $this->parens && $this->parensInOp && !count($env->parensStack) ){
+		if( $this->parens && $this->parensInOp && !$env->isMathsOn() ){
 			$returnValue = new \Less\Node\Paren($returnValue);
 		}
 		return $returnValue;

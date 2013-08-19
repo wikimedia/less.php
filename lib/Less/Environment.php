@@ -49,11 +49,38 @@ class Environment{
 
 	public $parensStack = array();
 
+	public $strictMaths;
+
 	public function __construct(){
 		$this->frames = array();
 		$this->compress = false;
 		$this->debug = false;
 		$this->strictImports =  false;
+	}
+
+
+	//may want to just use the __clone()?
+	public function copyEvalEnv($frames = array() ){
+
+		$new_env = new \Less\Environment();
+		$new_env->compress = $this->compress;
+		$new_env->strictMaths = $this->strictMaths;
+		$new_env->frames = $frames;
+
+		return $new_env;
+	}
+
+
+	public function inParenthesis(){
+		$this->parensStack[] = true;
+	}
+
+	public function outOfParenthesis() {
+		array_pop($this->parensStack);
+	}
+
+	public function isMathsOn() {
+		return $this->strictMaths === false ? true : ($this->parensStack && count($this->parensStack));
 	}
 
 	/**
