@@ -192,17 +192,22 @@ class Parser {
      * @param bool $returnRoot Indicates whether the return value should be a css string a root node
      * @return \Less\Node\Ruleset|\Less\Parser
      */
-    public function parseFile($filename, $returnRoot = false)
-    {
-        if ( ! file_exists($filename)) {
-            throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
-        }
+	public function parseFile($filename, $returnRoot = false){
 
-        $this->path = pathinfo($filename, PATHINFO_DIRNAME);
-        $this->filename = $filename;
+		if ( ! file_exists($filename)) {
+			throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
+		}
 
-        return $this->parse(file_get_contents($filename), $returnRoot);
-    }
+		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
+		$this->filename = $filename;
+
+		if( !$this->env->currentDirectory && $this->filename ){
+			// only works for node, only used for node
+			$this->env->currentDirectory = preg_replace('/[^\/\\]*$/','',$this->filename);
+		}
+
+		return $this->parse(file_get_contents($filename), $returnRoot);
+	}
 
 
 	public function SetImportDirs( $dirs ){
@@ -493,7 +498,7 @@ class Parser {
         }
 
         if ($name) {
-            return new \Less\Node\Call($name, $args, $index, $this->filename, $this->env->rootpath, ($this->env->rootpath ? $this->env->rootpath : reset($this->env->paths) ) );
+            return new \Less\Node\Call($name, $args, $index, $this->filename, $this->env->rootpath, $this->env->currentDirectory );
         }
     }
 

@@ -53,7 +53,7 @@ class Environment{
 
 	public $strictUnits = false;
 
-	public $relativePath;
+	public $currentDirectory;
 
 	public function __construct(){
 		$this->frames = array();
@@ -719,9 +719,9 @@ class Environment{
 			$args = 1;
 		}
 
-		if( $this->relativePath && $this->isPathRelative($filePath) ){
+		if( $this->currentDirectory && $this->isPathRelative($filePath) ){
 			$filePath = str_replace('\\','/',$filePath);
-			$filePath = rtrim($this->relativePath,'/').'/'.$filePath;
+			$filePath = rtrim($this->currentDirectory,'/').'/'.$filePath;
 		}
 
 
