@@ -53,12 +53,12 @@ class importVisitor{
 		array_shift($this->env->frames);
 	}
 
-	function visitRulesetDefinition($rulesetNode, $visitArgs) {
+	function visitRuleset($rulesetNode, $visitArgs) {
 		array_unshift($this->env->frames,$rulesetNode);
 		return $rulesetNode;
 	}
 
-	function visitRulesetDefinitionOut($rulesetNode) {
+	function visitRulesetOut($rulesetNode) {
 		array_shift($this->env->frames);
 	}
 
