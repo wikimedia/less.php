@@ -84,7 +84,7 @@ class Import{
 		if ($this->rootpath && !($path instanceof \Less\Node\URL)) {
 			$pathValue = $path->value;
 			// Add the base path if the import is relative
-			if( $pathValue && !preg_match('/^(?:[a-z\-]+:|\/)/', $pathValue) ){
+			if( $pathValue && $env->isPathRelative($pathValue)) {
 				$path->value = $this->rootpath . $pathValue;
 			}
 		}
