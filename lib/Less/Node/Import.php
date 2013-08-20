@@ -94,6 +94,7 @@ class Import{
 	function compile($env) {
 
 		//import once
+		$path = $this->compilePath( $env );
 		$full_path = $this->rootpath.$this->getPath();
 		$realpath = realpath($full_path);
 		if( $this->once && $realpath && in_array($realpath,\Less\Parser::$imports) ){

@@ -88,9 +88,10 @@ class Parser {
 				continue;
 			}
 
-			if( (strpos($file,'.php') + 4) !== strlen($file) ){
+			if( strpos($file,'.php') !== (strlen($file) - 4) ){
 				continue;
 			}
+
 			include_once($full_path);
 		}
 
@@ -157,8 +158,7 @@ class Parser {
      * @param bool $returnRoot Indicates whether the return value should be a css string a root node
      * @return \Less\Node\Ruleset|\Less\Parser
      */
-    public function parse($str, $returnRoot = false)
-    {
+    public function parse($str, $returnRoot = false){
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
 
@@ -170,7 +170,7 @@ class Parser {
         $root = new \Less\Node\Ruleset(null, $this->match('parsePrimary'));
         $root->root = true;
 
-		new \Less\importVisitor($root);
+		new \Less\importVisitor( $root );
 
         if ($returnRoot) {
             return $root;

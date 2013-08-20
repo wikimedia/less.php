@@ -22,7 +22,7 @@ class visitor{
 		if( method_exists($this->_implementation,$funcName) ){
 			$func = array($this->_implementation,$funcName);
 			$visitArgs = array('visitDeeper'=> true);
-			$node = call_user_func( $func, $node, $visitArgs );
+			$node = call_user_func( $func, $this->_implementation, $node, $visitArgs );
 		}
 		if( (!$visitArgs || $visitArgs['visitDeeper']) && $node && method_exists($node,'accept') ){
 			$node->accept($this);
