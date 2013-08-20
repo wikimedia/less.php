@@ -34,4 +34,40 @@ class importVisitor{
 		$visitArgs['visitDeeper'] = false;
 		return $ruleNode;
 	}
+
+	function visitDirective($directiveNode, $visitArgs){
+		array_unshift($this->env->frames,$directiveNode);
+		return $directiveNode;
+	}
+
+	function visitDirectiveOut($directiveNode) {
+		array_shift($this->env->frames);
+	}
+
+	function visitMixinDefinition($mixinDefinitionNode, $visitArgs) {
+		array_unshift($this->env->frames,$mixinDefinitionNode);
+		return $mixinDefinitionNode;
+	}
+
+	function visitMixinDefinitionOut($mixinDefinitionNode) {
+		array_shift($this->env->frames);
+	}
+
+	function visitRulesetDefinition($rulesetNode, $visitArgs) {
+		array_unshift($this->env->frames,$rulesetNode);
+		return $rulesetNode;
+	}
+
+	function visitRulesetDefinitionOut($rulesetNode) {
+		array_shift($this->env->frames);
+	}
+
+	function visitMedia($mediaNode, $visitArgs) {
+		array_unshift($this->env->frames, $mediaNode->ruleset);
+		return $mediaNode;
+	}
+
+	function visitMediaOut($mediaNode) {
+		array_shift($this->env->frames);
+	}
 }
