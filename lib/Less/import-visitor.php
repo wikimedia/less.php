@@ -7,7 +7,7 @@ class importVisitor{
 	public $_visitor;
 	public $_importer;
 
-	function __construct( $root, $importer = null ){
+	function __construct( $importer = null ){
 		$this->_visitor = new \Less\visitor($this);
 		$this->_importer = $importer;
 		$this->env = new \Less\Environment();
@@ -28,6 +28,17 @@ class importVisitor{
 		*/
 
 		return $importNode;
+	}
+
+	function run( $root ){
+		// process the contents
+		$this->_visitor->visit($root);
+
+		$this->isFinished = true;
+
+		if( $this->importCount === 0) {
+			$this->_finish();
+		}
 	}
 
 	function visitRule( $ruleNode, $visitArgs ){
