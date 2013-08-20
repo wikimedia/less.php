@@ -13,17 +13,13 @@ class Call{
     var $name;
     var $args;
     var $index;
-    var $filename;
-    var $rootpath;
-    var $currentDirectory;
+    var $currentFileInfo;
 
-	public function __construct($name, $args, $index, $filename, $rootpath, $currentDirectory = null ){
+	public function __construct($name, $args, $index, $currentFileInfo = null ){
 		$this->name = $name;
 		$this->args = $args;
 		$this->index = $index;
-		$this->filename = $filename;
-		$this->rootpath = $rootpath;
-		$this->currentDirectory = $currentDirectory;
+		$this->currentFileInfo = $currentFileInfo;
 	}
 
 	function accept( $visitor ){

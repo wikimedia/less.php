@@ -22,16 +22,16 @@ class Import{
 	public $index;
 	public $path;
 	public $features;
-	public $rootpath;
+	public $currentFileInfo;
 	public $css;
 	public $skip;
 
-	function __construct($path, $features, $once, $index, $rootpath = null ){
+	function __construct($path, $features, $once, $index, $currentFileInfo = null ){
 		$this->once = $once;
 		$this->index = $index;
 		$this->path = $path;
 		$this->features = $features;
-		$this->rootpath = $rootpath;
+		$this->currentFileInfo = $currentFileInfo;
 
 		$pathValue = $this->getPath();
 		if( $pathValue ){
@@ -76,16 +76,16 @@ class Import{
 	}
 
 	function compileForImport( $env ){
-		return new \Less\Node\Import( $this->path->compile($env), $this->features, $this->once, $this->index);
+		return new \Less\Node\Import( $this->path->compile($env), $this->features, $this->once, $this->index, $this->currentFileInfo);
 	}
 
 	function compilePath($env) {
 		$path = $this->path->compile($env);
-		if ($this->rootpath && !($path instanceof \Less\Node\URL)) {
+		if( $this->currentFileInfo && $this->currentFileInfo['rootpath'] && !($path instanceof \Less\Node\URL)) {
 			$pathValue = $path->value;
 			// Add the base path if the import is relative
 			if( $pathValue && $env->isPathRelative($pathValue)) {
-				$path->value = $this->rootpath . $pathValue;
+				$path->value = $this->currentFileInfo['rootpath'] . $pathValue;
 			}
 		}
 		return $path;
@@ -95,20 +95,19 @@ class Import{
 
 		//import once
 		$path = $this->compilePath( $env );
-		$full_path = $this->rootpath.$this->getPath();
+		$full_path = $this->currentFileInfo['rootpath'].$this->getPath();
 		$realpath = realpath($full_path);
+
 		if( $this->once && $realpath && in_array($realpath,\Less\Parser::$imports) ){
 			$this->skip = true;
 		}
-
 
 		$features = ( $this->features ? $this->features->compile($env) : null );
 
 		if ($this->skip) { return array(); }
 
-		if ($this->css) {
-			$temp = new \Less\Node\Import( $this->compilePath( $env), $features, $this->once, $this->index);
-			return $temp;
+		if( $this->css ){
+			return new \Less\Node\Import( $this->compilePath( $env), $features, $this->once, $this->index);
 		}
 
 

@@ -8,7 +8,7 @@ class Call{
 	private $selector;
 	private $arguments;
 	private $index;
-	private $filename;
+	private $currentFileInfo;
 
 	public $important;
 
@@ -16,11 +16,11 @@ class Call{
 	 * less.js: tree.mixin.Call
 	 *
 	 */
-    public function __construct($elements, $args, $index, $filename, $important = false){
+    public function __construct($elements, $args, $index, $currentFileInfo, $important = false){
         $this->selector =  new \Less\Node\Selector($elements);
         $this->arguments = $args;
         $this->index = $index;
-		$this->filename = $filename;
+		$this->currentFileInfo = $currentFileInfo;
 		$this->important = $important;
     }
 
@@ -68,7 +68,7 @@ class Call{
 								$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
 
 							} catch (Exception $e) {
-								throw new \Less\Exception\CompilerException($e->message, $e->index, null, $this->filename);
+								throw new \Less\Exception\CompilerException($e->message, $e->index, null, $this->currentFileInfo['filename']);
 							}
 						}
 						$match = true;
@@ -104,7 +104,7 @@ class Call{
 
 			throw new \Less\Exception\CompilerException('No matching definition was found for `'.
 				trim($this->selector->toCSS($env)) . '(' .$message.')',
-				$this->index, null, $this->filename);
+				$this->index, null, $this->currentFileInfo['filename']);
 
 		}else{
 			throw new \Less\Exception\CompilerException(trim($this->selector->toCSS($env)) . " is undefined", $this->index);

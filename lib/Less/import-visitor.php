@@ -10,8 +10,8 @@ class importVisitor{
 	function __construct( $root, $importer = null ){
 		$this->_visitor = new \Less\visitor($this);
 		$this->_importer = $importer;
-		$this->_visitor->visit($root);
 		$this->env = new \Less\Environment();
+		$this->_visitor->visit($root);
 	}
 
 	function visitImport($importNode, $visitArgs ){

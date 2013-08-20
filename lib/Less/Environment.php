@@ -6,25 +6,25 @@ namespace Less;
 
 class Environment{
 
+	public $paths = array();			// option - unmodified - paths to search for imports on
+	static $files = array();			// list of files that have been imported, used for import-once
+	public $relativeUrls;				// option - whether to adjust URL's to be relative
+	public $strictImports = false;		// option -
+	public $compress = false;			// option - whether to compress
+	public $processImports;				// option - whether to process imports. if false then imports will not be imported
+	public $currentFileInfo;			// information about the current file - for error reporting and importing and making urls relative etc.
+
 	/**
 	 * @var array
 	 */
-	public $frames;
+	public $frames = array();
+
 
 	/**
 	 * @var bool
 	 */
-	public $compress;
+	public $debug = false;
 
-	/**
-	 * @var bool
-	 */
-	public $debug;
-
-	/**
-	 * @var bool
-	 */
-	public $strictImports;
 
 	/**
 	 * @var array
@@ -36,14 +36,7 @@ class Environment{
 	 */
 	public $mediaPath = array();
 
-	/**
-	 * @var array
-	 */
-	public $paths = array();
-
 	public $selectors = array();
-
-	public $rootpath = '';
 
 	public $charset;
 
@@ -53,13 +46,8 @@ class Environment{
 
 	public $strictUnits = false;
 
-	public $currentDirectory;
-
-	public function __construct(){
+	public function __construct( $options = null ){
 		$this->frames = array();
-		$this->compress = false;
-		$this->debug = false;
-		$this->strictImports =  false;
 	}
 
 
@@ -718,11 +706,14 @@ class Environment{
 		}
 
 
-		if( $this->currentDirectory && $this->isPathRelative($filePath) ){
-			$filePath = str_replace('\\','/',$filePath);
-			$filePath = rtrim($this->currentDirectory,'/').'/'.$filePath;
+		$filePath = str_replace('\\','/',$filePath);
+        if( $this->isPathRelative($filePath) ){
+			if( $this->relativeUrls ){
+				$filePath = rtrim($this->currentFileInfo['currentDirectory'],'/').'/'.$filePath;
+			} else {
+				$filePath = rtrim($this->currentFileInfo['entryPath'],'/').'/'.$filePath;
+			}
 		}
-
 
 
 		// detect the mimetype if not given
@@ -756,8 +747,8 @@ class Environment{
 		$DATA_URI_MAX_KB = 32;
 		$fileSizeInKB = round( strlen($buf) / 1024 );
 		if( $fileSizeInKB >= $DATA_URI_MAX_KB ){
-			$url = new \Less\Node\Url( ($filePathNode ? $filePathNode : $mimetypeNode), $this->rootpath);
-			return $url.compile($this);
+			$url = new \Less\Node\Url( ($filePathNode ? $filePathNode : $mimetypeNode), $this->currentFileInfo);
+			return $url->compile($this);
 		}
 
 		if( $buf ){

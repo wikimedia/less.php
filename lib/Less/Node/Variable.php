@@ -7,13 +7,13 @@ class Variable {
 	public $type = 'Variable';
 	public $name;
 	public $index;
-	public $file;
+	public $currentFileInfo;
 	private $evaluating = false;
 
-    public function __construct($name, $index, $file = null) {
+    public function __construct($name, $index, $currentFileInfo = null) {
         $this->name = $name;
         $this->index = $index;
-		$this->file = $file;
+		$this->currentFileInfo = $currentFileInfo;
     }
 
     public function compile($env) {
@@ -24,7 +24,7 @@ class Variable {
         }
 
 		if ($this->evaluating) {
-            throw new \Less\Exception\CompilerException("Recursive variable definition for " . $name, $this->index, null, $this->file);
+            throw new \Less\Exception\CompilerException("Recursive variable definition for " . $name, $this->index, null, $this->currentFileInfo['file']);
 		}
 
 		$this->evaluating = true;
@@ -40,7 +40,7 @@ class Variable {
 			$this->evaluating = false;
             return $variable;
         } else {
-			throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index, null, $this->file);
+			throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index, null, $this->currentFileInfo['file']);
         }
     }
 }

@@ -6,12 +6,15 @@ class Quoted{
 	public $type = 'Quoted';
 	public $value;
 	public $content;
+	public $index;
+	public $currentFileInfo;
 
-	public function __construct($str, $content, $escaped = false, $i = false) {
+	public function __construct($str, $content, $escaped = false, $index = false, $currentFileInfo = null ){
 		$this->escaped = $escaped;
 		$this->value = $content ?: '';
 		$this->quote = $str[0];
-		$this->index = $i;
+		$this->index = $index;
+		$this->currentFileInfo = $currentFileInfo;
 	}
 
 	public function toCSS (){
@@ -23,12 +26,11 @@ class Quoted{
 	}
 
 	public function compile($env){
-		$that = $this;
 
 		$value = $this->value;
 		if( preg_match_all('/`([^`]+)`/', $this->value, $matches) ){
 			foreach($matches as $i => $match){
-				$js = \Less\Node\JavaScript($matches[1], $that->index, true);
+				$js = \Less\Node\JavaScript($matches[1], $this->index, true);
 				$js = $js->compile($env)->value;
 				$value = str_replace($matches[0][$i], $js, $value);
 			}
@@ -36,7 +38,7 @@ class Quoted{
 
 		if( preg_match_all('/@\{([\w-]+)\}/',$value,$matches) ){
 			foreach($matches[1] as $i => $match){
-				$v = new \Less\Node\Variable('@' . $match, $that->index);
+				$v = new \Less\Node\Variable('@' . $match, $this->index, $this->currentFileInfo );
 				$v = $v->compile($env,true);
 				$v = ($v instanceof \Less\Node\Quoted) ? $v->value : $v->toCSS($env);
 				$value = str_replace($matches[0][$i], $v, $value);

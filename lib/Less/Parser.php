@@ -51,7 +51,7 @@ class Parser {
     /**
      * @param Environment|null $env
      */
-    public function __construct(\Less\Environment $env = null){
+    public function __construct( $env = null ){
 
 		self::IncludeScripts( dirname(__FILE__) );
 
@@ -60,7 +60,7 @@ class Parser {
 		if( $env instanceof \Less\Environment ){
 			$this->env = $env;
 		}else{
-			$this->env = new \Less\Environment();
+			$this->env = new \Less\Environment( $env );
 			self::$imports = array();
 		}
 
@@ -196,16 +196,23 @@ class Parser {
      */
 	public function parseFile($filename, $returnRoot = false){
 
-		if ( ! file_exists($filename)) {
+		if( !file_exists($filename) ){
 			throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
 		}
 
 		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
 		$this->filename = $filename;
 
-		if( $this->filename ){
-			$this->env->currentDirectory = preg_replace('/[^\/\\\\]*$/','',$this->filename);
-		}
+
+		$dirname = preg_replace('/[^\/\\\\]*$/','',$this->filename);
+
+		$currentFileInfo = array();
+		$currentFileInfo['currentDirectory'] = $dirname;
+		$currentFileInfo['filename'] = $filename;
+		$currentFileInfo['rootpath'] = $dirname;
+		$currentFileInfo['entryPath'] = $dirname;
+
+		$this->env->currentFileInfo = $currentFileInfo;
 
 		return $this->parse(file_get_contents($filename), $returnRoot);
 	}
@@ -418,6 +425,7 @@ class Parser {
     private function parseEntitiesQuoted() {
 		$j = 0;
 		$e = false;
+		$index = $this->pos;
 
         if ($this->peek('~')) {
 			$j++;
@@ -434,7 +442,7 @@ class Parser {
 
         if ($str = $this->match('/^"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/')) {
 			$result = $str[0][0] == '"' ? $str[1] : $str[2];
-			return new \Less\Node\Quoted($str[0], $result, $e);
+			return new \Less\Node\Quoted($str[0], $result, $e, $index, $this->env->currentFileInfo );
         }
 
         return;
@@ -499,7 +507,7 @@ class Parser {
         }
 
         if ($name) {
-            return new \Less\Node\Call($name, $args, $index, $this->filename, $this->env->rootpath, $this->env->currentDirectory );
+            return new \Less\Node\Call($name, $args, $index, $this->env->currentFileInfo );
         }
     }
 
@@ -555,7 +563,7 @@ class Parser {
 
 
 		return new \Less\Node\Url((isset($value->value) || $value instanceof \Less\Node\Variable)
-							? $value : new \Less\Node\Anonymous($value), $this->env->rootpath);
+							? $value : new \Less\Node\Anonymous($value), $this->env->currentFileInfo );
 	}
 
 
@@ -571,7 +579,7 @@ class Parser {
     {
         $index = $this->pos;
         if ($this->peek('@') && ($name = $this->match('/^@@?[\w-]+/'))) {
-            return new \Less\Node\Variable($name, $index, $this->filename);
+            return new \Less\Node\Variable($name, $index, $this->env->currentFileInfo);
         }
     }
 
@@ -581,7 +589,7 @@ class Parser {
 		$index = $this->pos;
 
 		if( strlen($this->input) > ($this->pos+1) && $this->input[$this->pos] === '@' && ($curly = $this->match('/^@\{([\w-]+)\}/')) ){
-			return new \Less\Node\Variable('@'.$curly[1], $index, $this->filename);
+			return new \Less\Node\Variable('@'.$curly[1], $index, $this->env->currentFileInfo);
 		}
 	}
 
@@ -810,7 +818,7 @@ class Parser {
 			$important = true;
 
         if (count($elements) > 0 && ($this->match(';') || $this->peek('}'))) {
-            return new \Less\Node\Mixin\Call($elements, $args, $index, $this->filename, $important);
+            return new \Less\Node\Mixin\Call($elements, $args, $index, $this->env->currentFileInfo, $important);
         }
 
         $this->restore();
@@ -1166,7 +1174,7 @@ class Parser {
 				}
 
 				$importOnce = ($dir[1] !== 'multiple');
-				return new \Less\Node\Import($path, $features, $importOnce, $this->pos, $this->env->currentDirectory );
+				return new \Less\Node\Import($path, $features, $importOnce, $this->pos, $this->env->currentFileInfo );
 			}
 		}
 

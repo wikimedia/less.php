@@ -6,11 +6,11 @@ class Url{
 	public $type = "Url";
 	public $attrs;
 	public $value;
-	public $rootpath;
+	public $currentFileInfo;
 
-	public function __construct($value, $rootpath = null){
+	public function __construct($value, $currentFileInfo = null){
 		$this->value = $value;
-		$this->rootpath = $rootpath;
+		$this->currentFileInfo = $currentFileInfo;
 	}
 
 	function accept( $visitor ){
@@ -25,8 +25,8 @@ class Url{
 		$val = $this->value->compile($ctx);
 
 		// Add the base path if the URL is relative
-		if( $this->rootpath && is_string($val->value) && $ctx->isPathRelative($val->value) ){
-			$rootpath = $this->rootpath;
+		if( $this->currentFileInfo && is_string($val->value) && $ctx->isPathRelative($val->value) ){
+			$rootpath = $this->currentFileInfo['rootpath'];
 			if ( !$val->quote ){
 				$rootpath = preg_replace('/[\(\)\'"\s]/', '\\$1', $rootpath );
 			}
