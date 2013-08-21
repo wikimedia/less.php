@@ -699,9 +699,10 @@ class Parser {
 
 			$option = $this->match('/^(any|deep|all)(?=\s*\))/');
 			if( $option ){ break; }
+			$e = $this->match('parseElement');
 			$e = $this->match('/^[#.](?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/');
 			if( !$e ){ break; }
-			$elements[] = new \Less\Node\Element( null, $e, $this->pos );
+			$elements[] = $e;
 		}
 
 		$this->expect('/^\)/');
@@ -987,11 +988,9 @@ class Parser {
         $e = $this->matchMultiple( '/^(?:\d+\.\d+|\d+)%/', '/^(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
 			'*', '&', 'parseAttribute', '/^\([^()@]+\)/', '/^[\.#](?=@)/', 'parseEntitiesVariableCurly');
 
-
 		if( !$e ){
-			if ($this->match('(')) {
-				$v = $this->match('parseSelector');
-				if( $v && $this->match(')') ){
+			if( $this->match('(') ){
+				if( ($v = $this->match('parseSelector')) && $this->match(')') ){
 					$e = new \Less\Node\Paren($v);
 				}
 			}
