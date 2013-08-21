@@ -16,6 +16,7 @@ class Ruleset{
 	public $rules;
 	public $root;
 	public $allowImports;
+	public $paths = array();
 
 	public function __construct($selectors, $rules, $strictImports = false){
 		$this->selectors = $selectors;
@@ -251,20 +252,15 @@ class Ruleset{
 		$rules = array();	// node.Rule instances
 		$_rules = array();
 		$rulesets = array(); // node.Ruleset instances
-		$paths = array();	// Current selectors
-
-		if( !$this->root ){
-			$this->joinSelectors($paths, $context);
-		}
 
 
 		// Compile rules and rulesets
 		foreach($this->rules as $rule) {
 			if (isset($rule->rules) || ($rule instanceof \Less\Node\Media)) {
-				$rulesets[] = $rule->toCSS($paths, $env);
+				$rulesets[] = $rule->toCSS($this->paths, $env);
 
 			} else if ( $rule instanceof \Less\Node\Directive ){
-				$cssValue = $rule->toCSS($paths, $env);
+				$cssValue = $rule->toCSS($this->paths, $env);
                 // Output only the first @charset definition as such - convert the others
                 // to comments in case debug is enabled
                 if ($rule->name === "@charset") {
@@ -316,7 +312,7 @@ class Ruleset{
 					return trim(implode('', array_map(function ($s) use ($env) {
 						return $s->toCSS($env);
 					}, $p)));
-				}, $paths);
+				}, $this->paths);
 
 				$selector = implode($env->compress ? ',' : ",\n", $selector);
 
@@ -339,8 +335,9 @@ class Ruleset{
 		return implode('', $css) . ($env->compress ? "\n" : '' );
 	}
 
-	public function joinSelectors( &$paths, $context ){
-		foreach($this->selectors as $selector) {
+
+	public function joinSelectors( &$paths, $context, $selectors ){
+		foreach($selectors as $selector) {
 			$this->joinSelector($paths, $context, $selector);
 		}
 	}

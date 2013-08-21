@@ -24,7 +24,6 @@ class Media {
 
 	public function toCSS($ctx, $env) {
 		$features = $this->features->toCSS($env);
-		$this->ruleset->root = (count($ctx) === 0 ?: isset($ctx[0]['multiMedia']) && $ctx[0]['multiMedia']);
 		return '@media ' . $features . ($env->compress ? '{' : " {\n  ")
 			. str_replace("\n", "\n  ", trim($this->ruleset->toCSS($ctx, $env)))
 			. ($env->compress ? '}' : "\n}\n");
