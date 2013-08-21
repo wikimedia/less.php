@@ -97,22 +97,11 @@ class Ruleset{
         }
 
 
-		//if ($this->selectors) {
-		//	for ($i = 0; $i < count($this->selectors); $i++) {
-		//		if ($this->selectors[$i]->extend) {
-		//			$this->selectors[$i]->extend->compile($env, array_merge(array(array($this->selectors[$i])), array_slice($env->selectors,1)) );
-		//		}
-		//	}
-		//}
-
-
-		// Evaluate everything else
 		foreach($ruleset->rules as $i => $rule) {
 			if(! ($rule instanceof \Less\Node\Mixin\Definition) ){
 				$ruleset->rules[$i] = method_exists($rule,'compile') ? $rule->compile($env) : $rule;
 			}
 		}
-
 
 
 		// Pop the stack
