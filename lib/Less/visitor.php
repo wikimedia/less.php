@@ -22,7 +22,10 @@ class visitor{
 		if( method_exists($this->_implementation,$funcName) ){
 			$func = array($this->_implementation,$funcName);
 			$visitArgs = array('visitDeeper'=> true);
-			$node = call_user_func( $func, $node, $visitArgs );
+			$newNode = $func($node, $visitArgs);
+			if( $this->_implementation->isReplacing ){
+				$node = $newNode;
+			}
 		}
 		if( (!$visitArgs || $visitArgs['visitDeeper']) && $node && method_exists($node,'accept') ){
 			$node->accept($this);
@@ -48,7 +51,10 @@ class visitor{
 				$newNodes[] = $evald;
 			}
 		}
-		return $newNodes;
+		if( $this->_implementation->isReplacing ){
+			return $newNode;
+		}
+		return $nodes;
 	}
 
 }
