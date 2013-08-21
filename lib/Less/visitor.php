@@ -13,7 +13,7 @@ class visitor{
 			return $this->visitArray($node);
 		}
 
-		if( !$node || !property_exists($node,'type') || !$node->type ){
+		if( !is_object($node) || !property_exists($node,'type') || !$node->type ){
 			return $node;
 		}
 

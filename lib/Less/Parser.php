@@ -181,7 +181,7 @@ class Parser {
 			$joinSelector = new \Less\joinSelectorVisitor();
 			$joinSelector->run($evaldRoot);
 
-            $this->css = $evaldRoot->toCSS(array(), $this->env);
+            $this->css = $evaldRoot->toCSS($this->env);
 
 			if( $this->env->compress ){
 				$this->css = preg_replace('/(\s)+/',"$1", $this->css);

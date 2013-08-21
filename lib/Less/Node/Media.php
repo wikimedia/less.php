@@ -22,10 +22,10 @@ class Media {
 		$this->ruleset = $visitor->visit($this->ruleset);
 	}
 
-	public function toCSS($ctx, $env) {
+	public function toCSS($env) {
 		$features = $this->features->toCSS($env);
 		return '@media ' . $features . ($env->compress ? '{' : " {\n  ")
-			. str_replace("\n", "\n  ", trim($this->ruleset->toCSS($ctx, $env)))
+			. str_replace("\n", "\n  ", trim($this->ruleset->toCSS($env)))
 			. ($env->compress ? '}' : "\n}\n");
 	}
 

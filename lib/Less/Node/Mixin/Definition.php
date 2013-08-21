@@ -41,7 +41,7 @@ class Definition extends \Less\Node\Ruleset{
 		$this->condition = $visitor->visit($this->condition);
 	}
 
-	public function toCss($context, $env){
+	public function toCss($env){
 		return '';
 	}
 

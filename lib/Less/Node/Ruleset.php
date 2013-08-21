@@ -247,7 +247,7 @@ class Ruleset{
 	//
 	//	 `context` holds an array of arrays.
 	//
-	public function toCSS($context, $env){
+	public function toCSS($env){
 		$css = array();	  // The CSS output
 		$rules = array();	// node.Rule instances
 		$_rules = array();
@@ -257,10 +257,10 @@ class Ruleset{
 		// Compile rules and rulesets
 		foreach($this->rules as $rule) {
 			if (isset($rule->rules) || ($rule instanceof \Less\Node\Media)) {
-				$rulesets[] = $rule->toCSS($this->paths, $env);
+				$rulesets[] = $rule->toCSS($env);
 
 			} else if ( $rule instanceof \Less\Node\Directive ){
-				$cssValue = $rule->toCSS($this->paths, $env);
+				$cssValue = $rule->toCSS($env);
                 // Output only the first @charset definition as such - convert the others
                 // to comments in case debug is enabled
                 if ($rule->name === "@charset") {
@@ -337,8 +337,10 @@ class Ruleset{
 
 
 	public function joinSelectors( &$paths, $context, $selectors ){
-		foreach($selectors as $selector) {
-			$this->joinSelector($paths, $context, $selector);
+		if( is_array($selectors) ){
+			foreach($selectors as $selector) {
+				$this->joinSelector($paths, $context, $selector);
+			}
 		}
 	}
 

@@ -24,17 +24,16 @@ class Directive{
 		$this->value = $visitor->visit( $this->value );
 	}
 
-    public function toCSS($ctx, $env)
-    {
-        if ($this->ruleset) {
-            $this->ruleset->root = true;
-            return $this->name . ($env->compress ? '{' : " {\n  ") .
-                   preg_replace('/\n/', "\n  ", trim($this->ruleset->toCSS($ctx, $env))) .
-                   ($env->compress ? '}': "\n}\n");
-        } else {
-            return $this->name . ' ' . $this->value->toCSS($env) . ";\n";
-        }
-    }
+	public function toCSS( $env){
+		if ($this->ruleset) {
+			$this->ruleset->root = true;
+			return $this->name . ($env->compress ? '{' : " {\n  ") .
+				   preg_replace('/\n/', "\n  ", trim($this->ruleset->toCSS($env))) .
+				   ($env->compress ? '}': "\n}\n");
+		} else {
+			return $this->name . ' ' . $this->value->toCSS($env) . ";\n";
+		}
+	}
 
     public function compile($env)
     {
