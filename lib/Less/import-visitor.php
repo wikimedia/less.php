@@ -6,6 +6,7 @@ class importVisitor{
 
 	public $_visitor;
 	public $_importer;
+	public $isReplacing = true;
 
 	function __construct( $importer = null ){
 		$this->_visitor = new \Less\visitor($this);
