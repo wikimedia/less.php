@@ -44,7 +44,7 @@ class joinSelectorVisitor{
 
 	function visitMedia(&$mediaNode, $visitArgs) {
 		$context = $this->contexts[ count($this->contexts) - 1];
-		$mediaNode->ruleset->root = ( count($context) === 0 || $context[0]->multiMedia);
+		$mediaNode->ruleset->root = ( count($context) === 0 || @$context[0]->multiMedia);
 	}
 
 }

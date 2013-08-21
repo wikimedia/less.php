@@ -22,14 +22,12 @@ class extendFinderVisitor{
 		return $root;
 	}
 
-	function visitRule($ruleNode, $visitArgs) {
+	function visitRule($ruleNode, &$visitArgs) {
 		$visitArgs['visitDeeper'] = false;
-		return $ruleNode;
 	}
 
-	function visitMixinDefinition($mixinDefinitionNode, $visitArgs) {
+	function visitMixinDefinition($mixinDefinitionNode, &$visitArgs) {
 		$visitArgs['visitDeeper'] = false;
-		return $mixinDefinitionNode;
 	}
 
 	function visitRuleset($rulesetNode, $visitArgs) {
@@ -57,8 +55,14 @@ class extendFinderVisitor{
 				echo \Less\Pre($selector);
 			}
 
+			$cloneList = array();
+			foreach($allSelectorsExtendList as $allSelectorsExtend){
+				$cloneList = clone $allSelectorsExtend;
+			}
+
 			$extendList = array_slice($selector->extendList,0);
-			$extendList = array_merge($extendList, $allSelectorsExtendList);
+			$extendList = array_merge($extendList, $cloneList);
+
 			for( $j = 0; $j < count($extendList); $j++ ){
 				$extend = $extendList[$j];
 				$find = array(array($selector));
@@ -67,6 +71,7 @@ class extendFinderVisitor{
 				$this->allExtendsStack[ count($this->allExtendsStack)-1][] = $extend;
 			}
 		}
+
 
 		$this->contexts[] = $rulesetNode->selectors;
 	}
