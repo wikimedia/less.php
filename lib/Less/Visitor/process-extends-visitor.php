@@ -40,33 +40,41 @@ class processExtendsVisitor{
 		$allExtends = $this->allExtendsStack[ count($this->allExtendsStack)-1];
 		$selectorsToAdd = array();
 
-		if( !count($allExtends) ){
-			return;
-		}
 
-		for( $i = 0; $i < count($rulesetNode->selectors); $i++ ){
-			$selector = $rulesetNode->selectors[$i];
-			for( $j = 0; $j < count($selector->elements); $j++ ){
-				$element = $selector->elements[$j];
-				for( $k = 0; $k < count($allExtends); $k++ ){
-					if( $allExtends[$k]->selector->elements[0]->value === $element->value ){
-						foreach($allExtends[$k]->selfSelectors as $selfSelector){
-							$selfSelector->elements[0] = new \Less\Node\Element(
-								$element->combinator,
-								$selfSelector->elements[0]->value,
-								$selfSelector->elements[0]->index
-							);
 
-							$new_elements = array_slice($selector->elements,0,$j);
-							$new_elements = array_merge($new_elements, $selfSelector->elements);
-							$new_elements = array_merge($new_elements, array_slice($selector->elements,$j+1) );
-							$rule->selectors[] = new \Less\Node\Selector( $new_elements );
-						}
+		for( $k = 0; $k < count($allExtends); $k++ ){
+			for( $i = 0; $i < count($rulesetNode->selectors); $i++ ){
+				$selector = $rulesetNode->selectors[$i];
+				$match = $this->findMatch($allExtends[$k], $selector);
+				if( $match ){
+					foreach($allExtends[$k]->selfSelectors as $selfSelector ){
+						$firstElement = new \Less\Node\Element(
+							$match['initialCombinator'],
+							$selfSelector->elements[0]->value,
+							$selfSelector->elements[0]->index
+						);
+
+						$new_elements = array_slice($selector->elements,0,$match['index']);
+						$new_elements = array_merge($new_elements, array($firstElement) );
+						$new_elements = array_merge($new_elements, array_slice($selfSelector->elements,1) );
+						$new_elements = array_merge($new_elements, array_slice($selector->elements,$match['index']+1) );
+						$selectorsToAdd[] = new \Less\Node\Selector( $new_elements );
 					}
 				}
 			}
 		}
+
 		$rulesetNode->selectors = array_merge($rulesetNode->selectors,$selectorsToAdd);
+	}
+
+	function findMatch( $extend, $selector ){
+		for( $j = 0; $j < count($selector->elements); $j++ ){
+			$element = $selector->elements[$j];
+			if( $extend->selector->elements[0]->value === $element->value ){
+				return array('index' => $j, 'initialCombinator' => $element->combinator );
+			}
+		}
+		return null;
 	}
 
 	function visitRulesetOut( $rulesetNode ){

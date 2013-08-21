@@ -25,6 +25,7 @@ class Import{
 	public $currentFileInfo;
 	public $css;
 	public $skip;
+	public $root;
 
 	function __construct($path, $features, $once, $index, $currentFileInfo = null ){
 		$this->once = $once;
