@@ -47,31 +47,25 @@ class extendFinderVisitor{
 
 		// now find every selector and apply the extends that apply to all extends
 		// and the ones which apply to an individual extend
-		for($i = 0; $i < count($rulesetNode->selectors); $i++) {
-			$selector = $rulesetNode->selectors[$i];
-			if( $selector instanceof \Less\Node\Selector ){
+		for($i = 0; $i < count($rulesetNode->paths); $i++ ){
 
-			}else{
-				echo \Less\Pre($selector);
+			$selectorPath = $rulesetNode->paths[$i];
+			$selector = $selectorPath[ count($selectorPath)-1];
+
+			$list = array_slice($selector->extendList,0);
+			$list = array_merge($list, $allSelectorsExtendList);
+
+			$extendList = array();
+			foreach($list as $allSelectorsExtend){
+				$extendList[] = clone $allSelectorsExtend;
 			}
 
-			$cloneList = array();
-			foreach($allSelectorsExtendList as $allSelectorsExtend){
-				$cloneList = clone $allSelectorsExtend;
-			}
-
-			$extendList = array_slice($selector->extendList,0);
-			$extendList = array_merge($extendList, $cloneList);
-
-			for( $j = 0; $j < count($extendList); $j++ ){
+			for($j = 0; $j < count($extendList); $j++ ){
 				$extend = $extendList[$j];
-				$find = array(array($selector));
-				$find = array_merge($find,$this->contexts);
-				$extend->findSelfSelectors( $find );
-				$this->allExtendsStack[ count($this->allExtendsStack)-1][] = $extend;
+				$extend->findSelfSelectors( $selectorPath );
+				$this->allExtendsStack[ count($this->allExtendsStack)-1 ][] = $extend;
 			}
 		}
-
 
 		$this->contexts[] = $rulesetNode->selectors;
 	}

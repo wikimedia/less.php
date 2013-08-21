@@ -31,6 +31,7 @@ class processExtendsVisitor{
 		$visitArgs['visitDeeper'] = false;
 	}
 
+
 	function visitRuleset($rulesetNode, $visitArgs ){
 
 		if( $rulesetNode->root ){
@@ -41,11 +42,15 @@ class processExtendsVisitor{
 		$selectorsToAdd = array();
 
 		for( $k = 0; $k < count($allExtends); $k++ ){
-			for( $i = 0; $i < count($rulesetNode->selectors); $i++ ){
-				$selector = $rulesetNode->selectors[$i];
-				$match = $this->findMatch($allExtends[$k], $selector);
+			for( $i = 0; $i < count($rulesetNode->paths); $i++ ){
+				$selectorPath = $rulesetNode->paths[$i];
+				$match = $this->findMatch( $allExtends[$k], $selectorPath);
 				if( $match ){
-					foreach($allExtends[$k]->selfSelectors as $selfSelector ){
+					$selector = $selectorPath[$match['pathIndex']];
+
+					foreach( $allExtends[$k]->selfSelectors as $selfSelector ){
+						$path = array_slice($selectorPath,0, $match['pathIndex']);
+
 						$firstElement = new \Less\Node\Element(
 							$match['initialCombinator'],
 							$selfSelector->elements[0]->value,
@@ -56,32 +61,42 @@ class processExtendsVisitor{
 						$new_elements = array_merge($new_elements, array($firstElement) );
 						$new_elements = array_merge($new_elements, array_slice($selfSelector->elements,1) );
 						$new_elements = array_merge($new_elements, array_slice($selector->elements,$match['index']+$match['length']) );
-						$selectorsToAdd[] = new \Less\Node\Selector( $new_elements );
+						$path[] = new \Less\Node\Selector( $new_elements );
+
+						$path = array_merge( $path, array_slice($selectorPath, $match['pathIndex'] + 1, count($selectorPath)) );
+
+						$selectorsToAdd[] = $path;
 					}
 				}
 			}
 		}
-
-		$rulesetNode->selectors = array_merge($rulesetNode->selectors,$selectorsToAdd);
+		$rulesetNode->paths = array_merge($rulesetNode->paths, $selectorsToAdd);
 	}
 
-	function findMatch( $extend, $selector ){
+	function findMatch( $extend, $selectorPath ){
 
-		$hasMatch = false;
-		for( $i = 0; $i <= (count($selector->elements) - count($extend->selector->elements)); $i++ ){
-			$hasMatch = true;
-			for( $j = 0; $j < count($extend->selector->elements); $j++ ){
-				if( $extend->selector->elements[$j]->value !== $selector->elements[$i+$j]->value ){
-					$hasMatch = false;
-					break;
+		for( $k = 0; $k < count($selectorPath); $k++ ){
+			$selector = $selectorPath[$k];
+			for( $i = 0; $i < count($selector->elements); $i++ ){
+				$hasMatch = true;
+				$potentialMatch = array('pathIndex'=> $k, 'index' => $i,'matched'=>0);
+				for( $j = 0; $j < count($extend->selector->elements) && $i+$j < count($selector->elements); $j++ ){
+					$potentialMatch = array('pathIndex'=> $k, 'index' => $i);
+					$potentialMatch['matched'] = $j;
+					if( $extend->selector->elements[$j]->value !== $selector->elements[$i+$j]->value ||
+						($j > 0 && $extend->selector->elements[$j]->combinator->value !== $selector->elements[$i+$j]->combinator->value) ){
+						$potentialMatch = null;
+						break;
+					}
 				}
-			}
-			if( $hasMatch ){
-				return array('index' => $i, 'initialCombinator' => $selector->elements[$i]->combinator, 'length' => count($extend->selector->elements) );
+				if( $potentialMatch && $potentialMatch['matched']+1 === count($extend->selector->elements) ){
+					$potentialMatch['initialCombinator'] = $selector->elements[$i]->combinator;
+					$potentialMatch['length'] = count($extend->selector->elements);
+					return $potentialMatch;
+				}
 			}
 		}
 		return null;
-
 	}
 
 	function visitRulesetOut( $rulesetNode ){

@@ -178,11 +178,11 @@ class Parser {
 
 			$evaldRoot = $root->compile($this->env);
 
-			$extendsVisitor = new \Less\processExtendsVisitor();
-			$extendsVisitor->run($evaldRoot);
-
 			$joinSelector = new \Less\joinSelectorVisitor();
 			$joinSelector->run($evaldRoot);
+
+			$extendsVisitor = new \Less\processExtendsVisitor();
+			$extendsVisitor->run($evaldRoot);
 
             $this->css = $evaldRoot->toCSS($this->env);
 

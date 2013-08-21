@@ -26,19 +26,21 @@ class Extend{
 
 
 	function findSelfSelectors( $selectors, $elem = array(), $i = 0){
+		$selfElements = array();
 
-        // multiplies out the selectors, e.g.
-        // [[.a],[.b,.c]] => [.a.b,.a.c]
-        if( $i === 0 ){
-			$this->selfSelectors = array();
-		}
+		for($i = 0; $i < count($selectors); $i++ ){
 
-		if( isset($selectors[$i]) && is_array($selectors[$i]) && count($selectors[$i]) ){
-			foreach($selectors[$i] as $s){
-				$this->findSelfSelectors($selectors, array_merge($s->elements,$elem), $i+1 );
+			if( !is_object($selectors[$i]) ){
+				$debug = debug_backtrace();
+				echo \Less\Pre($debug);
+				//echo \Less\Pre($selectors[$i]);
+				die();
 			}
-		}else{
-			$this->selfSelectors[] = new \Less\Node\Selector($elem);
+
+
+			$selfElements = array_merge($selfElements, $selectors[$i]->elements);
 		}
+
+		$this->selfSelectors = array(new \Less\Node\Selector($elem));
 	}
 }
