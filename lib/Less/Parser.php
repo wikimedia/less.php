@@ -178,6 +178,9 @@ class Parser {
 
 			$evaldRoot = $root->compile($this->env);
 
+			$extendsVisitor = new \Less\processExtendsVisitor();
+			$extendsVisitor->run($evaldRoot);
+
 			$joinSelector = new \Less\joinSelectorVisitor();
 			$joinSelector->run($evaldRoot);
 
@@ -715,7 +718,7 @@ class Parser {
 			$this->expect('/^;/');
 		}
 
-		return new \Less\Node\Extend( $elements, $option, $index );
+		return new \Less\Node\Extend( new \Less\Node\Selector($elements), $option, $index );
 	}
 
 	function parseExtendRule(){
@@ -1034,32 +1037,33 @@ class Parser {
     //
     private function parseSelector(){
 		$elements = array();
+		$extendList = array();
 
 		while( ($extend = $this->match('parseExtend')) ?: ($e = $this->match('parseElement')) ){
-			if( !$e ){
-				break;
+			if( $extend ){
+				$extendList[] = $extend;
+			}else{
+				if( count($extendList) ){
+					//error("Extend can only be used at the end of selector");
+				}
+				$c = $this->input[ $this->pos ];
+				$elements[] = $e;
+				$e = null;
 			}
-			$c = $this->input[$this->pos];
-			$elements[] = $e;
-			$e = null;
-			if ($c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')') { break; }
+
+			if( $c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')') { break; }
 		}
 
-		if( count($elements) > 0){
-			return new \Less\Node\Selector($elements, $extend);
-		}
-		if( $extend ){
-			throw new \Less\Exception\ParserException('Extend must be used to extend a selector');
-		}
+
+		if( count($elements) ) { return new \Less\Node\Selector( $elements, $extendList); }
+		if( count($extendList) ) { throw new \Less\Exception\ParserException('Extend must be used to extend a selector, it cannot be used on its own'); }
     }
 
-    private function parseTag()
-    {
-        return $this->match('/^[A-Za-z][A-Za-z-]*[0-9]?/') ?: $this->match('*');
-    }
+	private function parseTag(){
+		return $this->match('/^[A-Za-z][A-Za-z-]*[0-9]?/') ?: $this->match('*');
+	}
 
-    private function parseAttribute()
-    {
+	private function parseAttribute(){
         if (! $this->match('[')) {
             return;
         }

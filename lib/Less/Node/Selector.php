@@ -8,16 +8,17 @@ class Selector {
 
 	public $type = 'Selector';
 	public $elements;
-	public $extend;
+	public $extendList = array();
 	private $_css;
 
-	public function __construct($elements, $extend = null) {
+	public function __construct($elements, $extendList = array() ){
 		$this->elements = $elements;
-		$this->extend = $extend;
+		$this->extendList = $extendList;
 	}
 
 	function accept($visitor) {
 		$this->elements = $visitor->visit($this->elements);
+		$this->extendList = $visitor->visit($this->extendList);
 	}
 
 	public function match($other) {
@@ -37,6 +38,21 @@ class Selector {
 			}
 		}
 		return true;
+	}
+
+	public function compile($env) {
+
+		$extendList = array();
+		foreach($this->extendList as $extend){
+			$extendList[] = $extend->compile($extend);
+		}
+
+		$elements = array();
+		foreach($this->elements as $e){
+			$elements[] = $e->compile($env);
+		}
+
+		return new \Less\Node\Selector($elements, $extendList);
 	}
 
 	public function toCSS ($env){
@@ -64,12 +80,4 @@ class Selector {
 		return $this->_css;
 	}
 
-	public function compile($env) {
-
-		$elements = array();
-		foreach($this->elements as $e){
-			$elements[] = $e->compile($env);
-		}
-		return new \Less\Node\Selector($elements, $this->extend);
-	}
 }

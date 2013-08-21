@@ -8,11 +8,10 @@ class Extend{
 	var $selector;
 	var $option;
 	var $index;
+	var $selfSelectors = array();
 
-	static $selfSelectors;
-
-	function __construct($elements, $option, $index){
-		$this->selector = new \Less\Node\Selector($elements);
+	function __construct($selector, $option, $index){
+		$this->selector = $selector;
 		$this->option = $option;
 		$this->index = $index;
 	}
@@ -21,7 +20,29 @@ class Extend{
 		$this->selector = $visitor->visit( $this->selector );
 	}
 
-	function compile( $env, $selectors = array() ){
+	function compile( $env ){
+		return new \Less\Node\Extend( $this->selector->compile($env), $this->option, $this->index);
+	}
+
+
+	function findSelfSelectors( $selectors, $elem = array(), $i = 0){
+
+        // multiplies out the selectors, e.g.
+        // [[.a],[.b,.c]] => [.a.b,.a.c]
+        if( $i === 0 ){
+			$this->selfSelectors = array();
+		}
+
+		if( isset($selectors[$i]) && is_array($selectors[$i]) && count($selectors[$i]) ){
+			foreach($selectors[$i] as $s){
+				$this->findSelfSelectors($selectors, array_merge($s->elements,$elem), $i+1 );
+			}
+		}else{
+			$this->selfSelectors[] = new \Less\Node\Selector($elem);
+		}
+	}
+
+	function a(){
 
 		self::findSelfSelectors( (count($selectors) ? $selectors : $env->selectors) );
 		$targetValue = $this->selector->elements[0]->value;
@@ -62,17 +83,5 @@ class Extend{
 
 		return $this;
 	}
-
-	static function findSelfSelectors( $selectors, $elem = array(), $i = 0){
-
-		if( isset($selectors[$i]) && is_array($selectors[$i]) && count($selectors[$i]) ){
-			foreach($selectors[$i] as $s){
-				self::findSelfSelectors($selectors, array_merge($s->elements,$elem), $i+1 );
-			}
-		}else{
-			self::$selfSelectors[] = new \Less\Node\Selector($elem);
-		}
-	}
-
 
 }
