@@ -295,7 +295,7 @@ class Ruleset{
 
 				// Remove duplicates
 				for ($i = count($rules) - 1; $i >= 0; $i--) {
-					if (array_search($rules[$i], $_rules) === FALSE) {
+					if( substr($rules[$i],0,2) === "/*" || !in_array($rules[$i], $_rules) ){
 						array_unshift($_rules, $rules[$i]);
 					}
 				}
