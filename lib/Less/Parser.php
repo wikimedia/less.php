@@ -1151,23 +1151,27 @@ class Parser {
         }
     }
 
-    //
-    // An @import directive
-    //
-    //     @import "lib";
-    //
-    // Depending on our environment, importing is done differently:
-    // In the browser, it's an XHR request, in Node, it would be a
-    // file-system operation. The function used for importing is
-    // stored in `import`, which we pass to the Import constructor.
-    //
-    private function parseImport(){
-		$dir = $path = false;
+	//
+	// An @import directive
+	//
+	//     @import "lib";
+	//
+	// Depending on our environment, importing is done differently:
+	// In the browser, it's an XHR request, in Node, it would be a
+	// file-system operation. The function used for importing is
+	// stored in `import`, which we pass to the Import constructor.
+	//
+	private function parseImport(){
 		$index = $this->pos;
 
 		$this->save();
 
 		$dir = $this->match('/^@import(?:-(once|multiple))?\s+/');
+
+		$options = array();
+		if( $dir ){
+			$options = $this->match('parseImportOptions');
+		}
 
 		if( $dir && ($path = $this->matchMultiple('parseEntitiesQuoted','parseEntitiesUrl')) ){
 			$features = $this->match('parseMediaFeatures');
@@ -1176,13 +1180,41 @@ class Parser {
 					$features = new \Less\Node\Value($features);
 				}
 
-				$importOnce = ($dir[1] !== 'multiple');
-				return new \Less\Node\Import($path, $features, $importOnce, $this->pos, $this->env->currentFileInfo );
+				if( $dir[1] === 'multiple') { $options['multiple'] = true; }
+				return new \Less\Node\Import($path, $features, $options, $this->pos, $this->env->currentFileInfo );
 			}
 		}
 
 		$this->restore();
-    }
+	}
+
+	private function parseImportOptions(){
+		$options = null;
+
+		// single option, no parens
+		if( $o = $this->match('parseImportOption') ){
+			$options[$o] = true;
+			return $options;
+		}
+
+		// list of options, surrounded by parens
+		if( !$this->match('(')) { return null; }
+		do{
+			if( $o = $this->match('parseImportOption') ){
+				$options[$o] = true;
+				if( !$this->match(',')) { break; }
+			}
+		}while($o);
+		$this->expect(')');
+		return $options;
+	}
+
+	private function parseImportOption(){
+		$opt = $this->match('/^(less|multiple)/');
+		if( $opt ){
+			return $opt[1];
+		}
+	}
 
 	private function parseMediaFeature() {
 		$nodes = array();

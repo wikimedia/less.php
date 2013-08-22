@@ -18,7 +18,7 @@ namespace Less\Node;
 class Import{
 
 	public $type = 'Import';
-	public $once;
+	public $options;
 	public $index;
 	public $path;
 	public $features;
@@ -27,8 +27,8 @@ class Import{
 	public $skip;
 	public $root;
 
-	function __construct($path, $features, $once, $index, $currentFileInfo = null ){
-		$this->once = $once;
+	function __construct($path, $features, $options, $index, $currentFileInfo = null ){
+		$this->options = $options;
 		$this->index = $index;
 		$this->path = $path;
 		$this->features = $features;
@@ -38,6 +38,7 @@ class Import{
 		if( $pathValue ){
 			$this->css = preg_match('/css([\?;].*)?$/',$pathValue);
 		}
+		if( isset($this->options['less']) ){ $this->css = false; }
     }
 
 //
@@ -77,7 +78,7 @@ class Import{
 	}
 
 	function compileForImport( $env ){
-		return new \Less\Node\Import( $this->path->compile($env), $this->features, $this->once, $this->index, $this->currentFileInfo);
+		return new \Less\Node\Import( $this->path->compile($env), $this->features, $this->options, $this->index, $this->currentFileInfo);
 	}
 
 	function compilePath($env) {
@@ -99,7 +100,7 @@ class Import{
 		$full_path = $this->currentFileInfo['rootpath'].$this->getPath();
 		$realpath = realpath($full_path);
 
-		if( $this->once && $realpath && in_array($realpath,\Less\Parser::$imports) ){
+		if( !isset($this->options['multiple']) && $realpath && in_array($realpath,\Less\Parser::$imports) ){
 			$this->skip = true;
 		}
 

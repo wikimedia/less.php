@@ -21,7 +21,7 @@ class importVisitor{
 			importNode = importNode.evalForImport(this.env);
 			this._importer.push(importNode.getPath(), function (e, root, imported) {
 				if (e) { e.index = importNode.index; }
-				if (imported && importNode.once) { importNode.skip = imported; }
+				if (imported && !importNode.options.multiple) { importNode.skip = imported; }
 				importNode.root = root || new(tree.Ruleset)([], []);
 			});
 		}
