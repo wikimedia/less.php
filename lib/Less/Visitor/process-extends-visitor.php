@@ -130,9 +130,10 @@ class processExtendsVisitor{
 
 					if( $potentialMatch ){
 						$potentialMatch['finished'] = ($potentialMatch['matched'] === count($extend->selector->elements));
-						if( $potentialMatch['finished'] && (
-							(!$extend->any && $i+1 < count($selector->elements) ) ||
-							(!$extend->deep && $k+1 < count($selectorPath) ))) {
+
+						if( $potentialMatch['finished'] &&
+							(!$extend->deep && ($i+1 < count($selector->elements) ||
+								$k+1 < count($selectorPath)))) {
 							$potentialMatch = null;
 						}
 					}
