@@ -1189,20 +1189,27 @@ class Parser {
 	}
 
 	private function parseImportOptions(){
-		$options = null;
 
-		// single option, no parens
-		if( $o = $this->match('parseImportOption') ){
-			$options[$o] = true;
-			return $options;
-		}
+		$options = array();
 
 		// list of options, surrounded by parens
-		if( !$this->match('(')) { return null; }
+		if( !$this->match('(') ){ return null; }
 		do{
 			if( $o = $this->match('parseImportOption') ){
-				$options[$o] = true;
-				if( !$this->match(',')) { break; }
+				$optionName = $o;
+				$value = true;
+				switch( $optionName ){
+					case "css":
+						$optionName = "less";
+						$value = false;
+					break;
+					case "once":
+						$optionName = "multiple";
+						$value = false;
+					break;
+				}
+				$options[$optionName] = $value;
+				if( !$this->match(',') ){ break; }
 			}
 		}while($o);
 		$this->expect(')');
@@ -1210,7 +1217,7 @@ class Parser {
 	}
 
 	private function parseImportOption(){
-		$opt = $this->match('/^(less|multiple)/');
+		$opt = $this->match('/^(less|css|multiple|once)/');
 		if( $opt ){
 			return $opt[1];
 		}

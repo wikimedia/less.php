@@ -34,11 +34,15 @@ class Import{
 		$this->features = $features;
 		$this->currentFileInfo = $currentFileInfo;
 
-		$pathValue = $this->getPath();
-		if( $pathValue ){
-			$this->css = preg_match('/css([\?;].*)?$/',$pathValue);
+
+		if( isset($this->options['less']) ){
+			$this->css = !$this->options['less'];
+		} else {
+			$pathValue = $this->getPath();
+			if( $pathValue && preg_match('/css([\?;].*)?$/',$pathValue) ){
+				$this->css = true;
+			}
 		}
-		if( isset($this->options['less']) ){ $this->css = false; }
     }
 
 //
@@ -70,7 +74,8 @@ class Import{
 	function getPath(){
 		if ($this->path instanceof \Less\Node\Quoted) {
 			$path = $this->path->value;
-			return ($this->css || preg_match('/(\.[a-z]*$)|([\?;].*)$/',$path)) ? $path : $path . '.less';
+			return ( isset($this->css) || preg_match('/(\.[a-z]*$)|([\?;].*)$/',$path)) ? $path : $path . '.less';
+
 		} else if ($this->path instanceof \Less\Node\URL) {
 			return $this->path->value->value;
 		}
