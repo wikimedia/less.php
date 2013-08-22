@@ -722,111 +722,121 @@ class Parser {
 	}
 
 
-    //
-    // A Mixin call, with an optional argument list
-    //
-    //     #mixins > .square(#fff);
-    //     .rounded(4px, black);
-    //     .button;
-    //
-    // The `while` loop is there because mixins can be
-    // namespaced, but we only support the child and descendant
-    // selector for now.
-    //
+	//
+	// A Mixin call, with an optional argument list
+	//
+	//     #mixins > .square(#fff);
+	//     .rounded(4px, black);
+	//     .button;
+	//
+	// The `while` loop is there because mixins can be
+	// namespaced, but we only support the child and descendant
+	// selector for now.
+	//
     private function parseMixinCall(){
-        $elements = array();
-        $args = array();
-        $arg = null;
-        $c = null;
-        $index = $this->pos;
-        $name = null;
-        $value = null;
+		$elements = array();
+		$index = $this->pos;
 		$important = false;
-		$argsComma = array();
-		$argsSemiColon = array();
-		$isSemiColonSeperated = null;
-		$expressionContainsNamed = false;
-
+		$args = null;
+		$c = null;
 
         if( !$this->peek('.') && !$this->peek('#') ){
             return;
         }
 
-        $this->save(); // stop us absorbing part of an invalid selector
+		$this->save(); // stop us absorbing part of an invalid selector
 
-        while ($e = $this->match('/^[#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/')) {
-            $elements[] = new \Less\Node\Element($c, $e, $index);
-            $c = $this->match('>');
-        }
+		while( $e = $this->match('/^[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/') ){
+		//while ($e = $this->match('/^[#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/')) {
+			$elements[] = new \Less\Node\Element($c, $e, $this->pos);
+			$c = $this->match('>');
+		}
 
-
-		if( $this->match('(') ){
-			$expressions = array();
-
-			while( $arg = $this->match('parseExpression') ){
-				$nameLoop = null;
-				$arg->throwAwayComments();
-				$value = $arg;
-
-				// Variable
-				if( count($arg->value) == 1 ){
-					$val = $arg->value[0];
-					if( $val instanceof \Less\Node\Variable ){
-						if( $this->match(':') ){
-							if ( count($expressions) > 0) {
-								if ($isSemiColonSeperated) {
-									throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
-								}
-								$expressionContainsNamed = true;
-							}
-							$value = $this->expect('parseExpression');
-							$nameLoop = $name = $val->name;
-						}
-					}
-				}
-
-
-				$expressions[] = $value;
-
-				$argsComma[] = array('name'=> $nameLoop, 'value' => $value);
-
-				if ($this->match(',')) {
-					continue;
-				}
-
-				if ($this->match(';') || $isSemiColonSeperated) {
-
-					if ($expressionContainsNamed) {
-						throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
-					}
-
-					$isSemiColonSeperated = true;
-
-					if ( count($expressions) > 1) {
-						$value = new \Less\Node\Value($expressions);
-					}
-					$argsSemiColon[] = array('name' => $name, 'value' => $value );
-
-					$name = null;
-					$expressions = array();
-				}
-			}
-
+		if( $this->match('(')) {
+			$args = $this->parseMixinArgs(true);
 			$this->expect(')');
 		}
 
-		$args = $isSemiColonSeperated ? $argsSemiColon : $argsComma;
+		if( !$args ){
+			$args = array();
+		}
 
-
-		if ($this->match('parseImportant'))
+		if( $this->match('parseImportant') ){
 			$important = true;
+		}
 
-        if (count($elements) > 0 && ($this->match(';') || $this->peek('}'))) {
-            return new \Less\Node\Mixin\Call($elements, $args, $index, $this->env->currentFileInfo, $important);
-        }
+		if( count($elements) > 0 && ($this->match(';') || $this->peek('}')) ){
+			return new \Less\Node\Mixin\Call($elements, $args, $index, $this->env->currentFileInfo, $important);
+		}
 
-        $this->restore();
-    }
+		$this->restore();
+	}
+
+	private function parseMixinArgs( $isCall ){
+
+		$expressions = array();
+		$argsSemiColon = array();
+		$isSemiColonSeperated = null;
+		$argsComma = array();
+		$expressionContainsNamed = null;
+		$name = null;
+
+
+
+		while( $arg = $this->match('parseExpression') ){
+			$nameLoop = null;
+			$arg->throwAwayComments();
+			$value = $arg;
+
+
+			// Variable
+			if( count($arg->value) == 1 ){
+				$val = $arg->value[0];
+				if( $val instanceof \Less\Node\Variable ){
+					if( $this->match(':') ){
+						if ( count($expressions) > 0) {
+							if ($isSemiColonSeperated) {
+								throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
+							}
+							$expressionContainsNamed = true;
+						}
+						$value = $this->expect('parseExpression');
+						$nameLoop = $name = $val->name;
+					}
+				}
+			}
+
+			$expressions[] = $value;
+
+			$argsComma[] = array('name'=> $nameLoop, 'value' => $value);
+
+			if( $this->match(',') ){
+				continue;
+			}
+
+			if( $this->match(';') || $isSemiColonSeperated ){
+
+				if( $expressionContainsNamed ){
+					throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
+				}
+
+				$isSemiColonSeperated = true;
+
+				if( count($expressions) > 1 ){
+					$value = new \Less\Node\Value($expressions);
+				}
+				$argsSemiColon[] = array('name' => $name, 'value' => $value );
+
+				$name = null;
+				$expressions = array();
+				$expressionContainsNamed = false;
+			}
+		}
+
+		$args = $isSemiColonSeperated ? $argsSemiColon : $argsComma;
+		return $args;
+	}
+
 
     //
     // A Mixin definition, with a list of parameters
