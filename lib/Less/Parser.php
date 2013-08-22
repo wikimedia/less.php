@@ -1166,7 +1166,7 @@ class Parser {
 
 		$this->save();
 
-		$dir = $this->match('/^@import(?:-(once|multiple))?\s+/');
+		$dir = $this->match('/^@import?\s+/');
 
 		$options = array();
 		if( $dir ){
@@ -1180,7 +1180,6 @@ class Parser {
 					$features = new \Less\Node\Value($features);
 				}
 
-				if( $dir[1] === 'multiple') { $options['multiple'] = true; }
 				return new \Less\Node\Import($path, $features, $options, $this->pos, $this->env->currentFileInfo );
 			}
 		}
