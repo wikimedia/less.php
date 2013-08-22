@@ -9,8 +9,8 @@ class Extend{
 	public $option;
 	public $index;
 	public $selfSelectors = array();
-	public $deep;
-	public $any;
+	public $allowBefore;
+	public $allowAfter;
 
 
 	function __construct($selector, $option, $index){
@@ -19,22 +19,14 @@ class Extend{
 		$this->index = $index;
 
 		switch($option){
-			case "all":
-				$this->deep = true;
-				$this->any = true;
-			break;
-			case "deep":
-				$this->deep = true;
-				$this->any = false;
-			break;
-			case "any":
-				$this->deep = false;
-				$this->any = true;
-			break;
-			default:
-				$this->deep = false;
-				$this->any = false;
-			break;
+	        case "all":
+	            $this->allowBefore = true;
+	            $this->allowAfter = true;
+	        break;
+	        default:
+	            $this->allowBefore = false;
+	            $this->allowAfter = false;
+	        break;
 		}
 	}
 

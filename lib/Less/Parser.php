@@ -697,7 +697,7 @@ class Parser {
 
 		while( true ){
 
-			$option = $this->match('/^(any|deep|all)(?=\s*\))/');
+			$option = $this->match('/^(all)(?=\s*\))/');
 			if( $option ){ break; }
 			$e = $this->match('parseElement');
 			if( !$e ){ break; }

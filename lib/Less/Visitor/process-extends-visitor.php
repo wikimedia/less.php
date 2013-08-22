@@ -111,7 +111,7 @@ class processExtendsVisitor{
 			$selector = $selectorPath[$k];
 			for( $i = 0; $i < count($selector->elements); $i++ ){
 
-				if( $extend->any || ($k == 0 && $i == 0) ){
+				if( $extend->allowBefore || ($k == 0 && $i == 0)) {
 					$potentialMatches[] = array('pathIndex'=> $k, 'index'=> $i, 'matched' => 0, 'initialCombinator'=> $selector->elements[$i]->combinator);
 				}
 
@@ -132,7 +132,7 @@ class processExtendsVisitor{
 						$potentialMatch['finished'] = ($potentialMatch['matched'] === count($extend->selector->elements));
 
 						if( $potentialMatch['finished'] &&
-							(!$extend->deep && ($i+1 < count($selector->elements) ||
+							(!$extend->allowAfter && ($i+1 < count($selector->elements) ||
 								$k+1 < count($selectorPath)))) {
 							$potentialMatch = null;
 						}
