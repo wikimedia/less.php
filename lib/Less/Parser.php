@@ -710,9 +710,10 @@ class Parser {
 			$option = $option[1];
 		}
 
-		//if( $option != "all" ){
-		//	error(":extend only supports the all option at the moment, please specify it after your selector, e.g. :extend(.a all)");
+		//if (option != "all" && option) {
+		//	error(":extend only supports the all option at the moment, please specify it after your selector, e.g. :extend(.a all) or specify no option to extend shallow and exact");
 		//}
+
 
 		if( $isRule ){
 			$this->expect('/^;/');

@@ -5,15 +5,37 @@ namespace Less\Node;
 class Extend{
 
 	public $type = 'Extend';
-	var $selector;
-	var $option;
-	var $index;
-	var $selfSelectors = array();
+	public $selector;
+	public $option;
+	public $index;
+	public $selfSelectors = array();
+	public $deep;
+	public $any;
+
 
 	function __construct($selector, $option, $index){
 		$this->selector = $selector;
 		$this->option = $option;
 		$this->index = $index;
+
+		switch($option){
+			case "all":
+				$this->deep = true;
+				$this->any = true;
+			break;
+			case "deep":
+				$this->deep = true;
+				$this->any = false;
+			break;
+			case "any":
+				$this->deep = false;
+				$this->any = true;
+			break;
+			default:
+				$this->deep = false;
+				$this->any = false;
+			break;
+		}
 	}
 
 	function accept( $visitor ){

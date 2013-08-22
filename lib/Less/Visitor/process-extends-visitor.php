@@ -110,25 +110,38 @@ class processExtendsVisitor{
 		for( $k = 0; $k < count($selectorPath); $k++ ){
 			$selector = $selectorPath[$k];
 			for( $i = 0; $i < count($selector->elements); $i++ ){
-				$potentialMatches[] = array('pathIndex'=> $k, 'index'=> $i, 'matched' => 0);
+
+				if( $extend->any || ($k == 0 && $i == 0) ){
+					$potentialMatches[] = array('pathIndex'=> $k, 'index'=> $i, 'matched' => 0, 'initialCombinator'=> $selector->elements[$i]->combinator);
+				}
 
 				for( $l = 0; $l < count($potentialMatches); $l++ ){
 					$potentialMatch = $potentialMatches[$l];
-					$targetElementIndex = $i;
-					for($j = $potentialMatch['matched']; $j < count($extend->selector->elements) && $targetElementIndex < count($selector->elements); $j++, $targetElementIndex++ ){
-						$potentialMatch['matched'] = $j + 1;
-						if( $extend->selector->elements[$j]->value !== $selector->elements[$targetElementIndex]->value ||
-							($j > 0 && $extend->selector->elements[$j]->combinator->value !== $selector->elements[$targetElementIndex]->combinator->value) ){
+					$targetCombinator = $selector->elements[$i]->combinator->value;
+					if( $targetCombinator == '' && $i === 0 ){
+						$targetCombinator = ' ';
+					}
+					if( $extend->selector->elements[ $potentialMatch['matched'] ]->value !== $selector->elements[$i]->value ||
+						($potentialMatch['matched'] > 0 && $extend->selector->elements[$potentialMatch['matched']]->combinator->value !== $targetCombinator)) {
+						$potentialMatch = null;
+					} else {
+						$potentialMatch['matched']++;
+					}
+
+					if( $potentialMatch ){
+						$potentialMatch['finished'] = ($potentialMatch['matched'] === count($extend->selector->elements));
+						if( $potentialMatch['finished'] && (
+							(!$extend->any && $i+1 < count($selector->elements) ) ||
+							(!$extend->deep && $k+1 < count($selectorPath) ))) {
 							$potentialMatch = null;
-							break;
 						}
 					}
 					if( $potentialMatch ){
-						if( $potentialMatch['matched'] === count($extend->selector->elements) ){
-							$potentialMatch['initialCombinator'] = $selector->elements[$i]->combinator;
+						if( $potentialMatch['finished'] ){
+							//$potentialMatch = array_slice($potentialMatch, 0, count($extend->selector->elements));
 							$potentialMatch['length'] = count($extend->selector->elements);
 							$potentialMatch['endPathIndex'] = $k;
-							$potentialMatch['endPathElementIndex'] = $targetElementIndex; // index after end of match
+							$potentialMatch['endPathElementIndex'] = $i+1; // index after end of match
 							$potentialMatches = array();
 							$matches[] = $potentialMatch;
 							break;
