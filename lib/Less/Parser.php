@@ -1122,34 +1122,33 @@ class Parser {
         }
     }
 
-    private function parseRule()
-    {
-        $start = $this->pos;
-        $c = isset($this->input[$this->pos]) ? $this->input[$this->pos] : '';
+	private function parseRule(){
+		$start = $this->pos;
+		$c = isset($this->input[$this->pos]) ? $this->input[$this->pos] : '';
 
-        if ($c === '.' || $c === '#' || $c === '&') {
-            return;
-        }
+		if ($c === '.' || $c === '#' || $c === '&') {
+			return;
+		}
 
-        if ($name = $this->match('parseVariable') ?: $this->match('parseProperty')) {
+		if ($name = $this->match('parseVariable') ?: $this->match('parseProperty')) {
 
 			if( !$this->env->compress && ($name[0] != '@') && preg_match('/^([^@+\/\'"*`(;{}-]*);/', $this->current, $match) ){
-                $this->pos += strlen($match[0]) - 1;
-                $value = new \Less\Node\Anonymous($match[1]);
-            } else {
-                $value = $this->match('parseValue');
-            }
-            $important = $this->match('parseImportant');
+				$this->pos += strlen($match[0]) - 1;
+				$value = new \Less\Node\Anonymous($match[1]);
+			} else {
+				$value = $this->match('parseValue');
+			}
+			$important = $this->match('parseImportant');
 
-            if ($value && $this->match('parseEnd')) {
-                return new \Less\Node\Rule($name, $value, $important, $start);
-            } else {
-                // Backtrack
-                $this->pos = $start;
-                $this->sync();
-            }
-        }
-    }
+			if ($value && $this->match('parseEnd')) {
+				return new \Less\Node\Rule($name, $value, $important, $start, $this->env->currentFileInfo);
+			} else {
+				// Backtrack
+				$this->pos = $start;
+				$this->sync();
+			}
+		}
+	}
 
 	//
 	// An @import directive
@@ -1233,7 +1232,7 @@ class Parser {
 				$e = $this->match('parseValue');
 				if ($this->match(')')) {
 					if ($p && $e) {
-						$nodes[] = new \Less\Node\Paren(new \Less\Node\Rule($p, $e, null, $this->pos, true));
+						$nodes[] = new \Less\Node\Paren(new \Less\Node\Rule($p, $e, null, $this->pos, $this->env->currentFileInfo, true));
 					} elseif ($e) {
 						$nodes[] = new \Less\Node\Paren($e);
 					} else {

@@ -10,12 +10,14 @@ class Rule{
 	public $index;
 	public $inline;
 	public $variable;
+	public $currentFileInfo;
 
-	public function __construct($name, $value, $important = null, $index = null, $inline = false){
+	public function __construct($name, $value, $important = null, $index = null, $currentFileInfo = null,  $inline = false){
 		$this->name = $name;
 		$this->value = ($value instanceof \Less\Node\Value) ? $value : new \Less\Node\Value(array($value));
 		$this->important = $important ? ' ' . trim($important) : '';
 		$this->index = $index;
+		$this->currentFileInfo = $currentFileInfo;
 		$this->inline = $inline;
 
 		if ($name[0] === '@') {
@@ -51,6 +53,7 @@ class Rule{
 			return new \Less\Node\Rule($this->name,
 										$this->value->compile($env),
 										$this->important,
+										$this->currentFileInfo,
 										$this->index, $this->inline);
 		}
 		catch(\Exception $e){
@@ -62,7 +65,7 @@ class Rule{
 	}
 
 	function makeImportant(){
-		return new \Less\Node\Rule($this->name, $this->value, '!important', $this->index, $this->inline);
+		return new \Less\Node\Rule($this->name, $this->value, '!important', $this->index, $this->currentFileInfo, $this->inline);
 	}
 
 }

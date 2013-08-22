@@ -15,6 +15,7 @@ class Ruleset{
 	public $selectors;
 	public $rules;
 	public $root;
+	public $firstRoot;
 	public $allowImports;
 	public $paths = array();
 
@@ -43,6 +44,7 @@ class Ruleset{
 
 		$ruleset->originalRuleset = $this;
 		$ruleset->root = $this->root;
+		$ruleset->firstRoot = $this->firstRoot;
 		$ruleset->allowImports = $this->allowImports;
 
 		// push the current ruleset to the frames stack
@@ -260,7 +262,10 @@ class Ruleset{
 					}
 				}
 			} else {
-				if (method_exists($rule, 'toCSS') && ( ! isset($rule->variable) ||  ! $rule->variable)) {
+				if( method_exists($rule, 'toCSS') && (!isset($rule->variable) || !$rule->variable) ){
+                    if( $this->firstRoot && $rule instanceof \Less\Node\Rule ){
+						throw new \Less\CompilerError("properties must be inside selector blocks, they cannot be in the root.");
+                    }
 					$rules[] = $rule->toCSS($env);
 				} else if (isset($rule->value) && $rule->value && ! $rule->variable) {
 					$rules[] = (string) $rule->value;

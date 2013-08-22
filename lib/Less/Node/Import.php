@@ -114,7 +114,7 @@ class Import{
 		if ($this->skip) { return array(); }
 
 		if( $this->css ){
-			return new \Less\Node\Import( $this->compilePath( $env), $features, $this->once, $this->index);
+			return new \Less\Node\Import( $this->compilePath( $env), $features, $this->options, $this->index);
 		}
 
 
