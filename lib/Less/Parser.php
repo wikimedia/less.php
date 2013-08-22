@@ -700,7 +700,6 @@ class Parser {
 			$option = $this->match('/^(any|deep|all)(?=\s*\))/');
 			if( $option ){ break; }
 			$e = $this->match('parseElement');
-			$e = $this->match('/^[#.](?:[\w-]|\\\\(?:[a-fA-F0-9]{1,6} ?|[^a-fA-F0-9]))+/');
 			if( !$e ){ break; }
 			$elements[] = $e;
 		}

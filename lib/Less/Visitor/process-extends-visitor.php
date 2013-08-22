@@ -34,6 +34,7 @@ class processExtendsVisitor{
 
 	function visitRuleset($rulesetNode, $visitArgs ){
 
+
 		if( $rulesetNode->root ){
 			return;
 		}
@@ -41,35 +42,62 @@ class processExtendsVisitor{
 		$allExtends = $this->allExtendsStack[ count($this->allExtendsStack)-1];
 		$selectorsToAdd = array();
 
+
 		for( $k = 0; $k < count($allExtends); $k++ ){
-			for( $i = 0; $i < count($rulesetNode->paths); $i++ ){
+			for($i = 0; $i < count($rulesetNode->paths); $i++ ){
 				$selectorPath = $rulesetNode->paths[$i];
-				$match = $this->findMatch( $allExtends[$k], $selectorPath);
-				if( $match ){
-					$selector = $selectorPath[$match['pathIndex']];
-
+				$matches = $this->findMatch( $allExtends[$k], $selectorPath);
+				if( count($matches) ){
 					foreach( $allExtends[$k]->selfSelectors as $selfSelector ){
-						$path = array_slice($selectorPath,0, $match['pathIndex']);
+						$currentSelectorPathIndex = 0;
+						$currentSelectorPathElementIndex = 0;
+						$path = [];
+						for($j = 0; $j < count($matches); $j++ ){
+							$match = $matches[$j];
+							$selector = $selectorPath[ $match['pathIndex'] ];
 
-						$firstElement = new \Less\Node\Element(
-							$match['initialCombinator'],
-							$selfSelector->elements[0]->value,
-							$selfSelector->elements[0]->index
-						);
+							$firstElement = new \Less\Node\Element(
+								$match['initialCombinator'],
+								$selfSelector->elements[0]->value,
+								$selfSelector->elements[0]->index
+							);
 
-						$new_elements = array_slice($selector->elements,0,$match['index']);
-						$new_elements = array_merge($new_elements, array($firstElement) );
-						$new_elements = array_merge($new_elements, array_slice($selfSelector->elements,1) );
-						$new_elements = array_merge($new_elements, array_slice($selector->elements,$match['index']+$match['length']) );
-						$path[] = new \Less\Node\Selector( $new_elements );
+							if( $match['pathIndex'] > $currentSelectorPathIndex && $currentSelectorPathElementIndex > 0 ){
+								$path[ count($path)-1]->elements = array_merge($path[ count($path)-1]->elements, array_slice($selectorPath[$currentSelectorPathIndex]->elements,$currentSelectorPathElementIndex));
 
-						$path = array_merge( $path, array_slice($selectorPath, $match['pathIndex'] + 1, count($selectorPath)) );
+								$currentSelectorPathIndex++;
+							}
+
+							$path = array_merge($path, array_slice($selectorPath,$currentSelectorPathIndex, $match['pathIndex']));
+
+							$new_elements = array_slice($selector->elements,$currentSelectorPathElementIndex,$match['index']);
+							$new_elements = array_merge($new_elements, array($firstElement) );
+							$new_elements = array_merge($new_elements, array_slice($selfSelector->elements,1) );
+							$path[] = new \Less\Node\Selector( $new_elements );
+
+
+							$currentSelectorPathIndex = $match['endPathIndex'];
+							$currentSelectorPathElementIndex = $match['endPathElementIndex'];
+							if( $currentSelectorPathElementIndex >= count($selector->elements) ){
+								$currentSelectorPathElementIndex = 0;
+								$currentSelectorPathIndex++;
+							}
+						}
+
+						if( $currentSelectorPathIndex < count($selectorPath) && $currentSelectorPathElementIndex > 0 ){
+							$path[ count($path)-1]->elements = array_merge($path[ count($path)-1]->elements, array_slice($selectorPath[$currentSelectorPathIndex]->elements,$currentSelectorPathElementIndex));
+							$currentSelectorPathElementIndex = 0;
+							$currentSelectorPathIndex++;
+						}
+
+						$path = array_merge($path,array_slice($selectorPath,$currentSelectorPathIndex, count($selectorPath)));
 
 						$selectorsToAdd[] = $path;
 					}
 				}
 			}
 		}
+
 		$rulesetNode->paths = array_merge($rulesetNode->paths, $selectorsToAdd);
 	}
 
@@ -100,7 +128,10 @@ class processExtendsVisitor{
 							$potentialMatch['initialCombinator'] = $selector->elements[$i]->combinator;
 							$potentialMatch['length'] = count($extend->selector->elements);
 							$potentialMatch['endPathIndex'] = $k;
-							return $potentialMatch;
+							$potentialMatch['endPathElementIndex'] = $targetElementIndex; // index after end of match
+							$potentialMatches = array();
+							$matches[] = $potentialMatch;
+							break;
 						}
 					} else {
 						array_splice($potentialMatches,$l, 1);
@@ -109,7 +140,7 @@ class processExtendsVisitor{
 				}
 			}
 		}
-		return null;
+		return $matches;
 	}
 
 	function visitRulesetOut( $rulesetNode ){

@@ -25,22 +25,13 @@ class Extend{
 	}
 
 
-	function findSelfSelectors( $selectors, $elem = array(), $i = 0){
+	function findSelfSelectors( $selectors){
 		$selfElements = array();
 
 		for($i = 0; $i < count($selectors); $i++ ){
-
-			if( !is_object($selectors[$i]) ){
-				$debug = debug_backtrace();
-				echo \Less\Pre($debug);
-				//echo \Less\Pre($selectors[$i]);
-				die();
-			}
-
-
 			$selfElements = array_merge($selfElements, $selectors[$i]->elements);
 		}
 
-		$this->selfSelectors = array(new \Less\Node\Selector($elem));
+		$this->selfSelectors = array(new \Less\Node\Selector($selfElements));
 	}
 }
