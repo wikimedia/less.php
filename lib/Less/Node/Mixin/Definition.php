@@ -54,7 +54,7 @@ class Definition extends \Less\Node\Ruleset{
 		$name;
 		$isNamedFound;
 
-		//$mixinEnv = $mixinEnv->copyEvalEnv( array_merge( array($frame), $mixinEnv->frames) );
+		$mixinEnv = $mixinEnv->copyEvalEnv( array_merge( array($frame), $mixinEnv->frames) );
 
 		$args = array_slice($args,0);
 

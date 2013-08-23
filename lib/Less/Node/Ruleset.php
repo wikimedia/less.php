@@ -186,13 +186,12 @@ class Ruleset{
 			});
 		}
 
+
 		return $this->_variables;
 	}
 
-	public function variable($name)
-	{
+	public function variable($name){
 		$vars = $this->variables();
-
 		return isset($vars[$name]) ? $vars[$name] : null;
 	}
 
