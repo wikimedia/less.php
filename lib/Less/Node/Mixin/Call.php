@@ -48,8 +48,10 @@ class Call{
         foreach($env->frames as $frame){
 
             if( $mixins = $frame->find($this->selector, null, $env) ){
+
 				$isOneFound = true;
-                foreach ($mixins as $mixin) {
+                foreach( $mixins as $mixin ){
+
                     $isRecursive = false;
                     foreach($env->frames as $recur_frame){
 						if( !($mixin instanceof \Less\Node\Mixin\Definition) ){
@@ -67,7 +69,6 @@ class Call{
 						if( !method_exists($mixin,'matchCondition') || $mixin->matchCondition($args, $env) ){
 							try {
 								$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
-
 							} catch (Exception $e) {
 								throw new \Less\Exception\CompilerException($e->message, $e->index, null, $this->currentFileInfo['filename']);
 							}
@@ -102,6 +103,7 @@ class Call{
 					return $argValue;
 				}, $args ));
 			}
+
 
 			throw new \Less\Exception\CompilerException('No matching definition was found for `'.
 				trim($this->selector->toCSS($env)) . '(' .$message.')',

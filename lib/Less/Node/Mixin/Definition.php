@@ -184,12 +184,15 @@ class Definition extends \Less\Node\Ruleset{
 	public function matchArgs($args, $env = NULL){
 
 		if (!$this->variadic) {
-			if (count($args) < $this->required)
+			if (count($args) < $this->required){
 				return false;
-			if (count($args) > count($this->params))
+			}
+			if (count($args) > count($this->params)){
 				return false;
-			if (($this->required > 0) && (count($args) > count($this->params)))
+			}
+			if (($this->required > 0) && (count($args) > count($this->params))){
 				return false;
+			}
 		}
 
 		$len = min(count($args), $this->arity);

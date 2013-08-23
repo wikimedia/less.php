@@ -88,10 +88,11 @@ class Ruleset{
 						if( !$ruleset->variable($r->name) ){
 							$temp[] = $r;
 						}
+					}else{
+						$temp[] = $r;
 					}
 				}
 				$rules = $temp;
-
 				array_splice($ruleset->rules, $i, 1, $rules);
 				$i += count($rules)-1;
 				$ruleset->resetCache();

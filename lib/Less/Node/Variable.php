@@ -40,7 +40,7 @@ class Variable {
 			$this->evaluating = false;
             return $variable;
         } else {
-			throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index, null, $this->currentFileInfo['file']);
+			throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index, null);
         }
     }
 }

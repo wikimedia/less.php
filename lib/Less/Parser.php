@@ -588,21 +588,20 @@ class Parser {
 	}
 
 
-    //
-    // A Variable entity, such as `@fink`, in
-    //
-    //     width: @fink + 2px
-    //
-    // We use a different parser for variable definitions,
-    // see `parsers.variable`.
-    //
-    private function parseEntitiesVariable()
-    {
-        $index = $this->pos;
-        if ($this->peek('@') && ($name = $this->match('/^@@?[\w-]+/'))) {
-            return new \Less\Node\Variable($name, $index, $this->env->currentFileInfo);
-        }
-    }
+	//
+	// A Variable entity, such as `@fink`, in
+	//
+	//     width: @fink + 2px
+	//
+	// We use a different parser for variable definitions,
+	// see `parsers.variable`.
+	//
+	private function parseEntitiesVariable(){
+		$index = $this->pos;
+		if ($this->peek('@') && ($name = $this->match('/^@@?[\w-]+/'))) {
+			return new \Less\Node\Variable($name, $index, $this->env->currentFileInfo);
+		}
+	}
 
 
 	// A variable entity useing the protective {} e.g. @{var}
@@ -683,18 +682,16 @@ class Parser {
     }
 
 
-    //
-    // The variable part of a variable definition. Used in the `rule` parser
-    //
-    //     @fink:
-    //
-    private function parseVariable()
-    {
-        if ($this->peek('@') && ($name = $this->match('/^(@[\w-]+)\s*:/'))) {
-            return $name[1];
-        }
-        return;
-    }
+	//
+	// The variable part of a variable definition. Used in the `rule` parser
+	//
+	//     @fink:
+	//
+	private function parseVariable(){
+		if ($this->peek('@') && ($name = $this->match('/^(@[\w-]+)\s*:/'))) {
+			return $name[1];
+		}
+	}
 
     //
 	// extend syntax - used to extend selectors
@@ -818,12 +815,14 @@ class Parser {
 					}
 					break;
 				}
-				$arg = $this->match('parseVariable','parseEntitiesLiteral','parseEntitiesKeyword');
+				$arg = $this->match('parseEntitiesVariable','parseEntitiesLiteral','parseEntitiesKeyword');
 			}
+
 
 			if( !$arg ){
 				break;
 			}
+
 
 			$nameLoop = null;
 			if( method_exists($arg,'throwAwayComments') ){
@@ -841,7 +840,9 @@ class Parser {
 				$val = $arg;
 			}
 
+
 			if( $val && $val instanceof \Less\Node\Variable ){
+
 				if( $this->match(':') ){
 					if( count($expressions) > 0 ){
 						if( $isSemiColonSeperated ){
