@@ -11,6 +11,8 @@ class Extend{
 	public $selfSelectors = array();
 	public $allowBefore;
 	public $allowAfter;
+	public $parents = array();
+	public $firstExtendOnThisSelectorPath;
 
 
 	function __construct($selector, $option, $index){

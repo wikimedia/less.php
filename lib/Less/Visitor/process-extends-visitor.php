@@ -22,37 +22,74 @@ class processExtendsVisitor{
 	}
 
 	function doExtendChaining( $extendsList, $extendsListTarget, $iterationCount = 0){
+		//
+		// chaining is different from normal extension.. if we extend an extend then we are not just copying, altering and pasting
+		// the selector we would do normally, but we are also adding an extend with the same target selector
+		// this means this new extend can then go and alter other extends
+		//
+		// this method deals with all the chaining work - without it, extend is flat and doesn't work on other extend selectors
+		// this is also the most expensive.. and a match on one selector can cause an extension of a selector we had already processed if
+		// we look at each selector at a time, as is done in visitRuleset
+
 		$extendsToAdd = array();
 		$extendVisitor = $this;
 
+		//loop through comparing every extend with every target extend.
+		// a target extend is the one on the ruleset we are looking at copy/edit/pasting in place
+		// e.g. .a:extend(.b) {} and .b:extend(.c) {} then the first extend extends the second one
+		// and the second is the target.
+		// the seperation into two lists allows us to process a subset of chains with a bigger set, as is the
+		// case when processing media queries
 		for( $extendIndex = 0; $extendIndex < count($extendsList); $extendIndex++ ){
 			for( $targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); $targetExtendIndex++ ){
 
 				$extend = $extendsList[$extendIndex];
 				$targetExtend = $extendsListTarget[$targetExtendIndex];
+
+				// look for circular references
 				if( $this->inInheritanceChain( $targetExtend, $extend)) { continue; }
 
+				// find a match in the target extends self selector (the bit before :extend)
 				$selectorPath = array( $targetExtend->selfSelectors[0] );
 				$matches = $extendVisitor->findMatch( $extend, $selectorPath);
 
 				if( count($matches) ){
 
+					// we found a match, so for each self selector..
 					foreach($extend->selfSelectors as $selfSelector ){
+
+						// process the extend as usual
 						$newSelector = $extendVisitor->extendSelector( $matches, $selectorPath, $selfSelector);
+
+						// but now we create a new extend from it
 						$newExtend = new \Less\Node\Extend( $targetExtend->selector, $targetExtend->option, 0);
 						$newExtend->selfSelectors = $newSelector;
+
+						// add the extend onto the list of extends for that selector
 						$newSelector[ count($newSelector)-1]->extendList = array($newExtend);
+
+						// record that we need to add it.
 						$extendsToAdd[] = $newExtend;
 						$newExtend->ruleset = $targetExtend->ruleset;
+
+						//remember its parents for circular references
 						$newExtend->parents = array($targetExtend, $extend);
-						$targetExtend->ruleset->paths[] = $newSelector;
+
+						// only process the selector once.. if we have :extend(.a,.b) then multiple
+						// extends will look at the same selector path, so when extending
+						// we know that any others will be duplicates in terms of what is added to the css
+						if( $targetExtend->firstExtendOnThisSelectorPath ){
+							$newExtend->firstExtendOnThisSelectorPath = true;
+							$targetExtend->ruleset->paths[] = $newSelector;
+						}
 					}
 				}
 			}
 		}
 
 		if( count($extendsToAdd) ){
-			$this->extendChainCount++;
+			// try to detect circular references to stop a stack overflow.
+			// may no longer be needed.			$this->extendChainCount++;
 			if( $iterationCount > 100) {
 				$selectorOne = "{unable to calculate}";
 				$selectorTwo = "{unable to calculate}";
@@ -62,6 +99,8 @@ class processExtendsVisitor{
 				}catch(\Exception $e){}
 				throw new \Less\Exception\ParserException("extend circular reference detected. One of the circular extends is currently:"+$selectorOne+":extend(" + $selectorTwo+")");
 			}
+
+			// now process the new extends on the existing rules so that we can handle a extending b extending c ectending d extending e...
 			return array_merge($extendsToAdd, $extendVisitor->doExtendChaining( $extendsToAdd, $extendsListTarget, $iterationCount+1));
 		} else {
 			return $extendsToAdd;
@@ -250,7 +289,9 @@ class processExtendsVisitor{
 
 	function visitMedia( $mediaNode, $visitArgs ){
 		$temp = $this->allExtendsStack[ count($this->allExtendsStack)-1 ];
-		$this->allExtendsStack[] = array_merge( $mediaNode->allExtends, $temp );
+		$newAllExtends = array_merge( $mediaNode->allExtends, $temp );
+		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $mediaNode->allExtends));
+		$this->allExtendsStack[] = $newAllExtends;
 	}
 
 	function visitMediaOut( $mediaNode ){
@@ -259,7 +300,9 @@ class processExtendsVisitor{
 
 	function visitDirective( $directiveNode, $visitArgs ){
 		$temp = $this->allExtendsStack[ count($this->allExtendsStack)-1];
-		$this->allExtendsStack[] = array_merge( $directiveNode->allExtends, $temp );
+		$newAllExtends = array_merge( $directiveNode->allExtends, $temp );
+		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $directiveNode->allExtends));
+		$this->allExtendsStack[] = $newAllExtends;
 	}
 
 	function visitDirectiveOut( $directiveNode ){

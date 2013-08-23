@@ -66,6 +66,7 @@ class extendFinderVisitor{
 				$extend = $extendList[$j];
 				$extend->findSelfSelectors( $selectorPath );
 				$extend->ruleset = $rulesetNode;
+				if( $j === 0 ){ $extend->firstExtendOnThisSelectorPath = true; }
 				$this->allExtendsStack[ count($this->allExtendsStack)-1 ][] = $extend;
 			}
 		}
