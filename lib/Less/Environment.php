@@ -197,9 +197,9 @@ class Environment{
 	public function hsla($h, $s, $l, $a){
 
 		$h = fmod(self::number($h), 360) / 360; // Classic % operator will change float to int
-		$s = self::number($s);
-		$l = self::number($l);
-		$a = self::number($a);
+		$s = self::clamp(self::number($s));
+		$l = self::clamp(self::number($l));
+		$a = self::clamp(self::number($a));
 
 		$m2 = $l <= 0.5 ? $l * ($s + 1) : $l + $s - $l * $s;
 
