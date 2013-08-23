@@ -33,16 +33,16 @@ class Media {
 
 		$media = new \Less\Node\Media(array(), array());
 
-		$strictMathsBypass = false;
-		if( $env->strictMaths === false) {
-			$strictMathsBypass = true;
-			$env->strictMaths = true;
+		$strictMathBypass = false;
+		if( $env->strictMath === false) {
+			$strictMathBypass = true;
+			$env->strictMath = true;
 		}
 		try {
 			$media->features = $this->features->compile($env);
 		}catch(\Exception $e){
-			if( $strictMathsBypass ){
-				$env->strictMaths = false;
+			if( $strictMathBypass ){
+				$env->strictMath = false;
 			}
 		}
 

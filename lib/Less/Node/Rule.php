@@ -49,10 +49,10 @@ class Rule{
 
 	public function compile ($env){
 
-		$strictMathsBypass = false;
-		if( $this->name === "font" && $env->strictMaths === false ){
-			$strictMathsBypass = true;
-			$env->strictMaths = true;
+		$strictMathBypass = false;
+		if( $this->name === "font" && $env->strictMath === false ){
+			$strictMathBypass = true;
+			$env->strictMath = true;
 		}
 		try {
 			return new \Less\Node\Rule($this->name,
@@ -62,8 +62,8 @@ class Rule{
 										$this->index, $this->inline);
 		}
 		catch(\Exception $e){
-			if( $strictMathsBypass ){
-				$env->strictMaths = false;
+			if( $strictMathBypass ){
+				$env->strictMath = false;
 			}
 		}
 

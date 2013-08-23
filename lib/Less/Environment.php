@@ -42,7 +42,7 @@ class Environment{
 
 	public $parensStack = array();
 
-	public $strictMaths;
+	public $strictMath = false;
 
 	public $strictUnits = false;
 
@@ -65,7 +65,7 @@ class Environment{
 
 		$new_env = new \Less\Environment();
 		$new_env->compress = $this->compress;
-		$new_env->strictMaths = $this->strictMaths;
+		$new_env->strictMath = $this->strictMath;
 		$new_env->frames = $frames;
 
 		return $new_env;
@@ -81,7 +81,7 @@ class Environment{
 	}
 
 	public function isMathsOn() {
-		return $this->strictMaths === false ? true : ($this->parensStack && count($this->parensStack));
+		return $this->strictMath === false ? true : ($this->parensStack && count($this->parensStack));
 	}
 
 	public function isPathRelative($path){
