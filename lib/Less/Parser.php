@@ -262,6 +262,9 @@ class Parser {
      * @return null|bool|object
      */
     public function match($tok){
+		if( func_num_args() > 1 ){
+			die('More than one arg: '.$tok);
+		}
 
         $match = null;
         if (is_callable(array($this, $tok))) {
@@ -1157,31 +1160,50 @@ class Parser {
         }
     }
 
-	private function parseRule(){
+
+	private function parseRule( $tryAnonymous = null ){
 		$start = $this->pos;
 		$c = isset($this->input[$this->pos]) ? $this->input[$this->pos] : '';
+		$this->save();
 
 		if ($c === '.' || $c === '#' || $c === '&') {
 			return;
 		}
 
-		if ($name = $this->match('parseVariable') ?: $this->match('parseProperty')) {
+		if( $name = $this->matchMultiple('parseVariable','parseProperty') ){
 
-			if( !$this->env->compress && ($name[0] != '@') && preg_match('/^([^@+\/\'"*`(;{}-]*);/', $this->current, $match) ){
-				$this->pos += strlen($match[0]) - 1;
-				$value = new \Less\Node\Anonymous($match[1]);
-			} else {
-				$value = $this->match('parseValue');
+
+			// prefer to try to parse first if its a variable or we are compressing
+			// but always fallback on the other one
+			if( !$tryAnonymous && ($this->env->compress || ( $name[0] === '@')) ){
+				$value = $this->matchMultiple('parseValue','parseAnonymousValue');
+			}else{
+				$value = $this->matchMultiple('parseAnonymousValue','parseValue');
 			}
+
 			$important = $this->match('parseImportant');
 
-			if ($value && $this->match('parseEnd')) {
+			if( $value && $this->match('parseEnd') ){
 				return new \Less\Node\Rule($name, $value, $important, $start, $this->env->currentFileInfo);
-			} else {
-				// Backtrack
-				$this->pos = $start;
-				$this->sync();
+			}else{
+				//not the same as less.js
+				$this->restore();
+				/*
+				if( $value && !$tryAnonymous ){
+					//return new \Less\Node\Rule(true);
+				}else{
+					$this->restore();
+				}
+				*/
 			}
+		}
+	}
+
+	function parseAnonymousValue(){
+
+		if( preg_match('/^([^@+\/\'"*`(;{}-]*);/',$this->current, $match) ){
+			$this->pos += strlen($match[0]) - 1;
+			return new \Less\Node\Anonymous($match[1]);
 		}
 	}
 

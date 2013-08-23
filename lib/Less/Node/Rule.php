@@ -12,7 +12,7 @@ class Rule{
 	public $variable;
 	public $currentFileInfo;
 
-	public function __construct($name, $value, $important = null, $index = null, $currentFileInfo = null,  $inline = false){
+	public function __construct($name, $value = null, $important = null, $index = null, $currentFileInfo = null,  $inline = false){
 		$this->name = $name;
 		$this->value = ($value instanceof \Less\Node\Value) ? $value : new \Less\Node\Value(array($value));
 		$this->important = $important ? ' ' . trim($important) : '';
