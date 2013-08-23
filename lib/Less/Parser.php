@@ -1096,6 +1096,25 @@ class Parser {
 	}
 
 	private function parseAttribute(){
+
+		$val = null;
+		$op = null;
+
+		if( !$this->match('[') ){
+			return;
+		}
+
+		$key = $this->expect('/^(?:[_A-Za-z0-9-\*]*\|)?(?:[_A-Za-z0-9-]|\\\\.)+/');
+
+		if( ($op = $this->match('/^[|~*$^]?=/')) ){
+			$val = $this->matchMultiple('parseEntitiesQuoted','/^[\w-]+/');
+		}
+
+		$this->expect(']');
+
+		return new \Less\Node\Attribute($key, $op, $val);
+
+
         if (! $this->match('[')) {
             return;
         }
