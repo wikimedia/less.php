@@ -262,9 +262,19 @@ class Parser {
      * @return null|bool|object
      */
     public function match($tok){
+
+		//handle multiple tokens
 		if( func_num_args() > 1 ){
-			die('More than one arg: '.$tok);
+			$toks = func_get_args();
+			foreach($toks as $tok){
+				$v = $this->match($tok);
+				if( $v ){
+					return $v;
+				}
+			}
+			return null;
 		}
+
 
         $match = null;
         if (is_callable(array($this, $tok))) {
@@ -400,7 +410,7 @@ class Parser {
     private function parsePrimary(){
         $root = array();
 
-        while( ($node = $this->matchMultiple('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
+        while( ($node = $this->match('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
 							'parseMixinCall', 'parseComment', 'parseDirective' ))
 							?: $this->match("/^[\s\n]+/") ?: $this->match('/^;+/')
         ) {
@@ -539,7 +549,7 @@ class Parser {
     }
 
     private function parseEntitiesLiteral(){
-		return $this->MatchMultiple('parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor');
+		return $this->match('parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor');
     }
 
 	// Assignments are argument entities for calls.
@@ -808,7 +818,7 @@ class Parser {
 					}
 					break;
 				}
-				$arg = $this->matchMultiple('parseVariable','parseEntitiesLiteral','parseEntitiesKeyword');
+				$arg = $this->match('parseVariable','parseEntitiesLiteral','parseEntitiesKeyword');
 			}
 
 			if( !$arg ){
@@ -1018,7 +1028,7 @@ class Parser {
     private function parseElement(){
         $c = $this->match('parseCombinator');
 
-        $e = $this->matchMultiple( '/^(?:\d+\.\d+|\d+)%/', '/^(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
+        $e = $this->match( '/^(?:\d+\.\d+|\d+)%/', '/^(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
 			'*', '&', 'parseAttribute', '/^\([^()@]+\)/', '/^[\.#](?=@)/', 'parseEntitiesVariableCurly');
 
 		if( !$e ){
@@ -1109,7 +1119,7 @@ class Parser {
 		}
 
 		if( ($op = $this->match('/^[|~*$^]?=/')) ){
-			$val = $this->matchMultiple('parseEntitiesQuoted','/^[\w-]+/','parseEntitiesVariableCurly');
+			$val = $this->match('parseEntitiesQuoted','/^[\w-]+/','parseEntitiesVariableCurly');
 		}
 
 		$this->expect(']');
@@ -1191,15 +1201,15 @@ class Parser {
 			return;
 		}
 
-		if( $name = $this->matchMultiple('parseVariable','parseProperty') ){
+		if( $name = $this->match('parseVariable','parseProperty') ){
 
 
 			// prefer to try to parse first if its a variable or we are compressing
 			// but always fallback on the other one
 			if( !$tryAnonymous && ($this->env->compress || ( $name[0] === '@')) ){
-				$value = $this->matchMultiple('parseValue','parseAnonymousValue');
+				$value = $this->match('parseValue','parseAnonymousValue');
 			}else{
-				$value = $this->matchMultiple('parseAnonymousValue','parseValue');
+				$value = $this->match('parseAnonymousValue','parseValue');
 			}
 
 			$important = $this->match('parseImportant');
@@ -1250,7 +1260,7 @@ class Parser {
 			$options = $this->match('parseImportOptions');
 		}
 
-		if( $dir && ($path = $this->matchMultiple('parseEntitiesQuoted','parseEntitiesUrl')) ){
+		if( $dir && ($path = $this->match('parseEntitiesQuoted','parseEntitiesUrl')) ){
 			$features = $this->match('parseMediaFeatures');
 			if( $this->match(';') ){
 				if( $features ){
@@ -1367,7 +1377,7 @@ class Parser {
             return;
         }
 
-		$value = $this->matchMultiple('parseImport','parseMedia');
+		$value = $this->match('parseImport','parseMedia');
         if( $value ){
             return $value;
 		}
@@ -1564,7 +1574,7 @@ class Parser {
 		if ($this->peek('-') && ($p === '@' || $p === '(')) {
 			$negate = $this->match('-');
 		}
-		$o = $this->matchMultiple('parseSub','parseEntitiesDimension','parseEntitiesColor','parseEntitiesVariable','parseEntitiesCall');
+		$o = $this->match('parseSub','parseEntitiesDimension','parseEntitiesColor','parseEntitiesVariable','parseEntitiesCall');
 
 		if( $negate ){
 			$o->parensInOp = true;
@@ -1603,23 +1613,6 @@ class Parser {
         }
     }
 
-
-	/**
-	 * Function for php implementation to reduce the usage of the Ternary Operator "?:"
-	 *
-	 */
-    private function MatchMultiple(){
-		$args = func_get_args();
-		foreach($args as $arg){
-
-			$v = $this->match($arg);
-			if( $v ){
-				return $v;
-			}
-		}
-
-		return null;
-	}
 
 }
 
