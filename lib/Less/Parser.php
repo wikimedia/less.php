@@ -1104,10 +1104,12 @@ class Parser {
 			return;
 		}
 
-		$key = $this->expect('/^(?:[_A-Za-z0-9-\*]*\|)?(?:[_A-Za-z0-9-]|\\\\.)+/');
+		if( !($key = $this->match('parseEntitiesVariableCurly')) ){
+			$key = $this->expect('/^(?:[_A-Za-z0-9-\*]*\|)?(?:[_A-Za-z0-9-]|\\\\.)+/');
+		}
 
 		if( ($op = $this->match('/^[|~*$^]?=/')) ){
-			$val = $this->matchMultiple('parseEntitiesQuoted','/^[\w-]+/');
+			$val = $this->matchMultiple('parseEntitiesQuoted','/^[\w-]+/','parseEntitiesVariableCurly');
 		}
 
 		$this->expect(']');
