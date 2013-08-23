@@ -44,7 +44,7 @@ class processExtendsVisitor{
 						$newSelector[ count($newSelector)-1]->extendList = array($newExtend);
 						$extendsToAdd[] = $newExtend;
 						$newExtend->ruleset = $targetExtend->ruleset;
-						$newExtend->parent = $targetExtend;
+						$newExtend->parents = array($targetExtend, $extend);
 						$targetExtend->ruleset->paths[] = $newSelector;
 					}
 				}
@@ -69,7 +69,19 @@ class processExtendsVisitor{
 	}
 
 	function inInheritanceChain( $possibleParent, $possibleChild ){
-		return $possibleParent === $possibleChild || ($possibleChild->parent ? $this->inInheritanceChain( $possibleParent, $possibleChild->parent) : false);
+		if( $possibleParent === $possibleChild) {
+			return true;
+		}
+
+		if( $possibleChild->parents ){
+			if( $this->inInheritanceChain( $possibleParent, $possibleChild->parents[0]) ){
+				return true;
+			}
+			if( $this->inInheritanceChain($possibleParent, $possibleChild->parents[1]) ){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	function visitRule( $ruleNode, &$visitArgs ){
