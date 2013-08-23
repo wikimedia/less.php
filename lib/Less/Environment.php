@@ -612,19 +612,20 @@ class Environment{
 	}
 
 	public function ispixel($n) {
-		return $n instanceof \Less\Node\Dimension && $n->unit->is('px')
-			? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
+		return $this->isunit($n, 'px');
 	}
 
 	public function ispercentage($n) {
-		return $n instanceof \Less\Node\Dimension && $n->unit->is('%')
-			? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
+		return $this->isunit($n, '%');
 	}
 
 	public function isem($n) {
-		return $n instanceof \Less\Node\Dimension && $n->unit->is('em')
-			? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
+		return $this->isunit($n, 'em');
 	}
+
+	function isunit( $n, $unit ){
+		return ($n instanceof \Less\Node\Dimension) && $n->unit->is( ($unit->value ? $unit->value : $unit) ) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
+    }
 
 	private function _isa($n, $type) {
 		return is_a($n, $type) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
