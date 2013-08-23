@@ -140,22 +140,13 @@ class Ruleset{
 		}
     }
 
-	static function makeImportant($selectors, $rules, $strictImports = false) {
-
-		/*
-        return new tree.Ruleset(this.selectors, this.rules.map(function (r) {
-                    if (r.makeImportant) {
-                        return r.makeImportant();
-                    } else {
-                        return r;
-                    }
-                }), this.strictImports);
-        */
-
+	static function makeImportant($selectors = null, $rules = null, $strictImports = false) {
 
 		$important_rules = array();
 		foreach($rules as $rule){
-			if( method_exists($rule,'makeImportant') ){
+			if( method_exists($rule,'makeImportant') && property_exists($rule,'selectors') ){
+				$important_rules[] = $rule->makeImportant($rule->selectors, $rule->rules, $strictImports);
+			}elseif( method_exists($rule,'makeImportant') ){
 				$important_rules[] = $rule->makeImportant();
 			}else{
 				$important_rules[] = $rule;
