@@ -688,33 +688,37 @@ class Parser {
 	//
 	function parseExtend($isRule = false){
 
-		$elements = array();
 		$index = $this->pos;
-		$option;
+		$extendList = array();
 
 		if( !$this->match( $isRule ? '/^&:extend\(/' : '/^:extend\(/' ) ){ return; }
 
+		do{
+			$option = null;
+			$elements = array();
+			while( true ){
+				$option = $this->match('/^(all)(?=\s*(\)|,))/');
+				if( $option ){ break; }
+				$e = $this->match('parseElement');
+				if( !$e ){ break; }
+				$elements[] = $e;
+			}
 
-		while( true ){
+			if( $option ){
+				$option = $option[1];
+			}
 
-			$option = $this->match('/^(all)(?=\s*\))/');
-			if( $option ){ break; }
-			$e = $this->match('parseElement');
-			if( !$e ){ break; }
-			$elements[] = $e;
-		}
+			$extendList[] = new \Less\Node\Extend( new \Less\Node\Selector($elements), $option, $index );
+
+		}while( $this->match(",") );
 
 		$this->expect('/^\)/');
-
-		if( $option ){
-			$option = $option[1];
-		}
 
 		if( $isRule ){
 			$this->expect('/^;/');
 		}
 
-		return new \Less\Node\Extend( new \Less\Node\Selector($elements), $option, $index );
+		return $extendList;
 	}
 
 	function parseExtendRule(){
@@ -1066,7 +1070,7 @@ class Parser {
 
 		while( ($extend = $this->match('parseExtend')) ?: ($e = $this->match('parseElement')) ){
 			if( $extend ){
-				$extendList[] = $extend;
+				$extendList = array_merge($extendList,$extend);
 			}else{
 				if( count($extendList) ){
 					//error("Extend can only be used at the end of selector");
