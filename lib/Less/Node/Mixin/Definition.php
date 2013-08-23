@@ -58,7 +58,8 @@ class Definition extends \Less\Node\Ruleset{
 
 		$args = array_slice($args,0);
 
-		foreach($args as $i => $arg){
+		for($i = 0; $i < count($args); $i++ ){
+			$arg = $args[$i];
 
 			if( $arg && $arg['name'] ){
 				$name = $arg['name'];
@@ -104,6 +105,7 @@ class Definition extends \Less\Node\Ruleset{
 					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $expression->compile($env)));
 				}else{
 					$val = ($arg && $arg['value']) ? $arg['value'] : false;
+
 					if ($val) {
 						$val = $val->compile($env);
 					} else if ( isset($param['value']) ) {
@@ -139,7 +141,9 @@ class Definition extends \Less\Node\Ruleset{
 
 		$mixinEnv = new \Less\Environment();
 		$mixinEnv->addFrames($mixinFrames);
+
 		$frame = $this->compileParams($env, $mixinEnv, $args, $_arguments);
+
 
 
 		$ex = new \Less\Node\Expression($_arguments);
