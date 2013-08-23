@@ -26,18 +26,20 @@
   filter: alpha(opacity=42);
 }
 .testPollution {
-  a: 'pollution';
+  a: 'no-pollution';
 }
 .units {
   width: 1px;
-  z-index: 1;
-  square-pixel: 1px;
-  odd-unit: 2em;
+  same-unit-as-previously: 1px;
+  square-pixel-divided: 1px;
+  odd-unit: 2;
   percentage: 500%;
   pixels: 500px;
   conversion-metric-a: 30mm;
   conversion-metric-b: 3cm;
   conversion-imperial: 3in;
-  custom-unit: 420cheeseburgers;
-  custom-unit-cancelling: 2;
+  custom-unit: 420octocats;
+  custom-unit-cancelling: 18dogs;
+  mix-units: 2px;
+  invalid-units: 1px;
 }

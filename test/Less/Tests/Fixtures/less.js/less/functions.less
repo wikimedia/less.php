@@ -17,6 +17,7 @@
   saturate: saturate(#29332f, 20%);
   desaturate: desaturate(#203c31, 20%);
   greyscale: greyscale(#203c31);
+  hsl-clamp: hsl(380, 150%, 150%);
   spin-p: spin(hsl(340, 50%, 50%), 40);
   spin-n: spin(hsl(30, 50%, 50%), -40);
   luma-white: luma(#fff);
@@ -52,7 +53,7 @@
   format-multiple: %("hello %s %d", "earth", 2);
   format-url-encode: %('red is %A', #ff0000);
   eformat: e(%("rgb(%d, %d, %d)", @r, 128, 64));
-
+  
   unitless: unit(12px);
   unit: unit((13px + 1px), em);
 
@@ -76,7 +77,7 @@
   pi: pi();
   mod: mod(13m, 11cm); // could take into account units, doesn't at the moment
   abs: abs(-4%);
-  tan: tan(40deg);
+  tan: tan(42deg);
   sin: sin(10deg);
   cos: cos(12);
   atan: atan(tan(0.1rad));
@@ -94,6 +95,9 @@
   shade-full: shade(#777777, 100);
   shade-percent: shade(#777777, 13%);
 
+  fade-out: fadeOut(red, 5%); // support fadeOut and fadeout
+  fade-in: fadein(fadeout(red, 10%), 5%);
+  
   hsv: hsv(5, 50%, 30%);
   hsva: hsva(3, 50%, 30%, 0.2);
 
@@ -112,6 +116,7 @@
     pixel: ispixel(32px);
     percent: ispercentage(32%);
     em: isem(32em);
+    cat: isunit(32cat, cat);
   }
 }
 

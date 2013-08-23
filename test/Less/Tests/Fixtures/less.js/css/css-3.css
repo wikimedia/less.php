@@ -1,6 +1,7 @@
 .comma-delimited {
   text-shadow: -1px -1px 1px #ff0000, 6px 5px 5px #ffff00;
   -moz-box-shadow: 0pt 0pt 2px rgba(255, 255, 255, 0.4) inset, 0pt 4px 6px rgba(255, 255, 255, 0.4) inset;
+  -webkit-transform: rotate(-0.0000000001deg);
 }
 @font-face {
   font-family: Headline;
@@ -73,12 +74,12 @@ p::before {
   }
 }
 .units {
-  font: 1.2rem / 2rem;
-  font: 8vw / 9vw;
-  font: 10vh / 12vh;
-  font: 12vm / 15vm;
-  font: 12vmin / 15vmin;
-  font: 1.2ch / 1.5ch;
+  font: 1.2rem/2rem;
+  font: 8vw/9vw;
+  font: 10vh/12vh;
+  font: 12vm/15vm;
+  font: 12vmin/15vmin;
+  font: 1.2ch/1.5ch;
 }
 @supports ( box-shadow: 2px 2px 2px black ) or
           ( -moz-box-shadow: 2px 2px 2px black ) {
@@ -110,4 +111,7 @@ foo | * {
 }
 h1 {
   color: green;
+}
+.upper-test {
+  UpperCaseProperties: allowed;
 }

@@ -56,11 +56,11 @@
     filter: alpha(opacity=@var);
 }
 
-// test current behaviour
 .polluteMixin() {
     @a: 'pollution';
 }
 .testPollution {
+    @a: 'no-pollution';
     a: @a;
 	.polluteMixin();
 	a: @a;
@@ -68,14 +68,16 @@
 
 .units {
   width: @onePixel;
-  z-index: (@onePixel / @onePixel);
-  square-pixel: (@onePixel * @onePixel * @onePixel / @onePixel);
-  odd-unit: (@onePixel * 4em / 2cm);
+  same-unit-as-previously: (@onePixel / @onePixel);
+  square-pixel-divided: (@onePixel * @onePixel / @onePixel);
+  odd-unit: unit((@onePixel * 4em / 2cm));
   percentage: (10 * 50%);
   pixels: (50px * 10);
   conversion-metric-a: (20mm + 1cm);
   conversion-metric-b: (1cm + 20mm);
   conversion-imperial: (1in + 72pt + 6pc);
-  custom-unit: (42octocats * 10cheeseburgers);
-  custom-unit-cancelling: (8cats / 4cats);
+  custom-unit: (42octocats * 10);
+  custom-unit-cancelling: (8cats * 9dogs / 4cats);
+  mix-units: (1px + 1em);
+  invalid-units: (1px * 1px);
 }

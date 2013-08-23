@@ -39,6 +39,12 @@ class Dimension{
 		$value = $this->value;
 		$strValue = (string)$value;
 
+		if( $value !== 0 && $value < 0.000001 && $value > -0.000001 ){
+			// would be output 1e-6 etc.
+			$strValue = number_format($strValue,10);
+			$strValue = preg_replace('/\.?0+$/','', $strValue);
+		}
+
 		if( $env && $env->compress ){
 			// Zero values doesn't need a unit
 			if( $value === 0 && !$this->unit->isAngle() ){

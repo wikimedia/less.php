@@ -164,7 +164,7 @@ $content = ob_get_clean();
 echo $content;
 
 if( isset($_GET['file']) ){
-	echo '<script src="/less.php/test/Less/Tests/less-1.4.0.js" ></script>';
+	echo '<script src="/less.php/test/Less/Tests/less-1.4.2.js" ></script>';
 }
 ?>
 </body></html>
