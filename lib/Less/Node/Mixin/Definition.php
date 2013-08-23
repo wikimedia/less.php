@@ -126,6 +126,8 @@ class Definition extends \Less\Node\Ruleset{
 			$argIndex++;
 		}
 
+		asort($evaldArguments);
+
 		return $frame;
 	}
 
@@ -138,6 +140,7 @@ class Definition extends \Less\Node\Ruleset{
 		$mixinEnv = new \Less\Environment();
 		$mixinEnv->addFrames($mixinFrames);
 		$frame = $this->compileParams($env, $mixinEnv, $args, $_arguments);
+
 
 		$ex = new \Less\Node\Expression($_arguments);
 		array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
