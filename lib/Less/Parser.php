@@ -1598,7 +1598,7 @@ class Parser {
     }
 
     private function parseProperty (){
-        if ($name = $this->match('/^(\*?-?[_a-z0-9-]+)\s*:/')) {
+        if ($name = $this->match('/^(\*?-?[_a-zA-Z0-9-]+)\s*:/')) {
             return $name[1];
         }
     }
