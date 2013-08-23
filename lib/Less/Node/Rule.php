@@ -50,7 +50,7 @@ class Rule{
 	public function compile ($env){
 
 		$strictMathBypass = false;
-		if( $this->name === "font" && $env->strictMath === false ){
+		if( $this->name === "font" && !$env->strictMath ){
 			$strictMathBypass = true;
 			$env->strictMath = true;
 		}
