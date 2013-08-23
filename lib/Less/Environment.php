@@ -624,7 +624,7 @@ class Environment{
 	}
 
 	function isunit( $n, $unit ){
-		return ($n instanceof \Less\Node\Dimension) && $n->unit->is( ($unit->value ? $unit->value : $unit) ) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
+		return ($n instanceof \Less\Node\Dimension) && $n->unit->is( ( property_exists($unit,'value') ? $unit->value : $unit) ) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
     }
 
 	private function _isa($n, $type) {
