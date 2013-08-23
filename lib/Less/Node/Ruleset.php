@@ -427,11 +427,11 @@ class Ruleset{
 							if ( count($sel) > 0) {
 								$newSelectorPath = array_slice($sel,0);
 								$lastSelector = array_pop($newSelectorPath);
-								$newJoinedSelector = new \Less\Node\Selector( array_slice($lastSelector->elements,0) );
+								$newJoinedSelector = new \Less\Node\Selector( array_slice($lastSelector->elements,0), $selector->extendList);
 								$newJoinedSelectorEmpty = false;
 							}
 							else {
-								$newJoinedSelector = new \Less\Node\Selector( array() );
+								$newJoinedSelector = new \Less\Node\Selector( array(), $selector->extendList);
 							}
 
 							//put together the parent selectors after the join
@@ -493,7 +493,7 @@ class Ruleset{
 			// if the previous thing in sel is a parent this needs to join on to it
 			if ( count($sel) > 0) {
 				$last = count($sel)-1;
-				$sel[ $last ] = new \Less\Node\Selector( array_merge( $sel[$last]->elements, $elements) );
+				$sel[$last] = new \Less\Node\Selector( array_merge( $sel[$last]->elements, $elements), $sel[$last]->extendList );
 			}else{
 				$sel[] = new \Less\Node\Selector( $elements );
 			}
