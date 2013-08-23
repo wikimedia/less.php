@@ -35,10 +35,15 @@ class Rule{
 		if ($this->variable) {
 			return "";
 		} else {
-
-			return $this->name . ($env->compress ? ':' : ': ') . $this->value->toCSS($env)
-				. $this->important
-				. ($this->inline ? "" : ";");
+			try {
+				return $this->name . ($env->compress ? ':' : ': ')
+					. $this->value->toCSS($env)
+					. $this->important . ($this->inline ? "" : ";");
+			}catch( \Exception $e ){
+				$e->index = $this->index;
+				$e->filename = $this->currentFileInfo['filename'];
+				throw $e;
+			}
 		}
 	}
 
