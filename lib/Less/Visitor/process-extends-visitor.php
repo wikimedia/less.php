@@ -15,8 +15,61 @@ class processExtendsVisitor{
 	function run( $root ){
 		$extendFinder = new \Less\extendFinderVisitor();
 		$extendFinder->run( $root );
+		if( !$extendFinder->foundExtends) { return $root; }
+		$root->allExtends = array_merge($root->allExtends, $this->doExtendChaining( $root->allExtends, $root->allExtends));
 		$this->allExtendsStack = array( $root->allExtends );
 		return $this->_visitor->visit( $root );
+	}
+
+	function doExtendChaining( $extendsList, $extendsListTarget, $iterationCount = 0){
+		$extendsToAdd = array();
+		$extendVisitor = $this;
+
+		for( $extendIndex = 0; $extendIndex < count($extendsList); $extendIndex++ ){
+			for( $targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); $targetExtendIndex++ ){
+
+				$extend = $extendsList[$extendIndex];
+				$targetExtend = $extendsListTarget[$targetExtendIndex];
+				if( $this->inInheritanceChain( $targetExtend, $extend)) { continue; }
+
+				$selectorPath = array( $targetExtend->selfSelectors[0] );
+				$matches = $extendVisitor->findMatch( $extend, $selectorPath);
+
+				if( count($matches) ){
+
+					foreach($extend->selfSelectors as $selfSelector ){
+						$newSelector = $extendVisitor->extendSelector( $matches, $selectorPath, $selfSelector);
+						$newExtend = new \Less\Node\Extend( $targetExtend->selector, $targetExtend->option, 0);
+						$newExtend->selfSelectors = $newSelector;
+						$newSelector[ count($newSelector)-1]->extendList = array($newExtend);
+						$extendsToAdd[] = $newExtend;
+						$newExtend->ruleset = $targetExtend->ruleset;
+						$newExtend->parent = $targetExtend;
+						$targetExtend->ruleset->paths[] = $newSelector;
+					}
+				}
+			}
+		}
+
+		if( count($extendsToAdd) ){
+			$this->extendChainCount++;
+			if( $iterationCount > 100) {
+				$selectorOne = "{unable to calculate}";
+				$selectorTwo = "{unable to calculate}";
+				try{
+					$selectorOne = $extendsToAdd[0]->selfSelectors[0]->toCSS();
+					$selectorTwo = $extendsToAdd[0]->selector->toCSS();
+				}catch(\Exception $e){}
+				throw new \Less\Exception\ParserException("extend circular reference detected. One of the circular extends is currently:"+$selectorOne+":extend(" + $selectorTwo+")");
+			}
+			return array_merge($extendsToAdd, $extendVisitor->doExtendChaining( $extendsToAdd, $extendsListTarget, $iterationCount+1));
+		} else {
+			return $extendsToAdd;
+		}
+	}
+
+	function inInheritanceChain( $possibleParent, $possibleChild ){
+		return $possibleParent === $possibleChild || ($possibleChild->parent ? $this->inInheritanceChain( $possibleParent, $possibleChild->parent) : false);
 	}
 
 	function visitRule( $ruleNode, &$visitArgs ){
@@ -46,6 +99,10 @@ class processExtendsVisitor{
 			for($pathIndex = 0; $pathIndex < count($rulesetNode->paths); $pathIndex++ ){
 
 				$selectorPath = $rulesetNode->paths[$pathIndex];
+
+				// extending extends happens initially, before the main pass
+				if( count( $selectorPath[ count($selectorPath)-1]->extendList) ) { continue; }
+
 				$matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
 
 				if( count($matches) ){

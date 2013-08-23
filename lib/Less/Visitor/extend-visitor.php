@@ -9,6 +9,7 @@ class extendFinderVisitor{
 	public $_visitor;
 	public $allExtendsStack;
 	public $isReplacing = false;
+	public $foundExtends;
 
 	function __construct(){
 		$this->_visitor = new \Less\visitor($this);
@@ -61,8 +62,10 @@ class extendFinderVisitor{
 			}
 
 			for($j = 0; $j < count($extendList); $j++ ){
+				$this->foundExtends = true;
 				$extend = $extendList[$j];
 				$extend->findSelfSelectors( $selectorPath );
+				$extend->ruleset = $rulesetNode;
 				$this->allExtendsStack[ count($this->allExtendsStack)-1 ][] = $extend;
 			}
 		}
