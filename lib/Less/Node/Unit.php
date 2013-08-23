@@ -8,11 +8,12 @@ class Unit{
 	var $numerator = array();
 	var $denominator = array();
 
-	function __construct($numerator = array(), $denominator = array()){
+	function __construct($numerator = array(), $denominator = array(), $backupUnit = null ){
 		$this->numerator = array_slice($numerator,0);
 		$this->denominator = array_slice($denominator,0);
 		sort($this->numerator);
 		sort($this->denominator);
+		$this->backupUnit = $backupUnit;
 	}
 
 	function __clone(){
@@ -20,7 +21,7 @@ class Unit{
 		$this->denominator = array_slice($this->denominator,0);
 	}
 
-	function toCSS(){
+	function toCSS($env){
 
 		if( count($this->numerator) ){
 			return $this->numerator[0];
@@ -28,7 +29,9 @@ class Unit{
 		if( count($this->denominator) ){
 			return $this->denominator[0];
 		}
-
+		if( (!$env || !$env->strictUnits) && $this->backupUnit ){
+			return $this->backupUnit;
+		}
 		return "";
 	}
 
@@ -41,11 +44,11 @@ class Unit{
 	}
 
 	function compare($other) {
-		return $this->is( $other->toCSS() ) ? 0 : -1;
+		return $this->is( $other->toString() ) ? 0 : -1;
 	}
 
 	function is($unitString){
-		return $this->toCSS() === $unitString;
+		return $this->toString() === $unitString;
 	}
 
 	function isAngle() {
@@ -98,20 +101,26 @@ class Unit{
 
 	function cancel(){
 		$counter = array();
+		$backup = null;
 
-		for ($i = 0; $i < count($this->numerator); $i++) {
+		for( $i = 0; $i < count($this->numerator); $i++ ){
 			$atomicUnit = $this->numerator[$i];
+			if( !$backup ){
+				$backup = $atomicUnit;
+			}
 			$counter[$atomicUnit] = ( isset($counter[$atomicUnit]) ? $counter[$atomicUnit] : 0) + 1;
 		}
 
-		for ($i = 0; $i < count($this->denominator); $i++) {
+		for( $i = 0; $i < count($this->denominator); $i++ ){
 			$atomicUnit = $this->denominator[$i];
+			if( !$backup ){
+				$backup = $atomicUnit;
+			}
 			$counter[$atomicUnit] = ( isset($counter[$atomicUnit]) ? $counter[$atomicUnit] : 0) - 1;
 		}
 
 		$this->numerator = array();
 		$this->denominator = array();
-
 
 		foreach($counter as $atomicUnit => $count){
 			if( $count > 0 ){
@@ -123,6 +132,10 @@ class Unit{
 					$this->denominator[] = $atomicUnit;
 				}
 			}
+		}
+
+		if( count($this->numerator) === 0 && count($this->denominator) === 0 && $backup ){
+			$this->backupUnit = $backup;
 		}
 
 		sort($this->numerator);

@@ -48,6 +48,15 @@ class Environment{
 
 	public function __construct( $options = null ){
 		$this->frames = array();
+
+
+		if( isset($options['compress']) ){
+			$this->compress = (bool)$options['compress'];
+		}
+		if( isset($options['strictUnits']) ){
+			$this->strictUnits = (bool)$options['strictUnits'];
+		}
+
 	}
 
 

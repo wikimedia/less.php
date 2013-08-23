@@ -32,7 +32,7 @@ class Dimension{
 
 	public function toCSS( $env = null ){
 
-		if( (!$env || $env->strictUnits !== false) && !$this->unit->isSingular() ){
+		if( ($env && $env->strictUnits) && !$this->unit->isSingular() ){
 			throw new \Less\Exception\CompilerException("Multiple units in dimension. Correct the units or use the unit function. Bad unit: ".$this->unit->toString());
 		}
 
@@ -51,7 +51,7 @@ class Dimension{
 			}
 		}
 
-		return $this->unit->isEmpty() ? $strValue : $strValue . $this->unit->toCSS();
+		return $strValue . $this->unit->toCSS($env);
 	}
 
     public function __toString(){
@@ -76,7 +76,7 @@ class Dimension{
 			}else{
 				$other = $other->convertTo( $this->unit->usedUnits());
 
-				if( $env->strictUnits !== false && $other->unit->toString() !== $unit->toCSS() ){
+				if( $env->strictUnits && $other->unit->toString() !== $unit->toCSS() ){
 					throw new \Less\Exception\CompilerException("Incompatible units. Change the units or use the unit function. Bad units: '".$unit->toString() . "' and ".$other->unit->toString()+"'.");
 				}
 
