@@ -358,31 +358,17 @@ class Environment{
 		$this->Expected('color',$color);
 	}
 
-	public function fadein($color, $amount)
-	{
+	public function fadein($color, $amount){
 		$hsl = $color->toHSL();
-
-		if ($amount->unit == '%') {
-			$hsl['a'] += $amount->value / 100;
-		} else {
-			$hsl['a'] += $amount->value;
-		}
+		$hsl['a'] += $amount->value / 100;
 		$hsl['a'] = self::clamp($hsl['a']);
-
 		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
-	public function fadeout($color, $amount)
-	{
+	public function fadeout($color, $amount){
 		$hsl = $color->toHSL();
-
-		if ($amount->unit == '%') {
-			$hsl['a'] -= $amount->value / 100;
-		} else {
-			$hsl['a'] -= $amount->value;
-		}
+		$hsl['a'] -= $amount->value / 100;
 		$hsl['a'] = self::clamp($hsl['a']);
-
 		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
