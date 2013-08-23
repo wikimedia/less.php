@@ -172,6 +172,7 @@ class processExtendsVisitor{
 		// returns an array of selector matches that can then be replaced
 		//
 		$needleElements = $extend->selector->elements;
+		$extendVisitor = $this;
 		$potentialMatches = array();
 		$potentialMatch = null;
 		$matches = array();
@@ -201,7 +202,7 @@ class processExtendsVisitor{
 					}
 
 					// if we don't match, null our match to indicate failure
-					if( $needleElements[ $potentialMatch['matched'] ]->value !== $haystackElement->value ||
+					if( !$extendVisitor->isElementValuesEqual( $needleElements[$potentialMatch['matched'] ]->value, $haystackElement->value) ||
 						($potentialMatch['matched'] > 0 && $needleElements[ $potentialMatch['matched'] ]->combinator->value !== $targetCombinator) ){
 						$potentialMatch = null;
 					} else {
@@ -233,6 +234,31 @@ class processExtendsVisitor{
 			}
 		}
 		return $matches;
+	}
+
+	function isElementValuesEqual( $elementValue1, $elementValue2 ){
+
+		if( is_string($elementValue1) || is_string($elementValue2) ) {
+			return $elementValue1 === $elementValue2;
+		}
+
+		if( $elementValue1 instanceof \Less\Node\Attribute ){
+
+			if( $elementValue1->op !== $elementValue2->op || $elementValue1->key !== $elementValue2->key ){
+				return false;
+			}
+
+			if( !$elementValue1->value || !$elementValue2->value ){
+				if( $elementValue1->value || $elementValue2->value ) {
+					return false;
+				}
+				return true;
+			}
+			$elementValue1 = ($elementValue1->value->value ? $elementValue1->value->value : $elementValue1->value );
+			$elementValue2 = ($elementValue2->value->value ? $elementValue2->value->value : $elementValue2->value );
+			return $elementValue1 === $elementValue2;
+		}
+		return false;
 	}
 
 	function extendSelector($matches, $selectorPath, $replacementSelector){
