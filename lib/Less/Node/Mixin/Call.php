@@ -40,9 +40,10 @@ class Call{
         $match = false;
         $isOneFound = false;
 
-		$args = array_map(function ($a) use ($env) {
-			return array('name'=> $a['name'], 'value' => $a['value']->compile($env) );
-		}, $this->arguments);
+		$args = array();
+		foreach($this->arguments as $a){
+			$args[] = array('name'=> $a['name'], 'value' => $a['value']->compile($env) );
+		}
 
         foreach($env->frames as $frame){
 

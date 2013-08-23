@@ -194,9 +194,9 @@ class Definition extends \Less\Node\Ruleset{
 
 		$len = min(count($args), $this->arity);
 
-		for ($i = 0; $i < $len; $i++) {
-			if ( !isset($this->params[$i]['name']) && !isset($this->params[$i]['variadic'])  ) {
-				if ($args[$i]['value']->compile($env)->toCSS() != $this->params[$i]['value']->compile($env)->toCSS()) {
+		for( $i = 0; $i < $len; $i++ ){
+			if( !isset($this->params[$i]['name']) && !isset($this->params[$i]['variadic']) ){
+				if( $args[$i]['value']->compile($env)->toCSS() != $this->params[$i]['value']->compile($env)->toCSS() ){
 					return false;
 				}
 			}

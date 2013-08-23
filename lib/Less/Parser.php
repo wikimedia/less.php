@@ -747,13 +747,13 @@ class Parser {
 		$this->save(); // stop us absorbing part of an invalid selector
 
 		while( $e = $this->match('/^[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/') ){
-		//while ($e = $this->match('/^[#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/')) {
 			$elements[] = new \Less\Node\Element($c, $e, $this->pos);
 			$c = $this->match('>');
 		}
 
-		if( $this->match('(')) {
-			$args = $this->parseMixinArgs(true);
+		if( $this->match('(') ){
+			$returned = $this->parseMixinArgs(true);
+			$args = $returned['args'];
 			$this->expect(')');
 		}
 
@@ -772,43 +772,90 @@ class Parser {
 		$this->restore();
 	}
 
-	private function parseMixinArgs( $isCall ){
 
+	private function parseMixinArgs( $isCall ){
 		$expressions = array();
 		$argsSemiColon = array();
 		$isSemiColonSeperated = null;
 		$argsComma = array();
 		$expressionContainsNamed = null;
 		$name = null;
+		$nameLoop = null;
+		$returner = array('args'=>null, 'variadic'=> false);
 
-
-
-		while( $arg = $this->match('parseExpression') ){
-			$nameLoop = null;
-			$arg->throwAwayComments();
-			$value = $arg;
-
-
-			// Variable
-			if( count($arg->value) == 1 ){
-				$val = $arg->value[0];
-				if( $val instanceof \Less\Node\Variable ){
-					if( $this->match(':') ){
-						if ( count($expressions) > 0) {
-							if ($isSemiColonSeperated) {
-								throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
-							}
-							$expressionContainsNamed = true;
-						}
-						$value = $this->expect('parseExpression');
-						$nameLoop = $name = $val->name;
+		while( true ){
+			if( $isCall ){
+				$arg = $this->match('parseExpression');
+			} else {
+				$this->match('parseComment');
+				if( $this->input[ $this->pos ] === '.' && $this->match('/^\.{3}/') ){
+					$returner['variadic'] = true;
+					if( $this->match(";") && !$isSemiColonSeperated ){
+						$isSemiColonSeperated = true;
 					}
+
+					if( $isSemiColonSeperated ){
+						$argsSemiColon[] = array('variadic'=>true);
+					}else{
+						$argsComma[] = array('variadic'=>true);
+					}
+					break;
+				}
+				$arg = $this->matchMultiple('parseVariable','parseEntitiesLiteral','parseEntitiesKeyword');
+			}
+
+			if( !$arg ){
+				break;
+			}
+
+			$nameLoop = null;
+			if( method_exists($arg,'throwAwayComments') ){
+				$arg->throwAwayComments();
+			}
+			$value = $arg;
+			$val = null;
+
+			if( $isCall ){
+				// Variable
+				if( count($arg->value) == 1) {
+					$val = $arg->value[0];
+				}
+			} else {
+				$val = $arg;
+			}
+
+			if( $val && $val instanceof \Less\Node\Variable ){
+				if( $this->match(':') ){
+					if( count($expressions) > 0 ){
+						if( $isSemiColonSeperated ){
+							throw new \Less\Exception\ParserException('Cannot mix ; and , as delimiter types');
+						}
+						$expressionContainsNamed = true;
+					}
+					$value = $this->expect('parseExpression');
+					$nameLoop = ($name = $val->name);
+				}elseif( !$isCall && $this->match('/^\.{3}/') ){
+					$returner['variadic'] = true;
+					if( $this->match(";") && !$isSemiColonSeperated ){
+						$isSemiColonSeperated = true;
+					}
+					if( $isSemiColonSeperated ){
+						$argsSemiColon[] = array('name'=> $arg->name, 'variadic' => true);
+					}else{
+						$argsComma[] = array('name'=> $arg->name, 'variadic' => true);
+					}
+					break;
+				}elseif( !$isCall ){
+					$name = $nameLoop = $val->name;
+					$value = null;
 				}
 			}
 
-			$expressions[] = $value;
+			if( $value ){
+				$expressions[] = $value;
+			}
 
-			$argsComma[] = array('name'=> $nameLoop, 'value' => $value);
+			$argsComma[] = array('name'=>$nameLoop, 'value'=>$value );
 
 			if( $this->match(',') ){
 				continue;
@@ -825,7 +872,7 @@ class Parser {
 				if( count($expressions) > 1 ){
 					$value = new \Less\Node\Value($expressions);
 				}
-				$argsSemiColon[] = array('name' => $name, 'value' => $value );
+				$argsSemiColon[] = array('name'=>$name, 'value'=>$value );
 
 				$name = null;
 				$expressions = array();
@@ -833,8 +880,8 @@ class Parser {
 			}
 		}
 
-		$args = $isSemiColonSeperated ? $argsSemiColon : $argsComma;
-		return $args;
+		$returner['args'] = ($isSemiColonSeperated ? $argsSemiColon : $argsComma);
+		return $returner;
 	}
 
 
@@ -871,35 +918,9 @@ class Parser {
         if ($match = $this->match('/^([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/')) {
             $name = $match[1];
 
-			do {
-				$this->match('parseComment');
-
-				if ($this->peek('.') && $this->match("/^\.{3}/")) {
-					$variadic = true;
-					$params[] = array( 'variadic'=> true );
-					break;
-				} elseif ($param = $this->match('parseEntitiesVariable') ?:
-                            $this->match('parseEntitiesLiteral') ?:
-                            $this->match('parseEntitiesKeyword')) {
-					// Variable
-					if ($param instanceof \Less\Node\Variable) {
-	                    if ($this->match(':')) {
-							$value = $this->expect('parseExpression', 'Expected expression');
-                            $params[] = array('name' => $param->name, 'value' => $value);
-						} elseif ($this->match("/^\.{3}/")) {
-							$params[] = array('name' => $param->name, 'variadic' => true);
-							$variadic = true;
-							break;
-						} else {
-	                        $params[] = array('name' => $param->name);
-						}
-                    } else {
-                        $params[] = array('value' => $param);
-                    }
-				} else {
-					break;
-				}
-			} while ( $this->match(',') || $this->match(';') );
+			$argInfo = $this->parseMixinArgs( false );
+			$params = $argInfo['args'];
+			$variadic = $argInfo['variadic'];
 
 
 			// .mixincall("@{a}");

@@ -111,7 +111,7 @@ class Dimension{
 			} elseif ($bValue < $aValue) {
 				return 1;
 			} else {
-				if( !$b->unit->isEmpty() && $a->unit->compare($b) !== 0) {
+				if( !$b->unit->isEmpty() && $a->unit->compare($b->unit) !== 0) {
 					return -1;
 				}
 				return 0;
