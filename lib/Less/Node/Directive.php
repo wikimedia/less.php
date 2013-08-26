@@ -12,7 +12,7 @@ class Directive{
     public function __construct($name, $value = null){
         $this->name = $name;
         if (is_array($value)) {
-            $this->ruleset = new Ruleset(false, $value);
+            $this->ruleset = new \Less\Node\Ruleset(false, $value);
             $this->ruleset->allowImports = true;
         } else {
             $this->value = $value;

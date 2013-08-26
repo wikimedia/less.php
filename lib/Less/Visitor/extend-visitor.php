@@ -41,7 +41,7 @@ class extendFinderVisitor{
 
 		// get &:extend(.a); rules which apply to all selectors in this ruleset
 		for( $i = 0; $i < count($rulesetNode->rules); $i++ ){
-			if( $rulesetNode->rules[$i] instanceof \Less\Extend ){
+			if( $rulesetNode->rules[$i] instanceof \Less\Node\Extend ){
 				$allSelectorsExtendList[] = $rulesetNode->rules[$i];
 			}
 		}

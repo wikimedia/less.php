@@ -166,7 +166,6 @@ class Parser {
         //$this->input = preg_replace('/^\uFEFF/', '', $this->input);
         $this->input = preg_replace('/^\\357\\273\\277/um', '', $this->input);
 
-
         $root = new \Less\Node\Ruleset(null, $this->match('parsePrimary'));
         $root->root = true;
 
@@ -413,9 +412,9 @@ class Parser {
         while( ($node = $this->match('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
 							'parseMixinCall', 'parseComment', 'parseDirective' ))
 							?: $this->match("/^[\s\n]+/") ?: $this->match('/^;+/')
-        ) {
+        ){
             if ($node) {
-                $root[] = $node;
+				$root[] = $node;
             }
         }
 
@@ -1159,8 +1158,7 @@ class Parser {
     // The `block` rule is used by `ruleset` and `mixin.definition`.
     // It's a wrapper around the `primary` rule, with added `{}`.
     //
-    private function parseBlock()
-    {
+    private function parseBlock(){
         if ($this->match('{') && (is_array($content = $this->match('parsePrimary'))) && $this->match('}')) {
             return $content;
         }

@@ -30,6 +30,7 @@ class Extend{
 	            $this->allowAfter = false;
 	        break;
 		}
+
 	}
 
 	function accept( $visitor ){

@@ -16,6 +16,7 @@ class processExtendsVisitor{
 		$extendFinder = new \Less\extendFinderVisitor();
 		$extendFinder->run( $root );
 		if( !$extendFinder->foundExtends) { return $root; }
+
 		$root->allExtends = array_merge($root->allExtends, $this->doExtendChaining( $root->allExtends, $root->allExtends));
 		$this->allExtendsStack = array( $root->allExtends );
 		return $this->_visitor->visit( $root );
