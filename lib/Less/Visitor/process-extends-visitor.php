@@ -297,11 +297,12 @@ class processExtendsVisitor{
 				$currentSelectorPathIndex++;
 			}
 
-			$len = $match['pathIndex'] - $currentSelectorPathIndex;
-			$temp = array_slice($selectorPath, $currentSelectorPathIndex, $len);
+			$slice_len = $match['pathIndex'] - $currentSelectorPathIndex;
+			$temp = array_slice($selectorPath, $currentSelectorPathIndex, $slice_len);
 			$path = array_merge( $path, $temp);
 
-			$new_elements = array_slice($selector->elements,$currentSelectorPathElementIndex, $match['index']);
+			$slice_len = $match['index'] - $currentSelectorPathElementIndex;
+			$new_elements = array_slice($selector->elements,$currentSelectorPathElementIndex, $slice_len);
 			$new_elements = array_merge($new_elements, array($firstElement) );
 			$new_elements = array_merge($new_elements, array_slice($replacementSelector->elements,1) );
 			$path[] = new \Less\Node\Selector( $new_elements );
@@ -320,7 +321,8 @@ class processExtendsVisitor{
 			$currentSelectorPathIndex++;
 		}
 
-		$path = array_merge($path, array_slice($selectorPath,$currentSelectorPathIndex, count($selectorPath)));
+		$slice_len = count($selectorPath) - $currentSelectorPathIndex;
+		$path = array_merge($path, array_slice($selectorPath, $currentSelectorPathIndex, $slice_len));
 
 		return $path;
 	}
