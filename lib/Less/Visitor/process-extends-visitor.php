@@ -162,10 +162,13 @@ class processExtendsVisitor{
 
 				$matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
 
+
+
 				if( count($matches) ){
 					foreach($allExtends[$extendIndex]->selfSelectors as $selfSelector ){
 						$selectorsToAdd[] = $extendVisitor->extendSelector($matches, $selectorPath, $selfSelector);
 					}
+
 				}
 			}
 		}
@@ -278,6 +281,8 @@ class processExtendsVisitor{
 		$path = array();
 
 		for($matchIndex = 0; $matchIndex < count($matches); $matchIndex++ ){
+
+
 			$match = $matches[$matchIndex];
 			$selector = $selectorPath[ $match['pathIndex'] ];
 			$firstElement = new \Less\Node\Element(
@@ -292,7 +297,9 @@ class processExtendsVisitor{
 				$currentSelectorPathIndex++;
 			}
 
-			$path = array_merge( $path, array_slice($selectorPath,$currentSelectorPathIndex, $match['pathIndex']));
+			$len = $match['pathIndex'] - $currentSelectorPathIndex;
+			$temp = array_slice($selectorPath, $currentSelectorPathIndex, $len);
+			$path = array_merge( $path, $temp);
 
 			$new_elements = array_slice($selector->elements,$currentSelectorPathElementIndex, $match['index']);
 			$new_elements = array_merge($new_elements, array($firstElement) );
