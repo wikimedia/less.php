@@ -42,13 +42,17 @@ class processExtendsVisitor{
 		// the seperation into two lists allows us to process a subset of chains with a bigger set, as is the
 		// case when processing media queries
 		for( $extendIndex = 0; $extendIndex < count($extendsList); $extendIndex++ ){
+
+			$extend = $extendsList[$extendIndex];
+
 			for( $targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); $targetExtendIndex++ ){
 
-				$extend = $extendsList[$extendIndex];
 				$targetExtend = $extendsListTarget[$targetExtendIndex];
 
 				// look for circular references
-				if( $this->inInheritanceChain( $targetExtend, $extend)) { continue; }
+				if( $this->inInheritanceChain( $targetExtend, $extend)) {
+					continue;
+				}
 
 				// find a match in the target extends self selector (the bit before :extend)
 				$selectorPath = array( $targetExtend->selfSelectors[0] );
@@ -109,6 +113,7 @@ class processExtendsVisitor{
 	}
 
 	function inInheritanceChain( $possibleParent, $possibleChild ){
+
 		if( $possibleParent === $possibleChild) {
 			return true;
 		}
@@ -117,7 +122,7 @@ class processExtendsVisitor{
 			if( $this->inInheritanceChain( $possibleParent, $possibleChild->parents[0]) ){
 				return true;
 			}
-			if( $this->inInheritanceChain($possibleParent, $possibleChild->parents[1]) ){
+			if( $this->inInheritanceChain( $possibleParent, $possibleChild->parents[1]) ){
 				return true;
 			}
 		}
@@ -168,6 +173,7 @@ class processExtendsVisitor{
 	}
 
 	function findMatch($extend, $haystackSelectorPath ){
+
 		//
 		// look through the haystack selector path to try and find the needle - extend.selector
 		// returns an array of selector matches that can then be replaced
@@ -192,7 +198,7 @@ class processExtendsVisitor{
 				}
 
 				for($i = 0; $i < count($potentialMatches); $i++ ){
-					$potentialMatch = $potentialMatches[$i];
+					$potentialMatch = &$potentialMatches[$i];
 
 					// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
 					// then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
@@ -213,6 +219,7 @@ class processExtendsVisitor{
 					// if we are still valid and have finished, test whether we have elements after and whether these are allowed
 					if( $potentialMatch ){
 						$potentialMatch['finished'] = ($potentialMatch['matched'] === count($needleElements) );
+
 						if( $potentialMatch['finished'] &&
 							(!$extend->allowAfter && ($hackstackElementIndex+1 < count($hackstackSelector->elements) || $haystackSelectorIndex+1 < count($haystackSelectorPath))) ){
 							$potentialMatch = null;

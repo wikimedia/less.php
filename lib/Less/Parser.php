@@ -1102,7 +1102,6 @@ class Parser {
 			if( $c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')') { break; }
 		}
 
-
 		if( count($elements) ) { return new \Less\Node\Selector( $elements, $extendList); }
 		if( count($extendList) ) { throw new \Less\Exception\ParserException('Extend must be used to extend a selector, it cannot be used on its own'); }
     }
