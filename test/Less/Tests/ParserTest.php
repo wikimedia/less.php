@@ -69,6 +69,19 @@ class ParserTest{
 			$renderer = new Diff_Renderer_Html_SideBySide();
 			//$renderer = new Diff_Renderer_Html_Inline();
 			echo $diff->Render($renderer);
+
+
+			if( isset($_GET['file']) ){
+				echo '<table style="width:100%"><tr><td>';
+				echo '<pre>';
+				echo implode("\n",$compiled);
+				echo '</pre>';
+				echo '</td><td>';
+				echo '<pre>';
+				echo implode("\n",$css);
+				echo '</pre>';
+				echo '</td></tr></table>';
+			}
 		}
 
 

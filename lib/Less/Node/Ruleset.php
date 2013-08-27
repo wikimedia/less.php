@@ -22,13 +22,6 @@ class Ruleset{
 	public function __construct($selectors, $rules, $strictImports = false){
 		$this->selectors = $selectors;
 		$this->rules = $rules;
-
-		// not the same as less.js ??
-		//  - enables &:extend
-		//  - Not sure how this is being done in less.js
-		if( is_array($rules) && count($rules) == 1 && is_array($rules[0]) ){
-			$this->rules = $rules[0];
-		}
 		$this->lookups = array();
 		$this->strictImports = $strictImports;
 	}

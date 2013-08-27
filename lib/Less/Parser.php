@@ -414,7 +414,13 @@ class Parser {
 							?: $this->match("/^[\s\n]+/") ?: $this->match('/^;+/')
         ){
             if ($node) {
-				$root[] = $node;
+
+				//not the same as less.js
+				if( is_array($node) ){
+					$root[] = $node[0];
+				}else{
+					$root[] = $node;
+				}
             }
         }
 
