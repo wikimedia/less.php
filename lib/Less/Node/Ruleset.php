@@ -112,9 +112,9 @@ class Ruleset{
 		array_shift($env->selectors);
 
         if ($mediaBlockCount) {
-			foreach($env->mediaBlocks as $mediaBlock){
-				$mediaBlock->bubbleSelectors( $selectors );
-            }
+			for($i = $mediaBlockCount; $i < count($env->mediaBlocks); $i++ ){
+				$env->mediaBlocks[$i]->bubbleSelectors($selectors);
+			}
         }
 
 		return $ruleset;
