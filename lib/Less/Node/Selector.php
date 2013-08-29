@@ -58,15 +58,6 @@ class Selector {
 
 	public function toCSS ($env){
 
-		//$debug = debug_backtrace();
-		//echo \Less\Pre($debug);
-
-		//static $z = 0;
-		//$z++;
-		//echo '<h3>selector '.$z.'</h3>';
-		//echo \Less\Pre($this->elements);
-
-
 		if ($this->_css) {
 			return $this->_css;
 		}

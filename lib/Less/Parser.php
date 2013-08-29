@@ -2,6 +2,8 @@
 
 namespace Less;
 
+
+
 class Parser {
 
 
@@ -1621,6 +1623,11 @@ class Parser {
 }
 
 	function pre($arg){
+		global $debug;
+
+		if( !isset($debug) || !$debug ){
+			//return;
+		}
 		ob_start();
 		echo "\n\n<pre>";
 		if( $arg === 0 ){

@@ -19,7 +19,7 @@ class extendFinderVisitor{
 
 	function run($root) {
 		$root = $this->_visitor->visit($root);
-		$root->allExtends = $this->allExtendsStack[0];
+		$root->allExtends =& $this->allExtendsStack[0];
 		return $root;
 	}
 
@@ -67,7 +67,9 @@ class extendFinderVisitor{
 				$extend->findSelfSelectors( $selectorPath );
 				$extend->ruleset = $rulesetNode;
 				if( $j === 0 ){ $extend->firstExtendOnThisSelectorPath = true; }
-				$this->allExtendsStack[ count($this->allExtendsStack)-1 ][] = $extend;
+
+				$temp = count($this->allExtendsStack)-1;
+				$this->allExtendsStack[ $temp ][] = $extend;
 			}
 		}
 
@@ -82,7 +84,7 @@ class extendFinderVisitor{
 
 	function visitMedia( $mediaNode, $visitArgs ){
 		$mediaNode->allExtends = array();
-		$this->allExtendsStack[] = $mediaNode->allExtends;
+		$this->allExtendsStack[] =& $mediaNode->allExtends;
 	}
 
 	function visitMediaOut( $mediaNode ){
@@ -91,7 +93,7 @@ class extendFinderVisitor{
 
 	function visitDirective( $directiveNode, $visitArgs ){
 		$directiveNode->allExtends = array();
-		$this->allExtendsStack[] = $directiveNode->allExtends;
+		$this->allExtendsStack[] =& $directiveNode->allExtends;
 	}
 
 	function visitDirectiveOut( $directiveNode ){

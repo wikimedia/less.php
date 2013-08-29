@@ -18,7 +18,9 @@ class processExtendsVisitor{
 		if( !$extendFinder->foundExtends) { return $root; }
 
 		$root->allExtends = array_merge($root->allExtends, $this->doExtendChaining( $root->allExtends, $root->allExtends));
-		$this->allExtendsStack = array( $root->allExtends );
+		$this->allExtendsStack = array();
+		$this->allExtendsStack[] = &$root->allExtends;
+
 		return $this->_visitor->visit( $root );
 	}
 
@@ -35,6 +37,7 @@ class processExtendsVisitor{
 		$extendsToAdd = array();
 		$extendVisitor = $this;
 
+
 		//loop through comparing every extend with every target extend.
 		// a target extend is the one on the ruleset we are looking at copy/edit/pasting in place
 		// e.g. .a:extend(.b) {} and .b:extend(.c) {} then the first extend extends the second one
@@ -42,11 +45,9 @@ class processExtendsVisitor{
 		// the seperation into two lists allows us to process a subset of chains with a bigger set, as is the
 		// case when processing media queries
 		for( $extendIndex = 0; $extendIndex < count($extendsList); $extendIndex++ ){
-
-			$extend = $extendsList[$extendIndex];
-
 			for( $targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); $targetExtendIndex++ ){
 
+				$extend = $extendsList[$extendIndex];
 				$targetExtend = $extendsListTarget[$targetExtendIndex];
 
 				// look for circular references
@@ -58,10 +59,12 @@ class processExtendsVisitor{
 				$selectorPath = array( $targetExtend->selfSelectors[0] );
 				$matches = $extendVisitor->findMatch( $extend, $selectorPath);
 
+
 				if( count($matches) ){
 
 					// we found a match, so for each self selector..
 					foreach($extend->selfSelectors as $selfSelector ){
+
 
 						// process the extend as usual
 						$newSelector = $extendVisitor->extendSelector( $matches, $selectorPath, $selfSelector);
@@ -331,8 +334,7 @@ class processExtendsVisitor{
 	}
 
 	function visitMedia( $mediaNode, $visitArgs ){
-		$temp = $this->allExtendsStack[ count($this->allExtendsStack)-1 ];
-		$newAllExtends = array_merge( $mediaNode->allExtends, $temp );
+		$newAllExtends = array_merge( $mediaNode->allExtends, $this->allExtendsStack[ count($this->allExtendsStack)-1 ] );
 		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $mediaNode->allExtends));
 		$this->allExtendsStack[] = $newAllExtends;
 	}
