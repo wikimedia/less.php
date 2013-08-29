@@ -17,7 +17,7 @@ class Call{
 	 *
 	 */
     public function __construct($elements, $args, $index, $currentFileInfo, $important = false){
-        $this->selector =  new \Less\Node\Selector($elements);
+        $this->selector = new \Less\Node\Selector($elements);
         $this->arguments = $args;
         $this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
@@ -45,43 +45,47 @@ class Call{
 			$args[] = array('name'=> $a['name'], 'value' => $a['value']->compile($env) );
 		}
 
-        foreach($env->frames as $frame){
+		for($i = 0; $i< count($env->frames); $i++){
 
-            if( $mixins = $frame->find($this->selector, null, $env) ){
+			$mixins = $env->frames[$i]->find($this->selector, null, $env);
 
-				$isOneFound = true;
-                foreach( $mixins as $mixin ){
+            if( !$mixins ){
+				continue;
+			}
 
-                    $isRecursive = false;
-                    foreach($env->frames as $recur_frame){
-						if( !($mixin instanceof \Less\Node\Mixin\Definition) ){
-							if( (isset($recur_frame->originalRuleset) && $mixin === $recur_frame->originalRuleset) || ($mixin === $recur_frame) ){
-								$isRecursive = true;
-								break;
-							}
+			$isOneFound = true;
+			foreach( $mixins as $mixin ){
+
+				$isRecursive = false;
+				foreach($env->frames as $recur_frame){
+					if( !($mixin instanceof \Less\Node\Mixin\Definition) ){
+						if( (isset($recur_frame->originalRuleset) && $mixin === $recur_frame->originalRuleset) || ($mixin === $recur_frame) ){
+							$isRecursive = true;
+							break;
 						}
 					}
-					if( $isRecursive ){
-						continue;
-					}
+				}
+				if( $isRecursive ){
+					continue;
+				}
 
-					if ($mixin->matchArgs($args, $env)) {
-						if( !method_exists($mixin,'matchCondition') || $mixin->matchCondition($args, $env) ){
-							try {
-								$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
-							} catch (Exception $e) {
-								throw new \Less\Exception\CompilerException($e->message, $e->index, null, $this->currentFileInfo['filename']);
-							}
+				if ($mixin->matchArgs($args, $env)) {
+					if( !method_exists($mixin,'matchCondition') || $mixin->matchCondition($args, $env) ){
+						try {
+							$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
+						} catch (Exception $e) {
+							throw new \Less\Exception\CompilerException($e->message, $e->index, null, $this->currentFileInfo['filename']);
 						}
-						$match = true;
 					}
+					$match = true;
+				}
 
-                }
+			}
 
-                if( $match ){
-                    return $rules;
-                }
-            }
+			if( $match ){
+				return $rules;
+			}
+
         }
 
 

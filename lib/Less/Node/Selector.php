@@ -28,7 +28,8 @@ class Selector {
 		$olen = count($oelements);
 
 		$max = min($len, $olen);
-		if ($len < $olen) {
+
+		if( $olen === 0 || $len < $olen ){
 			return false;
 		} else {
 			for ($i = 0; $i < $max; $i ++) {
@@ -37,6 +38,7 @@ class Selector {
 				}
 			}
 		}
+
 		return true;
 	}
 
