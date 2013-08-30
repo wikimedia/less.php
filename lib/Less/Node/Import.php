@@ -99,18 +99,28 @@ class Less_Tree_Import{
 	function compile($env) {
 
 		$evald = $this->compileForImport($env);
-		$uri = '';
+		$uri = $full_path = false;
 
-		//import once
+		//get path & uri
 		$evald_path = $evald->getPath();
-
 		if( $evald_path && $env->isPathRelative($evald_path) ){
-			$full_path = $evald->currentFileInfo['rootpath'].$evald_path;
-			$uri = $this->currentFileInfo['uri'].dirname($evald_path);
-		}else{
+
+			foreach(Less_Parser::$import_dirs as $rootpath => $rooturi){
+				$temp = $rootpath.$evald_path;
+				if( file_exists($temp) ){
+					$full_path = $temp;
+					$uri = $rooturi.dirname($evald_path);
+					break;
+				}
+			}
+		}
+
+		if( !$full_path ){
+			$uri = $evald_path;
 			$full_path = $evald_path;
 		}
 
+		//import once
 		$realpath = realpath($full_path);
 		if( !isset($evald->options['multiple']) && $realpath && in_array($realpath,Less_Parser::$imports) ){
 			$evald->skip = true;

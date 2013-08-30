@@ -23,7 +23,7 @@ class Less_Parser{
 	/**
 	 * @var array
 	 */
-	private $import_dirs = array();
+	static $import_dirs = array();
 
     /**
      * @var string
@@ -61,6 +61,7 @@ class Less_Parser{
 		}else{
 			$this->env = new Less_Environment( $env );
 			self::$imports = array();
+			self::$import_dirs = array();
 		}
 
 		$this->css = '';
@@ -208,13 +209,25 @@ class Less_Parser{
 			throw new Less_ParserException(sprintf('File `%s` not found.', $filename));
 		}
 
+		$previousFileInfo = $this->env->currentFileInfo;
+		$previousImportDirs = self::$import_dirs;
+		$this->SetFileInfo($filename, $uri);
+
+		$return = $this->parse(file_get_contents($filename), $returnRoot);
+
+		$this->env->currentFileInfo = $previousFileInfo;
+		self::$import_dirs = $previousImportDirs;
+
+		return $return;
+	}
+
+	public function SetFileInfo( $filename, $uri = ''){
+
 		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
 		$this->filename = realpath($filename);
 
-
 		$dirname = preg_replace('/[^\/\\\\]*$/','',$this->filename);
 
-		$previousFileInfo = $this->env->currentFileInfo;
 
 		$currentFileInfo = array();
 		$currentFileInfo['currentDirectory'] = $dirname;
@@ -230,18 +243,21 @@ class Less_Parser{
 
 		$this->env->currentFileInfo = $currentFileInfo;
 
-		$return = $this->parse(file_get_contents($filename), $returnRoot);
-
-		$this->env->currentFileInfo = $previousFileInfo;
-
-
-		return $return;
+		self::$import_dirs = array_merge( array( $dirname => $uri ), self::$import_dirs );
 	}
-
 
 	public function SetImportDirs( $dirs ){
-		$this->import_dirs = (array)$dirs;
+		foreach($dirs as $path => $uri){
+			if( !empty($path) ){
+				$path = rtrim($path,'/').'/';
+			}
+			if( !empty($uri) ){
+				$uri = rtrim($uri,'/').'/';
+			}
+			self::$import_dirs[$path] = $uri;
+		}
 	}
+
 
 
     function save() {
