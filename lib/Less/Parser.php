@@ -1664,3 +1664,9 @@ class Less_Parser{
 			return ob_get_clean();
 		}
 	}
+
+	if( !function_exists('msg') ){
+		function msg($arg){
+			echo Pre($arg);
+		}
+	}

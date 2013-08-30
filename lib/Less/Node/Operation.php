@@ -19,7 +19,7 @@ class Less_Tree_Operation{
 		$b = $this->operands[1]->compile($env);
 
 
-		if( $env->isMathsOn() ){
+		if( $env->isMathOn() ){
 			if( $a instanceof Less_Tree_Dimension && $b instanceof Less_Tree_Color ){
 				if ($this->op === '*' || $this->op === '+') {
 					$temp = $b;

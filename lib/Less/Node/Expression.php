@@ -48,7 +48,7 @@ class Less_Tree_Expression {
 		if( $inParenthesis ){
 			$env->outOfParenthesis();
 		}
-		if( $this->parens && $this->parensInOp && !$env->isMathsOn() && !$doubleParen ){
+		if( $this->parens && $this->parensInOp && !$env->isMathOn() && !$doubleParen ){
 			$returnValue = new Less_Tree_Paren($returnValue);
 		}
 		return $returnValue;

@@ -48,24 +48,26 @@ class Less_Tree_Rule{
 
 	public function compile ($env){
 
+		$return = null;
 		$strictMathBypass = false;
 		if( $this->name === "font" && !$env->strictMath ){
 			$strictMathBypass = true;
 			$env->strictMath = true;
 		}
-		try {
-			return new Less_Tree_Rule($this->name,
+		try{
+			$return = new Less_Tree_Rule($this->name,
 										$this->value->compile($env),
 										$this->important,
 										$this->currentFileInfo,
 										$this->index, $this->inline);
 		}
-		catch(\Exception $e){
-			if( $strictMathBypass ){
-				$env->strictMath = false;
-			}
+		catch(\Exception $e){}
+
+		if( $strictMathBypass ){
+			$env->strictMath = false;
 		}
 
+		return $return;
 	}
 
 	function makeImportant(){

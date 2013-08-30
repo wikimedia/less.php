@@ -19,7 +19,7 @@ class Less_Tree_Negative{
 	}
 
 	function compile($env) {
-		if( $env->isMathsOn() ){
+		if( $env->isMathOn() ){
 			$ret = new Less_Tree_Operation('*', array( new Less_Tree_Dimension(-1), $this->value ) );
 			return $ret->compile($env);
 		}

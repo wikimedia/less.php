@@ -79,8 +79,8 @@ class Less_Environment{
 		array_pop($this->parensStack);
 	}
 
-	public function isMathsOn() {
-		return $this->strictMath === false ? true : ($this->parensStack && count($this->parensStack));
+	public function isMathOn() {
+		return $this->strictMath ? ($this->parensStack && count($this->parensStack)) : true;
 	}
 
 	public function isPathRelative($path){
