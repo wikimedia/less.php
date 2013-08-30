@@ -559,16 +559,16 @@ class Parser {
      *
      * @return array
      */
-    private function parseEntitiesArguments(){
-        $args = array();
-        while ($arg = $this->match('parseEntitiesAssignment') ?: $this->match('parseExpression')) {
-            $args[] = $arg;
-            if (! $this->match(',')) {
-                break;
-            }
-        }
-        return $args;
-    }
+	private function parseEntitiesArguments(){
+		$args = array();
+		while( $arg = $this->match('parseEntitiesAssignment','parseExpression') ){
+			$args[] = $arg;
+			if (! $this->match(',')) {
+				break;
+			}
+		}
+		return $args;
+	}
 
     private function parseEntitiesLiteral(){
 		return $this->match('parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor');
@@ -597,9 +597,10 @@ class Parser {
 			return;
 		}
 
-		$value = $this->match('parseEntitiesQuoted') ?:
-				 $this->match('parseEntitiesVariable') ?:
-				 $this->match('/^(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/') ?: '';
+		$value = $this->match('parseEntitiesQuoted','parseEntitiesVariable','/^(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/');
+		if( !$value ){
+			$value = '';
+		}
 
 
 		$this->expect(')');
@@ -987,21 +988,14 @@ class Parser {
         }
     }
 
-    //
-    // Entities are the smallest recognized token,
-    // and can be found inside a rule's value.
-    //
-    private function parseEntity()
-    {
+	//
+	// Entities are the smallest recognized token,
+	// and can be found inside a rule's value.
+	//
+	private function parseEntity(){
 
-        return $this->match('parseEntitiesLiteral') ?:
-               $this->match('parseEntitiesVariable') ?:
-               $this->match('parseEntitiesUrl') ?:
-               $this->match('parseEntitiesCall') ?:
-               $this->match('parseEntitiesKeyword') ?:
-               $this->match('parseEntitiesJavascript') ?:
-               $this->match('parseComment');
-    }
+		return $this->match('parseEntitiesLiteral','parseEntitiesVariable','parseEntitiesUrl','parseEntitiesCall','parseEntitiesKeyword','parseEntitiesJavascript','parseComment');
+	}
 
     //
     // A Rule terminator. Note that we use `peek()` to check for '}',
@@ -1010,7 +1004,7 @@ class Parser {
     //
     private function parseEnd()
     {
-        return $this->match(';') ?: $this->peek('}');
+        return ($end = $this->match(';') ) ? $end : $this->peek('}');
     }
 
     //
@@ -1104,7 +1098,7 @@ class Parser {
 		$elements = array();
 		$extendList = array();
 
-		while( ($extend = $this->match('parseExtend')) ?: ($e = $this->match('parseElement')) ){
+		while( ($extend = $this->match('parseExtend')) ? $extend : ($e = $this->match('parseElement')) ){
 			if( $extend ){
 				$extendList = array_merge($extendList,$extend);
 			}else{
@@ -1124,7 +1118,7 @@ class Parser {
     }
 
 	private function parseTag(){
-		return $this->match('/^[A-Za-z][A-Za-z-]*[0-9]?/') ?: $this->match('*');
+		return ( $tag = $this->match('/^[A-Za-z][A-Za-z-]*[0-9]?/') ) ? $tag : $this->match('*');
 	}
 
 	private function parseAttribute(){
@@ -1155,17 +1149,17 @@ class Parser {
 
         $attr = '';
 
-        if ($key = $this->match('/^(?:[_A-Za-z0-9-]|\\\\.)+/') ?: $this->match('parseEntitiesQuoted')) {
-            if (($op = $this->match('/^[|~*$^]?=/')) &&
-                ($val = $this->match('parseEntitiesQuoted') ?: $this->match('/^[\w-]+/'))) {
-                if ( ! is_string($val)) {
-                    $val = $val->toCss();
-                }
-                $attr = $key.$op.$val;
-            } else {
-                $attr = $key;
-            }
-        }
+		if( $key = $this->match('/^(?:[_A-Za-z0-9-]|\\\\.)+/','parseEntitiesQuoted') ){
+			if( ($op = $this->match('/^[|~*$^]?=/')) &&
+				($val = $this->match('parseEntitiesQuoted','/^[\w-]+/')) ){
+				if( !is_string($val) ){
+					$val = $val->toCss();
+				}
+				$attr = $key.$op.$val;
+			}else{
+				$attr = $key;
+			}
+		}
 
         if (! $this->match(']')) {
             return;
@@ -1523,7 +1517,7 @@ class Parser {
 
 		if ($m = $this->match('parseOperand')) {
 			$isSpaced = $this->isWhitespace( $this->input[$this->pos-1] );
-			while( !$this->peek('/^\/[*\/]/') && ($op = ($this->match('/') ?: $this->match('*'))) ){
+			while( !$this->peek('/^\/[*\/]/') && ($op = $this->match('/','*')) ){
 
 				if( $a = $this->match('parseOperand') ){
 					$m->parensInOp = true;
@@ -1543,13 +1537,13 @@ class Parser {
         if ($m = $this->match('parseMultiplication')) {
 			$isSpaced = $this->isWhitespace( $this->input[$this->pos-1] );
 
-            while( ($op = $this->match('/^[-+]\s+/') ?: ( !$isSpaced ? ($this->match('+') ?: $this->match('-')) : false )) && ($a = $this->match('parseMultiplication')) ){
+            while( ($op = $this->match('/^[-+]\s+/') ?: ( !$isSpaced ? ($this->match('+','-')) : false )) && ($a = $this->match('parseMultiplication')) ){
 				$m->parensInOp = true;
 				$a->parensInOp = true;
-                $operation = new \Less\Node\Operation($op, array($operation ?: $m, $a), $isSpaced);
+                $operation = new \Less\Node\Operation($op, array($operation ? $operation : $m, $a), $isSpaced);
                 $isSpaced = $this->isWhitespace( $this->input[$this->pos-1] );
             }
-            return $operation ?: $m;
+            return $operation ? $operation : $m;
         }
     }
 
@@ -1558,9 +1552,9 @@ class Parser {
 		$condition = null;
 		if ($a = $this->match('parseCondition')) {
 			while ($this->match(',') && ($b = $this->match('parseCondition'))) {
-				$condition = new \Less\Node\Condition('or', $condition ?: $a, $b, $index);
+				$condition = new \Less\Node\Condition('or', $condition ? $condition : $a, $b, $index);
 			}
-			return $condition ?: $a;
+			return $condition ? $condition : $a;
 		}
 	}
 
