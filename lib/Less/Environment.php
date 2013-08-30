@@ -580,23 +580,23 @@ class Less_Environment{
 	}
 
 	public function iscolor($n) {
-		return $this->_isa($n, 'Less\Node\Color');
+		return $this->_isa($n, 'Less_Tree_Color');
 	}
 
 	public function isnumber($n) {
-		return $this->_isa($n, 'Less\Node\Dimension');
+		return $this->_isa($n, 'Less_Tree_Dimension');
 	}
 
 	public function isstring($n) {
-		return $this->_isa($n, 'Less\Node\Quoted');
+		return $this->_isa($n, 'Less_Tree_Quoted');
 	}
 
 	public function iskeyword($n) {
-		return $this->_isa($n, 'Less\Node\Keyword');
+		return $this->_isa($n, 'Less_Tree_Keyword');
 	}
 
 	public function isurl($n) {
-		return $this->_isa($n, 'Less\Node\Url');
+		return $this->_isa($n, 'Less_Tree_Url');
 	}
 
 	public function ispixel($n) {
