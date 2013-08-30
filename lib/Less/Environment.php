@@ -479,12 +479,13 @@ class Environment{
 		array_shift($args);
 		$str = $quoted->value;
 
-		foreach($args as $arg) {
-			$str = preg_replace_callback('/%[sda]/i', function($token) use ($arg) {
+		foreach($args as $arg){
+			if( preg_match('/%[sda]/i',$str, $token) ){
 				$token = $token[0];
 				$value = stristr($token, 's') ? $arg->value : $arg->toCSS();
-				return preg_match('/[A-Z]$/', $token) ? urlencode($value) : $value;
-			}, $str, 1);
+				$value = preg_match('/[A-Z]$/', $token) ? urlencode($value) : $value;
+				$str = preg_replace('/%[sda]/i',$value, $str, 1);
+			}
 		}
 		$str = str_replace('%%', '%', $str);
 
