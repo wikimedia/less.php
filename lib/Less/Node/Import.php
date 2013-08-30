@@ -121,7 +121,7 @@ class Less_Tree_Import{
 
 		//import once
 		$realpath = realpath($full_path);
-		if( !isset($evald->options['multiple']) && $realpath && in_array($realpath,Less_Parser::$imports) ){
+		if( !isset($evald->options['multiple']) && $realpath && Less_Parser::FileParsed($realpath) ){
 			$evald->skip = true;
 		}
 
@@ -134,8 +134,6 @@ class Less_Tree_Import{
 			return new Less_Tree_Import( $this->compilePath( $env), $features, $this->options, $this->index);
 		}
 
-
-		Less_Parser::$imports[] = $realpath;
 		$parser = new Less_Parser($env);
 		$evald->root = $parser->parseFile($full_path, $uri, true);
 		$ruleset = new Less_Tree_Ruleset(array(), $evald->root->rules );

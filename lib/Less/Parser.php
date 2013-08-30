@@ -45,7 +45,7 @@ class Less_Parser{
      */
     private $env;
 
-	static $imports = array();
+	private static $imports = array();
 
     /**
      * @param Environment|null $env
@@ -212,6 +212,7 @@ class Less_Parser{
 		$previousFileInfo = $this->env->currentFileInfo;
 		$this->SetFileInfo($filename, $uri);
 		$previousImportDirs = self::$import_dirs;
+		self::AddParsedFile($filename);
 
 		$return = $this->parse(file_get_contents($filename), $returnRoot);
 
@@ -258,6 +259,17 @@ class Less_Parser{
 		}
 	}
 
+	static function AddParsedFile($file){
+		self::$imports[] = $file;
+	}
+
+	static function AllParsedFiles(){
+		return self::$imports;
+	}
+
+	static function FileParsed($file){
+		return in_array($file,self::$imports);
+	}
 
 
     function save() {
