@@ -192,9 +192,12 @@ class Environment{
 		return $this->rgba($r, $g, $b, 1.0);
 	}
 
-	public function rgba($r, $g, $b, $a)
-	{
-		$rgb = array_map(function ($c) { return \Less\Environment::scaled($c,256); }, array($r, $g, $b));
+	public function rgba($r, $g, $b, $a){
+		$rgb = array();
+		foreach( array($r, $g, $b) as $c){
+			$rgb[] = \Less\Environment::scaled($c,256);
+		}
+
 		$a = self::number($a);
 		return new \Less\Node\Color($rgb, $a);
 	}
