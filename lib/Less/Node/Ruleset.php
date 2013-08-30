@@ -292,12 +292,15 @@ class Ruleset{
 			$css[] = implode($env->compress ? '' : "\n", $rules);
 		} else {
 			if (count($rules)) {
-				$selector = array_map(function ($p) use ($env) {
-					return trim(implode('', array_map(function ($s) use ($env) {
-						return $s->toCSS($env);
-					}, $p)));
-				}, $this->paths);
 
+				$selector = array();
+				foreach($this->paths as $p){
+					$_p = array();
+					foreach($p as $s){
+						$_p[] = $s->toCSS($env);
+					}
+					$selector[] = trim(implode('',$_p));
+				}
 				$selector = implode($env->compress ? ',' : ",\n", $selector);
 
 				// Remove duplicates
