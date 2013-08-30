@@ -38,7 +38,8 @@ class Less_Parser{
     /**
      *
      */
-    static public $version = '1.4.0';
+    static public $version = '1.4.2';
+    static public $less_version = '1.4.2';
 
     /**
      * @var Less_Environment
