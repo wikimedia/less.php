@@ -72,13 +72,14 @@ class Selector {
 			$this->_css = '';
 		}
 
-		$temp = array_map(function ($e) use ($env) {
-			if (is_string($e)) {
-				return ' ' . trim($e);
-			} else {
-				return $e->toCSS($env);
+		$temp = array();
+		foreach($this->elements as $e){
+			if( is_string($e) ){
+				$temp[] = ' ' . trim($e);
+			}else{
+				$temp[] = $e->toCSS($env);
 			}
-		}, $this->elements);
+		}
 		$this->_css .= implode('', $temp);
 
 		return $this->_css;

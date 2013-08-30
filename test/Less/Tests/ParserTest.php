@@ -67,7 +67,7 @@ class ParserTest{
 
 		$basename = basename($less);
 		$basename = substr($basename,0,-5); //remove .less extension
-		echo '<h3><a href="?file='.$basename.'">'.$basename.'</a></h3>';
+		echo '<br/><a href="?file='.$basename.'">'.$basename.'</a>';
 
 		$less = $dir.$less;
 		$css = $dir.$css;
@@ -90,7 +90,7 @@ class ParserTest{
 			return;
 		}
 		if( $css === $compiled ){
-			echo 'equal';
+			echo ' (equals) ';
 
 			if( !isset($_GET['file']) ){
 				return;
