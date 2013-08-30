@@ -91,10 +91,9 @@ class Call{
 
         if( $isOneFound ){
 
-
-			$message = '';
+			$message = array();
 			if( $args ){
-				$message = implode(', ',array_map(function($a) use($env){
+				foreach($args as $a){
 					$argValue = '';
 					if( $a['name'] ){
 						$argValue += $a['name']+':';
@@ -104,9 +103,10 @@ class Call{
 					}else{
 						$argValue += '???';
 					}
-					return $argValue;
-				}, $args ));
+					$message[] = $argValue;
+				}
 			}
+			$message = implode(', ');
 
 
 			throw new \Less\Exception\CompilerException('No matching definition was found for `'.
