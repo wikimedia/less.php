@@ -39,9 +39,10 @@ class Call{
     // The function should receive the value, not the variable.
     //
     public function compile($env){
-		$args = array_map(function ($a) use($env) {
-							  return $a->compile($env);
-						  }, $this->args);
+		$args = array();
+		foreach($this->args as $a){
+			$args[] = $a->compile($env);
+		}
 
 		$name = $this->name;
 		if( $name == '%' ){
@@ -64,8 +65,12 @@ class Call{
 		}
 
 		// 2.
+		$temp = array();
+		foreach($args as $a){
+			$temp[] = $a->toCSS($env);
+		}
 		return new \Less\Node\Anonymous($this->name .
-				   "(" . implode(', ', array_map(function ($a) use ($env) { return $a->toCSS($env); }, $args)) . ")");
+				   "(" . implode(', ', $temp) . ")");
     }
 
     public function toCSS ($env) {
