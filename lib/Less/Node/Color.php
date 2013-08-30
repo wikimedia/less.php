@@ -7,16 +7,21 @@ class Color{
 	var $rgb;
 	var $alpha;
 
-    public function __construct($rgb, $a = 1){
-        if (is_array($rgb)) {
-            $this->rgb = $rgb;
-        } else if (strlen($rgb) == 6) {
-            $this->rgb = array_map(function($c) { return hexdec($c); }, str_split($rgb, 2));
-        } else {
-            $this->rgb = array_map(function($c) { return hexdec($c.$c); }, str_split($rgb, 1));
-        }
-        $this->alpha = is_numeric($a) ? $a : 1;
-    }
+	public function __construct($rgb, $a = 1){
+		$this->rgb = array();
+		if( is_array($rgb) ){
+			$this->rgb = $rgb;
+		}else if( strlen($rgb) == 6 ){
+			foreach(str_split($rgb, 2) as $c){
+				$this->rgb[] = hexdec($c);
+			}
+		}else{
+			foreach(str_split($rgb, 1) as $c){
+				$this->rgb[] = hexdec($c.$c);
+			}
+		}
+		$this->alpha = is_numeric($a) ? $a : 1;
+	}
 
     public function compile($env = null){
         return $this;
@@ -139,15 +144,17 @@ class Color{
 		return array('h'=> $h * 360, 's'=> $s, 'v'=> $v, 'a' => $a );
 	}
 
-    public function toARGB()
-    {
-        $argb = array_merge( (array) round($this->alpha * 255), $this->rgb);
-        return '#' . implode('', array_map(function ($i) {
-            $i = round($i);
-            $i = dechex($i > 255 ? 255 : ($i < 0 ? 0 : $i));
-            return str_pad($i, 2, '0', STR_PAD_LEFT);
-        }, $argb));
-    }
+	public function toARGB(){
+		$argb = array_merge( (array) round($this->alpha * 255), $this->rgb);
+
+		$temp = array();
+		foreach($argb as $i){
+			$i = round($i);
+			$i = dechex($i > 255 ? 255 : ($i < 0 ? 0 : $i));
+			$temp[] = str_pad($i, 2, '0', STR_PAD_LEFT);
+		}
+		return '#' . implode('',$temp);
+	}
 
     public function compare($x){
 
