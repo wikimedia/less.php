@@ -109,17 +109,24 @@ class Media {
 		//	a and e
 		//	b and c and d
 		//	b and c and e
-		$this->features = new \Less\Node\Value(array_map(function($path) {
-			$path = array_map(function($fragment) {
-				return method_exists($fragment, 'toCSS') ? $fragment : new \Less\Node\Anonymous($fragment);
-			}, $path);
 
-			for ($i = count($path) - 1; $i > 0; $i--) {
-				array_splice($path, $i, 0, array(new \Less\Node\Anonymous('and')));
+		$permuted = $this->permute($path);
+		$expressions = array();
+		foreach($permuted as $path){
+			$p = array();
+			foreach($path as $fragment){
+				$p[] = method_exists($fragment, 'toCSS') ? $fragment : new \Less\Node\Anonymous($fragment);
 			}
 
-			return new \Less\Node\Expression($path);
-		}, $this->permute($path)));
+			for( $i = count($p) - 1; $i > 0; $i-- ){
+				array_splice($p, $i, 0, array(new \Less\Node\Anonymous('and')));
+			}
+
+			$expressions[] = new \Less\Node\Expression($p);
+		}
+		$this->features = new \Less\Node\Value($expressions);
+
+
 
 		// Fake a tree-node that doesn't output anything.
 		return new \Less\Node\Ruleset(array(), array());
