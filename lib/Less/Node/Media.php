@@ -96,7 +96,7 @@ class Less_Tree_Media {
 
 		// Extract the media-query conditions separated with `,` (OR).
 		foreach ($path as $key => $p) {
-			$value = $p->features instanceof Value ? $p->features->value : $p->features;
+			$value = $p->features instanceof Less_Tree_Value ? $p->features->value : $p->features;
 			$path[$key] = is_array($value) ? $value : array($value);
 		}
 

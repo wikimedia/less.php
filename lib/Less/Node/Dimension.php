@@ -104,7 +104,7 @@ class Less_Tree_Dimension{
     }
 
 	public function compare($other) {
-		if ($other instanceof Dimension) {
+		if ($other instanceof Less_Tree_Dimension) {
 
 			$a = $this->unify();
 			$b = $other->unify();

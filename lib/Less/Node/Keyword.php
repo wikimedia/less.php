@@ -17,7 +17,7 @@ class Less_Tree_Keyword{
 	}
 
 	public function compare($other) {
-		if ($other instanceof Keyword) {
+		if ($other instanceof Less_Tree_Keyword) {
 			return $other->value === $this->value ? 0 : 1;
 		} else {
 			return -1;
