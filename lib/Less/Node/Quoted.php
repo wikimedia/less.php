@@ -9,9 +9,9 @@ class Quoted{
 	public $index;
 	public $currentFileInfo;
 
-	public function __construct($str, $content, $escaped = false, $index = false, $currentFileInfo = null ){
+	public function __construct($str, $content = '', $escaped = false, $index = false, $currentFileInfo = null ){
 		$this->escaped = $escaped;
-		$this->value = $content ?: '';
+		$this->value = $content;
 		$this->quote = $str[0];
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
