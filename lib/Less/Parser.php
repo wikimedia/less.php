@@ -171,7 +171,8 @@ class Parser {
         $root = new \Less\Node\Ruleset(null, $this->match('parsePrimary'));
         $root->root = true;
 
-		//new \Less\importVisitor()->run($root);
+		//$importVisitor = new \Less\importVisitor();
+		//$importVisitor->run($root);
 
         if ($returnRoot) {
             return $root;
@@ -200,20 +201,23 @@ class Parser {
      *
      * @throws Exception\ParserException
      * @param $filename The file to parse
+     * @param $uri The url of the file
      * @param bool $returnRoot Indicates whether the return value should be a css string a root node
      * @return \Less\Node\Ruleset|\Less\Parser
      */
-	public function parseFile($filename, $returnRoot = false){
+	public function parseFile($filename, $uri = '', $returnRoot = false){
 
 		if( !file_exists($filename) ){
 			throw new \Less\Exception\ParserException(sprintf('File `%s` not found.', $filename));
 		}
 
 		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
-		$this->filename = $filename;
+		$this->filename = realpath($filename);
 
 
 		$dirname = preg_replace('/[^\/\\\\]*$/','',$this->filename);
+
+		$previousFileInfo = $this->env->currentFileInfo;
 
 		$currentFileInfo = array();
 		$currentFileInfo['currentDirectory'] = $dirname;
@@ -221,9 +225,20 @@ class Parser {
 		$currentFileInfo['rootpath'] = $dirname;
 		$currentFileInfo['entryPath'] = $dirname;
 
+		if( empty($uri) ){
+			$currentFileInfo['uri'] = $uri;
+		}else{
+			$currentFileInfo['uri'] = rtrim($uri,'/').'/';
+		}
+
 		$this->env->currentFileInfo = $currentFileInfo;
 
-		return $this->parse(file_get_contents($filename), $returnRoot);
+		$return = $this->parse(file_get_contents($filename), $returnRoot);
+
+		$this->env->currentFileInfo = $previousFileInfo;
+
+
+		return $return;
 	}
 
 

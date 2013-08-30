@@ -701,7 +701,6 @@ class Environment{
 			$args = 1;
 		}
 
-
 		$filePath = str_replace('\\','/',$filePath);
         if( $this->isPathRelative($filePath) ){
 			if( $this->relativeUrls ){
@@ -714,7 +713,6 @@ class Environment{
 
 		// detect the mimetype if not given
 		if( $args < 2 ){
-			$filePath = $mimetype;
 
 			/* incomplete
 			$mime = require('mime');
@@ -736,7 +734,12 @@ class Environment{
 			$useBase64 = preg_match('/;base64$/',$mimetype);
 		}
 
-		$buf = @file_get_contents($filePath);
+		if( file_exists($filePath) ){
+			$buf = @file_get_contents($filePath);
+		}else{
+			$buf = false;
+		}
+
 
 		// IE8 cannot handle a data-uri larger than 32KB. If this is exceeded
 		// and the --ieCompat flag is enabled, return a normal url() instead.

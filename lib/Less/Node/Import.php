@@ -75,7 +75,6 @@ class Import{
 		if ($this->path instanceof \Less\Node\Quoted) {
 			$path = $this->path->value;
 			return ( isset($this->css) || preg_match('/(\.[a-z]*$)|([\?;].*)$/',$path)) ? $path : $path . '.less';
-
 		} else if ($this->path instanceof \Less\Node\URL) {
 			return $this->path->value->value;
 		}
@@ -91,8 +90,8 @@ class Import{
 		if( $this->currentFileInfo && $this->currentFileInfo['rootpath'] && !($path instanceof \Less\Node\URL)) {
 			$pathValue = $path->value;
 			// Add the base path if the import is relative
-			if( $pathValue && $env->isPathRelative($pathValue)) {
-				$path->value = $this->currentFileInfo['rootpath'] . $pathValue;
+			if( $pathValue && $env->isPathRelative($pathValue) ){
+				$path->value = $this->currentFileInfo['uri']. $pathValue;
 			}
 		}
 		return $path;
@@ -100,28 +99,38 @@ class Import{
 
 	function compile($env) {
 
-		//import once
-		$path = $this->compilePath( $env );
-		$full_path = $this->currentFileInfo['rootpath'].$this->getPath();
-		$realpath = realpath($full_path);
+		$evald = $this->compileForImport($env);
+		$uri = '';
 
-		if( !isset($this->options['multiple']) && $realpath && in_array($realpath,\Less\Parser::$imports) ){
-			$this->skip = true;
+		//import once
+		$evald_path = $evald->getPath();
+
+		if( $evald_path && $env->isPathRelative($evald_path) ){
+			$full_path = $evald->currentFileInfo['rootpath'].$evald_path;
+			$uri = $this->currentFileInfo['uri'].dirname($evald_path);
+		}else{
+			$full_path = $evald_path;
 		}
 
-		$features = ( $this->features ? $this->features->compile($env) : null );
+		$realpath = realpath($full_path);
+		if( !isset($evald->options['multiple']) && $realpath && in_array($realpath,\Less\Parser::$imports) ){
+			$evald->skip = true;
+		}
 
-		if ($this->skip) { return array(); }
+		$features = ( $evald->features ? $evald->features->compile($env) : null );
 
-		if( $this->css ){
+		if ($evald->skip) { return array(); }
+
+		if( $evald->css ){
+			$temp = $this->compilePath( $env);
 			return new \Less\Node\Import( $this->compilePath( $env), $features, $this->options, $this->index);
 		}
 
 
 		\Less\Parser::$imports[] = $realpath;
 		$parser = new \Less\Parser($env);
-		$this->root = $parser->parseFile($full_path, true);
-		$ruleset = new \Less\Node\Ruleset(array(), $this->root->rules );
+		$evald->root = $parser->parseFile($full_path, $uri, true);
+		$ruleset = new \Less\Node\Ruleset(array(), $evald->root->rules );
 		$ruleset->evalImports($env);
 
 		return $this->features ? new \Less\Node\Media($ruleset->rules, $this->features->value) : $ruleset->rules;

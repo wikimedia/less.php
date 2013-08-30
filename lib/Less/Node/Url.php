@@ -26,7 +26,7 @@ class Url{
 
 		// Add the base path if the URL is relative
 		if( $this->currentFileInfo && is_string($val->value) && $ctx->isPathRelative($val->value) ){
-			$rootpath = $this->currentFileInfo['rootpath'];
+			$rootpath = $this->currentFileInfo['uri'];
 			if ( !$val->quote ){
 				$rootpath = preg_replace('/[\(\)\'"\s]/', '\\$1', $rootpath );
 			}

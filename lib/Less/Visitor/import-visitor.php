@@ -7,29 +7,19 @@ class importVisitor{
 	public $_visitor;
 	public $_importer;
 	public $isReplacing = true;
+	public $importCount;
 
-	function __construct( $importer = null ){
+	function __construct( $importer = null, $evalEnv = null ){
 		$this->_visitor = new \Less\visitor($this);
 		$this->_importer = $importer;
-		$this->env = new \Less\Environment();
-		$this->_visitor->visit($root);
-	}
-
-	function visitImport($importNode, $visitArgs ){
-		/*
-		if (!importNode.css) {
-			importNode = importNode.evalForImport(this.env);
-			this._importer.push(importNode.getPath(), function (e, root, imported) {
-				if (e) { e.index = importNode.index; }
-				if (imported && !importNode.options.multiple) { importNode.skip = imported; }
-				importNode.root = root || new(tree.Ruleset)([], []);
-			});
+		if( $evalEnv ){
+			$this->env = $evalEnv;
+		}else{
+			$this->env = new \Less\Environment();
 		}
-		visitArgs.visitDeeper = false;
-		*/
-
-		return $importNode;
+		$this->importCount = 0;
 	}
+
 
 	function run( $root ){
 		// process the contents
@@ -37,12 +27,32 @@ class importVisitor{
 
 		$this->isFinished = true;
 
-		if( $this->importCount === 0) {
-			$this->_finish();
-		}
+		//if( $this->importCount === 0) {
+		//	$this->_finish();
+		//}
 	}
 
-	function visitRule( $ruleNode, $visitArgs ){
+	function visitImport($importNode, &$visitArgs ){
+		$importVisitor = $this;
+
+		$visitArgs['visitDeeper'] = false;
+
+		if( $importNode->css ){
+			return $importNode;
+		}
+
+		$evaldImportNode = $importNode->compileForImport($this->env);
+
+		if( $evaldImportNode && !$evaldImportNode->css ){
+			$importNode = $evaldImportNode;
+			$this->importCount++;
+		}
+
+		return $importNode;
+	}
+
+
+	function visitRule( $ruleNode, &$visitArgs ){
 		$visitArgs['visitDeeper'] = false;
 		return $ruleNode;
 	}
@@ -82,4 +92,5 @@ class importVisitor{
 	function visitMediaOut($mediaNode) {
 		array_shift($this->env->frames);
 	}
+
 }

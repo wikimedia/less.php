@@ -20,25 +20,63 @@ class ParserTest{
 
 	function __construct(){
 
-		$pairs = $this->lessJsProvider();
-		foreach($pairs as $files){
-			$basename = basename($files[0]);
-			$basename = substr($basename,0,-5); //remove .less extension
-			echo '<h3><a href="?file='.$basename.'">'.$basename.'</a></h3>';
-			$this->testLessJsCssGeneration($files[0], $files[1]);
-		}
-
+		$dir = __DIR__ .'/Fixtures/less.js';
+		$this->lessJsProvider($dir);
 	}
 
-    /**
-     * @dataProvider lessJsProvider
-     */
-    public function testLessJsCssGeneration($less, $css){
+    public function lessJsProvider($dir){
+
+		if( isset($_GET['file']) ){
+			$less = '/less/'.$_GET['file'].'.less';
+			$css = '/css/'.$_GET['file'].'.css';
+			$pairs = array( array($less,$css) );
+
+		}else{
+
+			$list = scandir($dir.'/less');
+			foreach($list as $file){
+				if( strpos($file,'.less') === false ){
+					continue;
+				}
+				$pairs[] = array('/less/'.$file, '/css/'.str_replace('.less','.css',$file) );
+			}
+
+		}
+
+		foreach($pairs as $files){
+			$this->testLessJsCssGeneration( $dir, $files[0], $files[1] );
+		}
+
+		return;
+
+
+		$dir = __DIR__ .'/Fixtures/less.js';
+		if( isset($_GET['file']) ){
+			$less = (array)($dir.'/less/'.$_GET['file'].'.less');
+			$css = (array)($dir.'/css/'.$_GET['file'].'.css');
+		}else{
+			$less = glob($dir."/less/*.less");
+			$css = glob($dir."/css/*.css");
+		}
+
+
+        return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
+    }
+
+    public function testLessJsCssGeneration($dir, $less, $css){
+
+		$basename = basename($less);
+		$basename = substr($basename,0,-5); //remove .less extension
+		echo '<h3><a href="?file='.$basename.'">'.$basename.'</a></h3>';
+
+		$less = $dir.$less;
+		$css = $dir.$css;
 
 		$compiled = '';
 		try{
 			$parser = new \Less\Parser();
-			$compiled = $parser->parseFile($less)->getCss();
+			$parser->parseFile($less);
+			$compiled = $parser->getCss();
 
 		}catch(\Exception $e){
 			echo '<h1>Parser Error</h1>';
@@ -95,19 +133,7 @@ class ParserTest{
 
     }
 
-    public function lessJsProvider(){
 
-		$dir = __DIR__.'/Fixtures/less.js';
-		if( isset($_GET['file']) ){
-			$less = (array)($dir.'/less/'.$_GET['file'].'.less');
-			$css = (array)($dir.'/css/'.$_GET['file'].'.css');
-		}else{
-			$less = glob($dir."/less/*.less");
-			$css = glob($dir."/css/*.css");
-		}
-
-        return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
-    }
 
     /**
      * @dataProvider lessPhpProvider

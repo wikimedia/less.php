@@ -4,11 +4,14 @@ namespace Less;
 
 class visitor{
 
+	private $_implementation;
+
 	function __construct( $implementation ){
 		$this->_implementation = $implementation;
 	}
 
 	function visit($node){
+
 		if( is_array($node) ){
 			return $this->visitArray($node);
 		}
@@ -27,6 +30,7 @@ class visitor{
 				$node = $newNode;
 			}
 		}
+
 		if( (!$visitArgs || $visitArgs['visitDeeper']) && $node && method_exists($node,'accept') ){
 			$node->accept($this);
 		}
@@ -43,16 +47,12 @@ class visitor{
 	function visitArray( $nodes ){
 
 		$newNodes = array();
-		foreach($nodes as $node){
-			$evald = $this->visit($node);
-			if( is_array($evald) ){
-				$newNodes = array_merge($newNodes,$evald);
-			} else {
-				$newNodes[] = $evald;
-			}
+		foreach($nodes as $key => $node){
+			//not the same as less.js
+			$newNodes[$key] = $this->visit($node);
 		}
 		if( $this->_implementation->isReplacing ){
-			return $newNode;
+			return $newNodes;
 		}
 		return $nodes;
 	}
