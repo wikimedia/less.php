@@ -104,7 +104,6 @@ class Less_Tree_Import{
 		//get path & uri
 		$evald_path = $evald->getPath();
 		if( $evald_path && $env->isPathRelative($evald_path) ){
-			/*
 			foreach(Less_Parser::$import_dirs as $rootpath => $rooturi){
 				$temp = $rootpath.$evald_path;
 				if( file_exists($temp) ){
@@ -113,9 +112,6 @@ class Less_Tree_Import{
 					break;
 				}
 			}
-			*/
-			$full_path = $evald->currentFileInfo['rootpath'].$evald_path;
-			$uri = $this->currentFileInfo['uri'].dirname($evald_path);
 		}
 
 		if( !$full_path ){

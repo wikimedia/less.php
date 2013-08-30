@@ -210,8 +210,8 @@ class Less_Parser{
 		}
 
 		$previousFileInfo = $this->env->currentFileInfo;
-		$previousImportDirs = self::$import_dirs;
 		$this->SetFileInfo($filename, $uri);
+		$previousImportDirs = self::$import_dirs;
 
 		$return = $this->parse(file_get_contents($filename), $returnRoot);
 
@@ -243,7 +243,7 @@ class Less_Parser{
 
 		$this->env->currentFileInfo = $currentFileInfo;
 
-		self::$import_dirs = array_merge( array( $dirname => $uri ), self::$import_dirs );
+		self::$import_dirs = array_merge( array( $dirname => $currentFileInfo['uri'] ), self::$import_dirs );
 	}
 
 	public function SetImportDirs( $dirs ){
