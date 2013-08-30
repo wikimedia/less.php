@@ -217,19 +217,18 @@ class Environment{
 
 		$m1 = $l * 2 - $m2;
 
-		$hue = function ($h) use ($m1, $m2) {
-			$h = $h < 0 ? $h + 1 : ($h > 1 ? $h - 1 : $h);
-			if	  ($h * 6 < 1) return $m1 + ($m2 - $m1) * $h * 6;
-			else if ($h * 2 < 1) return $m2;
-			else if ($h * 3 < 2) return $m1 + ($m2 - $m1) * (2/3 - $h) * 6;
-			else				 return $m1;
-		};
+		return $this->rgba( self::hsla_hue($h + 1/3, $m1, $m2) * 255,
+							self::hsla_hue($h, $m1, $m2) * 255,
+							self::hsla_hue($h - 1/3, $m1, $m2) * 255,
+							$a);
+	}
 
-
-		return $this->rgba($hue($h + 1/3) * 255,
-						   $hue($h)	   * 255,
-						   $hue($h - 1/3) * 255,
-						   $a);
+	static function hsla_hue($h, $m1, $m2){
+		$h = $h < 0 ? $h + 1 : ($h > 1 ? $h - 1 : $h);
+		if	  ($h * 6 < 1) return $m1 + ($m2 - $m1) * $h * 6;
+		else if ($h * 2 < 1) return $m2;
+		else if ($h * 3 < 2) return $m1 + ($m2 - $m1) * (2/3 - $h) * 6;
+		else				 return $m1;
 	}
 
 	function hsv($h, $s, $v) {
