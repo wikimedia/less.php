@@ -194,7 +194,9 @@ class Ruleset{
 
 	public function find( $selector, $self = null, $env = null){
 
-		$self = $self ?: $this;
+		if( !$self ){
+			$self = $this;
+		}
 		$rules = array();
 		$key = $selector->toCSS($env);
 
