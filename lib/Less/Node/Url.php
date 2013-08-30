@@ -25,7 +25,7 @@ class Less_Tree_Url{
 
 		// Add the base path if the URL is relative
 		if( $this->currentFileInfo && is_string($val->value) && $ctx->isPathRelative($val->value) ){
-			$rootpath = $this->currentFileInfo['uri'];
+			$rootpath = $this->currentFileInfo['uri_root'];
 			if ( !$val->quote ){
 				$rootpath = preg_replace('/[\(\)\'"\s]/', '\\$1', $rootpath );
 			}

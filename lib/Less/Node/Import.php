@@ -90,7 +90,7 @@ class Less_Tree_Import{
 			$pathValue = $path->value;
 			// Add the base path if the import is relative
 			if( $pathValue && $env->isPathRelative($pathValue) ){
-				$path->value = $this->currentFileInfo['uri']. $pathValue;
+				$path->value = $this->currentFileInfo['uri_root']. $pathValue;
 			}
 		}
 		return $path;

@@ -199,18 +199,18 @@ class Less_Parser{
      *
      * @throws Less_ParserException
      * @param $filename The file to parse
-     * @param $uri The url of the file
+     * @param $uri_root The url of the file
      * @param bool $returnRoot Indicates whether the return value should be a css string a root node
      * @return Less_Tree_Ruleset|Less_Parser
      */
-	public function parseFile($filename, $uri = '', $returnRoot = false){
+	public function parseFile($filename, $uri_root = '', $returnRoot = false){
 
 		if( !file_exists($filename) ){
 			throw new Less_ParserException(sprintf('File `%s` not found.', $filename));
 		}
 
 		$previousFileInfo = $this->env->currentFileInfo;
-		$this->SetFileInfo($filename, $uri);
+		$this->SetFileInfo($filename, $uri_root);
 		$previousImportDirs = self::$import_dirs;
 		self::AddParsedFile($filename);
 
@@ -222,7 +222,7 @@ class Less_Parser{
 		return $return;
 	}
 
-	public function SetFileInfo( $filename, $uri = ''){
+	public function SetFileInfo( $filename, $uri_root = ''){
 
 		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
 		$this->filename = realpath($filename);
@@ -236,26 +236,26 @@ class Less_Parser{
 		$currentFileInfo['rootpath'] = $dirname;
 		$currentFileInfo['entryPath'] = $dirname;
 
-		if( empty($uri) ){
-			$currentFileInfo['uri'] = $uri;
+		if( empty($uri_root) ){
+			$currentFileInfo['uri_root'] = $uri_root;
 		}else{
-			$currentFileInfo['uri'] = rtrim($uri,'/').'/';
+			$currentFileInfo['uri_root'] = rtrim($uri_root,'/').'/';
 		}
 
 		$this->env->currentFileInfo = $currentFileInfo;
 
-		self::$import_dirs = array_merge( array( $dirname => $currentFileInfo['uri'] ), self::$import_dirs );
+		self::$import_dirs = array_merge( array( $dirname => $currentFileInfo['uri_root'] ), self::$import_dirs );
 	}
 
 	public function SetImportDirs( $dirs ){
-		foreach($dirs as $path => $uri){
+		foreach($dirs as $path => $uri_root){
 			if( !empty($path) ){
 				$path = rtrim($path,'/').'/';
 			}
-			if( !empty($uri) ){
-				$uri = rtrim($uri,'/').'/';
+			if( !empty($uri_root) ){
+				$uri_root = rtrim($uri_root,'/').'/';
 			}
-			self::$import_dirs[$path] = $uri;
+			self::$import_dirs[$path] = $uri_root;
 		}
 	}
 
