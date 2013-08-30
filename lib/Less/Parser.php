@@ -428,7 +428,7 @@ class Parser {
 
         while( ($node = $this->match('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
 							'parseMixinCall', 'parseComment', 'parseDirective' ))
-							?: $this->match("/^[\s\n]+/") ?: $this->match('/^;+/')
+							|| $this->match("/^[\s\n]+/") || $this->match('/^;+/')
         ){
             if ($node) {
 
@@ -1537,7 +1537,7 @@ class Parser {
         if ($m = $this->match('parseMultiplication')) {
 			$isSpaced = $this->isWhitespace( $this->input[$this->pos-1] );
 
-            while( ($op = $this->match('/^[-+]\s+/') ?: ( !$isSpaced ? ($this->match('+','-')) : false )) && ($a = $this->match('parseMultiplication')) ){
+            while( ($op = ($op = $this->match('/^[-+]\s+/')) ? $op : ( !$isSpaced ? ($this->match('+','-')) : false )) && ($a = $this->match('parseMultiplication')) ){
 				$m->parensInOp = true;
 				$a->parensInOp = true;
                 $operation = new \Less\Node\Operation($op, array($operation ? $operation : $m, $a), $isSpaced);
