@@ -1,8 +1,6 @@
 <?php
 
-namespace Less\Node;
-
-class Paren {
+class Less_Tree_Paren {
 
 	public $type = 'Paren';
 	public $value;
@@ -20,7 +18,7 @@ class Paren {
 	}
 
 	public function compile($env) {
-		return new Paren($this->value->compile($env));
+		return new Less_Tree_Paren($this->value->compile($env));
 	}
 
 }

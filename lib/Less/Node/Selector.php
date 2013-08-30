@@ -2,9 +2,8 @@
 
 //less.js : lib/less/tree/selector.js
 
-namespace Less\Node;
 
-class Selector {
+class Less_Tree_Selector {
 
 	public $type = 'Selector';
 	public $elements;
@@ -55,7 +54,7 @@ class Selector {
 			$elements[] = $e->compile($env);
 		}
 
-		return new \Less\Node\Selector($elements, $extendList);
+		return new Less_Tree_Selector($elements, $extendList);
 	}
 
 	public function toCSS ($env){
@@ -65,7 +64,7 @@ class Selector {
 		}
 
 		if (is_array($this->elements) && isset($this->elements[0]) &&
-			$this->elements[0]->combinator instanceof \Less\Node\Combinator &&
+			$this->elements[0]->combinator instanceof Less_Tree_Combinator &&
 			$this->elements[0]->combinator->value === '') {
 				$this->_css = ' ';
 		}else{

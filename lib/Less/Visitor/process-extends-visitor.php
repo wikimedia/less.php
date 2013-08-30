@@ -1,19 +1,18 @@
 <?php
 
-namespace Less;
 
-class processExtendsVisitor{
+class Less_processExtendsVisitor{
 
 	public $_visitor;
 	public $allExtendsStack;
 	public $isReplacing = false;
 
 	function __construct(){
-		$this->_visitor = new \Less\visitor($this);
+		$this->_visitor = new Less_visitor($this);
 	}
 
 	function run( $root ){
-		$extendFinder = new \Less\extendFinderVisitor();
+		$extendFinder = new Less_extendFinderVisitor();
 		$extendFinder->run( $root );
 		if( !$extendFinder->foundExtends) { return $root; }
 
@@ -70,7 +69,7 @@ class processExtendsVisitor{
 						$newSelector = $extendVisitor->extendSelector( $matches, $selectorPath, $selfSelector);
 
 						// but now we create a new extend from it
-						$newExtend = new \Less\Node\Extend( $targetExtend->selector, $targetExtend->option, 0);
+						$newExtend = new Less_Tree_Extend( $targetExtend->selector, $targetExtend->option, 0);
 						$newExtend->selfSelectors = $newSelector;
 
 						// add the extend onto the list of extends for that selector
@@ -105,7 +104,7 @@ class processExtendsVisitor{
 					$selectorOne = $extendsToAdd[0]->selfSelectors[0]->toCSS();
 					$selectorTwo = $extendsToAdd[0]->selector->toCSS();
 				}catch(\Exception $e){}
-				throw new \Less\Exception\ParserException("extend circular reference detected. One of the circular extends is currently:"+$selectorOne+":extend(" + $selectorTwo+")");
+				throw new Less_ParserException("extend circular reference detected. One of the circular extends is currently:"+$selectorOne+":extend(" + $selectorTwo+")");
 			}
 
 			// now process the new extends on the existing rules so that we can handle a extending b extending c ectending d extending e...
@@ -256,7 +255,7 @@ class processExtendsVisitor{
 			return $elementValue1 === $elementValue2;
 		}
 
-		if( $elementValue1 instanceof \Less\Node\Attribute ){
+		if( $elementValue1 instanceof Less_Tree_Attribute ){
 
 			if( $elementValue1->op !== $elementValue2->op || $elementValue1->key !== $elementValue2->key ){
 				return false;
@@ -288,7 +287,7 @@ class processExtendsVisitor{
 
 			$match = $matches[$matchIndex];
 			$selector = $selectorPath[ $match['pathIndex'] ];
-			$firstElement = new \Less\Node\Element(
+			$firstElement = new Less_Tree_Element(
 				$match['initialCombinator'],
 				$replacementSelector->elements[0]->value,
 				$replacementSelector->elements[0]->index
@@ -308,7 +307,7 @@ class processExtendsVisitor{
 			$new_elements = array_slice($selector->elements,$currentSelectorPathElementIndex, $slice_len);
 			$new_elements = array_merge($new_elements, array($firstElement) );
 			$new_elements = array_merge($new_elements, array_slice($replacementSelector->elements,1) );
-			$path[] = new \Less\Node\Selector( $new_elements );
+			$path[] = new Less_Tree_Selector( $new_elements );
 
 			$currentSelectorPathIndex = $match['endPathIndex'];
 			$currentSelectorPathElementIndex = $match['endPathElementIndex'];

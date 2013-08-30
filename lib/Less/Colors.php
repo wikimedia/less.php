@@ -2,9 +2,7 @@
 
 //less.js : lib/less/colors.js
 
-namespace Less;
-
-class Colors {
+class Less_Colors {
 
 	public static $colors;
 

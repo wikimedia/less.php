@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Assignment {
+class Less_Tree_Assignment {
 
 	public $type = 'Assignment';
 	private $key;
@@ -23,7 +22,7 @@ class Assignment {
 
     public function compile($env) {
 		if( is_object($this->value) && method_exists($this->value,'compile') ){
-			return new \Less\Node\Assignment( $this->key, $this->value->compile($env));
+			return new Less_Tree_Assignment( $this->key, $this->value->compile($env));
         }
         return $this;
     }

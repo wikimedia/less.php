@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Value{
+class Less_Tree_Value{
 
 	public $type = 'Value';
 
@@ -26,7 +25,7 @@ class Value{
 			$ret[] = $v->compile($env);
 		}
 
-		return new \Less\Node\Value($ret);
+		return new Less_Tree_Value($ret);
 	}
 
 	public function toCSS ($env){

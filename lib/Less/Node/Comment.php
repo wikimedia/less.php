@@ -1,8 +1,6 @@
 <?php
 
-namespace Less\Node;
-
-class Comment{
+class Less_Tree_Comment{
 
 	public $type = 'Comment';
 

@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Unit{
+class Less_Tree_Unit{
 
 	public $type = 'Unit';
 	var $numerator = array();
@@ -52,7 +51,7 @@ class Unit{
 	}
 
 	function isAngle() {
-		return isset( \Less\Node\UnitConversions::$angle[$this->toCSS()] );
+		return isset( Less_Tree_UnitConversions::$angle[$this->toCSS()] );
 	}
 
 	function isEmpty(){
@@ -78,8 +77,8 @@ class Unit{
 	function usedUnits(){
 		$result = array();
 
-		foreach(\Less\Node\UnitConversions::$groups as $groupName){
-			$group = \Less\Node\UnitConversions::${$groupName};
+		foreach(Less_Tree_UnitConversions::$groups as $groupName){
+			$group = Less_Tree_UnitConversions::${$groupName};
 
 			for($i=0; $i < count($this->numerator); $i++ ){
 				$atomicUnit = $this->numerator[$i];

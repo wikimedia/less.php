@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Keyword{
+class Less_Tree_Keyword{
 
 	public $type = 'Keyword';
 	public function __construct($value){

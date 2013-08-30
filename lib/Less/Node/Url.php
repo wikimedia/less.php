@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Url{
+class Less_Tree_Url{
 	public $type = "Url";
 	public $attrs;
 	public $value;
@@ -34,7 +33,7 @@ class Url{
 		}
 
 
-		return new \Less\Node\URL($val, null);
+		return new Less_Tree_URL($val, null);
 	}
 
 }

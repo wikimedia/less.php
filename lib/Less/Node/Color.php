@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Color{
+class Less_Tree_Color{
 	public $type = 'Color';
 	var $rgb;
 	var $alpha;
@@ -76,14 +75,14 @@ class Color{
     public function operate($env, $op, $other) {
         $result = array();
 
-        if (! ($other instanceof \Less\Node\Color)) {
+        if (! ($other instanceof Less_Tree_Color)) {
             $other = $other->toColor();
         }
 
         for ($c = 0; $c < 3; $c++) {
-            $result[$c] = \Less\Environment::operate($env, $op, $this->rgb[$c], $other->rgb[$c]);
+            $result[$c] = Less_Environment::operate($env, $op, $this->rgb[$c], $other->rgb[$c]);
         }
-        return new \Less\Node\Color($result, $this->alpha + $other->alpha);
+        return new Less_Tree_Color($result, $this->alpha + $other->alpha);
     }
 
 	public function toHSL(){

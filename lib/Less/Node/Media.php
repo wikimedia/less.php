@@ -2,9 +2,7 @@
 
 //less.js : lib/less/tree/media.js
 
-namespace Less\Node;
-
-class Media {
+class Less_Tree_Media {
 
 	public $type = 'Media';
 	public $features;
@@ -12,8 +10,8 @@ class Media {
 
 	public function __construct($value = array(), $features = array()) {
 		$selectors = $this->emptySelectors();
-		$this->features = new \Less\Node\Value($features);
-		$this->ruleset = new \Less\Node\Ruleset($selectors, $value);
+		$this->features = new Less_Tree_Value($features);
+		$this->ruleset = new Less_Tree_Ruleset($selectors, $value);
 		$this->ruleset->allowImports = true;
 	}
 
@@ -31,7 +29,7 @@ class Media {
 
 	public function compile($env) {
 
-		$media = new \Less\Node\Media(array(), array());
+		$media = new Less_Tree_Media(array(), array());
 
 		$strictMathBypass = false;
 		if( $env->strictMath === false) {
@@ -72,8 +70,8 @@ class Media {
 	}
 
 	public function emptySelectors(){
-		$el = new \Less\Node\Element('','&', 0);
-		return array(new \Less\Node\Selector(array($el)));
+		$el = new Less_Tree_Element('','&', 0);
+		return array(new Less_Tree_Selector(array($el)));
 	}
 
 
@@ -83,7 +81,7 @@ class Media {
 
 		if (count($env->mediaBlocks) > 1) {
 			$selectors = $this->emptySelectors();
-			$result = new \Less\Node\Ruleset($selectors, $env->mediaBlocks);
+			$result = new Less_Tree_Ruleset($selectors, $env->mediaBlocks);
 			$result->multiMedia = true;
 		}
 
@@ -115,21 +113,21 @@ class Media {
 		foreach($permuted as $path){
 			$p = array();
 			foreach($path as $fragment){
-				$p[] = method_exists($fragment, 'toCSS') ? $fragment : new \Less\Node\Anonymous($fragment);
+				$p[] = method_exists($fragment, 'toCSS') ? $fragment : new Less_Tree_Anonymous($fragment);
 			}
 
 			for( $i = count($p) - 1; $i > 0; $i-- ){
-				array_splice($p, $i, 0, array(new \Less\Node\Anonymous('and')));
+				array_splice($p, $i, 0, array(new Less_Tree_Anonymous('and')));
 			}
 
-			$expressions[] = new \Less\Node\Expression($p);
+			$expressions[] = new Less_Tree_Expression($p);
 		}
-		$this->features = new \Less\Node\Value($expressions);
+		$this->features = new Less_Tree_Value($expressions);
 
 
 
 		// Fake a tree-node that doesn't output anything.
-		return new \Less\Node\Ruleset(array(), array());
+		return new Less_Tree_Ruleset(array(), array());
 	}
 
 	public function permute($arr) {
@@ -154,7 +152,7 @@ class Media {
 	}
 
     function bubbleSelectors($selectors) {
-		$this->ruleset = new \Less\Node\Ruleset( array_slice($selectors,0), array($this->ruleset) );
+		$this->ruleset = new Less_Tree_Ruleset( array_slice($selectors,0), array($this->ruleset) );
     }
 
 }

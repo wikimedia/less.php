@@ -1,9 +1,7 @@
 <?php
 
-namespace Less;
 
-
-class extendFinderVisitor{
+class Less_extendFinderVisitor{
 
 	public $contexts = array();
 	public $_visitor;
@@ -12,7 +10,7 @@ class extendFinderVisitor{
 	public $foundExtends;
 
 	function __construct(){
-		$this->_visitor = new \Less\visitor($this);
+		$this->_visitor = new Less_visitor($this);
 		$this->contexts = array();
 		$this->allExtendsStack = array(array());
 	}
@@ -41,7 +39,7 @@ class extendFinderVisitor{
 
 		// get &:extend(.a); rules which apply to all selectors in this ruleset
 		for( $i = 0; $i < count($rulesetNode->rules); $i++ ){
-			if( $rulesetNode->rules[$i] instanceof \Less\Node\Extend ){
+			if( $rulesetNode->rules[$i] instanceof Less_Tree_Extend ){
 				$allSelectorsExtendList[] = $rulesetNode->rules[$i];
 			}
 		}

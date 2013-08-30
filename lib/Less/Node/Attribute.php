@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Attribute{
+class Less_Tree_Attribute{
 
 	public $type = "Attribute";
 	public $key;
@@ -20,7 +19,7 @@ class Attribute{
 	}
 
 	function compile($env){
-		return new \Less\Node\Attribute( (method_exists($this->key,'compile') ? $this->key->compile($env) : $this->key),
+		return new Less_Tree_Attribute( (method_exists($this->key,'compile') ? $this->key->compile($env) : $this->key),
 			$this->op, ($this->value && method_exists($this->value,'compile')) ? $this->value->compile($env) : $this->value);
 	}
 

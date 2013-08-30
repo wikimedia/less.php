@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Negative{
+class Less_Tree_Negative{
 
 	public $type = 'Negative';
 	public $value;
@@ -21,9 +20,9 @@ class Negative{
 
 	function compile($env) {
 		if( $env->isMathsOn() ){
-			$ret = new \Less\Node\Operation('*', array( new \Less\Node\Dimension(-1), $this->value ) );
+			$ret = new Less_Tree_Operation('*', array( new Less_Tree_Dimension(-1), $this->value ) );
 			return $ret->compile($env);
 		}
-		return new \Less\Node\Negative( $this->value->compile($env) );
+		return new Less_Tree_Negative( $this->value->compile($env) );
 	}
 }

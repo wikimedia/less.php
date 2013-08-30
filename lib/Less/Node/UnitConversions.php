@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class UnitConversions{
+class Less_Tree_UnitConversions{
 
 	static $groups = array('length','duration','angle');
 

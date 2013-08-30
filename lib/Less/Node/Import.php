@@ -1,6 +1,5 @@
 <?php
 
-namespace Less\Node;
 
 
 //
@@ -15,7 +14,7 @@ namespace Less\Node;
 // `import,push`, we also pass it a callback, which it'll call once
 // the file has been fetched, and parsed.
 //
-class Import{
+class Less_Tree_Import{
 
 	public $type = 'Import';
 	public $options;
@@ -72,22 +71,22 @@ class Import{
 	}
 
 	function getPath(){
-		if ($this->path instanceof \Less\Node\Quoted) {
+		if ($this->path instanceof Less_Tree_Quoted) {
 			$path = $this->path->value;
 			return ( isset($this->css) || preg_match('/(\.[a-z]*$)|([\?;].*)$/',$path)) ? $path : $path . '.less';
-		} else if ($this->path instanceof \Less\Node\URL) {
+		} else if ($this->path instanceof Less_Tree_URL) {
 			return $this->path->value->value;
 		}
 		return null;
 	}
 
 	function compileForImport( $env ){
-		return new \Less\Node\Import( $this->path->compile($env), $this->features, $this->options, $this->index, $this->currentFileInfo);
+		return new Less_Tree_Import( $this->path->compile($env), $this->features, $this->options, $this->index, $this->currentFileInfo);
 	}
 
 	function compilePath($env) {
 		$path = $this->path->compile($env);
-		if( $this->currentFileInfo && $this->currentFileInfo['rootpath'] && !($path instanceof \Less\Node\URL)) {
+		if( $this->currentFileInfo && $this->currentFileInfo['rootpath'] && !($path instanceof Less_Tree_URL)) {
 			$pathValue = $path->value;
 			// Add the base path if the import is relative
 			if( $pathValue && $env->isPathRelative($pathValue) ){
@@ -113,7 +112,7 @@ class Import{
 		}
 
 		$realpath = realpath($full_path);
-		if( !isset($evald->options['multiple']) && $realpath && in_array($realpath,\Less\Parser::$imports) ){
+		if( !isset($evald->options['multiple']) && $realpath && in_array($realpath,Less_Parser::$imports) ){
 			$evald->skip = true;
 		}
 
@@ -123,17 +122,17 @@ class Import{
 
 		if( $evald->css ){
 			$temp = $this->compilePath( $env);
-			return new \Less\Node\Import( $this->compilePath( $env), $features, $this->options, $this->index);
+			return new Less_Tree_Import( $this->compilePath( $env), $features, $this->options, $this->index);
 		}
 
 
-		\Less\Parser::$imports[] = $realpath;
-		$parser = new \Less\Parser($env);
+		Less_Parser::$imports[] = $realpath;
+		$parser = new Less_Parser($env);
 		$evald->root = $parser->parseFile($full_path, $uri, true);
-		$ruleset = new \Less\Node\Ruleset(array(), $evald->root->rules );
+		$ruleset = new Less_Tree_Ruleset(array(), $evald->root->rules );
 		$ruleset->evalImports($env);
 
-		return $this->features ? new \Less\Node\Media($ruleset->rules, $this->features->value) : $ruleset->rules;
+		return $this->features ? new Less_Tree_Media($ruleset->rules, $this->features->value) : $ruleset->rules;
 	}
 }
 

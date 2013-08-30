@@ -2,9 +2,8 @@
 
 //less.js : lib/less/functions.js
 
-namespace Less;
 
-class Environment{
+class Less_Environment{
 
 	public $paths = array();			// option - unmodified - paths to search for imports on
 	static $files = array();			// list of files that have been imported, used for import-once
@@ -63,7 +62,7 @@ class Environment{
 	//may want to just use the __clone()?
 	public function copyEvalEnv($frames = array() ){
 
-		$new_env = new \Less\Environment();
+		$new_env = new Less_Environment();
 		$new_env->compress = $this->compress;
 		$new_env->strictMath = $this->strictMath;
 		$new_env->frames = $frames;
@@ -170,20 +169,20 @@ class Environment{
 
 	static public function number($n){
 
-		if ($n instanceof \Less\Node\Dimension) {
+		if ($n instanceof Less_Tree_Dimension) {
 			return floatval( $n->unit->is('%') ? $n->value / 100 : $n->value);
 		} else if (is_numeric($n)) {
 			return $n;
 		} else {
-			throw new \Less\Exception\CompilerException("color functions take numbers as parameters");
+			throw new Less_CompilerException("color functions take numbers as parameters");
 		}
 	}
 
 	static public function scaled($n, $size) {
-		if( $n instanceof \Less\Node\Dimension && $n->unit->is('%') ){
+		if( $n instanceof Less_Tree_Dimension && $n->unit->is('%') ){
 			return (float)$n->value * $size / 100;
 		} else {
-			return \Less\Environment::number($n);
+			return Less_Environment::number($n);
 		}
 	}
 
@@ -195,11 +194,11 @@ class Environment{
 	public function rgba($r, $g, $b, $a){
 		$rgb = array();
 		foreach( array($r, $g, $b) as $c){
-			$rgb[] = \Less\Environment::scaled($c,256);
+			$rgb[] = Less_Environment::scaled($c,256);
 		}
 
 		$a = self::number($a);
-		return new \Less\Node\Color($rgb, $a);
+		return new Less_Tree_Color($rgb, $a);
 	}
 
 	public function hsl($h, $s, $l){
@@ -236,10 +235,10 @@ class Environment{
 	}
 
 	function hsva($h, $s, $v, $a) {
-		$h = ((\Less\Environment::number($h) % 360) / 360 ) * 360;
-		$s = \Less\Environment::number($s);
-		$v = \Less\Environment::number($v);
-		$a = \Less\Environment::number($a);
+		$h = ((Less_Environment::number($h) % 360) / 360 ) * 360;
+		$s = Less_Environment::number($s);
+		$v = Less_Environment::number($v);
+		$a = Less_Environment::number($a);
 
 		$i = floor(($h / 60) % 6);
 		$f = ($h / 60) - $i;
@@ -265,54 +264,54 @@ class Environment{
 	public function hue($color)
 	{
 		$c = $color->toHSL();
-		return new \Less\Node\Dimension(round($c['h']));
+		return new Less_Tree_Dimension(round($c['h']));
 	}
 
 	public function saturation($color)
 	{
 		$c = $color->toHSL();
-		return new \Less\Node\Dimension(round($c['s'] * 100), '%');
+		return new Less_Tree_Dimension(round($c['s'] * 100), '%');
 	}
 
 	public function lightness($color){
 		$c = $color->toHSL();
-		return new \Less\Node\Dimension(round($c['l'] * 100), '%');
+		return new Less_Tree_Dimension(round($c['l'] * 100), '%');
 	}
 
 	function hsvhue( $color ){
 		$hsv = $color->toHSV();
-		return new \Less\Node\Dimension( round($hsv['h']) );
+		return new Less_Tree_Dimension( round($hsv['h']) );
 	}
 
 	function hsvsaturation( $color ){
 		$hsv = $color->toHSV();
-		return new \Less\Node\Dimension( round($hsv['s'] * 100), '%' );
+		return new Less_Tree_Dimension( round($hsv['s'] * 100), '%' );
 	}
 
 	function hsvvalue( $color ){
 		$hsv = $color->toHSV();
-		return new \Less\Node\Dimension( round($hsv['v'] * 100), '%' );
+		return new Less_Tree_Dimension( round($hsv['v'] * 100), '%' );
 	}
 
 	public function red($color) {
-		return new \Less\Node\Dimension( $color->rgb[0] );
+		return new Less_Tree_Dimension( $color->rgb[0] );
 	}
 
 	public function green($color) {
-		return new \Less\Node\Dimension( $color->rgb[1] );
+		return new Less_Tree_Dimension( $color->rgb[1] );
 	}
 
 	public function blue($color) {
-		return new \Less\Node\Dimension( $color->rgb[2] );
+		return new Less_Tree_Dimension( $color->rgb[2] );
 	}
 
 	public function alpha($color){
 		$c = $color->toHSL();
-		return new \Less\Node\Dimension($c['a']);
+		return new Less_Tree_Dimension($c['a']);
 	}
 
 	function luma ($color) {
-		return new \Less\Node\Dimension(round( $color->luma() * $color->alpha * 100), '%');
+		return new Less_Tree_Dimension(round( $color->luma() * $color->alpha * 100), '%');
 	}
 
 	public function saturate($color, $amount)
@@ -348,7 +347,7 @@ class Environment{
 	public function darken($color, $amount)
 	{
 
-		if( $color instanceof \Less\Node\Color ){
+		if( $color instanceof Less_Tree_Color ){
 			$hsl = $color->toHSL();
 
 			$hsl['l'] -= $amount->value / 100;
@@ -405,7 +404,7 @@ class Environment{
 	public function mix($color1, $color2, $weight = null)
 	{
 		if (!$weight) {
-			$weight = new \Less\Node\Dimension('50', '%');
+			$weight = new Less_Tree_Dimension('50', '%');
 		}
 
 		$p = $weight->value / 100.0;
@@ -423,12 +422,12 @@ class Environment{
 
 		$alpha = $color1->alpha * $p + $color2->alpha * (1 - $p);
 
-		return new \Less\Node\Color($rgb, $alpha);
+		return new Less_Tree_Color($rgb, $alpha);
 	}
 
 	public function greyscale($color)
 	{
-		return $this->desaturate($color, new \Less\Node\Dimension(100));
+		return $this->desaturate($color, new Less_Tree_Dimension(100));
 	}
 
 	function contrast( $color, $dark = false, $light = false, $threshold = false) {
@@ -452,7 +451,7 @@ class Environment{
 		if( $threshold === false ){
 			$threshold = 0.43;
 		} else {
-			$threshold = \Less\Environment::number($threshold);
+			$threshold = Less_Environment::number($threshold);
 		}
 
 		if( ($color->luma() * $color->alpha) < $threshold ){
@@ -464,11 +463,11 @@ class Environment{
 
 	public function e ($str)
 	{
-		return new \Less\Node\Anonymous($str instanceof \Less\Node\JavaScript ? $str->evaluated : $str);
+		return new Less_Tree_Anonymous($str instanceof Less_Tree_JavaScript ? $str->evaluated : $str);
 	}
 
 	public function escape ($str){
-		return new \Less\Node\Anonymous(urlencode($str->value));
+		return new Less_Tree_Anonymous(urlencode($str->value));
 	}
 
 	public function _percent(){
@@ -489,11 +488,11 @@ class Environment{
 		}
 		$str = str_replace('%%', '%', $str);
 
-		return new \Less\Node\Quoted('"' . $str . '"', $str);
+		return new Less_Tree_Quoted('"' . $str . '"', $str);
 	}
 
     function unit($val, $unit = null ){
-        return new \Less\Node\Dimension($val->value, $unit ? $unit->toCSS() : "");
+        return new Less_Tree_Dimension($val->value, $unit ? $unit->toCSS() : "");
     }
 
 	public function convert($val, $unit){
@@ -511,22 +510,22 @@ class Environment{
 	}
 
 	public function pi(){
-		return new \Less\Node\Dimension(M_PI);
+		return new Less_Tree_Dimension(M_PI);
 	}
 
 	public function mod($a, $b) {
-		return new \Less\Node\Dimension( $a->value % $b->value, $a->unit);
+		return new Less_Tree_Dimension( $a->value % $b->value, $a->unit);
 	}
 
     function pow($x, $y) {
 		if( is_numeric($x) && is_numeric($y) ){
-			$x = new \Less\Node\Dimension($x);
-			$y = new \Less\Node\Dimension($y);
-		}elseif( !($x instanceof \Less\Node\Dimension) || !($y instanceof \Less\Node\Dimension) ){
-			throw new \Less\Exception\CompilerException('Arguments must be numbers');
+			$x = new Less_Tree_Dimension($x);
+			$y = new Less_Tree_Dimension($y);
+		}elseif( !($x instanceof Less_Tree_Dimension) || !($y instanceof Less_Tree_Dimension) ){
+			throw new Less_CompilerException('Arguments must be numbers');
 		}
 
-		return new \Less\Node\Dimension( pow($x->value, $y->value), $x->unit );
+		return new Less_Tree_Dimension( pow($x->value, $y->value), $x->unit );
     }
 
 	// var mathFunctions = [{name:"ce ...
@@ -548,7 +547,7 @@ class Environment{
 		$fn = array_shift($args);
 		$unit = array_shift($args);
 
-		if ($args[0] instanceof \Less\Node\Dimension) {
+		if ($args[0] instanceof Less_Tree_Dimension) {
 
 			if( $unit === null ){
 				$unit = $args[0]->unit;
@@ -556,27 +555,27 @@ class Environment{
 				$args[0] = $args[0]->unify();
 			}
 			$args[0] = (float)$args[0]->value;
-			return new \Less\Node\Dimension( call_user_func_array($fn, $args), $unit);
+			return new Less_Tree_Dimension( call_user_func_array($fn, $args), $unit);
 		} else if (is_numeric($args[0])) {
 			return call_user_func_array($fn,$args);
 		} else {
-			throw new \Less\Exception\CompilerException("math functions take numbers as parameters");
+			throw new Less_CompilerException("math functions take numbers as parameters");
 		}
 	}
 
 	public function argb($color) {
-		return new \Less\Node\Anonymous($color->toARGB());
+		return new Less_Tree_Anonymous($color->toARGB());
 	}
 
 	public function percentage($n) {
-		return new \Less\Node\Dimension($n->value * 100, '%');
+		return new Less_Tree_Dimension($n->value * 100, '%');
 	}
 
 	public function color($n) {
-		if ($n instanceof \Less\Node\Quoted) {
-			return new \Less\Node\Color(substr($n->value, 1));
+		if ($n instanceof Less_Tree_Quoted) {
+			return new Less_Tree_Color(substr($n->value, 1));
 		} else {
-			throw new \Less\Exception\CompilerException("Argument must be a string");
+			throw new Less_CompilerException("Argument must be a string");
 		}
 	}
 
@@ -613,11 +612,11 @@ class Environment{
 	}
 
 	function isunit( $n, $unit ){
-		return ($n instanceof \Less\Node\Dimension) && $n->unit->is( ( property_exists($unit,'value') ? $unit->value : $unit) ) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
+		return ($n instanceof Less_Tree_Dimension) && $n->unit->is( ( property_exists($unit,'value') ? $unit->value : $unit) ) ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
     }
 
 	private function _isa($n, $type) {
-		return is_a($n, $type) ? new \Less\Node\Keyword('true') : new \Less\Node\Keyword('false');
+		return is_a($n, $type) ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
 	}
 
 	/* Blending modes */
@@ -727,9 +726,9 @@ class Environment{
 			if (useBase64) mimetype += ';base64';
 			*/
 
-			$mimetype = \Less\Mime::lookup($filePath);
+			$mimetype = Less_Mime::lookup($filePath);
 
-			$charset = \Less\Mime::charsets_lookup($mimetype);
+			$charset = Less_Mime::charsets_lookup($mimetype);
 			$useBase64 = !in_array($charset,array('US-ASCII', 'UTF-8'));
 			if ($useBase64) $mimetype .= ';base64';
 
@@ -749,7 +748,7 @@ class Environment{
 		$DATA_URI_MAX_KB = 32;
 		$fileSizeInKB = round( strlen($buf) / 1024 );
 		if( $fileSizeInKB >= $DATA_URI_MAX_KB ){
-			$url = new \Less\Node\Url( ($filePathNode ? $filePathNode : $mimetypeNode), $this->currentFileInfo);
+			$url = new Less_Tree_Url( ($filePathNode ? $filePathNode : $mimetypeNode), $this->currentFileInfo);
 			return $url->compile($this);
 		}
 
@@ -758,7 +757,7 @@ class Environment{
 			$filePath = "'data:" . $mimetype . ',' . $buf . "'";
 		}
 
-		return new \Less\Node\Url( new \Less\Node\Anonymous($filePath) );
+		return new Less_Tree_Url( new Less_Tree_Anonymous($filePath) );
 	}
 
 
@@ -770,7 +769,7 @@ class Environment{
 		$last = array_intersect_key($last,array('function'=>'','class'=>'','line'=>''));
 
 		$message = 'Object of type '.get_class($arg).' passed to darken function. Expecting `Color`. '.$arg->toCSS().'. '.print_r($last,true);
-		throw new \Less\Exception\CompilerException($message);
+		throw new Less_CompilerException($message);
 
 	}
 

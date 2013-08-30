@@ -1,8 +1,6 @@
 <?php
 
-namespace Less\Node;
-
-class Operation{
+class Less_Tree_Operation{
 
 	public $type = 'Operation';
 
@@ -22,22 +20,22 @@ class Operation{
 
 
 		if( $env->isMathsOn() ){
-			if( $a instanceof \Less\Node\Dimension && $b instanceof \Less\Node\Color ){
+			if( $a instanceof Less_Tree_Dimension && $b instanceof Less_Tree_Color ){
 				if ($this->op === '*' || $this->op === '+') {
 					$temp = $b;
 					$b = $a;
 					$a = $temp;
 				} else {
-					throw new \Less\CompilerError("Operation on an invalid type");
+					throw new Less_CompilerError("Operation on an invalid type");
 				}
 			}
 			if ( !$a || !method_exists($a,'operate') ) {
-				throw new \Less\CompilerError("Operation on an invalid type");
+				throw new Less_CompilerError("Operation on an invalid type");
 			}
 
 			return $a->operate($env,$this->op, $b);
 		} else {
-			return new \Less\Node\Operation($this->op, array($a, $b), $this->isSpaced );
+			return new Less_Tree_Operation($this->op, array($a, $b), $this->isSpaced );
 		}
 	}
 

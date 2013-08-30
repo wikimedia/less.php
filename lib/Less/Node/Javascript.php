@@ -1,8 +1,6 @@
 <?php
 
-namespace Less\Node;
-
-class Javascript{
+class Less_Tree_Javascript{
 
 	public $type = 'Javascript';
 

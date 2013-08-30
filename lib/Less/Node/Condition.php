@@ -1,8 +1,6 @@
 <?php
 
-namespace Less\Node;
-
-class Condition {
+class Less_Tree_Condition {
 
 	public $type = 'Condition';
 	private $op;
@@ -44,7 +42,7 @@ class Condition {
 					} elseif ($bReflection->hasMethod('compare')) {
 						$result = $b->compare($a);
 					} else {
-						throw new \Less\Exception\CompilerException('Unable to perform comparison', $this->index);
+						throw new Less_CompilerException('Unable to perform comparison', $this->index);
 					}
 					switch ($result) {
 						case -1: return $op === '<' || $op === '=<';

@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Anonymous{
+class Less_Tree_Anonymous{
 	public $value;
 	public $quote;
 	public $type = 'Anonymous';

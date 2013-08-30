@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Exception;
 
-class CompilerException extends \Exception {
+class Less_CompilerException extends \Exception {
 
 	private $filename;
 

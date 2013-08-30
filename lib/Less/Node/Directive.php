@@ -1,8 +1,6 @@
 <?php
 
-namespace Less\Node;
-
-class Directive{
+class Less_Tree_Directive{
 
 	public $type = 'Directive';
     public $name;
@@ -12,7 +10,7 @@ class Directive{
     public function __construct($name, $value = null){
         $this->name = $name;
         if (is_array($value)) {
-            $this->ruleset = new \Less\Node\Ruleset(false, $value);
+            $this->ruleset = new Less_Tree_Ruleset(false, $value);
             $this->ruleset->allowImports = true;
         } else {
             $this->value = $value;
@@ -40,7 +38,7 @@ class Directive{
         $evaldDirective = $this;
         if( $this->ruleset ){
 			$env->unshiftFrame($this);
-            $evaldDirective = new \Less\Node\Directive( $this->name );
+            $evaldDirective = new Less_Tree_Directive( $this->name );
             $evaldDirective->ruleset = $this->ruleset->compile($env);
             $env->shiftFrame();
         }

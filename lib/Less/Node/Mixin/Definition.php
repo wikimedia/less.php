@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node\Mixin;
 
-class Definition extends \Less\Node\Ruleset{
+class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 	public $type = 'MixinDefinition';
 	public $name;
 	public $selectors;
@@ -18,7 +17,7 @@ class Definition extends \Less\Node\Ruleset{
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition
 	public function __construct($name, $params, $rules, $condition, $variadic = false){
 		$this->name = $name;
-		$this->selectors = array(new \Less\Node\Selector(array( new \Less\Node\Element(null, $name))));
+		$this->selectors = array(new Less_Tree_Selector(array( new Less_Tree_Element(null, $name))));
 		$this->params = $params;
 		$this->condition = $condition;
 		$this->variadic = $variadic;
@@ -47,7 +46,7 @@ class Definition extends \Less\Node\Ruleset{
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.evalParams
 	public function compileParams($env, $mixinEnv, $args = array() , &$evaldArguments = array() ){
-		$frame = new \Less\Node\Ruleset(null, array());
+		$frame = new Less_Tree_Ruleset(null, array());
 		$varargs;
 		$params = array_slice($this->params,0);
 		$val;
@@ -68,7 +67,7 @@ class Definition extends \Less\Node\Ruleset{
 				foreach($params as $j => $param){
 					if( !isset($evaldArguments[$j]) && $name === $params[$j]['name']) {
 						$evaldArguments[$j] = $arg['value']->compile($env);
-						array_unshift($frame->rules, new \Less\Node\Rule( $name, $arg['value']->compile($env) ) );
+						array_unshift($frame->rules, new Less_Tree_Rule( $name, $arg['value']->compile($env) ) );
 						$isNamedFound = true;
 						break;
 					}
@@ -78,7 +77,7 @@ class Definition extends \Less\Node\Ruleset{
 					$i--;
 					continue;
 				} else {
-					throw new \Less\Exception\CompilerException("Named argument for " . $this->name .' '.$args[$i]['name'] . ' not found');
+					throw new Less_CompilerException("Named argument for " . $this->name .' '.$args[$i]['name'] . ' not found');
 				}
 			}
 		}
@@ -101,8 +100,8 @@ class Definition extends \Less\Node\Ruleset{
 					for ($j = $argIndex; $j < count($args); $j++) {
 						$varargs[] = $args[$j]['value']->compile($env);
 					}
-					$expression = new \Less\Node\Expression($varargs);
-					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $expression->compile($env)));
+					$expression = new Less_Tree_Expression($varargs);
+					array_unshift($frame->rules, new Less_Tree_Rule($param['name'], $expression->compile($env)));
 				}else{
 					$val = ($arg && $arg['value']) ? $arg['value'] : false;
 
@@ -112,10 +111,10 @@ class Definition extends \Less\Node\Ruleset{
 						$val = $param['value']->compile($mixinEnv);
 						$frame->resetCache();
 					} else {
-						throw new \Less\Exception\CompilerException("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
+						throw new Less_CompilerException("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
 					}
 
-					array_unshift($frame->rules, new \Less\Node\Rule($param['name'], $val));
+					array_unshift($frame->rules, new Less_Tree_Rule($param['name'], $val));
 					$evaldArguments[$i] = $val;
 				}
 			}
@@ -139,25 +138,25 @@ class Definition extends \Less\Node\Ruleset{
 
 		$mixinFrames = array_merge($this->frames, $env->frames);
 
-		$mixinEnv = new \Less\Environment();
+		$mixinEnv = new Less_Environment();
 		$mixinEnv->addFrames($mixinFrames);
 
 		$frame = $this->compileParams($env, $mixinEnv, $args, $_arguments);
 
 
 
-		$ex = new \Less\Node\Expression($_arguments);
-		array_unshift($frame->rules, new \Less\Node\Rule('@arguments', $ex->compile($env)));
+		$ex = new Less_Tree_Expression($_arguments);
+		array_unshift($frame->rules, new Less_Tree_Rule('@arguments', $ex->compile($env)));
 
 		$rules = $important
-			? \Less\Node\Ruleset::makeImportant($this->selectors, $this->rules)->rules
+			? Less_Tree_Ruleset::makeImportant($this->selectors, $this->rules)->rules
 			: array_slice($this->rules, 0);
 
-		$ruleset = new \Less\Node\Ruleset(null, $rules);
+		$ruleset = new Less_Tree_Ruleset(null, $rules);
 
 
 		// duplicate the environment, adding new frames.
-		$ruleSetEnv = new \Less\Environment();
+		$ruleSetEnv = new Less_Environment();
 		$ruleSetEnv->addFrame($this);
 		$ruleSetEnv->addFrame($frame);
 		$ruleSetEnv->addFrames($mixinFrames);

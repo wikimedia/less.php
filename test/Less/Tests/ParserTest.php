@@ -74,7 +74,7 @@ class ParserTest{
 
 		$compiled = '';
 		try{
-			$parser = new \Less\Parser();
+			$parser = new Less_Parser();
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 

@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Extend{
+class Less_Tree_Extend{
 
 	public $type = 'Extend';
 	public $selector;
@@ -38,7 +37,7 @@ class Extend{
 	}
 
 	function compile( $env ){
-		return new \Less\Node\Extend( $this->selector->compile($env), $this->option, $this->index);
+		return new Less_Tree_Extend( $this->selector->compile($env), $this->option, $this->index);
 	}
 
 
@@ -49,6 +48,6 @@ class Extend{
 			$selfElements = array_merge($selfElements, $selectors[$i]->elements);
 		}
 
-		$this->selfSelectors = array(new \Less\Node\Selector($selfElements));
+		$this->selfSelectors = array(new Less_Tree_Selector($selfElements));
 	}
 }

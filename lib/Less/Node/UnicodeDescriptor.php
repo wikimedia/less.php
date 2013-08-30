@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class UnicodeDescriptor{
+class Less_Tree_UnicodeDescriptor{
 	public $type = 'UnicodeDescriptor';
 	public function __construct($value){
 		$this->value = $value;

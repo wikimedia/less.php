@@ -1,8 +1,6 @@
 <?php
 
-namespace Less\Node;
-
-class Expression {
+class Less_Tree_Expression {
 
 	public $type = 'Expression';
 	public $value = array();
@@ -31,7 +29,7 @@ class Expression {
 			foreach($this->value as $e){
 				$ret[] = $e->compile($env);
 			}
-			$returnValue = new \Less\Node\Expression($ret);
+			$returnValue = new Less_Tree_Expression($ret);
 
 		} else if (is_array($this->value) && count($this->value) == 1) {
 
@@ -51,7 +49,7 @@ class Expression {
 			$env->outOfParenthesis();
 		}
 		if( $this->parens && $this->parensInOp && !$env->isMathsOn() && !$doubleParen ){
-			$returnValue = new \Less\Node\Paren($returnValue);
+			$returnValue = new Less_Tree_Paren($returnValue);
 		}
 		return $returnValue;
 	}
@@ -71,7 +69,7 @@ class Expression {
 		if( is_array($this->value) ){
 			$new_value = array();
 			foreach($this->value as $v){
-				if( $v instanceof \Less\Node\Comment ){
+				if( $v instanceof Less_Tree_Comment ){
 					continue;
 				}
 				$new_value[] = $v;

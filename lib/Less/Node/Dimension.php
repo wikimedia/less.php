@@ -1,20 +1,19 @@
 <?php
 
-namespace Less\Node;
 
-class Dimension{
+class Less_Tree_Dimension{
 
 	public $type = 'Dimension';
 
     public function __construct($value, $unit = false){
         $this->value = floatval($value);
 
-		if( $unit && ($unit instanceof \Less\Node\Unit) ){
+		if( $unit && ($unit instanceof Less_Tree_Unit) ){
 			$this->unit = $unit;
 		}elseif( $unit ){
-			$this->unit = new \Less\Node\Unit( array($unit) );
+			$this->unit = new Less_Tree_Unit( array($unit) );
 		}else{
-			$this->unit = new \Less\Node\Unit( );
+			$this->unit = new Less_Tree_Unit( );
 		}
     }
 
@@ -27,13 +26,13 @@ class Dimension{
     }
 
     public function toColor() {
-        return new \Less\Node\Color(array($this->value, $this->value, $this->value));
+        return new Less_Tree_Color(array($this->value, $this->value, $this->value));
     }
 
 	public function toCSS( $env = null ){
 
 		if( ($env && $env->strictUnits) && !$this->unit->isSingular() ){
-			throw new \Less\Exception\CompilerException("Multiple units in dimension. Correct the units or use the unit function. Bad unit: ".$this->unit->toString());
+			throw new Less_CompilerException("Multiple units in dimension. Correct the units or use the unit function. Bad unit: ".$this->unit->toString());
 		}
 
 		$value = $this->value;
@@ -69,7 +68,7 @@ class Dimension{
     // so `1px + 2em` will yield `3px`.
     public function operate($env, $op, $other){
 
-		$value = \Less\Environment::operate($env, $op, $this->value, $other->value);
+		$value = Less_Environment::operate($env, $op, $this->value, $other->value);
 		$unit = clone $this->unit;
 
 		if( $op === '+' || $op === '-' ){
@@ -83,10 +82,10 @@ class Dimension{
 				$other = $other->convertTo( $this->unit->usedUnits());
 
 				if( $env->strictUnits && $other->unit->toString() !== $unit->toCSS() ){
-					throw new \Less\Exception\CompilerException("Incompatible units. Change the units or use the unit function. Bad units: '".$unit->toString() . "' and ".$other->unit->toString()+"'.");
+					throw new Less_CompilerException("Incompatible units. Change the units or use the unit function. Bad units: '".$unit->toString() . "' and ".$other->unit->toString()+"'.");
 				}
 
-				$value = \Less\Environment::operate($env, $op, $this->value, $other->value);
+				$value = Less_Environment::operate($env, $op, $this->value, $other->value);
 			}
 		}elseif( $op === '*' ){
 			$unit->numerator = array_merge($unit->numerator, $other->unit->numerator);
@@ -101,7 +100,7 @@ class Dimension{
 			sort($unit->denominator);
 			$unit->cancel();
 		}
-		return new \Less\Node\Dimension( $value, $unit);
+		return new Less_Tree_Dimension( $value, $unit);
     }
 
 	public function compare($other) {
@@ -137,8 +136,8 @@ class Dimension{
 
 		if( is_string($conversions) ){
 			$derivedConversions = array();
-			foreach( \Less\Node\UnitConversions::$groups as $i ){
-				if( isset(\Less\Node\UnitConversions::${$i}[$conversions]) ){
+			foreach( Less_Tree_UnitConversions::$groups as $i ){
+				if( isset(Less_Tree_UnitConversions::${$i}[$conversions]) ){
 					$derivedConversions = array( $i => $conversions);
 				}
 			}
@@ -147,7 +146,7 @@ class Dimension{
 
 
 		foreach($conversions as $groupName => $targetUnit){
-			$group = \Less\Node\UnitConversions::${$groupName};
+			$group = Less_Tree_UnitConversions::${$groupName};
 
 			//numerator
 			for($i=0; $i < count($unit->numerator); $i++ ){
@@ -176,6 +175,6 @@ class Dimension{
 
 		$unit->cancel();
 
-		return new \Less\Node\Dimension( $value, $unit);
+		return new Less_Tree_Dimension( $value, $unit);
     }
 }

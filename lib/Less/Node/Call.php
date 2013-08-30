@@ -1,12 +1,11 @@
 <?php
 
-namespace Less\Node;
 
 //
 // A function call node.
 //
 
-class Call{
+class Less_Tree_Call{
     public $type = 'Call';
     private $value;
 
@@ -60,7 +59,7 @@ class Call{
 				}
 
 			} catch (Exception $e) {
-				throw \Less\Exception\CompilerException('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
+				throw Less_CompilerException('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
 			}
 		}
 
@@ -69,7 +68,7 @@ class Call{
 		foreach($args as $a){
 			$temp[] = $a->toCSS($env);
 		}
-		return new \Less\Node\Anonymous($this->name .
+		return new Less_Tree_Anonymous($this->name .
 				   "(" . implode(', ', $temp) . ")");
     }
 

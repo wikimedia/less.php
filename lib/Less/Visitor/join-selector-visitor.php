@@ -1,15 +1,13 @@
 <?php
 
-namespace Less;
-
-class joinSelectorVisitor{
+class Less_joinSelectorVisitor{
 
 	public $contexts = array( array() );
 	public $_visitor;
 	public $isReplacing = false;
 
 	function __construct(){
-		$this->_visitor = new \Less\visitor($this);
+		$this->_visitor = new Less_visitor($this);
 	}
 
 	function run( $root ){

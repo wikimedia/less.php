@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Alpha{
+class Less_Tree_Alpha{
 	private $value;
 	public $type = 'Alpha';
 

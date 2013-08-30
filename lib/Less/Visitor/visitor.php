@@ -1,8 +1,6 @@
 <?php
 
-namespace Less;
-
-class visitor{
+class Less_visitor{
 
 	private $_implementation;
 

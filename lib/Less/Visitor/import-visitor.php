@@ -1,8 +1,6 @@
 <?php
 
-namespace Less;
-
-class importVisitor{
+class Less_importVisitor{
 
 	public $_visitor;
 	public $_importer;
@@ -10,12 +8,12 @@ class importVisitor{
 	public $importCount;
 
 	function __construct( $importer = null, $evalEnv = null ){
-		$this->_visitor = new \Less\visitor($this);
+		$this->_visitor = new Less_visitor($this);
 		$this->_importer = $importer;
 		if( $evalEnv ){
 			$this->env = $evalEnv;
 		}else{
-			$this->env = new \Less\Environment();
+			$this->env = new Less_Environment();
 		}
 		$this->importCount = 0;
 	}

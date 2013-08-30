@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Quoted{
+class Less_Tree_Quoted{
 	public $type = 'Quoted';
 	public $value;
 	public $content;
@@ -30,7 +29,7 @@ class Quoted{
 		$value = $this->value;
 		if( preg_match_all('/`([^`]+)`/', $this->value, $matches) ){
 			foreach($matches as $i => $match){
-				$js = \Less\Node\JavaScript($matches[1], $this->index, true);
+				$js = Less_Tree_JavaScript($matches[1], $this->index, true);
 				$js = $js->compile($env)->value;
 				$value = str_replace($matches[0][$i], $js, $value);
 			}
@@ -38,14 +37,14 @@ class Quoted{
 
 		if( preg_match_all('/@\{([\w-]+)\}/',$value,$matches) ){
 			foreach($matches[1] as $i => $match){
-				$v = new \Less\Node\Variable('@' . $match, $this->index, $this->currentFileInfo );
+				$v = new Less_Tree_Variable('@' . $match, $this->index, $this->currentFileInfo );
 				$v = $v->compile($env,true);
-				$v = ($v instanceof \Less\Node\Quoted) ? $v->value : $v->toCSS($env);
+				$v = ($v instanceof Less_Tree_Quoted) ? $v->value : $v->toCSS($env);
 				$value = str_replace($matches[0][$i], $v, $value);
 			}
 		}
 
-		return new \Less\Node\Quoted($this->quote . $value . $this->quote, $value, $this->escaped, $this->index);
+		return new Less_Tree_Quoted($this->quote . $value . $this->quote, $value, $this->escaped, $this->index);
 	}
 
 	function compare($x) {

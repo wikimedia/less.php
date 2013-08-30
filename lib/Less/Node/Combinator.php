@@ -2,9 +2,8 @@
 
 // less.js : lib/less/tree/element.js
 
-namespace Less\Node;
 
-class Combinator {
+class Less_Tree_Combinator {
 
 	public $type = 'Combinator';
 	public $value;

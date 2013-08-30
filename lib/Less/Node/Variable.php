@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Variable {
+class Less_Tree_Variable {
 
 	public $type = 'Variable';
 	public $name;
@@ -19,12 +18,12 @@ class Variable {
 	public function compile($env) {
 		$name = $this->name;
 		if (strpos($name, '@@') === 0) {
-			$v = new \Less\Node\Variable(substr($name, 1), $this->index + 1);
+			$v = new Less_Tree_Variable(substr($name, 1), $this->index + 1);
 			$name = '@' . $v->compile($env)->value;
 		}
 
 		if ($this->evaluating) {
-			throw new \Less\Exception\CompilerException("Recursive variable definition for " . $name, $this->index, null, $this->currentFileInfo['file']);
+			throw new Less_CompilerException("Recursive variable definition for " . $name, $this->index, null, $this->currentFileInfo['file']);
 		}
 
 		$this->evaluating = true;
@@ -37,7 +36,7 @@ class Variable {
 			}
 		}
 
-		throw new \Less\Exception\CompilerException("variable " . $name . " is undefined", $this->index, null);
+		throw new Less_CompilerException("variable " . $name . " is undefined", $this->index, null);
 	}
 
 }

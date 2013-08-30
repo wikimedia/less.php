@@ -2,17 +2,15 @@
 
 //less.js : lib/less/tree/element.js
 
-namespace Less\Node;
-
-class Element{
+class Less_Tree_Element{
 	public $type = 'Element';
 	public $combinator;
     public $value;
 	public $index;
 
     public function __construct($combinator, $value, $index = null) {
-        if ( ! ($combinator instanceof \Less\Node\Combinator)) {
-            $combinator = new Combinator($combinator);
+        if ( ! ($combinator instanceof Less_Tree_Combinator)) {
+            $combinator = new Less_Tree_Combinator($combinator);
         }
 
 		if (is_string($value)) {
@@ -47,7 +45,7 @@ class Element{
     }
 
 	public function compile($env) {
-		return new Element($this->combinator,
+		return new Less_Tree_Element($this->combinator,
 			is_string($this->value) ? $this->value : $this->value->compile($env),
 			$this->index
 		);

@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node;
 
-class Rule{
+class Less_Tree_Rule{
 	public $type = 'Rule';
 	public $name;
 	public $value;
@@ -14,7 +13,7 @@ class Rule{
 
 	public function __construct($name, $value = null, $important = null, $index = null, $currentFileInfo = null,  $inline = false){
 		$this->name = $name;
-		$this->value = ($value instanceof \Less\Node\Value) ? $value : new \Less\Node\Value(array($value));
+		$this->value = ($value instanceof Less_Tree_Value) ? $value : new Less_Tree_Value(array($value));
 		$this->important = $important ? ' ' . trim($important) : '';
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
@@ -55,7 +54,7 @@ class Rule{
 			$env->strictMath = true;
 		}
 		try {
-			return new \Less\Node\Rule($this->name,
+			return new Less_Tree_Rule($this->name,
 										$this->value->compile($env),
 										$this->important,
 										$this->currentFileInfo,
@@ -70,7 +69,7 @@ class Rule{
 	}
 
 	function makeImportant(){
-		return new \Less\Node\Rule($this->name, $this->value, '!important', $this->index, $this->currentFileInfo, $this->inline);
+		return new Less_Tree_Rule($this->name, $this->value, '!important', $this->index, $this->currentFileInfo, $this->inline);
 	}
 
 }

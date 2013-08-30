@@ -1,8 +1,7 @@
 <?php
 
-namespace Less\Node\Mixin;
 
-class Call{
+class Less_Tree_Mixin_Call{
 
 	public $type = 'MixinCall';
 	private $selector;
@@ -17,7 +16,7 @@ class Call{
 	 *
 	 */
     public function __construct($elements, $args, $index, $currentFileInfo, $important = false){
-        $this->selector = new \Less\Node\Selector($elements);
+        $this->selector = new Less_Tree_Selector($elements);
         $this->arguments = $args;
         $this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
@@ -58,7 +57,7 @@ class Call{
 
 				$isRecursive = false;
 				foreach($env->frames as $recur_frame){
-					if( !($mixin instanceof \Less\Node\Mixin\Definition) ){
+					if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
 						if( (isset($recur_frame->originalRuleset) && $mixin === $recur_frame->originalRuleset) || ($mixin === $recur_frame) ){
 							$isRecursive = true;
 							break;
@@ -74,7 +73,7 @@ class Call{
 						try {
 							$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
 						} catch (Exception $e) {
-							throw new \Less\Exception\CompilerException($e->message, $e->index, null, $this->currentFileInfo['filename']);
+							throw new Less_CompilerException($e->message, $e->index, null, $this->currentFileInfo['filename']);
 						}
 					}
 					$match = true;
@@ -109,12 +108,12 @@ class Call{
 			$message = implode(', ');
 
 
-			throw new \Less\Exception\CompilerException('No matching definition was found for `'.
+			throw new Less_CompilerException('No matching definition was found for `'.
 				trim($this->selector->toCSS($env)) . '(' .$message.')',
 				$this->index, null, $this->currentFileInfo['filename']);
 
 		}else{
-			throw new \Less\Exception\CompilerException(trim($this->selector->toCSS($env)) . " is undefined", $this->index);
+			throw new Less_CompilerException(trim($this->selector->toCSS($env)) . " is undefined", $this->index);
 		}
     }
 }

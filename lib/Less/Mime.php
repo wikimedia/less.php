@@ -2,9 +2,7 @@
 
 //less.js : lib/less/functions.js
 
-namespace Less;
-
-class Mime{
+class Less_Mime{
 
 	// this map is intentionally incomplete
 	// if you want more, install 'mime' dep
