@@ -1564,9 +1564,9 @@ class Parser {
 
 		if ($this->match('/^not/')) $negate = true;
 		$this->expect('(');
-		if ($a = ($this->match('parseAddition') ?: $this->match('parseEntitiesKeyword') ?: $this->match('parseEntitiesQuoted')) ) {
+		if ($a = ($this->match('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted')) ) {
 			if ($op = $this->match('/^(?:>=|=<|[<=>])/')) {
-				if ($b = ($this->match('parseAddition') ?: $this->match('parseEntitiesKeyword') ?: $this->match('parseEntitiesQuoted'))) {
+				if ($b = ($this->match('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted'))) {
 					$c = new \Less\Node\Condition($op, $a, $b, $index, $negate);
 				} else {
 					throw new \Less\Exception\ParserException('Unexpected expression');
@@ -1609,7 +1609,7 @@ class Parser {
     private function parseExpression (){
         $entities = array();
 
-        while ($e = $this->match('parseAddition') ?: $this->match('parseEntity')) {
+        while ($e = $this->match('parseAddition','parseEntity')) {
             $entities[] = $e;
 			// operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
 			if( !$this->peek('/^\/[\/*]/') && ($delim = $this->match('/')) ){
