@@ -53,8 +53,6 @@ class Less_Parser{
      */
     public function __construct( $env = null ){
 
-		self::IncludeScripts( dirname(__FILE__) );
-
 		// Top parser on an import tree must be sure there is one "env"
 		// which will then be passed around by reference.
 		if( $env instanceof Less_Environment ){
@@ -69,38 +67,6 @@ class Less_Parser{
 		$this->pos = 0;
     }
 
-
-	/**
-	 * Include the necessary php files
-	 *
-	 */
-	private static function IncludeScripts( $dir ){
-
-		$files = scandir($dir);
-		$dirs = array();
-		foreach($files as $file){
-			if( $file == '.' || $file == '..' ){
-				continue;
-			}
-
-			$full_path = $dir.'/'.$file;
-			if( is_dir($full_path) ){
-				$dirs[] = $full_path;
-				continue;
-			}
-
-			if( strpos($file,'.php') !== (strlen($file) - 4) ){
-				continue;
-			}
-
-			include_once($full_path);
-		}
-
-		foreach($dirs as $dir){
-			self::IncludeScripts( $dir );
-		}
-
-	}
 
 
     /**

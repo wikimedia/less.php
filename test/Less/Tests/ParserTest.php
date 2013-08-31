@@ -6,13 +6,19 @@ ini_set('display_errors',1);
 
 //get parser
 $dir = dirname(dirname(dirname(__DIR__)));
-require($dir.'/lib/Less/Parser.php');
+//require($dir.'/lib/Less/Parser.php');
+
+ParserTest::IncludeScripts( $dir.'/lib/Less' );
+
 
 //get diff
 require( $dir. '/test/Less/Tests/php-diff/lib/Diff.php');
 require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/SideBySide.php');
 require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/Inline.php');
 
+
+
+//
 
 global $head;
 
@@ -183,6 +189,40 @@ class ParserTest{
 
         return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
     }
+
+
+
+	/**
+	 * Include the necessary php files
+	 *
+	 */
+	static function IncludeScripts( $dir ){
+
+		$files = scandir($dir);
+		$dirs = array();
+		foreach($files as $file){
+			if( $file == '.' || $file == '..' ){
+				continue;
+			}
+
+			$full_path = $dir.'/'.$file;
+			if( is_dir($full_path) ){
+				$dirs[] = $full_path;
+				continue;
+			}
+
+			if( strpos($file,'.php') !== (strlen($file) - 4) ){
+				continue;
+			}
+
+			include_once($full_path);
+		}
+
+		foreach($dirs as $dir){
+			self::IncludeScripts( $dir );
+		}
+
+	}
 }
 
 ob_start();

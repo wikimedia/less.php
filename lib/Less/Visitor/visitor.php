@@ -44,6 +44,11 @@ class Less_visitor{
 
 	function visitArray( $nodes ){
 
+		//check for associative arrays
+		if( $nodes !== array_values($nodes) ){
+			return $nodes;
+		}
+
 		$newNodes = array();
 		foreach($nodes as $key => $node){
 			//not the same as less.js
