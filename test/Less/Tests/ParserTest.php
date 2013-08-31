@@ -199,6 +199,12 @@ class ParserTest{
 	static function IncludeScripts( $dir ){
 
 		$files = scandir($dir);
+
+		usort($files,function($a,$b){
+			return strlen($a)-strlen($b);
+		});
+
+
 		$dirs = array();
 		foreach($files as $file){
 			if( $file == '.' || $file == '..' ){

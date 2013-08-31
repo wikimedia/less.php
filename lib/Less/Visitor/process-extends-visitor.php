@@ -1,9 +1,8 @@
 <?php
 
 
-class Less_processExtendsVisitor{
+class Less_processExtendsVisitor extends Less_visitor{
 
-	public $_visitor;
 	public $allExtendsStack;
 
 	public $visitRuleDeeper = false;
@@ -11,9 +10,6 @@ class Less_processExtendsVisitor{
 	public $visitSelectorDeeper = false;
 
 
-	function __construct(){
-		$this->_visitor = new Less_visitor($this);
-	}
 
 	function run( $root ){
 		$extendFinder = new Less_extendFinderVisitor();
@@ -24,7 +20,7 @@ class Less_processExtendsVisitor{
 		$this->allExtendsStack = array();
 		$this->allExtendsStack[] = &$root->allExtends;
 
-		$this->_visitor->visit( $root );
+		$this->visit( $root );
 	}
 
 	function doExtendChaining( $extendsList, $extendsListTarget, $iterationCount = 0){

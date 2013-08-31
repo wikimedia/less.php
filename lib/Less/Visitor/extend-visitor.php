@@ -1,10 +1,9 @@
 <?php
 
 
-class Less_extendFinderVisitor{
+class Less_extendFinderVisitor extends Less_visitor{
 
 	public $contexts = array();
-	public $_visitor;
 	public $allExtendsStack;
 	public $foundExtends;
 
@@ -12,13 +11,12 @@ class Less_extendFinderVisitor{
 	public $visitMixinDefinitionDeeper = false;
 
 	function __construct(){
-		$this->_visitor = new Less_visitor($this);
 		$this->contexts = array();
 		$this->allExtendsStack = array(array());
 	}
 
 	function run($root) {
-		$this->_visitor->visit($root);
+		$this->visit($root);
 		$root->allExtends =& $this->allExtendsStack[0];
 		return $root;
 	}

@@ -1,19 +1,15 @@
 <?php
 
-class Less_joinSelectorVisitor{
+class Less_joinSelectorVisitor extends Less_visitor{
 
 	public $contexts = array( array() );
-	public $_visitor;
 
 	public $visitRuleDeeper = false;
 	public $visitMixinDefinition = false;
 
-	function __construct(){
-		$this->_visitor = new Less_visitor($this);
-	}
 
 	function run( $root ){
-		$this->_visitor->visit($root);
+		$this->visit($root);
 	}
 
 	function visitRuleset($rulesetNode) {
@@ -34,7 +30,7 @@ class Less_joinSelectorVisitor{
 		array_pop($this->contexts);
 	}
 
-	function visitMedia(&$mediaNode) {
+	function visitMedia($mediaNode) {
 		$context = $this->contexts[ count($this->contexts) - 1];
 		$mediaNode->ruleset->root = ( count($context) === 0 || @$context[0]->multiMedia);
 	}

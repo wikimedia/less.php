@@ -2,12 +2,6 @@
 
 class Less_visitor{
 
-	private $_implementation;
-
-	function __construct( $implementation ){
-		$this->_implementation = $implementation;
-	}
-
 	function visit($node){
 
 		if( is_array($node) ){
@@ -20,22 +14,25 @@ class Less_visitor{
 		}
 
 		$funcName = "visit" . $node->type;
-		if( method_exists($this->_implementation,$funcName) ){
-			$func = array($this->_implementation,$funcName);
-			$func($node);
-		}
-
+		$this->Call( $funcName, $node);
 
 		$deeper_property = $funcName.'Deeper';
-		if( !property_exists($this->_implementation,$deeper_property) && $node && method_exists($node,'accept') ){
+		if( !property_exists($this,$deeper_property) && method_exists($node,'accept') ){
 			$node->accept($this);
 		}
 
 		$funcName = $funcName . "Out";
-		if( method_exists($this->_implementation, $funcName) ){
-			$func = array($this->_implementation,$funcName);
+		$this->Call( $funcName, $node);
+	}
+
+	function Call( $funcName, $node ){
+
+		if( method_exists($this,$funcName) ){
+			$func = array($this,$funcName);
+			//$func($node);
 			call_user_func( $func, $node );
 		}
+
 	}
 
 	function visitArray( $nodes ){
