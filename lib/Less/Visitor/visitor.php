@@ -19,7 +19,7 @@ class Less_visitor{
 		}
 
 		$deeper_property = $funcName.'Deeper';
-		if( !property_exists($this,$deeper_property) && method_exists($node,'accept') ){
+		if( !isset($this->$deeper_property) && method_exists($node,'accept') ){
 			$node->accept($this);
 		}
 
