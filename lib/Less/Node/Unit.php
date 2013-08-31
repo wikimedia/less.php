@@ -62,17 +62,6 @@ class Less_Tree_Unit{
 		return count($this->numerator) <= 1 && count($this->denominator) == 0;
 	}
 
-	function map($callback){
-
-		for($i=0; $i < count($this->numerator); $i++ ){
-			$this->numerator[$i] = call_user_func($callback, $this->numerator[$i],false);
-		}
-
-		for($i=0; $i < count($this->denominator); $i++ ){
-			$this->denominator[$i] = call_user_func($callback, $this->denominator[$i],false);
-		}
-
-	}
 
 	function usedUnits(){
 		$result = array();

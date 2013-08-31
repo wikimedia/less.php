@@ -151,17 +151,6 @@ class Less_Environment{
 		}
 	}
 
-	static public function find($obj, $fun){
-		foreach($obj as $i => $o) {
-
-			if ($r = call_user_func($fun, $o)) {
-
-				return $r;
-			}
-		}
-		return null;
-	}
-
 	static public function clamp($val)
 	{
 		return min(1, max(0, $val));
