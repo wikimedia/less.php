@@ -266,20 +266,7 @@ class Less_Parser{
      * @param string $tok
      * @return null|bool|object
      */
-    public function match($tok){
-
-		//handle multiple tokens
-		if( func_num_args() > 1 ){
-			$toks = func_get_args();
-			while( $tok = array_shift($toks) ){
-				$v = $this->match($tok);
-				if( $v ){
-					return $v;
-				}
-			}
-			return null;
-		}
-
+    public function match(){
 
         // The match is confirmed, add the match length to `this::pos`,
         // and consume any extra white-space characters (' ' || '\n')
@@ -287,16 +274,24 @@ class Less_Parser{
         // grammar is mostly white-space insensitive.
         //
 
-		if( strlen($tok) == 1 ){
-			return $this->MatchChar($tok);
+		for($i = 0, $len = func_num_args(); $i< $len; $i++){
+			$tok = func_get_arg($i);
 
-		}else if (is_callable(array($this, $tok))) {
-			return $this->MatchFunc($tok);
+			if( strlen($tok) == 1 ){
+				$match = $this->MatchChar($tok);
 
-		}else{
-			return $this->MatchReg($tok);
+			}else if (is_callable(array($this, $tok))) {
+				$match = $this->MatchFunc($tok);
+
+			}else{
+				$match = $this->MatchReg($tok);
+			}
+
+			if( $match ){
+				return $match;
+			}
 		}
-    }
+	}
 
 	// Match a single character in the input,
     function MatchChar($tok){
