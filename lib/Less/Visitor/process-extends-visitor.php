@@ -190,10 +190,10 @@ class Less_processExtendsVisitor{
 		$matches = array();
 
 		// loop through the haystack elements
-		for($haystackSelectorIndex = 0; $haystackSelectorIndex < count($haystackSelectorPath); $haystackSelectorIndex++ ){
+		for($haystackSelectorIndex = 0, $haystack_path_len = count($haystackSelectorPath); $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++ ){
 			$hackstackSelector = $haystackSelectorPath[$haystackSelectorIndex];
 
-			for($hackstackElementIndex = 0; $hackstackElementIndex < count($hackstackSelector->elements); $hackstackElementIndex++ ){
+			for($hackstackElementIndex = 0, $haystack_elements_len = count($hackstackSelector->elements); $hackstackElementIndex < $haystack_elements_len; $hackstackElementIndex++ ){
 
 				$haystackElement = $hackstackSelector->elements[$hackstackElementIndex];
 

@@ -111,16 +111,16 @@ class Less_Tree_Media {
 		$permuted = $this->permute($path);
 		$expressions = array();
 		foreach($permuted as $path){
-			$p = array();
-			foreach($path as $fragment){
-				$p[] = method_exists($fragment, 'toCSS') ? $fragment : new Less_Tree_Anonymous($fragment);
+
+			for( $i=0, $len=count($path); $i < $len; $i++){
+				$path[$i] = method_exists($path[$i], 'toCSS') ? $path[$i] : new Less_Tree_Anonymous($path[$i]);
 			}
 
-			for( $i = count($p) - 1; $i > 0; $i-- ){
-				array_splice($p, $i, 0, array(new Less_Tree_Anonymous('and')));
+			for( $i = count($path) - 1; $i > 0; $i-- ){
+				array_splice($path, $i, 0, array(new Less_Tree_Anonymous('and')));
 			}
 
-			$expressions[] = new Less_Tree_Expression($p);
+			$expressions[] = new Less_Tree_Expression($path);
 		}
 		$this->features = new Less_Tree_Value($expressions);
 
