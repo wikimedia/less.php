@@ -155,9 +155,8 @@ class Less_Tree_Ruleset{
 		return new Less_Tree_Ruleset($selectors, $important_rules, $strictImports );
 	}
 
-	public function matchArgs($args)
-	{
-		return ! is_array($args) || count($args) === 0;
+	public function matchArgs($args){
+		return !is_array($args) || count($args) === 0;
 	}
 
 	function resetCache() {
@@ -166,16 +165,16 @@ class Less_Tree_Ruleset{
 		$this->lookups = array();
 	}
 
-	public function variables() {
-		if ( ! $this->_variables) {
-			$this->_variables = array_reduce($this->rules, function ($hash, $r) {
-				if ($r instanceof Less_Tree_Rule && $r->variable === true) {
-					$hash[$r->name] = $r;
-				}
-				return $hash;
-			});
-		}
+	public function variables(){
 
+		if( !$this->_variables ){
+			$this->_variables = array();
+			foreach( $this->rules as $r){
+				if ($r instanceof Less_Tree_Rule && $r->variable === true) {
+					$this->_variables[$r->name] = $r;
+				}
+			}
+		}
 
 		return $this->_variables;
 	}

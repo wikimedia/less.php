@@ -23,13 +23,14 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 		$this->arity = count($params);
 		$this->rules = $rules;
 		$this->lookups = array();
-		$this->required = array_reduce($params, function ($count, $p) {
+
+		$this->required = 0;
+		foreach( $params as $p ){
 			if (! isset($p['name']) || ($p['name'] && !isset($p['value']))) {
-				return $count + 1;
-			} else {
-				return $count;
+				$this->required++;
 			}
-		});
+		}
+
 		$this->frames = array();
 	}
 
