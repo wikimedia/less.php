@@ -404,7 +404,7 @@ class Less_Parser{
     private function parsePrimary(){
         $root = array();
 
-		$this->MatchReg("/^[\s\n]+/");
+		$this->skipWhitespace(0);
 
         while( ($node = $this->match('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective' ))
 							|| $this->MatchReg('/^;+/')
