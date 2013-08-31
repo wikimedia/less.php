@@ -280,7 +280,7 @@ class Less_Parser{
 			if( strlen($tok) == 1 ){
 				$match = $this->MatchChar($tok);
 
-			}else if (is_callable(array($this, $tok))) {
+			}elseif( method_exists($this, $tok) ){
 				$match = $this->MatchFunc($tok);
 
 			}else{
