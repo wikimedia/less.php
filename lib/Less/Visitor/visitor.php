@@ -14,22 +14,21 @@ class Less_visitor{
 			return $this->visitArray($node);
 		}
 
-		if( !is_object($node) || !property_exists($node,'type') || !$node->type ){
+		if( !@property_exists($node,'type') || !$node->type ){
 			return $node;
 		}
 
-		$visitArgs = null;
+		$visitArgs = array('visitDeeper'=> true);
 		$funcName = "visit" . $node->type;
 		if( method_exists($this->_implementation,$funcName) ){
 			$func = array($this->_implementation,$funcName);
-			$visitArgs = array('visitDeeper'=> true);
 			$newNode = $func($node, $visitArgs);
 			if( $this->_implementation->isReplacing ){
 				$node = $newNode;
 			}
 		}
 
-		if( (!$visitArgs || $visitArgs['visitDeeper']) && $node && method_exists($node,'accept') ){
+		if( $visitArgs['visitDeeper'] && $node && method_exists($node,'accept') ){
 			$node->accept($this);
 		}
 
@@ -49,11 +48,12 @@ class Less_visitor{
 			return $nodes;
 		}
 
+
 		$newNodes = array();
-		foreach($nodes as $key => $node){
-			//not the same as less.js
-			$newNodes[$key] = $this->visit($node);
+		for($i = 0, $len = count($nodes); $i < $len; $i++ ){
+			$newNodes[] = $this->visit($nodes[$i]);
 		}
+
 		if( $this->_implementation->isReplacing ){
 			return $newNodes;
 		}

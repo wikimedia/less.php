@@ -329,8 +329,6 @@ class Less_processExtendsVisitor{
 		return $path;
 	}
 
-	function visitRulesetOut( $rulesetNode ){
-	}
 
 	function visitMedia( $mediaNode, $visitArgs ){
 		$newAllExtends = array_merge( $mediaNode->allExtends, $this->allExtendsStack[ count($this->allExtendsStack)-1 ] );
