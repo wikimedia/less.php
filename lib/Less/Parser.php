@@ -281,7 +281,12 @@ class Less_Parser{
 		}
 
 
-		$match = null;
+        // The match is confirmed, add the match length to `this::pos`,
+        // and consume any extra white-space characters (' ' || '\n')
+        // which come after that. The reason for this is that LeSS's
+        // grammar is mostly white-space insensitive.
+        //
+
 		if( strlen($tok) == 1 ){
 			return $this->MatchChar($tok);
 
@@ -289,34 +294,16 @@ class Less_Parser{
 			// Non-terminal, match using a function call
 			return $this->$tok();
 
-		} else {
+		}else{
 			// Match a regexp from the current start point
 			$this->sync();
 
-			$result = preg_match($tok, $this->current, $match);
-			if ($result) {
-				$length = strlen($match[0]);
-			} else {
-				return null;
+			if( preg_match($tok, $this->current, $match) ){
+				$this->skipWhitespace(strlen($match[0]));
+				$this->sync();
+				return count($match) === 1 ? $match[0] : $match;
 			}
 		}
-
-
-        // The match is confirmed, add the match length to `this::pos`,
-        // and consume any extra white-space characters (' ' || '\n')
-        // which come after that. The reason for this is that LeSS's
-        // grammar is mostly white-space insensitive.
-        //
-        if( $match ){
-			$this->skipWhitespace($length);
-            $this->sync();
-
-            if (is_string($match)) {
-                return $match;
-            } else {
-                return count($match) === 1 ? $match[0] : $match;
-            }
-        }
     }
 
 	// Match a single character in the input,
@@ -339,11 +326,9 @@ class Less_Parser{
 	public function peek($tok, $offset = 0){
 		if (strlen($tok) == 1) {
 			return substr($this->input,$this->pos + $offset,1) === $tok;
-		} else if (preg_match($tok, $this->current, $matches)) {
-			return true;
-		} else {
-			return false;
 		}
+
+		return (bool)preg_match($tok, $this->current);
 	}
 
 
@@ -415,9 +400,10 @@ class Less_Parser{
     private function parsePrimary(){
         $root = array();
 
-        while( ($node = $this->match('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset',
-							'parseMixinCall', 'parseComment', 'parseDirective' ))
-							|| $this->match("/^[\s\n]+/") || $this->match('/^;+/')
+		$this->match("/^[\s\n]+/");
+
+        while( ($node = $this->match('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective' ))
+							|| $this->match('/^;+/')
         ){
 			//not the same as less.js
 			if( is_array($node) ){

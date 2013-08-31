@@ -184,7 +184,7 @@ class Less_processExtendsVisitor{
 		// returns an array of selector matches that can then be replaced
 		//
 		$needleElements = $extend->selector->elements;
-		$extendVisitor = $this;
+		//$extendVisitor = $this;
 		$potentialMatches = array();
 		$potentialMatch = null;
 		$matches = array();
@@ -214,7 +214,7 @@ class Less_processExtendsVisitor{
 					}
 
 					// if we don't match, null our match to indicate failure
-					if( !$extendVisitor->isElementValuesEqual( $needleElements[$potentialMatch['matched'] ]->value, $haystackElement->value) ||
+					if( !$this->isElementValuesEqual( $needleElements[$potentialMatch['matched'] ]->value, $haystackElement->value) ||
 						($potentialMatch['matched'] > 0 && $needleElements[ $potentialMatch['matched'] ]->combinator->value !== $targetCombinator) ){
 						$potentialMatch = null;
 					} else {
