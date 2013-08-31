@@ -14,9 +14,7 @@ class Less_visitor{
 			$nodes = array($nodes);
 		}
 
-
-		for($i = 0, $len = count($nodes); $i < $len; $i++ ){
-			$node = $nodes[$i];
+		foreach($nodes as $node){
 
 			if( !@property_exists($node,'type') || !$node->type ){
 				return;
