@@ -185,11 +185,17 @@ class Less_Tree_Ruleset{
 		return isset($vars[$name]) ? $vars[$name] : null;
 	}
 
-	public function rulesets (){
-		return array_filter($this->rules, function ($r) {
-			return ($r instanceof Less_Tree_Ruleset) || ($r instanceof Less_Tree_Mixin_Definition);
-		});
+
+	public function rulesets(){
+		$rulesets = array();
+		foreach($this->rules as $r){
+			if( ($r instanceof Less_Tree_Ruleset) || ($r instanceof Less_Tree_Mixin_Definition) ){
+				$rulesets[] = $r;
+			}
+		}
+		return $rulesets;
 	}
+
 
 	public function find( $selector, $self = null, $env = null){
 
