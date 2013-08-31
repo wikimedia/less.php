@@ -295,7 +295,7 @@ class Less_Parser{
 
 	// Match a single character in the input,
     function MatchChar($tok){
-		if( substr($this->input,$this->pos,1) === $tok ){
+		if( @($this->input[$this->pos] === $tok) ){
 			$this->skipWhitespace(1);
 			$this->sync();
 			return $tok;
@@ -333,8 +333,6 @@ class Less_Parser{
 
 	public function PeekChar($tok, $offset = 0){
 		return @( $this->input[$this->pos + $offset] === $tok );
-		//return isset($this->input[$this->pos + $offset]) && $this->input[$this->pos + $offset] === $tok;
-		//return substr($this->input,$this->pos + $offset,1) === $tok;
 	}
 
 
