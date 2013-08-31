@@ -61,15 +61,10 @@ class Less_Environment{
 
 	//may want to just use the __clone()?
 	public function copyEvalEnv($frames = array() ){
-
-		$new_env = new Less_Environment();
-		$new_env->compress = $this->compress;
-		$new_env->strictMath = $this->strictMath;
+		$new_env = clone $this;
 		$new_env->frames = $frames;
-
 		return $new_env;
 	}
-
 
 	public function inParenthesis(){
 		$this->parensStack[] = true;
@@ -158,7 +153,7 @@ class Less_Environment{
 		}
 	}
 
-	static public function scaled($n, $size) {
+	static public function scaled($n, $size = 256 ){
 		if( $n instanceof Less_Tree_Dimension && $n->unit->is('%') ){
 			return (float)$n->value * $size / 100;
 		} else {
@@ -174,10 +169,8 @@ class Less_Environment{
 	}
 
 	public static function rgba($r, $g, $b, $a){
-		$rgb = array();
-		foreach( array($r, $g, $b) as $c){
-			$rgb[] = Less_Environment::scaled($c,256);
-		}
+		$rgb = array($r, $g, $b);
+		$rgb = array_map(array('Less_Environment','scaled'),$rgb);
 
 		$a = self::number($a);
 		return new Less_Tree_Color($rgb, $a);

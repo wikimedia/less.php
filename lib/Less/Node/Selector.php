@@ -42,16 +42,15 @@ class Less_Tree_Selector {
 	}
 
 	public function compile($env) {
-
-
 		$extendList = array();
-		foreach($this->extendList as $extend){
-			$extendList[] = $extend->compile($extend);
+
+		for($i = 0, $len = count($this->extendList); $i < $len; $i++){
+			$extendList[] = $this->extendList[$i]->compile($this->extendList[$i]);
 		}
 
 		$elements = array();
-		foreach($this->elements as $e){
-			$elements[] = $e->compile($env);
+		for( $i = 0, $len = count($this->elements); $i < $len; $i++){
+			$elements[] = $this->elements[$i]->compile($env);
 		}
 
 		return new Less_Tree_Selector($elements, $extendList);

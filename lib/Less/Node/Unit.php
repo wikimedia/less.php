@@ -8,10 +8,8 @@ class Less_Tree_Unit{
 	var $denominator = array();
 
 	function __construct($numerator = array(), $denominator = array(), $backupUnit = null ){
-		$this->numerator = array_slice($numerator,0);
-		$this->denominator = array_slice($denominator,0);
-		sort($this->numerator);
-		sort($this->denominator);
+		$this->numerator = $numerator;
+		$this->denominator = $denominator;
 		$this->backupUnit = $backupUnit;
 	}
 

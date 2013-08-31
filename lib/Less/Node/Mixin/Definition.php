@@ -52,7 +52,10 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 		$name;
 		$isNamedFound;
 
-		$mixinEnv = $mixinEnv->copyEvalEnv( array_merge( array($frame), $mixinEnv->frames) );
+
+		$mixinEnv = clone $mixinEnv;
+		$mixinEnv->frames = array_merge( array($frame), $mixinEnv->frames);
+		//$mixinEnv = $mixinEnv->copyEvalEnv( array_merge( array($frame), $mixinEnv->frames) );
 
 		$args = array_slice($args,0);
 
@@ -177,9 +180,9 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 
 		$frame = $this->compileParams( $env, $mixinEnv, $args );
 
-		$conditionEnv = $env->copyEvalEnv( array_merge( array($frame) , $env->frames) );
+		$env->frames = array_merge( array($frame) , $env->frames);
 
-		if( !$this->condition->compile($conditionEnv) ){
+		if( !$this->condition->compile($env) ){
 			return false;
 		}
 
