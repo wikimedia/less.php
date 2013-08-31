@@ -338,9 +338,7 @@ class Less_Parser{
 
     public function skipWhitespace($length) {
 		$this->pos += $length;
-		while( $this->pos < strlen($this->input) && $this->isWhitespace() ){
-			$this->pos++;
-		}
+		$this->pos += strspn($this->input, "\n\r\t ", $this->pos);
     }
 
 	public function expect($tok, $msg = NULL) {
@@ -1154,31 +1152,29 @@ class Less_Parser{
         }
     }
 
-    //
-    // div, .class, body > p {...}
-    //
-    private function parseRuleset()
-    {
-        $selectors = array();
-        $start = $this->pos;
+	//
+	// div, .class, body > p {...}
+	//
+	private function parseRuleset(){
+		$selectors = array();
+		$start = $this->pos;
 
-        while ($s = $this->MatchFunc('parseSelector')) {
-            $selectors[] = $s;
-            $this->MatchFunc('parseComment');
-            if ( ! $this->MatchChar(',')) {
-                break;
-            }
-            $this->MatchFunc('parseComment');
-        }
+		while( $selectors[] = $this->MatchFunc('parseSelector') ){
+			$this->MatchFunc('parseComment');
+			if( !$this->MatchChar(',') ){
+				break;
+			}
+			$this->MatchFunc('parseComment');
+		}
 
-        if (count($selectors) > 0 && (is_array($rules = $this->MatchFunc('parseBlock')))) {
-            return new Less_Tree_Ruleset($selectors, $rules, $this->env->strictImports);
-        } else {
-            // Backtrack
-            $this->pos = $start;
-            $this->sync();
-        }
-    }
+		if( count($selectors) > 0 && (is_array($rules = $this->MatchFunc('parseBlock'))) ){
+			return new Less_Tree_Ruleset($selectors, $rules, $this->env->strictImports);
+		} else {
+			// Backtrack
+			$this->pos = $start;
+			$this->sync();
+		}
+	}
 
 
 	private function parseRule( $tryAnonymous = null ){
