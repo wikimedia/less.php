@@ -5,8 +5,8 @@ class Less_joinSelectorVisitor{
 	public $contexts = array( array() );
 	public $_visitor;
 
-	const visitRuleDeeper = false;
-	const visitMixinDefinition = false;
+	public $visitRuleDeeper = false;
+	public $visitMixinDefinition = false;
 
 	function __construct(){
 		$this->_visitor = new Less_visitor($this);

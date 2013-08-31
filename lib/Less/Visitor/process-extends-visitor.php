@@ -6,9 +6,9 @@ class Less_processExtendsVisitor{
 	public $_visitor;
 	public $allExtendsStack;
 
-	const visitRuleDeeper = false;
-	const visitMixinDefinitionDeeper = false;
-	const visitSelectorDeeper = false;
+	public $visitRuleDeeper = false;
+	public $visitMixinDefinitionDeeper = false;
+	public $visitSelectorDeeper = false;
 
 
 	function __construct(){

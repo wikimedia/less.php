@@ -8,8 +8,8 @@ class Less_extendFinderVisitor{
 	public $allExtendsStack;
 	public $foundExtends;
 
-	const visitRuleDeeper = false;
-	const visitMixinDefinitionDeeper = false;
+	public $visitRuleDeeper = false;
+	public $visitMixinDefinitionDeeper = false;
 
 	function __construct(){
 		$this->_visitor = new Less_visitor($this);
