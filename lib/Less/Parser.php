@@ -327,12 +327,14 @@ class Less_Parser{
 	 * @param int $offset
 	 * @return bool
 	 */
-	public function peek($tok, $offset = 0){
-		if (strlen($tok) == 1) {
-			return substr($this->input,$this->pos + $offset,1) === $tok;
-		}
-
+	public function PeekReg($tok){
 		return (bool)preg_match($tok, $this->current);
+	}
+
+	public function PeekChar($tok, $offset = 0){
+		return @( $this->input[$this->pos + $offset] === $tok );
+		//return isset($this->input[$this->pos + $offset]) && $this->input[$this->pos + $offset] === $tok;
+		//return substr($this->input,$this->pos + $offset,1) === $tok;
 	}
 
 
@@ -423,11 +425,11 @@ class Less_Parser{
     // over them.
     private function parseComment(){
 
-        if ( ! $this->peek('/')) {
+        if ( ! $this->PeekChar('/')) {
             return;
         }
 
-		if ($this->peek('/', 1)) {
+		if ($this->PeekChar('/', 1)) {
 			return new Less_Tree_Comment($this->MatchReg('/^\/\/.*/'), true);
 		}elseif( $comment = $this->MatchReg('/^\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/')) {
 			return new Less_Tree_Comment($comment, false);
@@ -444,12 +446,12 @@ class Less_Parser{
 		$e = false;
 		$index = $this->pos;
 
-        if ($this->peek('~')) {
+        if ($this->PeekChar('~')) {
 			$j++;
             $e = true; // Escaped strings
         }
 
-        if ( ! $this->peek('"', $j) && ! $this->peek("'", $j)) {
+        if ( ! $this->PeekChar('"', $j) && ! $this->PeekChar("'", $j)) {
             return;
         }
 
@@ -565,7 +567,7 @@ class Less_Parser{
 	// to be enclosed within a string, so it can't be parsed as an Expression.
 	//
 	private function parseEntitiesUrl(){
-		if (! $this->peek('u') || ! $this->MatchReg('/^url\(/')) {
+		if (! $this->PeekChar('u') || ! $this->MatchReg('/^url\(/')) {
 			return;
 		}
 
@@ -593,7 +595,7 @@ class Less_Parser{
 	//
 	private function parseEntitiesVariable(){
 		$index = $this->pos;
-		if ($this->peek('@') && ($name = $this->MatchReg('/^@@?[\w-]+/'))) {
+		if ($this->PeekChar('@') && ($name = $this->MatchReg('/^@@?[\w-]+/'))) {
 			return new Less_Tree_Variable($name, $index, $this->env->currentFileInfo);
 		}
 	}
@@ -617,7 +619,7 @@ class Less_Parser{
     //
     private function parseEntitiesColor()
     {
-        if ($this->peek('#') && ($rgb = $this->MatchReg('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/'))) {
+        if ($this->PeekChar('#') && ($rgb = $this->MatchReg('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/'))) {
             return new Less_Tree_Color($rgb[1]);
         }
     }
@@ -662,10 +664,10 @@ class Less_Parser{
     private function parseEntitiesJavascript()
     {
         $e = false;
-        if ($this->peek('~')) {
+        if ($this->PeekChar('~')) {
             $e = true;
         }
-        if (! $this->peek('`', $e)) {
+        if (! $this->PeekChar('`', $e)) {
             return;
         }
         if ($e) {
@@ -683,7 +685,7 @@ class Less_Parser{
 	//     @fink:
 	//
 	private function parseVariable(){
-		if ($this->peek('@') && ($name = $this->MatchReg('/^(@[\w-]+)\s*:/'))) {
+		if ($this->PeekChar('@') && ($name = $this->MatchReg('/^(@[\w-]+)\s*:/'))) {
 			return $name[1];
 		}
 	}
@@ -749,7 +751,7 @@ class Less_Parser{
 		$args = null;
 		$c = null;
 
-        if( !$this->peek('.') && !$this->peek('#') ){
+        if( !$this->PeekChar('.') && !$this->PeekChar('#') ){
             return;
         }
 
@@ -774,7 +776,7 @@ class Less_Parser{
 			$important = true;
 		}
 
-		if( count($elements) > 0 && ($this->MatchChar(';') || $this->peek('}')) ){
+		if( count($elements) > 0 && ($this->MatchChar(';') || $this->PeekChar('}')) ){
 			return new Less_Tree_Mixin_Call($elements, $args, $index, $this->env->currentFileInfo, $important);
 		}
 
@@ -922,7 +924,7 @@ class Less_Parser{
 		$variadic = false;
 		$cond = null;
 
-        if ((! $this->peek('.') && ! $this->peek('#')) || $this->peek('/^[^{]*\}/')) {
+        if ((! $this->PeekChar('.') && ! $this->PeekChar('#')) || $this->PeekChar('/^[^{]*\}/')) {
             return;
         }
 
@@ -976,7 +978,7 @@ class Less_Parser{
     //
     private function parseEnd()
     {
-        return ($end = $this->MatchChar(';') ) ? $end : $this->peek('}');
+        return ($end = $this->MatchChar(';') ) ? $end : $this->PeekChar('}');
     }
 
     //
@@ -1358,7 +1360,7 @@ class Less_Parser{
 		$hasIdentifier = false;
 		$hasExpression = false;
 
-        if (! $this->peek('@')) {
+        if (! $this->PeekChar('@')) {
             return;
         }
 
@@ -1464,7 +1466,7 @@ class Less_Parser{
 
     private function parseImportant ()
     {
-        if ($this->peek('!')) {
+        if ($this->PeekChar('!')) {
             return $this->MatchReg('/^! *important/');
         }
     }
@@ -1487,7 +1489,7 @@ class Less_Parser{
 
 		if ($m = $this->MatchFunc('parseOperand')) {
 			$isSpaced = $this->isWhitespace( -1 );
-			while( !$this->peek('/^\/[*\/]/') && ($op = $this->match('/','*')) ){
+			while( !$this->PeekReg('/^\/[*\/]/') && ($op = $this->match('/','*')) ){
 
 				if( $a = $this->MatchFunc('parseOperand') ){
 					$m->parensInOp = true;
@@ -1556,7 +1558,7 @@ class Less_Parser{
 	private function parseOperand (){
 		$negate = false;
 		$p = isset($this->input[$this->pos + 1]) ? $this->input[$this->pos + 1] : '';
-		if ($this->peek('-') && ($p === '@' || $p === '(')) {
+		if ($this->PeekChar('-') && ($p === '@' || $p === '(')) {
 			$negate = $this->MatchChar('-');
 		}
 		$o = $this->match('parseSub','parseEntitiesDimension','parseEntitiesColor','parseEntitiesVariable','parseEntitiesCall');
@@ -1582,7 +1584,7 @@ class Less_Parser{
         while ($e = $this->match('parseAddition','parseEntity')) {
             $entities[] = $e;
 			// operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
-			if( !$this->peek('/^\/[\/*]/') && ($delim = $this->MatchChar('/')) ){
+			if( !$this->PeekReg('/^\/[\/*]/') && ($delim = $this->MatchChar('/')) ){
 				$entities[] = new Less_Tree_Anonymous($delim);
 			}
 
