@@ -4,7 +4,9 @@ class Less_joinSelectorVisitor{
 
 	public $contexts = array( array() );
 	public $_visitor;
-	public $isReplacing = false;
+
+	const visitRuleDeeper = false;
+	const visitMixinDefinition = false;
 
 	function __construct(){
 		$this->_visitor = new Less_visitor($this);
@@ -14,15 +16,7 @@ class Less_joinSelectorVisitor{
 		return $this->_visitor->visit($root);
 	}
 
-	function visitRule($ruleNode, &$visitArgs) {
-		$visitArgs['visitDeeper'] = false;
-	}
-
-	function visitMixinDefinition($mixinDefinitionNode, &$visitArgs) {
-		$visitArgs['visitDeeper'] = false;
-	}
-
-	function visitRuleset($rulesetNode, $visitArgs) {
+	function visitRuleset($rulesetNode) {
 		$context = $this->contexts[ count($this->contexts) - 1];
 		$paths = array();
 		//$this->contexts[] = $paths;
@@ -40,7 +34,7 @@ class Less_joinSelectorVisitor{
 		array_pop($this->contexts);
 	}
 
-	function visitMedia(&$mediaNode, $visitArgs) {
+	function visitMedia(&$mediaNode) {
 		$context = $this->contexts[ count($this->contexts) - 1];
 		$mediaNode->ruleset->root = ( count($context) === 0 || @$context[0]->multiMedia);
 	}

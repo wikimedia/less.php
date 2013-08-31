@@ -6,8 +6,10 @@ class Less_extendFinderVisitor{
 	public $contexts = array();
 	public $_visitor;
 	public $allExtendsStack;
-	public $isReplacing = false;
 	public $foundExtends;
+
+	const visitRuleDeeper = false;
+	const visitMixinDefinitionDeeper = false;
 
 	function __construct(){
 		$this->_visitor = new Less_visitor($this);
@@ -21,15 +23,7 @@ class Less_extendFinderVisitor{
 		return $root;
 	}
 
-	function visitRule($ruleNode, &$visitArgs) {
-		$visitArgs['visitDeeper'] = false;
-	}
-
-	function visitMixinDefinition($mixinDefinitionNode, &$visitArgs) {
-		$visitArgs['visitDeeper'] = false;
-	}
-
-	function visitRuleset($rulesetNode, $visitArgs) {
+	function visitRuleset($rulesetNode) {
 
 		if( $rulesetNode->root ){
 			return;
@@ -80,7 +74,7 @@ class Less_extendFinderVisitor{
 		}
 	}
 
-	function visitMedia( $mediaNode, $visitArgs ){
+	function visitMedia( $mediaNode ){
 		$mediaNode->allExtends = array();
 		$this->allExtendsStack[] =& $mediaNode->allExtends;
 	}
@@ -89,7 +83,7 @@ class Less_extendFinderVisitor{
 		array_pop($this->allExtendsStack);
 	}
 
-	function visitDirective( $directiveNode, $visitArgs ){
+	function visitDirective( $directiveNode ){
 		$directiveNode->allExtends = array();
 		$this->allExtendsStack[] =& $directiveNode->allExtends;
 	}

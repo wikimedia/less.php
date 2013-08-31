@@ -5,7 +5,11 @@ class Less_processExtendsVisitor{
 
 	public $_visitor;
 	public $allExtendsStack;
-	public $isReplacing = false;
+
+	const visitRuleDeeper = false;
+	const visitMixinDefinitionDeeper = false;
+	const visitSelectorDeeper = false;
+
 
 	function __construct(){
 		$this->_visitor = new Less_visitor($this);
@@ -131,19 +135,8 @@ class Less_processExtendsVisitor{
 		return false;
 	}
 
-	function visitRule( $ruleNode, &$visitArgs ){
-		$visitArgs['visitDeeper'] = false;
-	}
 
-	function visitMixinDefinition( $mixinDefinitionNode, &$visitArgs ){
-		$visitArgs['visitDeeper'] = false;
-	}
-
-	function visitSelector($selectorNode, $visitArgs) {
-		$visitArgs['visitDeeper'] = false;
-	}
-
-	function visitRuleset($rulesetNode, $visitArgs) {
+	function visitRuleset($rulesetNode) {
 		if( $rulesetNode->root ){
 			return;
 		}
@@ -330,7 +323,7 @@ class Less_processExtendsVisitor{
 	}
 
 
-	function visitMedia( $mediaNode, $visitArgs ){
+	function visitMedia( $mediaNode ){
 		$newAllExtends = array_merge( $mediaNode->allExtends, $this->allExtendsStack[ count($this->allExtendsStack)-1 ] );
 		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $mediaNode->allExtends));
 		$this->allExtendsStack[] = $newAllExtends;
@@ -340,7 +333,7 @@ class Less_processExtendsVisitor{
 		array_pop( $this->allExtendsStack );
 	}
 
-	function visitDirective( $directiveNode, $visitArgs ){
+	function visitDirective( $directiveNode ){
 		$temp = $this->allExtendsStack[ count($this->allExtendsStack)-1];
 		$newAllExtends = array_merge( $directiveNode->allExtends, $temp );
 		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $directiveNode->allExtends));

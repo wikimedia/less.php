@@ -18,17 +18,15 @@ class Less_visitor{
 			return $node;
 		}
 
-		$visitArgs = array('visitDeeper'=> true);
 		$funcName = "visit" . $node->type;
 		if( method_exists($this->_implementation,$funcName) ){
 			$func = array($this->_implementation,$funcName);
-			$newNode = $func($node, $visitArgs);
-			if( $this->_implementation->isReplacing ){
-				$node = $newNode;
-			}
+			$newNode = $func($node);
 		}
 
-		if( $visitArgs['visitDeeper'] && $node && method_exists($node,'accept') ){
+
+		$deeper_property = $funcName.'Deeper';
+		if( !property_exists($this->_implementation,$deeper_property) && $node && method_exists($node,'accept') ){
 			$node->accept($this);
 		}
 
@@ -54,9 +52,6 @@ class Less_visitor{
 			$newNodes[] = $this->visit($nodes[$i]);
 		}
 
-		if( $this->_implementation->isReplacing ){
-			return $newNodes;
-		}
 		return $nodes;
 	}
 
