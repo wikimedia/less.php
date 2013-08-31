@@ -245,5 +245,29 @@ echo $content;
 if( isset($_GET['file']) ){
 	echo '<script src="/less.php/test/Less/Tests/less-1.4.2.js" ></script>';
 }
+
+
+	$max_used = memory_get_peak_usage();
+	//$limit = @ini_get('memory_limit'); //need to convert to byte value
+	//$percentage = round($max_used/$limit,2);
+	echo '<div style="position:absolute;top:-1px;right:0;z-index:10000;padding:5px 10px;background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.2);font-size:11px">';
+	echo '<b>Performance</b>';
+	echo '<table>';
+	//.'<tr><td>Memory Usage:</td><td> '.number_format(memory_get_usage()).'</td></tr>';
+	echo '<tr><td>Memory:</td><td> '.number_format($max_used).'</td></tr>';
+	//.'<tr><td>% of Limit:</td><td> '.$percentage.'%</td></tr>';
+	echo '<tr><td>Time (Request):</td><td> '.microtime_diff($_SERVER['REQUEST_TIME'],microtime()).'</td></tr>';
+	echo '</table>';
+	echo '</div>';
+
+function microtime_diff($a, $b = false, $eff = 6) {
+	if( !$b ) $b = microtime();
+	$a = array_sum(explode(" ", $a));
+	$b = array_sum(explode(" ", $b));
+	return sprintf('%0.'.$eff.'f', $b-$a);
+}
+
+
+
 ?>
 </body></html>
