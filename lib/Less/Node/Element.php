@@ -26,8 +26,8 @@ class Less_Tree_Element{
     }
 
 	function accept( $visitor ){
-		$this->combinator = $visitor->visit( $this->combinator );
-		$this->value = $visitor->visit( $this->value );
+		$visitor->visit( $this->combinator );
+		$visitor->visit( $this->value );
 	}
 
 	//less.js : tree.Element.prototype.toCSS

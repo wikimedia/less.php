@@ -12,7 +12,7 @@ class Less_Tree_Expression {
 	}
 
 	function accept( $visitor ){
-		$this->value = $visitor->visit( $this->value );
+		$visitor->visit( $this->value );
 	}
 
 	public function compile($env) {

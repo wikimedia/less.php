@@ -10,7 +10,7 @@ class Less_Tree_Alpha{
 	}
 
 	function accept( $visitor ){
-		$this->value = $visitor->visit( $this->value );
+		$visitor->visit( $this->value );
 	}
 
 	public function toCss($env){

@@ -11,17 +11,18 @@ class Less_visitor{
 	function visit($node){
 
 		if( is_array($node) ){
-			return $this->visitArray($node);
+			$this->visitArray($node);
+			return;
 		}
 
 		if( !@property_exists($node,'type') || !$node->type ){
-			return $node;
+			return;
 		}
 
 		$funcName = "visit" . $node->type;
 		if( method_exists($this->_implementation,$funcName) ){
 			$func = array($this->_implementation,$funcName);
-			$newNode = $func($node);
+			$func($node);
 		}
 
 
@@ -35,24 +36,18 @@ class Less_visitor{
 			$func = array($this->_implementation,$funcName);
 			call_user_func( $func, $node );
 		}
-
-		return $node;
 	}
 
 	function visitArray( $nodes ){
 
 		//check for associative arrays
 		if( $nodes !== array_values($nodes) ){
-			return $nodes;
+			return;
 		}
 
-
-		$newNodes = array();
 		for($i = 0, $len = count($nodes); $i < $len; $i++ ){
-			$newNodes[] = $this->visit($nodes[$i]);
+			$this->visit($nodes[$i]);
 		}
-
-		return $nodes;
 	}
 
 }

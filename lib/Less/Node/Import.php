@@ -55,9 +55,9 @@ class Less_Tree_Import{
 //
 
 	function accept($visitor) {
-		$this->features = $visitor->visit($this->features);
-		$this->path = $visitor->visit($this->path);
-		$this->root = $visitor->visit($this->root);
+		$visitor->visit($this->features);
+		$visitor->visit($this->path);
+		$visitor->visit($this->root);
 	}
 
 	function toCSS($env) {

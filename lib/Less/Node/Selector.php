@@ -16,8 +16,8 @@ class Less_Tree_Selector {
 	}
 
 	function accept($visitor) {
-		$this->elements = $visitor->visit($this->elements);
-		$this->extendList = $visitor->visit($this->extendList);
+		$visitor->visit($this->elements);
+		$visitor->visit($this->extendList);
 	}
 
 	public function match($other) {

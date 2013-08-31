@@ -13,7 +13,7 @@ class Less_Tree_Assignment {
 	}
 
 	function accept( $visitor ){
-		$this->value = $visitor->visit( $this->value );
+		$visitor->visit( $this->value );
 	}
 
     public function toCss($env) {

@@ -24,7 +24,7 @@ class Less_processExtendsVisitor{
 		$this->allExtendsStack = array();
 		$this->allExtendsStack[] = &$root->allExtends;
 
-		return $this->_visitor->visit( $root );
+		$this->_visitor->visit( $root );
 	}
 
 	function doExtendChaining( $extendsList, $extendsListTarget, $iterationCount = 0){

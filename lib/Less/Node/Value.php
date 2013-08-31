@@ -11,7 +11,7 @@ class Less_Tree_Value{
 	}
 
 	function accept($visitor) {
-		$this->value = $visitor->visit($this->value);
+		$visitor->visit($this->value);
 	}
 
 	public function compile($env){

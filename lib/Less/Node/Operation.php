@@ -11,7 +11,7 @@ class Less_Tree_Operation{
 	}
 
 	function accept($visitor) {
-		$this->operands = $visitor->visit($this->operands);
+		$visitor->visit($this->operands);
 	}
 
 	public function compile($env){

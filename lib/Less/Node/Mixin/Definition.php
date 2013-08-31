@@ -34,9 +34,9 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 	}
 
 	function accept( $visitor ){
-		$this->params = $visitor->visit($this->params);
-		$this->rules = $visitor->visit($this->rules);
-		$this->condition = $visitor->visit($this->condition);
+		$visitor->visit($this->params);
+		$visitor->visit($this->rules);
+		$visitor->visit($this->condition);
 	}
 
 	public function toCss($env){

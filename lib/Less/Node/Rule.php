@@ -27,7 +27,7 @@ class Less_Tree_Rule{
 	}
 
 	function accept($visitor) {
-		$this->value = $visitor->visit( $this->value );
+		$visitor->visit( $this->value );
 	}
 
 	public function toCSS ($env){

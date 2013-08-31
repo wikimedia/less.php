@@ -33,7 +33,7 @@ class Less_Tree_Extend{
 	}
 
 	function accept( $visitor ){
-		$this->selector = $visitor->visit( $this->selector );
+		$visitor->visit( $this->selector );
 	}
 
 	function compile( $env ){

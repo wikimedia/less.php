@@ -16,8 +16,8 @@ class Less_Tree_Media {
 	}
 
 	function accept( $visitor ){
-		$this->features = $visitor->visit($this->features);
-		$this->ruleset = $visitor->visit($this->ruleset);
+		$visitor->visit($this->features);
+		$visitor->visit($this->ruleset);
 	}
 
 	public function toCSS($env) {

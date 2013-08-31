@@ -24,8 +24,8 @@ class Less_Tree_Mixin_Call{
     }
 
 	function accept($visitor){
-		$this->selector = $visitor->visit($this->selector);
-		$this->arguments = $visitor->visit($this->arguments);
+		$visitor->visit($this->selector);
+		$visitor->visit($this->arguments);
 	}
 
 

@@ -13,7 +13,7 @@ class Less_joinSelectorVisitor{
 	}
 
 	function run( $root ){
-		return $this->_visitor->visit($root);
+		$this->_visitor->visit($root);
 	}
 
 	function visitRuleset($rulesetNode) {

@@ -18,8 +18,8 @@ class Less_Tree_Condition {
 	}
 
 	public function accept($visitor){
-		$this->lvalue = $visitor->visit( $this->lvalue );
-		$this->rvalue = $visitor->visit( $this->rvalue );
+		$visitor->visit( $this->lvalue );
+		$visitor->visit( $this->rvalue );
 	}
 
     public function compile($env) {
