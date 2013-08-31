@@ -1,5 +1,6 @@
 <?php
 
+/*
 class Less_importVisitor{
 
 	public $_visitor;
@@ -92,3 +93,4 @@ class Less_importVisitor{
 	}
 
 }
+*/
