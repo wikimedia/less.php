@@ -128,6 +128,7 @@ class Less_Parser{
     public function parse($str, $returnRoot = false){
         $this->pos = 0;
         $this->input = preg_replace('/\r\n/', "\n", $str);
+        $this->current = $this->input;
 
         // Remove potential UTF Byte Order Mark
         //$this->input = preg_replace('/^\uFEFF/', '', $this->input);
@@ -253,7 +254,11 @@ class Less_Parser{
      * @return void
      */
     public function sync(){
-		$this->current = substr($this->input, $this->pos);
+		static $last = false;
+		if( $last !== $this->pos ){
+			$this->current = substr($this->input, $this->pos);
+			$last = $this->pos;
+		}
     }
 
     function isWhitespace($offset = 0) {
@@ -816,7 +821,7 @@ class Less_Parser{
 
 
 			$nameLoop = null;
-			if( method_exists($arg,'throwAwayComments') ){
+			if( $arg instanceof Less_Tree_Expression ){
 				$arg->throwAwayComments();
 			}
 			$value = $arg;
