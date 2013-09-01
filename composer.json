@@ -1,8 +1,8 @@
 {
-	"name": "Mordred/less.php",
+	"name": "oyejorge/less.php",
 	"description": "PHP port of the Javascript version of LESS http://lesscss.org",
 	"keywords": [ "less", "css", "php", "stylesheet", "less.js", "lesscss" ],
-	"homepage": "https://github.com/Mordred/less.php",
+	"homepage": "https://github.com/oyejorge/less.php",
 	"authors": [
 		{
 			"name": "Matt Agar",
@@ -11,10 +11,14 @@
 		{
 			"name": "Martin Jantošovič",
 			"homepage": "https://github.com/Mordred"
+		},
+		{
+			"name": "Josh Schmidt",
+			"homepage": "https://github.com/oyejorge"
 		}
 	],
 	"require": {
-		"PHP" : ">=5.3.5"
+		"PHP" : ">=5.2"
 	},
 	"autoload": {
 		"psr-0": { "Less": "lib/" }

@@ -15,7 +15,7 @@ spl_autoload_register(function($className) use ($lessLibraryPath) {
 });
 
 // Create our environment
-$env = new \Less\Environment;
+$env = new \Less\Environment();
 $env->setCompress(true);
 
 // Grab a comma separated list of files to parse from the query string.
@@ -33,7 +33,7 @@ foreach($files as $key => $file) {
 }
 
 if (count($files)) {
-    
+
     // Check for a cached version of the query string hash
     $hash = md5(array_reduce($files, function($a, $b) {
         return $a . $b . filemtime($b);
