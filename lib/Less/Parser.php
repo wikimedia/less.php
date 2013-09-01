@@ -1175,11 +1175,14 @@ class Less_Parser{
 
 	private function parseRule( $tryAnonymous = null ){
 		$start = $this->pos;
-		$c = isset($this->input[$this->pos]) ? $this->input[$this->pos] : '';
 		$this->save();
 
-		if ($c === '.' || $c === '#' || $c === '&') {
-			return;
+		if( isset($this->input[$this->pos]) ){
+			$c = $this->input[$this->pos];
+
+			if( $c === '.' || $c === '#' || $c === '&' ){
+				return;
+			}
 		}
 
 		if( $name = $this->match('parseVariable','parseProperty') ){
