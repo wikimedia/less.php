@@ -1550,11 +1550,12 @@ class Less_Parser{
 	// such as a Color, or a Variable
 	//
 	private function parseOperand (){
+
 		$negate = false;
-		$p = isset($this->input[$this->pos + 1]) ? $this->input[$this->pos + 1] : '';
-		if ($this->PeekChar('-') && ($p === '@' || $p === '(')) {
+		if( $this->PeekChar('@',1) || $this->PeekChar('(',1) ){
 			$negate = $this->MatchChar('-');
 		}
+
 		$o = $this->match('parseSub','parseEntitiesDimension','parseEntitiesColor','parseEntitiesVariable','parseEntitiesCall');
 
 		if( $negate ){
