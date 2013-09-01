@@ -502,7 +502,7 @@ class Less_Parser{
             $this->pos += strlen($name);
         }
 
-        if ($nameLC === 'alpha') {
+        if( $nameLC === 'alpha' ){
 			$alpha_ret = $this->parseAlpha();
 			if( $alpha_ret ){
 				return $alpha_ret;
@@ -1569,28 +1569,28 @@ class Less_Parser{
 		return $o;
 	}
 
-    //
-    // Expressions either represent mathematical operations,
-    // or white-space delimited Entities.
-    //
-    //     1px solid black
-    //     @var * 2
-    //
-    private function parseExpression (){
-        $entities = array();
+	//
+	// Expressions either represent mathematical operations,
+	// or white-space delimited Entities.
+	//
+	//     1px solid black
+	//     @var * 2
+	//
+	private function parseExpression (){
+		$entities = array();
 
-        while ($e = $this->match('parseAddition','parseEntity')) {
-            $entities[] = $e;
+		while( $e = $this->match('parseAddition','parseEntity') ){
+			$entities[] = $e;
 			// operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
 			if( !$this->PeekReg('/^\/[\/*]/') && ($delim = $this->MatchChar('/')) ){
 				$entities[] = new Less_Tree_Anonymous($delim);
 			}
 
-        }
-        if (count($entities) > 0) {
-            return new Less_Tree_Expression($entities);
-        }
-    }
+		}
+		if (count($entities) > 0) {
+			return new Less_Tree_Expression($entities);
+		}
+	}
 
     private function parseProperty (){
         if ($name = $this->MatchReg('/^(\*?-?[_a-zA-Z0-9-]+)\s*:/')) {
