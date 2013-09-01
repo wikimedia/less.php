@@ -285,7 +285,7 @@ class Less_Parser{
 			if( strlen($tok) == 1 ){
 				$match = $this->MatchChar($tok);
 
-			}elseif( method_exists($this, $tok) ){
+			}elseif( $tok[0] != '/' ){
 				// Non-terminal, match using a function call
 				$match = $this->$tok();
 
