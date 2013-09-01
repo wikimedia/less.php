@@ -8,17 +8,16 @@ The **dynamic** stylesheet language.
 about
 -----
 
-This is a PHP port of the official JavaScript version of LESS <http://lesscss.org>.
+This is a PHP port of the official LESS processor <http://lesscss.org> and should produce the same results as LESS 1.4.2.
 
-Most of the code structure remains the same, which should allow for fairly easy updates in the future. That does
-mean this library requires PHP5.3 as it makes heavy use of namespaces, anonymous functions and the shorthand ternary
-operator - `?:` (to replicate the way Javascript will return the value of the first valid operand when using  `||`).
+Most of the code structure remains the same, which should allow for fairly easy updates in the future.
+Namespaces, anonymous functions and shorthand ternary operators - `?:` have been removed to make this package compatible with php 5.2+.
 
-A couple of things have been omitted from this initial version:
+There are still a few unsupported LESS features:
 
 - Evaluation of JavaScript expressions within back-ticks (for obvious reasons).
 - Definition of custom functions - will be added to the `\Less\Environment` class.
-- A tidy up of the API is needed.
+
 
 use
 ---
