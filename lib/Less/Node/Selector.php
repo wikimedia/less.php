@@ -23,18 +23,17 @@ class Less_Tree_Selector {
 	public function match($other) {
 		$len   = count($this->elements);
 
-		$oelements = array_slice( $other->elements, (count($other->elements) && $other->elements[0]->value === "&") ? 1 : 0);
-		$olen = count($oelements);
-
+		$offset = (count($other->elements) && $other->elements[0]->value === "&") ? 1 : 0;
+		$olen = count($other->elements) - $offset;
 		$max = min($len, $olen);
 
-		if( $olen === 0 || $len < $olen ){
+		if( !$max ){
 			return false;
-		} else {
-			for ($i = 0; $i < $max; $i ++) {
-				if ($this->elements[$i]->value !== $oelements[$i]->value) {
-					return false;
-				}
+		}
+
+		for ($i = 0; $i < $max; $i ++) {
+			if ($this->elements[$i]->value !== $other->elements[$i + $offset]->value) {
+				return false;
 			}
 		}
 
