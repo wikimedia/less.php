@@ -9,9 +9,11 @@ class Less_Tree_Alpha{
 		$this->value = $val;
 	}
 
+	/*
 	function accept( $visitor ){
 		$visitor->visit( $this->value );
 	}
+	*/
 
 	public function toCss($env){
 		return "alpha(opacity=" . (is_string($this->value) ? $this->value : $this->value->toCSS()) . ")";

@@ -17,10 +17,12 @@ class Less_Tree_Condition {
 		$this->negate = $negate;
 	}
 
+	/*
 	public function accept($visitor){
 		$visitor->visit( $this->lvalue );
 		$visitor->visit( $this->rvalue );
 	}
+	*/
 
     public function compile($env) {
 		$a = $this->lvalue->compile($env);

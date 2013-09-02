@@ -10,9 +10,11 @@ class Less_Tree_Value{
 		$this->is = 'value';
 	}
 
+	/*
 	function accept($visitor) {
 		$visitor->visit($this->value);
 	}
+	*/
 
 	public function compile($env){
 

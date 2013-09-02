@@ -10,9 +10,9 @@ class Less_Tree_Operation{
 		$this->isSpaced = $isSpaced;
 	}
 
-	function accept($visitor) {
+	/*function accept($visitor) {
 		$visitor->visit($this->operands);
-	}
+	}*/
 
 	public function compile($env){
 		$a = $this->operands[0]->compile($env);

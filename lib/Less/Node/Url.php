@@ -12,9 +12,11 @@ class Less_Tree_Url{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
+	/*
 	function accept( $visitor ){
 		$visitor->visit($this->value);
 	}
+	*/
 
 	public function toCSS(){
 		return "url(" . $this->value->toCSS() . ")";

@@ -53,12 +53,13 @@ class Less_Tree_Import{
 // we end up with a flat structure, which can easily be imported in the parent
 // ruleset.
 //
-
+	/*
 	function accept($visitor) {
 		$visitor->visit($this->features);
 		$visitor->visit($this->path);
 		$visitor->visit($this->root);
 	}
+	*/
 
 	function toCSS($env) {
 		$features = $this->features ? ' ' . $this->features->toCSS($env) : '';

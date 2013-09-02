@@ -17,9 +17,10 @@ class Less_Tree_Directive{
         }
     }
 
+
 	function accept( $visitor ){
 		$visitor->visit( $this->ruleset );
-		$visitor->visit( $this->value );
+		//$visitor->visit( $this->value );
 	}
 
 	public function toCSS( $env){

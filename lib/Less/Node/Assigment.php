@@ -12,9 +12,11 @@ class Less_Tree_Assignment {
 		$this->value = $val;
 	}
 
+	/*
 	function accept( $visitor ){
 		$visitor->visit( $this->value );
 	}
+	*/
 
     public function toCss($env) {
         return $this->key . '=' . (is_string($this->value) ? $this->value : $this->value->toCSS());

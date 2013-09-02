@@ -26,7 +26,7 @@ class Less_Tree_Ruleset{
 	}
 
 	function accept( $visitor ){
-		$visitor->visit($this->selectors);
+		//$visitor->visit($this->selectors);
 		$visitor->visit($this->rules);
 	}
 

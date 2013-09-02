@@ -10,9 +10,11 @@ class Less_Tree_Negative{
 		$this->value = $node;
 	}
 
+	/*
 	function accept($visitor) {
 		$visitor->visit($this->value);
 	}
+	*/
 
 	function toCSS($env){
 		return '-'.$this->value->toCSS($env);

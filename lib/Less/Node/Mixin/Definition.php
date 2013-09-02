@@ -34,11 +34,13 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 		$this->frames = array();
 	}
 
+	/*
 	function accept( $visitor ){
 		$visitor->visit($this->params);
 		$visitor->visit($this->rules);
 		$visitor->visit($this->condition);
 	}
+	*/
 
 	public function toCss($env){
 		return '';

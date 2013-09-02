@@ -32,9 +32,11 @@ class Less_Tree_Extend{
 
 	}
 
+	/*
 	function accept( $visitor ){
 		$visitor->visit( $this->selector );
 	}
+	*/
 
 	function compile( $env ){
 		return new Less_Tree_Extend( $this->selector->compile($env), $this->option, $this->index);

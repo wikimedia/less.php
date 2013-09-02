@@ -15,10 +15,12 @@ class Less_Tree_Selector {
 		$this->extendList = $extendList;
 	}
 
+	/*
 	function accept($visitor) {
 		$visitor->visit($this->elements);
 		$visitor->visit($this->extendList);
 	}
+	*/
 
 	public function match($other) {
 		$len   = count($this->elements);

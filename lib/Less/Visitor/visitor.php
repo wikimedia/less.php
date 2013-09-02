@@ -4,20 +4,14 @@ class Less_visitor{
 
 	function visit($nodes){
 
-		if( is_array($nodes) ){
-
-			//check for associative arrays
-			if( $nodes !== array_values($nodes) ){
-				return;
-			}
-		}else{
+		if( !is_array($nodes) ){
 			$nodes = array($nodes);
 		}
 
 		foreach($nodes as $node){
 
 			if( !@property_exists($node,'type') || !$node->type ){
-				return;
+				continue;
 			}
 
 			$funcName = "visit" . $node->type;

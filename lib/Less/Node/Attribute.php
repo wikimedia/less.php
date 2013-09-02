@@ -14,9 +14,11 @@ class Less_Tree_Attribute{
 		$this->value = $value;
 	}
 
+	/*
 	function accept($visitor){
 		$visitor->visit($this->value);
 	}
+	*/
 
 	function compile($env){
 		return new Less_Tree_Attribute( (method_exists($this->key,'compile') ? $this->key->compile($env) : $this->key),

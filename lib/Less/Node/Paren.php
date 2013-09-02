@@ -9,9 +9,11 @@ class Less_Tree_Paren {
 		$this->value = $value;
 	}
 
+	/*
 	function accept($visitor){
 		$visitor->visit($this->value);
 	}
+	*/
 
 	public function toCSS($env) {
 		return '(' . trim($this->value->toCSS($env)) . ')';

@@ -16,7 +16,7 @@ class Less_Tree_Media {
 	}
 
 	function accept( $visitor ){
-		$visitor->visit($this->features);
+		//$visitor->visit($this->features);
 		$visitor->visit($this->ruleset);
 	}
 

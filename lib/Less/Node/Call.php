@@ -21,9 +21,11 @@ class Less_Tree_Call{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
+	/*
 	function accept( $visitor ){
 		$visitor->visit( $this->args );
 	}
+	*/
 
     //
     // When evaluating a function call,

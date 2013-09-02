@@ -23,10 +23,12 @@ class Less_Tree_Mixin_Call{
 		$this->important = $important;
     }
 
+	/*
 	function accept($visitor){
 		$visitor->visit($this->selector);
 		$visitor->visit($this->arguments);
 	}
+	*/
 
 
 	/**
