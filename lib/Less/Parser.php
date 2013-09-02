@@ -30,23 +30,24 @@ class Less_Parser{
      */
     private $filename;
 
-    /**
-     * @var string
-     */
-    private $css;
 
     /**
      *
      */
-    static public $version = '1.4.2';
-    static public $less_version = '1.4.2';
+    const version = '1.4.2';
+    const cache_version = '142';
+    const less_version = '1.4.2';
 
     /**
      * @var Less_Environment
      */
     private $env;
+    private $rules = array();
 
 	private static $imports = array();
+	private static $cache_dir = false;	// directory less.php can use for storing data
+
+
 
     /**
      * @param Environment|null $env
@@ -63,7 +64,6 @@ class Less_Parser{
 			self::$import_dirs = array();
 		}
 
-		$this->css = '';
 		$this->pos = 0;
     }
 
@@ -74,8 +74,7 @@ class Less_Parser{
      *
      * @return Environment
      */
-    public function getEnvironment()
-    {
+    public function getEnvironment(){
         return $this->env;
     }
 
@@ -85,8 +84,7 @@ class Less_Parser{
      * @param Less_Envronment $env
      * @return void
      */
-    public function setEnvironment(Less_Envronment $env)
-    {
+    public function setEnvironment(Less_Envronment $env){
         $this->env = $env;
     }
 
@@ -95,28 +93,31 @@ class Less_Parser{
      *
      * @return string
      */
-    public function getCss()
-    {
-        return $this->css;
+    public function getCss(){
+
+ 		$root = new Less_Tree_Ruleset(null, $this->rules );
+		$root->root = true;
+
+		//$importVisitor = new Less_importVisitor();
+		//$importVisitor->run($root);
+
+		$evaldRoot = $root->compile($this->env);
+
+		$joinSelector = new Less_joinSelectorVisitor();
+		$joinSelector->run($evaldRoot);
+
+		$extendsVisitor = new Less_processExtendsVisitor();
+		$extendsVisitor->run($evaldRoot);
+
+		$css = $evaldRoot->toCSS($this->env);
+
+		if( $this->env->compress ){
+			$css = preg_replace('/(\s)+/',"$1", $css);
+		}
+
+        return $css;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->css;
-    }
-
-    /**
-     * Clear the css buffer
-     *
-     * @return void
-     */
-    public function clearCss()
-    {
-        $this->css = '';
-    }
 
     /**
      * Parse a Less string into css
@@ -125,42 +126,11 @@ class Less_Parser{
      * @param bool $returnRoot Indicates whether the return value should be a css string a root node
      * @return Less_Tree_Ruleset|Less_Parser
      */
-    public function parse($str, $returnRoot = false){
-        $this->pos = 0;
-        $this->input = preg_replace('/\r\n/', "\n", $str);
-        $this->current = $this->input;
-
-        // Remove potential UTF Byte Order Mark
-        //$this->input = preg_replace('/^\uFEFF/', '', $this->input);
-        $this->input = preg_replace('/^\\357\\273\\277/um', '', $this->input);
-
-        $root = new Less_Tree_Ruleset(null, $this->parsePrimary());
-        $root->root = true;
-
-		//$importVisitor = new Less_importVisitor();
-		//$importVisitor->run($root);
-
-        if ($returnRoot) {
-            return $root;
-        } else {
-
-			$evaldRoot = $root->compile($this->env);
-
-			$joinSelector = new Less_joinSelectorVisitor();
-			$joinSelector->run($evaldRoot);
-
-			$extendsVisitor = new Less_processExtendsVisitor();
-			$extendsVisitor->run($evaldRoot);
-
-            $this->css = $evaldRoot->toCSS($this->env);
-
-			if( $this->env->compress ){
-				$this->css = preg_replace('/(\s)+/',"$1", $this->css);
-			}
-
-            return $this;
-        }
+    public function parse($str){
+		$this->input = $str;
+		$this->_parse();
     }
+
 
     /**
      * Parse a Less string from a given file
@@ -182,13 +152,20 @@ class Less_Parser{
 		$previousImportDirs = self::$import_dirs;
 		self::AddParsedFile($filename);
 
-		$return = $this->parse(file_get_contents($filename), $returnRoot);
+		$return = null;
+		if( $returnRoot ){
+			$rules = $this->GetRules( $filename );
+			$return = new Less_Tree_Ruleset(null, $rules );
+		}else{
+			$this->_parse( $filename );
+		}
 
 		$this->env->currentFileInfo = $previousFileInfo;
 		self::$import_dirs = $previousImportDirs;
 
 		return $return;
 	}
+
 
 	public function SetFileInfo( $filename, $uri_root = ''){
 
@@ -215,6 +192,15 @@ class Less_Parser{
 		self::$import_dirs = array_merge( array( $dirname => $currentFileInfo['uri_root'] ), self::$import_dirs );
 	}
 
+	public function SetCacheDir( $dir ){
+
+		if( is_dir($dir) && is_writable($dir) ){
+			self::$cache_dir = rtrim($dir,'/').'/';
+			return true;
+		}
+
+	}
+
 	public function SetImportDirs( $dirs ){
 		foreach($dirs as $path => $uri_root){
 			if( !empty($path) ){
@@ -226,6 +212,57 @@ class Less_Parser{
 			self::$import_dirs[$path] = $uri_root;
 		}
 	}
+
+	private function _parse( $file_path = false ){
+		$this->rules = array_merge($this->rules, $this->GetRules( $file_path ));
+	}
+
+
+	/**
+	 * Return the results of parsePrimary for $file_path
+	 * Use cache and save cached results if possible
+	 *
+	 */
+	private function GetRules( $file_path ){
+
+		$cache_file = $this->CacheFile( $file_path );
+		if( $cache_file && file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
+			return $cache;
+		}
+
+		if( $file_path ){
+			$this->input = file_get_contents( $file_path );
+		}
+
+		$this->pos = 0;
+		$this->input = preg_replace('/\r\n/', "\n", $this->input);
+
+		// Remove potential UTF Byte Order Mark
+		//$this->input = preg_replace('/^\uFEFF/', '', $this->input);
+		$this->input = preg_replace('/^\\357\\273\\277/um', '', $this->input);
+		$this->current = $this->input;
+
+		$rules = $this->parsePrimary();
+
+
+		//save the cache
+		if( $cache_file ){
+			file_put_contents( $cache_file, serialize($rules) );
+		}
+
+		return $rules;
+	}
+
+
+	private function CacheFile( $file_path ){
+
+		if( $file_path && self::$cache_dir ){
+			$file_size = filesize( $file_path );
+			$file_mtime = filemtime( $file_path );
+			return self::$cache_dir.base_convert( md5($file_path), 16, 36).'.'.base_convert($file_size,10,36).'.'.base_convert($file_mtime,10,36).'.'.self::cache_version.'.lesscache';
+		}
+	}
+
 
 	static function AddParsedFile($file){
 		self::$imports[] = $file;
@@ -244,7 +281,7 @@ class Less_Parser{
         $this->memo = $this->pos;
 	}
 
-    function restore() {
+    private function restore() {
         $this->pos = $this->memo;
 	}
 
@@ -253,7 +290,7 @@ class Less_Parser{
      *
      * @return void
      */
-    public function sync(){
+    private function sync(){
 		static $last = false;
 		if( $last !== $this->pos ){
 			$this->current = substr($this->input, $this->pos);
@@ -261,7 +298,7 @@ class Less_Parser{
 		}
     }
 
-    function isWhitespace($offset = 0) {
+    private function isWhitespace($offset = 0) {
 		return ctype_space($this->input[ $this->pos + $offset]);
     }
 
@@ -271,7 +308,7 @@ class Less_Parser{
      * @param string $tok
      * @return null|bool|object
      */
-    public function match(){
+    private function match(){
 
         // The match is confirmed, add the match length to `this::pos`,
         // and consume any extra white-space characters (' ' || '\n')
@@ -300,7 +337,7 @@ class Less_Parser{
 	}
 
 	// Match a single character in the input,
-    function MatchChar($tok){
+	private function MatchChar($tok){
 		if( @($this->input[$this->pos] === $tok) ){
 			$this->skipWhitespace(1);
 			$this->sync();
@@ -309,7 +346,7 @@ class Less_Parser{
 	}
 
 	// Match a regexp from the current start point
-	function MatchReg($tok){
+	private function MatchReg($tok){
 		$this->sync();
 
 		if( preg_match($tok, $this->current, $match) ){

@@ -24,7 +24,17 @@ global $head;
 
 class ParserTest{
 
+	var $cache_dir;
+
 	function __construct(){
+
+		$this->cache_dir = __DIR__.'/x_cache';
+
+		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
+			echo '<p>Invalid cache directory</p>';
+		}elseif( !is_writable($this->cache_dir) ){
+			echo '<p>Cache directory not writable</p>';
+		}
 
 		$dir = __DIR__ .'/Fixtures/less.js';
 		$this->lessJsProvider($dir);
@@ -53,20 +63,6 @@ class ParserTest{
 			$this->testLessJsCssGeneration( $dir, $files[0], $files[1] );
 		}
 
-		return;
-
-
-		$dir = __DIR__ .'/Fixtures/less.js';
-		if( isset($_GET['file']) ){
-			$less = (array)($dir.'/less/'.$_GET['file'].'.less');
-			$css = (array)($dir.'/css/'.$_GET['file'].'.css');
-		}else{
-			$less = glob($dir."/less/*.less");
-			$css = glob($dir."/css/*.css");
-		}
-
-
-        return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
     }
 
     public function testLessJsCssGeneration($dir, $less, $css){
@@ -81,6 +77,9 @@ class ParserTest{
 		$compiled = '';
 		try{
 			$parser = new Less_Parser();
+			//$parser->SetCacheDir( $this->cache_dir );
+			//$contents = file_get_contents($less);
+			//$parser->parse($contents);
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 
