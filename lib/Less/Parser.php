@@ -46,6 +46,7 @@ class Less_Parser{
 
 	private static $imports = array();
 	private static $cache_dir = false;	// directory less.php can use for storing data
+	private static $clean_cache = true;
 
 
 
@@ -227,6 +228,7 @@ class Less_Parser{
 
 		$cache_file = $this->CacheFile( $file_path );
 		if( $cache_file && file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
+			touch($cache_file);
 			return $cache;
 		}
 
@@ -248,6 +250,11 @@ class Less_Parser{
 		//save the cache
 		if( $cache_file ){
 			file_put_contents( $cache_file, serialize($rules) );
+
+			if( self::$clean_cache ){
+				$this->CleanCache();
+			}
+
 		}
 
 		return $rules;
@@ -263,6 +270,17 @@ class Less_Parser{
 		}
 	}
 
+	private function CleanCache(){
+
+		$files = glob(self::$cache_dir.'/*.lesscache');
+		$check_time = time() - 604800;
+		foreach($files as $file){
+			if( filemtime($file) > $check_time ){
+				continue;
+			}
+			unlink($file);
+		}
+	}
 
 	static function AddParsedFile($file){
 		self::$imports[] = $file;
