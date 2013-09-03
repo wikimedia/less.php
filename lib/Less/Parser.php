@@ -70,24 +70,6 @@ class Less_Parser{
 
 
 
-    /**
-     * Get the current parser environment
-     *
-     * @return Environment
-     */
-    public function getEnvironment(){
-        return $this->env;
-    }
-
-    /**
-     * Set the current parser environment
-     *
-     * @param Less_Envronment $env
-     * @return void
-     */
-    public function setEnvironment(Less_Envronment $env){
-        $this->env = $env;
-    }
 
     /**
      * Get the current css buffer
