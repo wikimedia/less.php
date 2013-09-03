@@ -109,7 +109,7 @@ class Less_Tree_Import{
 				$temp = $rootpath.$evald_path;
 				if( file_exists($temp) ){
 					$full_path = $temp;
-					$uri = $rooturi.dirname($evald_path);
+					$uri = dirname($rooturi.$evald_path);
 					break;
 				}
 			}
