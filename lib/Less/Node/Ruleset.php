@@ -201,30 +201,30 @@ class Less_Tree_Ruleset{
 		if( !$self ){
 			$self = $this;
 		}
-		$rules = array();
+
 		$key = $selector->toCSS($env);
 
-		if (array_key_exists($key, $this->lookups)) {
-			return $this->lookups[$key];
-		}
+		if( !array_key_exists($key, $this->lookups) ){
+			$this->lookups[$key] = array();;
 
-		foreach($this->rulesets() as $rule) {
-			if ($rule !== $self) {
-				foreach($rule->selectors as $ruleSelector) {
-					if ($selector->match($ruleSelector)) {
+			foreach( $this->rulesets() as $rule ){
+				if( $rule == $self ){
+					continue;
+				}
+
+				foreach( $rule->selectors as $ruleSelector ){
+					if( $selector->match($ruleSelector) ){
 
 						if (count($selector->elements) > count($ruleSelector->elements)) {
-							$rules = array_merge($rules, $rule->find( new Less_Tree_Selector(array_slice($selector->elements, 1)), $self, $env));
+							$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, 1)), $self, $env));
 						} else {
-							$rules[] = $rule;
+							$this->lookups[$key][] = $rule;
 						}
 						break;
 					}
 				}
 			}
 		}
-
-		$this->lookups[$key] = $rules;
 
 		return $this->lookups[$key];
 	}
