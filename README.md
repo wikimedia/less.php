@@ -34,8 +34,9 @@ $css = $parser->getCss();
 
 ### Parsing Less Files
 The parseFile() function takes two arguments:
-1) The absolute path of the .less file to be parsed
-2) The url root to prepend to any relative image or @import urls in the .less file.
+
+1. The absolute path of the .less file to be parsed
+2. The url root to prepend to any relative image or @import urls in the .less file.
 
 ```php
 <?php
