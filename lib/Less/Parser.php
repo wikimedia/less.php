@@ -292,7 +292,7 @@ class Less_Parser{
      */
     private function sync(){
 		static $last = false;
-		if( $last !== $this->pos ){
+		if( $this->pos !== $last ){
 			$this->current = substr($this->input, $this->pos);
 			$last = $this->pos;
 		}
@@ -349,7 +349,7 @@ class Less_Parser{
 	private function MatchReg($tok){
 		$this->sync();
 
-		if( preg_match($tok, $this->current, $match) ){
+		if( preg_match($tok, $this->current, $match, 0) ){
 			$this->skipWhitespace(strlen($match[0]));
 			$this->sync();
 			return count($match) === 1 ? $match[0] : $match;
@@ -378,6 +378,7 @@ class Less_Parser{
 		$this->pos += $length;
 		$this->pos += strspn($this->input, "\n\r\t ", $this->pos);
     }
+
 
 	public function expect($tok, $msg = NULL) {
 		$result = $this->match($tok);
@@ -443,7 +444,7 @@ class Less_Parser{
 		$this->skipWhitespace(0);
 
         while( ($node = $this->match('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective' ))
-							|| $this->MatchReg('/^;+/')
+							|| $this->skipSemicolons()
         ){
 			//not the same as less.js
 			if( is_array($node) ){
@@ -455,6 +456,16 @@ class Less_Parser{
 
         return $root;
     }
+
+	public function skipSemicolons(){
+		$len = strspn($this->input, ";", $this->pos);
+		if( $len ){
+			$this->skipWhitespace($len);
+			$this->sync();
+			return true;
+		}
+	}
+
 
     // We create a Comment node for CSS comments `/* */`,
     // but keep the LeSS comments `//` silent, by just skipping

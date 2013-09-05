@@ -10,6 +10,10 @@ class Less_visitor{
 
 		foreach($nodes as $node){
 
+			if( !is_object($node) ){
+				continue;
+			}
+
 			$class = get_class($node);
 			$funcName = 'visit' . substr( $class, strrpos( $class, '_')+1 );
 

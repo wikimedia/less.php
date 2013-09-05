@@ -77,7 +77,7 @@ class ParserTest{
 		$compiled = '';
 		try{
 			$parser = new Less_Parser();
-			$parser->SetCacheDir( $this->cache_dir );
+			//$parser->SetCacheDir( $this->cache_dir );
 			//$contents = file_get_contents($less);
 			//$parser->parse($contents);
 			$parser->parseFile($less);
@@ -115,6 +115,7 @@ class ParserTest{
 
 
 			if( isset($_GET['file']) ){
+				echo '</table>';
 				echo '<table style="width:100%"><tr><td>';
 				echo '<pre>';
 				echo implode("\n",$compiled);
