@@ -4,7 +4,7 @@
 class Less_Tree_Anonymous{
 	public $value;
 	public $quote;
-	public $type = 'Anonymous';
+	//public $type = 'Anonymous';
 
 	public function __construct($value){
 		$this->value = is_string($value) ? $value : $value->value;

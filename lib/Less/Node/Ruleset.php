@@ -4,7 +4,7 @@
 
 
 class Less_Tree_Ruleset{
-	public $type = 'Ruleset';
+	//public $type = 'Ruleset';
 	protected $lookups;
 	private $_variables;
 	private $_rulesets;

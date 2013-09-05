@@ -3,7 +3,7 @@
 
 class Less_Tree_Mixin_Call{
 
-	public $type = 'MixinCall';
+	//public $type = 'MixinCall';
 	private $selector;
 	private $arguments;
 	private $index;

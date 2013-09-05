@@ -4,7 +4,7 @@
 
 class Less_Tree_Media {
 
-	public $type = 'Media';
+	//public $type = 'Media';
 	public $features;
 	public $ruleset;
 

@@ -3,7 +3,7 @@
 //less.js : lib/less/tree/element.js
 
 class Less_Tree_Element{
-	public $type = 'Element';
+	//public $type = 'Element';
 	public $combinator;
     public $value;
 	public $index;

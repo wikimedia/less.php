@@ -2,7 +2,7 @@
 
 
 class Less_Tree_Url{
-	public $type = "Url";
+	//public $type = "Url";
 	public $attrs;
 	public $value;
 	public $currentFileInfo;

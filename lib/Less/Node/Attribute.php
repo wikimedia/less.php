@@ -3,7 +3,7 @@
 
 class Less_Tree_Attribute{
 
-	public $type = "Attribute";
+	//public $type = "Attribute";
 	public $key;
 	public $op;
 	public $value;

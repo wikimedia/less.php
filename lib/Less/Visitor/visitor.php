@@ -10,11 +10,10 @@ class Less_visitor{
 
 		foreach($nodes as $node){
 
-			if( !@property_exists($node,'type') || !$node->type ){
-				continue;
-			}
+			$class = get_class($node);
+			$funcName = 'visit' . substr( $class, strrpos( $class, '_')+1 );
 
-			$funcName = "visit" . $node->type;
+
 			if( method_exists($this,$funcName) ){
 				$this->$funcName( $node );
 			}

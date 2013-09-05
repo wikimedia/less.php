@@ -16,7 +16,7 @@
 //
 class Less_Tree_Import{
 
-	public $type = 'Import';
+	//public $type = 'Import';
 	public $options;
 	public $index;
 	public $path;

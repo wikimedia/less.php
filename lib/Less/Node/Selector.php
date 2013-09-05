@@ -5,7 +5,7 @@
 
 class Less_Tree_Selector {
 
-	public $type = 'Selector';
+	//public $type = 'Selector';
 	public $elements;
 	public $extendList = array();
 	private $_css;

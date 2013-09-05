@@ -2,7 +2,7 @@
 
 class Less_Tree_Directive{
 
-	public $type = 'Directive';
+	//public $type = 'Directive';
     public $name;
     public $value;
     public $ruleset;

@@ -2,7 +2,7 @@
 
 
 class Less_Tree_Rule{
-	public $type = 'Rule';
+	//public $type = 'Rule';
 	public $name;
 	public $value;
 	public $important;

@@ -3,7 +3,7 @@
 
 class Less_Tree_Variable {
 
-	public $type = 'Variable';
+	//public $type = 'Variable';
 	public $name;
 	public $index;
 	public $currentFileInfo;

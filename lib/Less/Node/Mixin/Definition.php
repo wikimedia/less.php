@@ -1,7 +1,7 @@
 <?php
 
 class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
-	public $type = 'MixinDefinition';
+	//public $type = 'MixinDefinition';
 	public $name;
 	public $selectors;
 	public $params;

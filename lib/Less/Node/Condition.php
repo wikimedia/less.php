@@ -2,7 +2,7 @@
 
 class Less_Tree_Condition {
 
-	public $type = 'Condition';
+	//public $type = 'Condition';
 	private $op;
 	private $lvalue;
 	private $rvalue;

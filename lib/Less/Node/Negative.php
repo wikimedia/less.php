@@ -3,7 +3,7 @@
 
 class Less_Tree_Negative{
 
-	public $type = 'Negative';
+	//public $type = 'Negative';
 	public $value;
 
 	function __construct($node){

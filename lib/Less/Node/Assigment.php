@@ -3,7 +3,7 @@
 
 class Less_Tree_Assignment {
 
-	public $type = 'Assignment';
+	//public $type = 'Assignment';
 	private $key;
 	private $value;
 

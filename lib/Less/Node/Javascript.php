@@ -2,7 +2,7 @@
 
 class Less_Tree_Javascript{
 
-	public $type = 'Javascript';
+	//public $type = 'Javascript';
 
 	public function __construct($string, $index, $escaped){
 		$this->escaped = $escaped;

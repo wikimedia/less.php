@@ -3,7 +3,7 @@
 
 class Less_Tree_Dimension{
 
-	public $type = 'Dimension';
+	//public $type = 'Dimension';
 
     public function __construct($value, $unit = false){
         $this->value = floatval($value);

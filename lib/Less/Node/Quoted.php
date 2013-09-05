@@ -2,7 +2,7 @@
 
 
 class Less_Tree_Quoted{
-	public $type = 'Quoted';
+	//public $type = 'Quoted';
 	public $value;
 	public $content;
 	public $index;

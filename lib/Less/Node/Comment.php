@@ -2,7 +2,7 @@
 
 class Less_Tree_Comment{
 
-	public $type = 'Comment';
+	//public $type = 'Comment';
 
     public function __construct($value, $silent)
     {

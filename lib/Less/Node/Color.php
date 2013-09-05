@@ -2,7 +2,7 @@
 
 
 class Less_Tree_Color{
-	public $type = 'Color';
+	//public $type = 'Color';
 	var $rgb;
 	var $alpha;
 

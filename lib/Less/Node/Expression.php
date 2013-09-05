@@ -2,7 +2,7 @@
 
 class Less_Tree_Expression {
 
-	public $type = 'Expression';
+	//public $type = 'Expression';
 	public $value = array();
 	public $parens = false;
 	public $parensInOp = false;

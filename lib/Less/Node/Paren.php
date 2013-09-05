@@ -2,7 +2,7 @@
 
 class Less_Tree_Paren {
 
-	public $type = 'Paren';
+	//public $type = 'Paren';
 	public $value;
 
 	public function __construct($value) {

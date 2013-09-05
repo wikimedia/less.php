@@ -2,7 +2,7 @@
 
 class Less_Tree_Operation{
 
-	public $type = 'Operation';
+	//public $type = 'Operation';
 
 	public function __construct($op, $operands, $isSpaced = false){
 		$this->op = trim($op);

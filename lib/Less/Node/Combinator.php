@@ -5,7 +5,7 @@
 
 class Less_Tree_Combinator {
 
-	public $type = 'Combinator';
+	//public $type = 'Combinator';
 	public $value;
 
 	public function __construct($value = null) {

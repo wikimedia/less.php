@@ -3,7 +3,7 @@
 
 class Less_Tree_Unit{
 
-	public $type = 'Unit';
+	//public $type = 'Unit';
 	var $numerator = array();
 	var $denominator = array();
 

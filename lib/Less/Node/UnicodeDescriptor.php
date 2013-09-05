@@ -2,7 +2,7 @@
 
 
 class Less_Tree_UnicodeDescriptor{
-	public $type = 'UnicodeDescriptor';
+	//public $type = 'UnicodeDescriptor';
 	public function __construct($value){
 		$this->value = $value;
 	}

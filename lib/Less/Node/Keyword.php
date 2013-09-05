@@ -3,7 +3,7 @@
 
 class Less_Tree_Keyword{
 
-	public $type = 'Keyword';
+	//public $type = 'Keyword';
 	public function __construct($value){
 		$this->value = $value;
 	}

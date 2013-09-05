@@ -3,7 +3,7 @@
 
 class Less_Tree_Extend{
 
-	public $type = 'Extend';
+	//public $type = 'Extend';
 	public $selector;
 	public $option;
 	public $index;
