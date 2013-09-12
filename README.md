@@ -23,7 +23,7 @@ use
 ---
 
 ### Installation
-
+[Download the latest Less.php distribution file](https://github.com/oyejorge/less.php/tree/master/dist) and upload it to your server.
 
 
 ### Parsing Strings
