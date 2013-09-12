@@ -37,6 +37,7 @@ class ParserTest{
 		}
 
 		$dir = __DIR__ .'/Fixtures/less.js';
+		$dir = __DIR__ .'/Fixtures/bootstrap3';
 		$this->lessJsProvider($dir);
 	}
 
@@ -49,12 +50,12 @@ class ParserTest{
 
 		}else{
 
-			$list = scandir($dir.'/less');
+			$list = scandir($dir.'/css');
 			foreach($list as $file){
-				if( strpos($file,'.less') === false ){
+				if( strpos($file,'.css') === false ){
 					continue;
 				}
-				$pairs[] = array('/less/'.$file, '/css/'.str_replace('.less','.css',$file) );
+				$pairs[] = array('/less/'.str_replace('.css','.less',$file), '/css/'.$file  );
 			}
 
 		}
