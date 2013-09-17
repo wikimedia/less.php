@@ -488,9 +488,12 @@ class Less_Parser{
             return;
         }
 
+
 		if ($this->PeekChar('/', 1)) {
+
 			return new Less_Tree_Comment($this->MatchReg('/^\/\/.*/'), true);
-		}elseif( $comment = $this->MatchReg('/^\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/')) {
+		//}elseif( $comment = $this->MatchReg('/^\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/')) {
+		}elseif( $comment = $this->MatchReg('/^\/\*.*?\*+\/\n?/s') ) { //not the same as less.js to prevent fatal errors
 			return new Less_Tree_Comment($comment, false);
 		}
     }

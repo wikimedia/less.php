@@ -25,8 +25,15 @@ class Less_Tree_Selector {
 	public function match($other) {
 		$len   = count($this->elements);
 
-		$offset = (count($other->elements) && $other->elements[0]->value === "&") ? 1 : 0;
-		$olen = count($other->elements) - $offset;
+		$olen = $offset = 0;
+		if( $other && count($other->elements) ){
+
+			if( $other->elements[0]->value === "&" ){
+				$offset = 1;
+			}
+			$olen = count($other->elements) - $offset;
+		}
+
 		$max = min($len, $olen);
 
 		if( !$max ){
@@ -41,6 +48,10 @@ class Less_Tree_Selector {
 
 		return true;
 	}
+
+
+
+
 
 	public function compile($env) {
 		$extendList = array();

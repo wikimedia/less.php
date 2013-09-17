@@ -37,7 +37,7 @@ class ParserTest{
 		}
 
 		$dir = __DIR__ .'/Fixtures/less.js';
-		$dir = __DIR__ .'/Fixtures/bootstrap3';
+		//$dir = __DIR__ .'/Fixtures/bootstrap3';
 		$this->lessJsProvider($dir);
 	}
 
