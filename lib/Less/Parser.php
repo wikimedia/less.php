@@ -34,8 +34,8 @@ class Less_Parser{
     /**
      *
      */
-    const version = '1.4.2b1';
-    const cache_version = '142b1';
+    const version = '1.4.2b2';
+    const cache_version = '142b2';
     const less_version = '1.4.2';
 
     /**

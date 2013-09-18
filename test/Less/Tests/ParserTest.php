@@ -17,14 +17,15 @@ require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/SideBySide.php'
 require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/Inline.php');
 
 
-
-//
-
-global $head;
-
 class ParserTest{
 
+	//options
+	var $compress = true;
+	var $test_folder = 'less.js'; // bootstrap3
+
+
 	var $cache_dir;
+	var $head;
 
 	function __construct(){
 
@@ -36,8 +37,7 @@ class ParserTest{
 			echo '<p>Cache directory not writable</p>';
 		}
 
-		$dir = __DIR__ .'/Fixtures/less.js';
-		//$dir = __DIR__ .'/Fixtures/bootstrap3';
+		$dir = __DIR__ .'/Fixtures/'.$this->test_folder;
 		$this->lessJsProvider($dir);
 	}
 
@@ -75,9 +75,16 @@ class ParserTest{
 		$less = $dir.$less;
 		$css = $dir.$css;
 
+
+		$options = array();
+		if( $this->compress ){
+			$options = array( 'compress'=>true );
+		}
+
+
 		$compiled = '';
 		try{
-			$parser = new Less_Parser();
+			$parser = new Less_Parser( $options );
 			//$parser->SetCacheDir( $this->cache_dir );
 			//$contents = file_get_contents($less);
 			//$parser->parse($contents);
@@ -95,6 +102,27 @@ class ParserTest{
 			echo '<b>----empty----</b>';
 			return;
 		}
+
+
+		// If compress is enabled, add some whitespaces back for comparison
+		if( $this->compress ){
+			$compiled = str_replace('{'," {\n",$compiled);
+			//$compiled = str_replace('}',"\n}",$compiled);
+			$compiled = str_replace(';',";\n",$compiled);
+			$compiled = preg_replace('/\s*}\s*/',"\n}\n",$compiled);
+
+
+			$css = preg_replace('/\n\s+/',"\n",$css);
+			$css = preg_replace('/:\s+/',":",$css);
+			$css = preg_replace('/;(\s)}/','$1}',$css);
+
+		}
+
+		$css = trim($css);
+		$compiled = trim($compiled);
+
+
+
 		if( $css === $compiled ){
 			echo ' (equals) ';
 
@@ -132,64 +160,14 @@ class ParserTest{
 
 		$pos = strpos($less,'/less.php');
 
-		global $head;
 		if( isset($_GET['file']) ){
-			$head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
+			$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
 		}
 		//echo '<textarea>'.htmlspecialchars(file_get_contents($less)).'</textara>';
 
     }
 
 
-
-    /**
-     * @dataProvider lessPhpProvider
-     */
-    public function testLessPhpCssGeneration($less, $css)
-    {
-        $parser = new Parser();
-
-        $less = $parser->parseFile($less)->getCss();
-        $css = file_get_contents($css);
-
-        $this->assertEquals($css, $less);
-    }
-
-    public function lessPhpProvider(){
-		$dir = __DIR__.'/Fixtures/less.php/less/';
-		$less = glob($dir.'/*.less');
-		$css = glob($dir.'/*.css');
-
-        return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
-    }
-
-    /**
-     * @dataProvider boostrap202Provider
-     */
-    public function testBoostrap202CssGeneration($less, $css)
-    {
-        $parser = new Parser();
-
-        $less = $parser->parseFile($less)->getCss();
-        $css = file_get_contents($css);
-
-        $this->assertEquals($css, $less);
-    }
-
-    public function boostrap202Provider()
-    {
-		$dir = __DIR__ . "/Fixtures/bootstrap-2.0.2/";
-        $less = array(
-			$dir . 'less/bootstrap.less',
-			$dir . 'less/responsive.less'
-		);
-        $css = array(
-			$dir . 'css/bootstrap.css',
-			$dir . 'css/bootstrap-responsive.css'
-		);
-
-        return array_map(function($less, $css) { return array($less, $css); }, $less, $css);
-    }
 
 
 
@@ -233,7 +211,7 @@ class ParserTest{
 }
 
 ob_start();
-new ParserTest();
+$test_obj = new ParserTest();
 $content = ob_get_clean();
 
 ?>
@@ -242,7 +220,7 @@ $content = ob_get_clean();
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <title>Parser Tests</title>
 <link rel="stylesheet" href="/less.php/test/Less/Tests/php-diff/styles.css" type="text/css" />
-<?php echo $head ?>
+<?php echo $test_obj->head ?>
 </head>
 <body>
 <?php
