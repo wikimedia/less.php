@@ -35,7 +35,7 @@ class Less_Parser{
      *
      */
     const version = '1.4.2b2';
-    const cache_version = '142b2';
+    const cache_version = '1422';
     const less_version = '1.4.2';
 
     /**
@@ -124,7 +124,7 @@ class Less_Parser{
      * @param bool $returnRoot Indicates whether the return value should be a css string a root node
      * @return Less_Tree_Ruleset|Less_Parser
      */
-	public function parseFile($filename, $uri_root = '', $returnRoot = false){
+	public function parseFile( $filename, $uri_root = '', $returnRoot = false){
 
 		if( !file_exists($filename) ){
 			throw new Less_ParserException(sprintf('File `%s` not found.', $filename));
