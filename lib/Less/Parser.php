@@ -1,7 +1,9 @@
 <?php
 
 
-class Less_Parser{
+require 'LessCache.php';
+
+class Less_Parser extends Less_Cache{
 
 
     private $input;		// LeSS input string
@@ -20,11 +22,6 @@ class Less_Parser{
      */
     private $path;
 
-	/**
-	 * @var array
-	 */
-	static $import_dirs = array();
-
     /**
      * @var string
      */
@@ -35,7 +32,6 @@ class Less_Parser{
      *
      */
     const version = '1.4.2b2';
-    const cache_version = '1422';
     const less_version = '1.4.2';
 
     /**
@@ -45,8 +41,6 @@ class Less_Parser{
     private $rules = array();
 
 	private static $imports = array();
-	private static $cache_dir = false;	// directory less.php can use for storing data
-	private static $clean_cache = true;
 
 
 
@@ -178,6 +172,7 @@ class Less_Parser{
 	public function SetCacheDir( $dir ){
 
 		if( is_dir($dir) && is_writable($dir) ){
+			$dir = str_replace('\\','/',$dir);
 			self::$cache_dir = rtrim($dir,'/').'/';
 			return true;
 		}
@@ -186,6 +181,10 @@ class Less_Parser{
 
 	public function SetImportDirs( $dirs ){
 		foreach($dirs as $path => $uri_root){
+
+			$path = str_replace('\\','/',$path);
+			$uri_root = str_replace('\\','/',$uri_root);
+
 			if( !empty($path) ){
 				$path = rtrim($path,'/').'/';
 			}
@@ -234,7 +233,7 @@ class Less_Parser{
 			file_put_contents( $cache_file, serialize($rules) );
 
 			if( self::$clean_cache ){
-				$this->CleanCache();
+				self::CleanCache();
 			}
 
 		}
@@ -248,21 +247,10 @@ class Less_Parser{
 		if( $file_path && self::$cache_dir ){
 			$file_size = filesize( $file_path );
 			$file_mtime = filemtime( $file_path );
-			return self::$cache_dir.base_convert( md5($file_path), 16, 36).'.'.base_convert($file_size,10,36).'.'.base_convert($file_mtime,10,36).'.'.self::cache_version.'.lesscache';
+			return self::$cache_dir.'lessphp_'.base_convert( md5($file_path), 16, 36).'.'.base_convert($file_size,10,36).'.'.base_convert($file_mtime,10,36).'.'.self::cache_version.'.lesscache';
 		}
 	}
 
-	private function CleanCache(){
-
-		$files = glob(self::$cache_dir.'/*.lesscache');
-		$check_time = time() - 604800;
-		foreach($files as $file){
-			if( filemtime($file) > $check_time ){
-				continue;
-			}
-			unlink($file);
-		}
-	}
 
 	static function AddParsedFile($file){
 		self::$imports[] = $file;

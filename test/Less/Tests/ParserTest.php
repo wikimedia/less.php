@@ -20,7 +20,7 @@ require( $dir. '/test/Less/Tests/php-diff/lib/Diff/Renderer/Html/Inline.php');
 class ParserTest{
 
 	//options
-	var $compress = true;
+	var $compress = false;
 	var $test_folder = 'less.js'; // bootstrap3
 
 
@@ -84,10 +84,17 @@ class ParserTest{
 
 		$compiled = '';
 		try{
+
+			/**
+			 * Less_Cache Testing
+			Less_Cache::$cache_dir = $this->cache_dir;
+			$cached_css_file = Less_Cache::Get( array($less=>'') );
+			$compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
+			*/
+
+
 			$parser = new Less_Parser( $options );
 			//$parser->SetCacheDir( $this->cache_dir );
-			//$contents = file_get_contents($less);
-			//$parser->parse($contents);
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 

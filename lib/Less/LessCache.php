@@ -7,11 +7,11 @@ class Less_Cache{
 	public static $import_dirs = array();
 	public static $error;
 
-    const cache_version = '142b2';
+    const cache_version = '1422';
+	protected static $clean_cache = true;
 
 
-	function Parse( $less_files, $parser_options = array() ){
-
+	function Get( $less_files, $parser_options = array() ){
 
 		//check $cache_dir
 		if( empty(self::$cache_dir) ){
@@ -20,7 +20,7 @@ class Less_Cache{
 		}
 
 		self::$cache_dir = str_replace('\\','/',self::$cache_dir);
-		self::$cache_dir = rtrim(self::$cache_dir,'/');
+		self::$cache_dir = rtrim(self::$cache_dir,'/').'/';
 
 		if( !is_dir(self::$cache_dir) ){
 			throw new Exception('cache_dir does not exist');
@@ -30,9 +30,8 @@ class Less_Cache{
 
 		// generate name for compiled css file
 		$less_files = (array)$less_files;
-		$less_files = array_filter($less_files);
-		$hash = self::ArrayHash($less_files);
- 		$list_file = self::$cache_dir.'/lessphp_'.$hash.'.list';
+		$hash = md5(json_encode($less_files));
+ 		$list_file = self::$cache_dir.'lessphp_'.$hash.'.list';
 
 
  		// check cached content
@@ -41,8 +40,8 @@ class Less_Cache{
  		if( file_exists($list_file) ){
 
 			//get info about the list file
-			$compiled_name = 'lessphp_'.$hash.'_'.self::GenEtag( filesize($list_file) ).'.css';
-			$compiled_file = self::$cache_dir.'/'.$compiled_name;
+			$compiled_name = self::CompiledName( $hash, $list_file );
+			$compiled_file = self::$cache_dir.$compiled_name;
 
 
 			//check modified time of all included files
@@ -72,8 +71,7 @@ class Less_Cache{
 
 		}
 
-
-		$compiled = self::ParseFiles( $less_files );
+		$compiled = self::Cache( $less_files );
 		if( !$compiled ){
 			return false;
 		}
@@ -85,18 +83,25 @@ class Less_Cache{
 
 
 		//save the css
-		$compiled_name = 'less_'.$hash.'_'.self::GenEtag( filesize($list_file) ).'.css';
-		$compiled_file = '/data/_cache/'.$compiled_name;
-		file_put_contents( $dataDir.$compiled_file, $compiled );
+		$compiled_name = self::CompiledName( $hash, $list_file );
+		file_put_contents( self::$cache_dir.$compiled_name, $compiled );
 
-		return $compiled_file;
+
+		//clean up
+		self::CleanCache();
+
+		return $compiled_name;
 
 	}
 
-	function ParseFiles( &$less_files ){
+	function Cache( &$less_files ){
 
 		//prepare the processor
-		include_once('Less.php');
+		if( !class_exists('Less_Parser') ){
+			include_once('Less.php');
+		}
+
+
 		$parser = new Less_Parser(); //array('compress'=>true)
 		$parser->SetCacheDir( self::$cache_dir );
 		$parser->SetImportDirs( self::$import_dirs );
@@ -112,7 +117,7 @@ class Less_Cache{
 					continue;
 				}
 
-				$parser->ParseFile( $file_path, $uri_root );
+				$parser->ParseFile( $file_path, $uri_or_less );
 			}
 
 			$compiled = $parser->getCss();
@@ -128,28 +133,31 @@ class Less_Cache{
 	}
 
 
-	static function GenEtag(){
-		$etag = '';
-		$args = func_get_args();
-		$args[] = self::cache_version;
-		foreach($args as $arg){
-			if( !ctype_digit($arg) ){
-				$arg = crc32( $arg );
-				$arg = sprintf("%u\n", $arg );
-			}
-			$etag .= base_convert( $arg, 10, 36);
+	function CompiledName( $hash, $list_file ){
+
+		$etag = base_convert( self::cache_version, 10, 36 ) . base_convert( filesize($list_file), 10, 36 );
+
+		return 'lessphp_'.$hash.'_'.$etag.'.css';
+	}
+
+
+	public static function CleanCache(){
+		static $clean = false;
+
+		if( $clean ){
+			return;
 		}
-		return $etag;
+
+		$files = glob(self::$cache_dir.'lessphp_.*');
+		$check_time = time() - 604800;
+		foreach($files as $file){
+			if( filemtime($file) > $check_time ){
+				continue;
+			}
+			unlink($file);
+		}
+
+		$clean = true;
 	}
-
-
-	/**
-	 * Generate a checksum for the $array
-	 *
-	 */
-	static function ArrayHash($array){
-		return md5(json_encode($array) );
-	}
-
 
 }
