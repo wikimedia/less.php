@@ -68,8 +68,6 @@ class ParserTest{
 
     public function testLessJsCssGeneration($dir, $less, $css){
 
-		$test->hmm();
-
 		$basename = basename($less);
 		$basename = substr($basename,0,-5); //remove .less extension
 		echo '<br/><a href="?file='.$basename.'">'.$basename.'</a>';
