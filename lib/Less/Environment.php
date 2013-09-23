@@ -689,9 +689,9 @@ class Less_Environment{
 		$filePath = str_replace('\\','/',$filePath);
 		if( Less_Environment::isPathRelative($filePath) ){
 			if( $this->relativeUrls ){
-				$filePath = rtrim($this->currentFileInfo['currentDirectory'],'/').'/'.$filePath;
+				$filePath = Less_Environment::NormPath(rtrim($this->currentFileInfo['currentDirectory'],'/').'/'.$filePath);
 			} else {
-				$filePath = rtrim($this->currentFileInfo['entryPath'],'/').'/'.$filePath;
+				$filePath = Less_Environment::NormPath(rtrim($this->currentFileInfo['entryPath'],'/').'/'.$filePath);
 			}
 		}
 
@@ -754,6 +754,36 @@ class Less_Environment{
 		$message = 'Object of type '.get_class($arg).' passed to darken function. Expecting `Color`. '.$arg->toCSS().'. '.print_r($last,true);
 		throw new Less_CompilerException($message);
 
+	}
+
+
+	/**
+	 * Canonicalize a path by resolving references to '/./', '/../'
+	 * Does not remove leading "../"
+	 * @param string path or url
+	 * @return string Canonicalized path
+	 *
+	 */
+	static function NormPath($path){
+
+		$temp = explode('/',$path);
+		$result = array();
+		foreach($temp as $i => $p){
+			if( $p == '.' ){
+				continue;
+			}
+			if( $p == '..' ){
+				for($j=$i-1;$j>0;$j--){
+					if( isset($result[$j]) ){
+						unset($result[$j]);
+						continue 2;
+					}
+				}
+			}
+			$result[$i] = $p;
+		}
+
+		return implode('/',$result);
 	}
 
 }

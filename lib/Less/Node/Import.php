@@ -91,7 +91,7 @@ class Less_Tree_Import{
 			$pathValue = $path->value;
 			// Add the base path if the import is relative
 			if( $pathValue && $env->isPathRelative($pathValue) ){
-				$path->value = $this->currentFileInfo['uri_root']. $pathValue;
+				$path->value = Less_Environment::NormPath($this->currentFileInfo['uri_root']. $pathValue);
 			}
 		}
 		return $path;
@@ -108,8 +108,8 @@ class Less_Tree_Import{
 			foreach(Less_Parser::$import_dirs as $rootpath => $rooturi){
 				$temp = $rootpath.$evald_path;
 				if( file_exists($temp) ){
-					$full_path = $temp;
-					$uri = dirname($rooturi.$evald_path);
+					$full_path = Less_Environment::NormPath($temp);
+					$uri = Less_Environment::NormPath(dirname($rooturi.$evald_path));
 					break;
 				}
 			}
