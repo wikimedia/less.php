@@ -30,30 +30,43 @@ class Less_Tree_Condition {
 
 		$i = $this->index;
 
-		$result = function($op) use ($a, $b) {
-			switch ($op) {
-				case 'and':
-					return $a && $b;
-				case 'or':
-					return $a || $b;
-				default:
-					$aReflection = new \ReflectionClass($a);
-					$bReflection = new \ReflectionClass($b);
-					if ($aReflection->hasMethod('compare')) {
-						$result = $a->compare($b);
-					} elseif ($bReflection->hasMethod('compare')) {
-						$result = $b->compare($a);
-					} else {
-						throw new Less_CompilerException('Unable to perform comparison', $this->index);
-					}
-					switch ($result) {
-						case -1: return $op === '<' || $op === '=<';
-						case  0: return $op === '=' || $op === '>=' || $op === '=<';
-						case  1: return $op === '>' || $op === '>=';
-					}
-			}
-		};
-		$result = $result($this->op);
+		switch( $this->op ){
+			case 'and':
+				$result = $a && $b;
+			break;
+
+			case 'or':
+				$result = $a || $b;
+			break;
+
+			default:
+				$aReflection = new \ReflectionClass($a);
+				$bReflection = new \ReflectionClass($b);
+				if ($aReflection->hasMethod('compare')) {
+					$result = $a->compare($b);
+				} elseif ($bReflection->hasMethod('compare')) {
+					$result = $b->compare($a);
+				} else {
+					throw new Less_CompilerException('Unable to perform comparison', $this->index);
+				}
+				switch ($result) {
+					case -1:
+					$result = $this->op === '<' || $this->op === '=<';
+					break;
+
+					case  0:
+					$result = $this->op === '=' || $this->op === '>=' || $this->op === '=<';
+					break;
+
+					case  1:
+					$result = $this->op === '>' || $this->op === '>=';
+					break;
+				}
+			break;
+		}
+
+		$with_result = $result;
+
 		return $this->negate ? !$result : $result;
     }
 
