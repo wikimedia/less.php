@@ -65,8 +65,6 @@ class Less_Tree_Condition {
 			break;
 		}
 
-		$with_result = $result;
-
 		return $this->negate ? !$result : $result;
     }
 
