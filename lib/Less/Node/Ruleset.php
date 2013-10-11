@@ -35,7 +35,9 @@ class Less_Tree_Ruleset{
 		$selectors = array();
 		if( $this->selectors ){
 			foreach($this->selectors as $s){
-				$selectors[] = $s->compile($env);
+				if( is_object($s) && method_exists($s,'compile') ){
+					$selectors[] = $s->compile($env);
+				}
 			}
 		}
 		$ruleset = new Less_Tree_Ruleset($selectors, array_slice($this->rules,0), $this->strictImports);
