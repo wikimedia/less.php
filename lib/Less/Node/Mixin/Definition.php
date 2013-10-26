@@ -138,7 +138,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 	}
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.eval
-	public function compile($env, $args, $important) {
+	public function compile($env, $args = NULL, $important = NULL) {
 		$_arguments = array();
 
 		$mixinFrames = array_merge($this->frames, $env->frames);
