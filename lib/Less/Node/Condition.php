@@ -40,8 +40,8 @@ class Less_Tree_Condition {
 			break;
 
 			default:
-				$aReflection = new \ReflectionClass($a);
-				$bReflection = new \ReflectionClass($b);
+				$aReflection = new ReflectionClass($a);
+				$bReflection = new ReflectionClass($b);
 				if ($aReflection->hasMethod('compare')) {
 					$result = $a->compare($b);
 				} elseif ($bReflection->hasMethod('compare')) {

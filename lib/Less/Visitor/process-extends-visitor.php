@@ -103,7 +103,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 				try{
 					$selectorOne = $extendsToAdd[0]->selfSelectors[0]->toCSS();
 					$selectorTwo = $extendsToAdd[0]->selector->toCSS();
-				}catch(\Exception $e){}
+				}catch(Exception $e){}
 				throw new Less_ParserException("extend circular reference detected. One of the circular extends is currently:"+$selectorOne+":extend(" + $selectorTwo+")");
 			}
 

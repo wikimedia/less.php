@@ -38,7 +38,7 @@ class Less_Tree_Media {
 		}
 		try {
 			$media->features = $this->features->compile($env);
-		}catch(\Exception $e){}
+		}catch(Exception $e){}
 
 		if( $strictMathBypass ){
 			$env->strictMath = false;
