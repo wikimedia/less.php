@@ -228,6 +228,10 @@ class Less_Parser extends Less_Cache{
 		$rules = $this->parsePrimary();
 
 
+		// free up a little memory
+		unset($this->input, $this->current, $this->pos);
+
+
 		//save the cache
 		if( $cache_file ){
 			file_put_contents( $cache_file, serialize($rules) );
