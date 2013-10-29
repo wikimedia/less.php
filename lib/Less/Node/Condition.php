@@ -40,15 +40,15 @@ class Less_Tree_Condition {
 			break;
 
 			default:
-				$aReflection = new ReflectionClass($a);
-				$bReflection = new ReflectionClass($b);
-				if ($aReflection->hasMethod('compare')) {
+
+				if( method_exists($a, 'compare') ){
 					$result = $a->compare($b);
-				} elseif ($bReflection->hasMethod('compare')) {
+				}elseif( method_exists($b, 'compare') ){
 					$result = $b->compare($a);
-				} else {
+				}else{
 					throw new Less_CompilerException('Unable to perform comparison', $this->index);
 				}
+
 				switch ($result) {
 					case -1:
 					$result = $this->op === '<' || $this->op === '=<';
