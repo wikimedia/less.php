@@ -40,7 +40,6 @@ class Less_Tree_Condition {
 			break;
 
 			default:
-
 				if( method_exists($a, 'compare') ){
 					$result = $a->compare($b);
 				}elseif( method_exists($b, 'compare') ){
