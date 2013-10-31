@@ -207,18 +207,20 @@ class Less_Parser extends Less_Cache{
 	 */
 	private function GetRules( $file_path ){
 
-		$cache_file = substr($file_path,0,-5).'.lesscache';
-		if( file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
-			return $cache;
-		}
-
-		$cache_file = $this->CacheFile( $file_path );
-		if( $cache_file && file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
-			touch($cache_file);
-			return $cache;
-		}
-
+		$cache_file = false;
 		if( $file_path ){
+
+			$cache_file = substr($file_path,0,-5).'.lesscache';
+			if( file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
+				return $cache;
+			}
+
+			$cache_file = $this->CacheFile( $file_path );
+			if( $cache_file && file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
+				touch($cache_file);
+				return $cache;
+			}
+
 			$this->input = file_get_contents( $file_path );
 		}
 
