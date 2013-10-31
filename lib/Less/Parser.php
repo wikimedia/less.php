@@ -207,6 +207,11 @@ class Less_Parser extends Less_Cache{
 	 */
 	private function GetRules( $file_path ){
 
+		$cache_file = substr($file_path,0,-5).'.lesscache';
+		if( file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
+			return $cache;
+		}
+
 		$cache_file = $this->CacheFile( $file_path );
 		if( $cache_file && file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
 			touch($cache_file);
@@ -246,7 +251,7 @@ class Less_Parser extends Less_Cache{
 	}
 
 
-	private function CacheFile( $file_path ){
+	public function CacheFile( $file_path ){
 
 		if( $file_path && self::$cache_dir ){
 			$file_size = filesize( $file_path );
