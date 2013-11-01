@@ -3,7 +3,7 @@
 
 class Less_Tree_Anonymous{
 	public $value;
-	public $quote;
+	//public $quote;
 	//public $type = 'Anonymous';
 
 	public function __construct($value){
@@ -23,8 +23,8 @@ class Less_Tree_Anonymous{
 			return -1;
 		}
 
-		$left = $this.toCSS();
-		$right = $x.toCSS();
+		$left = $this->toCSS();
+		$right = $x->toCSS();
 
 		if( $left === $right ){
 			return 0;
