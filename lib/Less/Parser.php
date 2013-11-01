@@ -137,9 +137,6 @@ class Less_Parser extends Less_Cache{
 			$this->_parse( $filename );
 		}
 
-.		msg($this->rules);
-
-
 		$this->env->currentFileInfo = $previousFileInfo;
 		self::$import_dirs = $previousImportDirs;
 
