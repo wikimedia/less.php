@@ -31,7 +31,7 @@ class Less_Parser extends Less_Cache{
     /**
      *
      */
-    const version = '1.4.2';
+    const version = '1.4.2.1';
     const less_version = '1.4.2';
 
     /**
@@ -1685,6 +1685,7 @@ class Less_Parser extends Less_Cache{
 
 }
 
+
 	if( !function_exists('pre') ){
 		function pre($arg){
 			global $debug;
@@ -1711,3 +1712,4 @@ class Less_Parser extends Less_Cache{
 			echo Pre($arg);
 		}
 	}
+
