@@ -1556,7 +1556,6 @@ class Less_Parser extends Less_Cache{
 
 	private function parseMultiplication() {
 		$operation = false;
-		$expression = array();
 
 		if ($m = $this->parseOperand()) {
 			$isSpaced = $this->isWhitespace( -1 );
