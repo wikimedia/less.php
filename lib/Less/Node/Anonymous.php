@@ -3,7 +3,7 @@
 
 class Less_Tree_Anonymous{
 	public $value;
-	//public $quote;
+	public $quote;
 	//public $type = 'Anonymous';
 
 	public function __construct($value){

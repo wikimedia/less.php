@@ -67,7 +67,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 
 			if( $arg && $arg['name'] ){
 				$name = $arg['name'];
-				$isNameFound = false;
+				$isNamedFound = false;
 
 				foreach($params as $j => $param){
 					if( !isset($evaldArguments[$j]) && $name === $params[$j]['name']) {
