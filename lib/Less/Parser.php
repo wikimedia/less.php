@@ -228,8 +228,7 @@ class Less_Parser extends Less_Cache{
 		$this->input = preg_replace('/\r\n/', "\n", $this->input);
 
 		// Remove potential UTF Byte Order Mark
-		//$this->input = preg_replace('/^\uFEFF/', '', $this->input);
-		$this->input = preg_replace('/^\\357\\273\\277/um', '', $this->input);
+		$this->input = preg_replace('/^\xEF\xBB\xBF/', '', $this->input);
 		$this->current = $this->input;
 
 		$rules = $this->parsePrimary();
