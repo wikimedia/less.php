@@ -1,6 +1,8 @@
 <?php
 
-error_reporting(E_ALL ^ E_STRICT);
+//error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
+//error_reporting(E_ALL ^ E_STRICT);
 ini_set('display_errors',1);
 
 
@@ -246,6 +248,7 @@ if( isset($_GET['file']) ){
 	echo '<b>Performance</b>';
 	echo '<table>';
 	//.'<tr><td>Memory Usage:</td><td> '.number_format(memory_get_usage()).'</td></tr>';
+	echo '<tr><td>Error Level</td><td> '.error_reporting().'</td></tr>';
 	echo '<tr><td>Memory:</td><td> '.number_format($max_used).'</td></tr>';
 	//.'<tr><td>% of Limit:</td><td> '.$percentage.'%</td></tr>';
 	echo '<tr><td>Time (Request):</td><td> '.microtime_diff($_SERVER['REQUEST_TIME'],microtime()).'</td></tr>';

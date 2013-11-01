@@ -40,9 +40,9 @@ class Less_Tree_Condition {
 			break;
 
 			default:
-				if( method_exists($a, 'compare') ){
+				if( Less_Parser::is_method($a, 'compare') ){
 					$result = $a->compare($b);
-				}elseif( method_exists($b, 'compare') ){
+				}elseif( Less_Parser::is_method($b, 'compare') ){
 					$result = $b->compare($a);
 				}else{
 					throw new Less_CompilerException('Unable to perform comparison', $this->index);

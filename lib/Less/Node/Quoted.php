@@ -49,7 +49,7 @@ class Less_Tree_Quoted{
 
 	function compare($x) {
 
-		if( !method_exists($x, 'toCSS') ){
+		if( !Less_Parser::is_method($x, 'toCSS') ){
 			return -1;
 		}
 

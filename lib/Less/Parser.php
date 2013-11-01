@@ -1676,6 +1676,14 @@ class Less_Parser extends Less_Cache{
         }
     }
 
+	/**
+	 * Some versions of php have trouble with method_exists($a,$b) if $a is not an object
+	 *
+	 */
+    public static function is_method($a,$b){
+		return is_object($a) && method_exists($a,$b);
+	}
+
 
 }
 
