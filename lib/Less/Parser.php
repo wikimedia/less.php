@@ -458,7 +458,7 @@ class Less_Parser extends Less_Cache{
 
 	// Match a single character in the input,
 	private function MatchChar($tok){
-		if( @($this->input[$this->pos] === $tok) ){
+		if( ($this->pos < $this->input_len) && ($this->input[$this->pos] === $tok) ){
 			$this->skipWhitespace(1);
 			$this->sync();
 			return $tok;
@@ -502,7 +502,8 @@ class Less_Parser extends Less_Cache{
 	}
 
 	public function PeekChar($tok, $offset = 0){
-		return @( $this->input[$this->pos + $offset] === $tok );
+		$offset += $this->pos;
+		return ($offset < $this->input_len) && ($this->input[$offset] === $tok );
 	}
 
 
