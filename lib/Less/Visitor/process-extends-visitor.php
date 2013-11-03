@@ -59,7 +59,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$matches = $extendVisitor->findMatch( $extend, $selectorPath);
 
 
-				if( count($matches) ){
+				if( $matches ){
 
 					// we found a match, so for each self selector..
 					foreach($extend->selfSelectors as $selfSelector ){
@@ -73,7 +73,8 @@ class Less_processExtendsVisitor extends Less_visitor{
 						$newExtend->selfSelectors = $newSelector;
 
 						// add the extend onto the list of extends for that selector
-						$newSelector[ count($newSelector)-1]->extendList = array($newExtend);
+						end($newSelector)->extendList = array($newExtend);
+						//$newSelector[ count($newSelector)-1]->extendList = array($newExtend);
 
 						// record that we need to add it.
 						$extendsToAdd[] = $newExtend;
@@ -170,8 +171,10 @@ class Less_processExtendsVisitor extends Less_visitor{
 		// returns an array of selector matches that can then be replaced
 		//
 		$needleElements = $extend->selector->elements;
+		$needleElements_len = count($needleElements);
 		//$extendVisitor = $this;
 		$potentialMatches = array();
+		$potentialMatches_len = 0;
 		$potentialMatch = null;
 		$matches = array();
 
@@ -186,9 +189,10 @@ class Less_processExtendsVisitor extends Less_visitor{
 				// if we allow elements before our match we can add a potential match every time. otherwise only at the first element.
 				if( $extend->allowBefore || ($haystackSelectorIndex == 0 && $hackstackElementIndex == 0) ){
 					$potentialMatches[] = array('pathIndex'=> $haystackSelectorIndex, 'index'=> $hackstackElementIndex, 'matched'=> 0, 'initialCombinator'=> $haystackElement->combinator);
+					$potentialMatches_len++;
 				}
 
-				for($i = 0, $potentialMatches_len = count($potentialMatches); $i < $potentialMatches_len; $i++ ){
+				for($i = 0; $i < $potentialMatches_len; $i++ ){
 					$potentialMatch = &$potentialMatches[$i];
 
 					// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
@@ -209,17 +213,17 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 					// if we are still valid and have finished, test whether we have elements after and whether these are allowed
 					if( $potentialMatch ){
-						$potentialMatch['finished'] = ($potentialMatch['matched'] === count($needleElements) );
+						$potentialMatch['finished'] = ($potentialMatch['matched'] === $needleElements_len );
 
 						if( $potentialMatch['finished'] &&
-							(!$extend->allowAfter && ($hackstackElementIndex+1 < count($hackstackSelector->elements) || $haystackSelectorIndex+1 < count($haystackSelectorPath))) ){
+							(!$extend->allowAfter && ($hackstackElementIndex+1 < $haystack_elements_len || $haystackSelectorIndex+1 < $haystack_path_len)) ){
 							$potentialMatch = null;
 						}
 					}
 					// if null we remove, if not, we are still valid, so either push as a valid match or continue
 					if( $potentialMatch ){
 						if( $potentialMatch['finished'] ){
-							$potentialMatch['length'] = count($needleElements);
+							$potentialMatch['length'] = $needleElements_len;
 							$potentialMatch['endPathIndex'] = $haystackSelectorIndex;
 							$potentialMatch['endPathElementIndex'] = $hackstackElementIndex + 1; // index after end of match
 							$potentialMatches = array(); // we don't allow matches to overlap, so start matching again
@@ -321,7 +325,6 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 
 	function visitMedia( $mediaNode ){
-		//$newAllExtends = array_merge( $mediaNode->allExtends, $this->allExtendsStack[ count($this->allExtendsStack)-1 ] );
 		$newAllExtends = array_merge( $mediaNode->allExtends, end($this->allExtendsStack) );
 		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $mediaNode->allExtends));
 		$this->allExtendsStack[] = $newAllExtends;
@@ -332,7 +335,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 	}
 
 	function visitDirective( $directiveNode ){
-		$temp = $this->allExtendsStack[ count($this->allExtendsStack)-1];
+		$temp = end($this->allExtendsStack);
 		$newAllExtends = array_merge( $directiveNode->allExtends, $temp );
 		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $directiveNode->allExtends));
 		$this->allExtendsStack[] = $newAllExtends;
