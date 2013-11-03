@@ -153,13 +153,10 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 				$matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
 
-
-
-				if( count($matches) ){
+				if( $matches ){
 					foreach($allExtends[$extendIndex]->selfSelectors as $selfSelector ){
 						$selectorsToAdd[] = $extendVisitor->extendSelector($matches, $selectorPath, $selfSelector);
 					}
-
 				}
 			}
 		}
@@ -191,7 +188,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 					$potentialMatches[] = array('pathIndex'=> $haystackSelectorIndex, 'index'=> $hackstackElementIndex, 'matched'=> 0, 'initialCombinator'=> $haystackElement->combinator);
 				}
 
-				for($i = 0; $i < count($potentialMatches); $i++ ){
+				for($i = 0, $potentialMatches_len = count($potentialMatches); $i < $potentialMatches_len; $i++ ){
 					$potentialMatch = &$potentialMatches[$i];
 
 					// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
@@ -226,10 +223,12 @@ class Less_processExtendsVisitor extends Less_visitor{
 							$potentialMatch['endPathIndex'] = $haystackSelectorIndex;
 							$potentialMatch['endPathElementIndex'] = $hackstackElementIndex + 1; // index after end of match
 							$potentialMatches = array(); // we don't allow matches to overlap, so start matching again
+							$potentialMatches_len = 0;
 							$matches[] = $potentialMatch;
 						}
 					} else {
 						array_splice($potentialMatches, $i, 1);
+						$potentialMatches_len--;
 						$i--;
 					}
 				}
@@ -283,8 +282,8 @@ class Less_processExtendsVisitor extends Less_visitor{
 			);
 
 			if( $match['pathIndex'] > $currentSelectorPathIndex && $currentSelectorPathElementIndex > 0 ){
-				$last_key = count($path)-1;
-				$path[$last_key]->elements = array_merge( $path[$last_key]->elements, array_slice( $selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
+				$last_path = end($path);
+				$last_path->elements = array_merge( $last_path->elements, array_slice( $selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
 				$currentSelectorPathElementIndex = 0;
 				$currentSelectorPathIndex++;
 			}
@@ -308,8 +307,8 @@ class Less_processExtendsVisitor extends Less_visitor{
 		}
 
 		if( $currentSelectorPathIndex < count($selectorPath) && $currentSelectorPathElementIndex > 0 ){
-			$last_key = count($path) - 1;
-			$path[$last_key]->elements = array_merge( $path[$last_key]->elements, array_slice($selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
+			$last_path = end($path);
+			$last_path->elements = array_merge( $last_path->elements, array_slice($selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
 			$currentSelectorPathElementIndex = 0;
 			$currentSelectorPathIndex++;
 		}
