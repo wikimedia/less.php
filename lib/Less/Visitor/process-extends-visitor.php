@@ -43,7 +43,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 		// and the second is the target.
 		// the seperation into two lists allows us to process a subset of chains with a bigger set, as is the
 		// case when processing media queries
-		for( $extendIndex = 0; $extendIndex < count($extendsList); $extendIndex++ ){
+		for( $extendIndex = 0, $extendsList_len = count($extendsList); $extendIndex < $extendsList_len; $extendIndex++ ){
 			for( $targetExtendIndex = 0; $targetExtendIndex < count($extendsListTarget); $targetExtendIndex++ ){
 
 				$extend = $extendsList[$extendIndex];
@@ -143,8 +143,8 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 		// look at each selector path in the ruleset, find any extend matches and then copy, find and replace
 
-		for( $extendIndex = 0; $extendIndex < count($allExtends); $extendIndex++ ){
-			for($pathIndex = 0; $pathIndex < count($rulesetNode->paths); $pathIndex++ ){
+		for( $extendIndex = 0, $all_extend_len = count($allExtends); $extendIndex < $all_extend_len; $extendIndex++ ){
+			for($pathIndex = 0, $paths_len = count($rulesetNode->paths); $pathIndex < $paths_len; $pathIndex++ ){
 
 				$selectorPath = $rulesetNode->paths[$pathIndex];
 
@@ -271,7 +271,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 		$currentSelectorPathElementIndex = 0;
 		$path = array();
 
-		for($matchIndex = 0; $matchIndex < count($matches); $matchIndex++ ){
+		for($matchIndex = 0, $matches_len = count($matches); $matchIndex < $matches_len; $matchIndex++ ){
 
 
 			$match = $matches[$matchIndex];
