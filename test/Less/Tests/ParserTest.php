@@ -23,7 +23,7 @@ class ParserTest{
 
 	//options
 	var $compress = false;
-	var $test_folder = 'less.js'; // bootstrap3
+	var $test_folder = 'less.js'; //'bootstrap3';
 
 
 	var $cache_dir;
