@@ -336,8 +336,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 	}
 
 	function visitDirective( $directiveNode ){
-		$temp = end($this->allExtendsStack);
-		$newAllExtends = array_merge( $directiveNode->allExtends, $temp );
+		$newAllExtends = array_merge( $directiveNode->allExtends, end($this->allExtendsStack) );
 		$this->allExtendsStack[] = $this->doExtendChaining($newAllExtends, $directiveNode->allExtends);
 	}
 
