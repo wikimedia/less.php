@@ -71,7 +71,7 @@ class Less_Cache{
 
 		}
 
-		$compiled = self::Cache( $less_files );
+		$compiled = self::Cache( $less_files, $parser_options );
 		if( !$compiled ){
 			return false;
 		}
@@ -94,7 +94,7 @@ class Less_Cache{
 
 	}
 
-	function Cache( &$less_files ){
+	function Cache( &$less_files, $parser_options = array() ){
 
 		//prepare the processor
 		if( !class_exists('Less_Parser') ){
@@ -102,7 +102,7 @@ class Less_Cache{
 		}
 
 
-		$parser = new Less_Parser(); //array('compress'=>true)
+		$parser = new Less_Parser($parser_options);
 		$parser->SetCacheDir( self::$cache_dir );
 		$parser->SetImportDirs( self::$import_dirs );
 
