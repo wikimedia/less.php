@@ -89,16 +89,17 @@ class ParserTest{
 
 			/**
 			 * Less_Cache Testing
+			*/
 			Less_Cache::$cache_dir = $this->cache_dir;
 			$cached_css_file = Less_Cache::Get( array($less=>'') );
 			$compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
-			*/
 
-
+			/*
 			$parser = new Less_Parser( $options );
 			//$parser->SetCacheDir( $this->cache_dir );
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
+			*/
 
 		}catch(\Exception $e){
 			echo '<h1>Parser Error</h1>';

@@ -11,7 +11,7 @@ class Less_Cache{
 	protected static $clean_cache = true;
 
 
-	function Get( $less_files, $parser_options = array() ){
+	public static function Get( $less_files, $parser_options = array() ){
 
 		//check $cache_dir
 		if( empty(self::$cache_dir) ){
@@ -94,7 +94,7 @@ class Less_Cache{
 
 	}
 
-	function Cache( &$less_files, $parser_options = array() ){
+	public static function Cache( &$less_files, $parser_options = array() ){
 
 		//prepare the processor
 		if( !class_exists('Less_Parser') ){
@@ -133,7 +133,7 @@ class Less_Cache{
 	}
 
 
-	function CompiledName( $hash, $list_file ){
+	public static function CompiledName( $hash, $list_file ){
 
 		$etag = base_convert( self::cache_version, 10, 36 ) . base_convert( filesize($list_file), 10, 36 );
 
