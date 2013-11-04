@@ -16,7 +16,8 @@ class Less_processExtendsVisitor extends Less_visitor{
 		$extendFinder->run( $root );
 		if( !$extendFinder->foundExtends) { return $root; }
 
-		$root->allExtends = array_merge($root->allExtends, $this->doExtendChaining( $root->allExtends, $root->allExtends));
+		$root->allExtends = $this->doExtendChaining( $root->allExtends, $root->allExtends);
+
 		$this->allExtendsStack = array();
 		$this->allExtendsStack[] = &$root->allExtends;
 
@@ -95,7 +96,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 			}
 		}
 
-		if( count($extendsToAdd) ){
+		if( $extendsToAdd ){
 			// try to detect circular references to stop a stack overflow.
 			// may no longer be needed.			$this->extendChainCount++;
 			if( $iterationCount > 100) {
@@ -109,10 +110,10 @@ class Less_processExtendsVisitor extends Less_visitor{
 			}
 
 			// now process the new extends on the existing rules so that we can handle a extending b extending c ectending d extending e...
-			return array_merge($extendsToAdd, $extendVisitor->doExtendChaining( $extendsToAdd, $extendsListTarget, $iterationCount+1));
-		} else {
-			return $extendsToAdd;
+			$extendsToAdd = $extendVisitor->doExtendChaining( $extendsToAdd, $extendsListTarget, $iterationCount+1);
 		}
+
+		return array_merge($extendsList, $extendsToAdd);
 	}
 
 	function inInheritanceChain( $possibleParent, $possibleChild ){
@@ -138,7 +139,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 			return;
 		}
 
-		$allExtends = end($this->allExtendsStack); //$this->allExtendsStack[ count($this->allExtendsStack)-1];
+		$allExtends = end($this->allExtendsStack);
 		$selectorsToAdd = array();
 		$extendVisitor = $this;
 
@@ -150,7 +151,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$selectorPath = $rulesetNode->paths[$pathIndex];
 
 				// extending extends happens initially, before the main pass
-				if( count( $selectorPath[ count($selectorPath)-1]->extendList) ) { continue; }
+				if( end($selectorPath)->extendList ){ continue; }
 
 				$matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
 
@@ -273,6 +274,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 		$currentSelectorPathIndex = 0;
 		$currentSelectorPathElementIndex = 0;
 		$path = array();
+		$selectorPath_len = count($selectorPath);
 
 		for($matchIndex = 0, $matches_len = count($matches); $matchIndex < $matches_len; $matchIndex++ ){
 
@@ -310,14 +312,14 @@ class Less_processExtendsVisitor extends Less_visitor{
 			}
 		}
 
-		if( $currentSelectorPathIndex < count($selectorPath) && $currentSelectorPathElementIndex > 0 ){
+		if( $currentSelectorPathIndex < $selectorPath_len && $currentSelectorPathElementIndex > 0 ){
 			$last_path = end($path);
 			$last_path->elements = array_merge( $last_path->elements, array_slice($selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
 			$currentSelectorPathElementIndex = 0;
 			$currentSelectorPathIndex++;
 		}
 
-		$slice_len = count($selectorPath) - $currentSelectorPathIndex;
+		$slice_len = $selectorPath_len - $currentSelectorPathIndex;
 		$path = array_merge($path, array_slice($selectorPath, $currentSelectorPathIndex, $slice_len));
 
 		return $path;
@@ -326,8 +328,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 	function visitMedia( $mediaNode ){
 		$newAllExtends = array_merge( $mediaNode->allExtends, end($this->allExtendsStack) );
-		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $mediaNode->allExtends));
-		$this->allExtendsStack[] = $newAllExtends;
+		$this->allExtendsStack[] = $this->doExtendChaining($newAllExtends, $mediaNode->allExtends);
 	}
 
 	function visitMediaOut( $mediaNode ){
@@ -337,8 +338,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 	function visitDirective( $directiveNode ){
 		$temp = end($this->allExtendsStack);
 		$newAllExtends = array_merge( $directiveNode->allExtends, $temp );
-		$newAllExtends = array_merge($newAllExtends, $this->doExtendChaining($newAllExtends, $directiveNode->allExtends));
-		$this->allExtendsStack[] = $newAllExtends;
+		$this->allExtendsStack[] = $this->doExtendChaining($newAllExtends, $directiveNode->allExtends);
 	}
 
 	function visitDirectiveOut( $directiveNode ){
