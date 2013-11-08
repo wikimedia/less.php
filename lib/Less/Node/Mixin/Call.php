@@ -75,7 +75,8 @@ class Less_Tree_Mixin_Call{
 						try {
 							$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
 						} catch (Exception $e) {
-							throw new Less_CompilerException($e->message, $e->index, null, $this->currentFileInfo['filename']);
+							//throw new Less_CompilerException($e->getMessage(), $e->index, null, $this->currentFileInfo['filename']);
+							throw new Less_CompilerException($e->getMessage(), null, null, $this->currentFileInfo['filename']);
 						}
 					}
 					$match = true;
