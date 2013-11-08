@@ -108,7 +108,7 @@ class Less_Tree_Mixin_Call{
 					$message[] = $argValue;
 				}
 			}
-			$message = implode(', ');
+			$message = implode(', ',$message);
 
 
 			throw new Less_CompilerException('No matching definition was found for `'.
