@@ -232,7 +232,7 @@ class Less_Tree_Ruleset{
 	//	 `context` holds an array of arrays.
 	//
 	public function toCSS($env){
-		$css = array();	  // The CSS output
+		$css = '';	  // The CSS output
 		$rules = array();	// node.Rule instances
 		$_rules = array();
 		$rulesets = array(); // node.Ruleset instances
@@ -292,17 +292,17 @@ class Less_Tree_Ruleset{
 		// a selector, or {}.
 		// Otherwise, only output if this ruleset has rules.
 		if ($this->root) {
-			$css[] = implode($env->compress ? '' : "\n", $rules);
+			$css .= implode($env->compress ? '' : "\n", $rules);
 		} else {
 			if (count($rules)) {
 
 				$selector = array();
 				foreach($this->paths as $p){
-					$_p = array();
+					$_p = '';
 					foreach($p as $s){
-						$_p[] = $s->toCSS($env);
+						$_p .= $s->toCSS($env);
 					}
-					$selector[] = trim(implode('',$_p));
+					$selector[] = trim($_p);
 				}
 				$selector = implode($env->compress ? ',' : ",\n", $selector);
 
@@ -314,15 +314,15 @@ class Less_Tree_Ruleset{
 				}
 				$rules = $_rules;
 
-				$css[] = $selector;
-				$css[] = ($env->compress ? '{' : " {\n  ") .
+				$css .= $selector;
+				$css .= ($env->compress ? '{' : " {\n  ") .
 						 implode($env->compress ? '' : "\n  ", $rules) .
 						 ($env->compress ? '}' : "\n}\n");
 			}
 		}
-		$css[] = $rulesets;
+		$css .= $rulesets;
 
-		return implode('', $css) . ($env->compress ? "\n" : '' );
+		return $css . ($env->compress ? "\n" : '' );
 	}
 
 
