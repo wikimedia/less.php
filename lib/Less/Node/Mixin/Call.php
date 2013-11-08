@@ -1,7 +1,7 @@
 <?php
 
 
-class Less_Tree_Mixin_Call{
+class Less_Tree_MixinCall{
 
 	//public $type = 'MixinCall';
 	private $selector;
@@ -59,7 +59,7 @@ class Less_Tree_Mixin_Call{
 
 				$isRecursive = false;
 				foreach($env->frames as $recur_frame){
-					if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
+					if( !($mixin instanceof Less_Tree_MixinDefinition) ){
 						if( (isset($recur_frame->originalRuleset) && $mixin === $recur_frame->originalRuleset) || ($mixin === $recur_frame) ){
 							$isRecursive = true;
 							break;

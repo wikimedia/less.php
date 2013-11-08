@@ -940,7 +940,7 @@ class Less_Parser extends Less_Cache{
 		}
 
 		if( count($elements) > 0 && ($this->MatchChar(';') || $this->PeekChar('}')) ){
-			return new Less_Tree_Mixin_Call($elements, $args, $index, $this->env->currentFileInfo, $important);
+			return new Less_Tree_MixinCall($elements, $args, $index, $this->env->currentFileInfo, $important);
 		}
 
 		$this->restore();
@@ -1118,7 +1118,7 @@ class Less_Parser extends Less_Cache{
             $ruleset = $this->parseBlock();
 
             if( is_array($ruleset) ){
-                return new Less_Tree_Mixin_Definition($name, $params, $ruleset, $cond, $variadic);
+                return new Less_Tree_MixinDefinition($name, $params, $ruleset, $cond, $variadic);
             } else {
 				$this->restore();
 			}

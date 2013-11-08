@@ -64,7 +64,7 @@ class Less_Tree_Ruleset{
 		// Store the frames around mixin definitions,
 		// so they can be evaluated like closures when the time comes.
 		foreach($ruleset->rules as $i => $rule) {
-			if ($rule instanceof Less_Tree_Mixin_Definition) {
+			if ($rule instanceof Less_Tree_MixinDefinition) {
 				$ruleset->rules[$i]->frames = array_slice($env->frames,0);
 			}
 		}
@@ -77,7 +77,7 @@ class Less_Tree_Ruleset{
 		// Evaluate mixin calls.
 		for($i=0; $i < count($ruleset->rules); $i++){
 			$rule = $ruleset->rules[$i];
-			if( $rule instanceof Less_Tree_Mixin_Call ){
+			if( $rule instanceof Less_Tree_MixinCall ){
 				$rules = $rule->compile($env);
 
 				$temp = array();
@@ -102,7 +102,7 @@ class Less_Tree_Ruleset{
 
 
 		foreach($ruleset->rules as $i => $rule) {
-			if(! ($rule instanceof Less_Tree_Mixin_Definition) ){
+			if(! ($rule instanceof Less_Tree_MixinDefinition) ){
 				$ruleset->rules[$i] = Less_Parser::is_method($rule,'compile') ? $rule->compile($env) : $rule;
 			}
 		}
@@ -206,7 +206,7 @@ class Less_Tree_Ruleset{
 					continue;
 				}
 
-				if( ($rule instanceof Less_Tree_Ruleset) || ($rule instanceof Less_Tree_Mixin_Definition) ){
+				if( ($rule instanceof Less_Tree_Ruleset) || ($rule instanceof Less_Tree_MixinDefinition) ){
 
 					foreach( $rule->selectors as $ruleSelector ){
 						if( $selector->match($ruleSelector) ){
