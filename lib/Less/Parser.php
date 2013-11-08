@@ -121,6 +121,7 @@ class Less_Parser extends Less_Cache{
 
 		$previousFileInfo = $this->env->currentFileInfo;
 		$this->SetFileInfo($filename, $uri_root);
+
 		$previousImportDirs = self::$import_dirs;
 		self::AddParsedFile($filename);
 
@@ -132,7 +133,9 @@ class Less_Parser extends Less_Cache{
 			$this->_parse( $filename );
 		}
 
-		$this->env->currentFileInfo = $previousFileInfo;
+		if( $previousFileInfo ){
+			$this->env->currentFileInfo = $previousFileInfo;
+		}
 		self::$import_dirs = $previousImportDirs;
 
 		return $return;
@@ -145,7 +148,6 @@ class Less_Parser extends Less_Cache{
 		$this->filename = Less_Environment::NormPath($filename);
 
 		$dirname = preg_replace('/[^\/\\\\]*$/','',$this->filename);
-
 
 		$currentFileInfo = array();
 		$currentFileInfo['currentDirectory'] = $dirname;
