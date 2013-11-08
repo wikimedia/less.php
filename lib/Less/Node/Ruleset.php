@@ -187,16 +187,6 @@ class Less_Tree_Ruleset{
 	}
 
 
-	public function rulesets(){
-		$rulesets = array();
-		foreach($this->rules as $r){
-			if( ($r instanceof Less_Tree_Ruleset) || ($r instanceof Less_Tree_Mixin_Definition) ){
-				$rulesets[] = $r;
-			}
-		}
-		return $rulesets;
-	}
-
 
 	public function find( $selector, $self = null, $env = null){
 
@@ -209,20 +199,25 @@ class Less_Tree_Ruleset{
 		if( !array_key_exists($key, $this->lookups) ){
 			$this->lookups[$key] = array();;
 
-			foreach( $this->rulesets() as $rule ){
+
+			foreach($this->rules as $rule){
+
 				if( $rule == $self ){
 					continue;
 				}
 
-				foreach( $rule->selectors as $ruleSelector ){
-					if( $selector->match($ruleSelector) ){
+				if( ($rule instanceof Less_Tree_Ruleset) || ($rule instanceof Less_Tree_Mixin_Definition) ){
 
-						if (count($selector->elements) > count($ruleSelector->elements)) {
-							$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, 1)), $self, $env));
-						} else {
-							$this->lookups[$key][] = $rule;
+					foreach( $rule->selectors as $ruleSelector ){
+						if( $selector->match($ruleSelector) ){
+
+							if (count($selector->elements) > count($ruleSelector->elements)) {
+								$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, 1)), $self, $env));
+							} else {
+								$this->lookups[$key][] = $rule;
+							}
+							break;
 						}
-						break;
 					}
 				}
 			}
