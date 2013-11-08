@@ -278,21 +278,17 @@ class Less_Tree_Ruleset{
 			}
 		}
 
-        // Remove last semicolon
-		if( $env->compress && count($rules) ){
-			$rule =& $rules[ count($rules)-1 ];
-			if( substr($rule, -1 ) === ';' ){
-				$rule = substr($rule,0,-1);
-			}
-		}
-
 		$rulesets = implode('', $rulesets);
 
 		// If this is the root node, we don't render
 		// a selector, or {}.
 		// Otherwise, only output if this ruleset has rules.
 		if ($this->root) {
-			$css .= implode($env->compress ? '' : "\n", $rules);
+			if( $env->compress ){
+				$css .= rtrim(implode('', $rules),';');
+			}else{
+				$css .= implode("\n", $rules);
+			}
 		} else {
 			if (count($rules)) {
 
@@ -304,7 +300,7 @@ class Less_Tree_Ruleset{
 					}
 					$selector[] = trim($_p);
 				}
-				$selector = implode($env->compress ? ',' : ",\n", $selector);
+				$css .= implode($env->compress ? ',' : ",\n", $selector);
 
 				// Remove duplicates
 				for ($i = count($rules) - 1; $i >= 0; $i--) {
@@ -314,10 +310,11 @@ class Less_Tree_Ruleset{
 				}
 				$rules = $_rules;
 
-				$css .= $selector;
-				$css .= ($env->compress ? '{' : " {\n  ") .
-						 implode($env->compress ? '' : "\n  ", $rules) .
-						 ($env->compress ? '}' : "\n}\n");
+				if( $env->compress ){
+					$css .= '{'.rtrim(implode('',$rules),';').'}';
+				}else{
+					$css .= " {\n  ".implode("\n  ",$rules)."\n}\n";
+				}
 			}
 		}
 		$css .= $rulesets;
