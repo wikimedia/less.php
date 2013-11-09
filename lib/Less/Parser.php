@@ -67,6 +67,9 @@ class Less_Parser extends Less_Cache{
      */
     public function getCss(){
 
+		$precision = ini_get('precision');
+		@ini_set('precision',16);
+
  		$root = new Less_Tree_Ruleset(null, $this->rules );
 		$root->root = true;
 
@@ -86,6 +89,9 @@ class Less_Parser extends Less_Cache{
 		if( $this->env->compress ){
 			$css = preg_replace('/(\s)+/',"$1", $css);
 		}
+
+		@ini_set('precision',$precision);
+
 
         return $css;
     }
