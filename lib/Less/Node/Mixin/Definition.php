@@ -60,7 +60,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 		$mixinEnv->frames = array_merge( array($frame), $mixinEnv->frames);
 		//$mixinEnv = $mixinEnv->copyEvalEnv( array_merge( array($frame), $mixinEnv->frames) );
 
-		$args = array_slice($args,0);
+		//$args = array_slice($args,0);
 
 		for($i = 0; $i < count($args); $i++ ){
 			$arg = $args[$i];
