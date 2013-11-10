@@ -35,7 +35,6 @@ class Less_processExtendsVisitor extends Less_visitor{
 		// we look at each selector at a time, as is done in visitRuleset
 
 		$extendsToAdd = array();
-		$extendVisitor = $this;
 
 
 		//loop through comparing every extend with every target extend.
@@ -57,7 +56,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 				// find a match in the target extends self selector (the bit before :extend)
 				$selectorPath = array( $targetExtend->selfSelectors[0] );
-				$matches = $extendVisitor->findMatch( $extend, $selectorPath);
+				$matches = $this->findMatch( $extend, $selectorPath);
 
 
 				if( $matches ){
@@ -67,7 +66,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 
 						// process the extend as usual
-						$newSelector = $extendVisitor->extendSelector( $matches, $selectorPath, $selfSelector);
+						$newSelector = $this->extendSelector( $matches, $selectorPath, $selfSelector);
 
 						// but now we create a new extend from it
 						$newExtend = new Less_Tree_Extend( $targetExtend->selector, $targetExtend->option, 0);
@@ -110,7 +109,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 			}
 
 			// now process the new extends on the existing rules so that we can handle a extending b extending c ectending d extending e...
-			$extendsToAdd = $extendVisitor->doExtendChaining( $extendsToAdd, $extendsListTarget, $iterationCount+1);
+			$extendsToAdd = $this->doExtendChaining( $extendsToAdd, $extendsListTarget, $iterationCount+1);
 		}
 
 		return array_merge($extendsList, $extendsToAdd);
@@ -141,7 +140,6 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 		$allExtends = end($this->allExtendsStack);
 		$selectorsToAdd = array();
-		$extendVisitor = $this;
 
 		// look at each selector path in the ruleset, find any extend matches and then copy, find and replace
 
@@ -157,7 +155,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 				if( $matches ){
 					foreach($allExtends[$extendIndex]->selfSelectors as $selfSelector ){
-						$selectorsToAdd[] = $extendVisitor->extendSelector($matches, $selectorPath, $selfSelector);
+						$selectorsToAdd[] = $this->extendSelector($matches, $selectorPath, $selfSelector);
 					}
 				}
 			}
@@ -173,7 +171,6 @@ class Less_processExtendsVisitor extends Less_visitor{
 		//
 		$needleElements = $extend->selector->elements;
 		$needleElements_len = count($needleElements);
-		//$extendVisitor = $this;
 		$potentialMatches = array();
 		$potentialMatches_len = 0;
 		$potentialMatch = null;
