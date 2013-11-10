@@ -133,18 +133,19 @@ class Less_processExtendsVisitor extends Less_visitor{
 	}
 
 
-	function visitRuleset($rulesetNode) {
+	function visitRuleset($rulesetNode){
+
+
 		if( $rulesetNode->root ){
 			return;
 		}
 
 		$allExtends = end($this->allExtendsStack);
-		$selectorsToAdd = array();
+		$paths_len = count($rulesetNode->paths);
 
 		// look at each selector path in the ruleset, find any extend matches and then copy, find and replace
-
 		for( $extendIndex = 0, $all_extend_len = count($allExtends); $extendIndex < $all_extend_len; $extendIndex++ ){
-			for($pathIndex = 0, $paths_len = count($rulesetNode->paths); $pathIndex < $paths_len; $pathIndex++ ){
+			for($pathIndex = 0; $pathIndex < $paths_len; $pathIndex++ ){
 
 				$selectorPath = $rulesetNode->paths[$pathIndex];
 
@@ -155,12 +156,11 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 				if( $matches ){
 					foreach($allExtends[$extendIndex]->selfSelectors as $selfSelector ){
-						$selectorsToAdd[] = $this->extendSelector($matches, $selectorPath, $selfSelector);
+						$rulesetNode->paths[] = $this->extendSelector($matches, $selectorPath, $selfSelector);
 					}
 				}
 			}
 		}
-		$rulesetNode->paths = array_merge($rulesetNode->paths,$selectorsToAdd);
 	}
 
 	function findMatch($extend, $haystackSelectorPath ){
