@@ -14,8 +14,6 @@ class Less_Tree_Unit{
 	}
 
 	function __clone(){
-		$this->numerator = array_slice($this->numerator,0);
-		$this->denominator = array_slice($this->denominator,0);
 	}
 
 	function toCSS($env){

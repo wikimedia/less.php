@@ -50,7 +50,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 	public function compileParams($env, $mixinEnv, $args = array() , &$evaldArguments = array() ){
 		$frame = new Less_Tree_Ruleset(null, array());
 		$varargs;
-		$params = array_slice($this->params,0);
+		$params = $this->params;
 		$val;
 		$name;
 		$isNamedFound;
@@ -59,8 +59,6 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 		$mixinEnv = clone $mixinEnv;
 		$mixinEnv->frames = array_merge( array($frame), $mixinEnv->frames);
 		//$mixinEnv = $mixinEnv->copyEvalEnv( array_merge( array($frame), $mixinEnv->frames) );
-
-		//$args = array_slice($args,0);
 
 		for($i = 0; $i < count($args); $i++ ){
 			$arg = $args[$i];

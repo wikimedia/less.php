@@ -76,8 +76,8 @@ class Less_Tree_Dimension{
 		if( $op === '+' || $op === '-' ){
 
 			if( !count($unit->numerator) && !count($unit->denominator) ){
-				$unit->numerator = array_slice($other->unit->numerator,0);
-				$unit->denominator = array_slice($other->unit->denominator,0);
+				$unit->numerator = $other->unit->numerator;
+				$unit->denominator = $other->unit->denominator;
 			}elseif( !count($other->unit->numerator) && !count($other->unit->denominator) ){
 				// do nothing
 			}else{

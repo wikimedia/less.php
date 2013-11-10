@@ -40,7 +40,7 @@ class Less_Tree_Ruleset{
 				}
 			}
 		}
-		$ruleset = new Less_Tree_Ruleset($selectors, array_slice($this->rules,0), $this->strictImports);
+		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);
 		$rules = array();
 
 		$ruleset->originalRuleset = $this;
@@ -65,7 +65,7 @@ class Less_Tree_Ruleset{
 		// so they can be evaluated like closures when the time comes.
 		foreach($ruleset->rules as $i => $rule) {
 			if ($rule instanceof Less_Tree_MixinDefinition) {
-				$ruleset->rules[$i]->frames = array_slice($env->frames,0);
+				$ruleset->rules[$i]->frames = $env->frames;
 			}
 		}
 
@@ -419,9 +419,9 @@ class Less_Tree_Ruleset{
 							//construct the joined selector - if & is the first thing this will be empty,
 							// if not newJoinedSelector will be the last set of elements in the selector
 							if ( count($sel) > 0) {
-								$newSelectorPath = array_slice($sel,0);
+								$newSelectorPath = $sel;
 								$lastSelector = array_pop($newSelectorPath);
-								$newJoinedSelector = new Less_Tree_Selector( array_slice($lastSelector->elements,0), $selector->extendList);
+								$newJoinedSelector = new Less_Tree_Selector( $lastSelector->elements, $selector->extendList);
 								$newJoinedSelectorEmpty = false;
 							}
 							else {

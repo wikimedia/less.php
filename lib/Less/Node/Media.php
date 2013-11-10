@@ -148,7 +148,7 @@ class Less_Tree_Media {
 	}
 
     function bubbleSelectors($selectors) {
-		$this->ruleset = new Less_Tree_Ruleset( array_slice($selectors,0), array($this->ruleset) );
+		$this->ruleset = new Less_Tree_Ruleset( $selectors, array($this->ruleset) );
     }
 
 }

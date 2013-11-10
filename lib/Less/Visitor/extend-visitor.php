@@ -43,8 +43,7 @@ class Less_extendFinderVisitor extends Less_visitor{
 			$selector = end($selectorPath); //$selectorPath[ count($selectorPath)-1];
 
 
-			$list = array_slice($selector->extendList,0);
-			$list = array_merge($list, $allSelectorsExtendList);
+			$list = array_merge($selector->extendList, $allSelectorsExtendList);
 
 			$extendList = array();
 			foreach($list as $allSelectorsExtend){
