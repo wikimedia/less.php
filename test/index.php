@@ -227,23 +227,22 @@ class ParserTest{
 		}
 
 		echo '<div style="float:right">';
-		echo '<table cellspacing="5">';
 
 		//success rate
-		echo '<tr><td>Success Rate</td><td>'.$this->matched_count.' out of '.$this->files_tested.'  less files</td></tr>';
+		echo '<fieldset><legend>Success Rate</legend>'.$this->matched_count.' out of '.$this->files_tested.'  less files</fieldset>';
 
 		//current memory usage
 		$memory = memory_get_usage();
-		echo '<tr><td>Memory</td><td> '.self::FormatBytes($memory).' ('.number_format($memory).')</td></tr>';
+		echo '<fieldset><legend>Memory</legend>'.self::FormatBytes($memory).' ('.number_format($memory).')</fieldset>';
 
 		//max memory usage
 		$memory = memory_get_peak_usage();
-		echo '<tr><td>Memory Peak</td><td> '.self::FormatBytes($memory).' ('.number_format($memory).')</td></tr>';
+		echo '<fieldset><legend>Memory Peak</legend>'.self::FormatBytes($memory).' ('.number_format($memory).')</fieldset>';
 
 		//time
-		echo '<tr><td>Time (PHP):</td><td> '.self::microtime_diff(phpless_start_time,microtime()).'</td></tr>';
-		echo '<tr><td>Time (Request)</td><td> '.self::microtime_diff($_SERVER['REQUEST_TIME'],microtime()).'</td></tr>';
-		echo '</table>';
+		echo '<fieldset><legend>Time (PHP):</legend>'.self::microtime_diff(phpless_start_time,microtime()).'</fieldset>';
+		echo '<fieldset><legend>Time (Request)</legend>'.self::microtime_diff($_SERVER['REQUEST_TIME'],microtime()).'</fieldset>';
+
 		echo '</div>';
 
 	}
@@ -275,20 +274,31 @@ $content = ob_get_clean();
 <title>Parser Tests</title>
 <link rel="stylesheet" href="php-diff/styles.css" type="text/css" />
 <?php echo $test_obj->head ?>
+<style>
+html,body{padding:0;margin:0;}
+#heading{background:#2C3E50;color:#fff;padding:5px 20px;}
+fieldset{display:inline-block;border:0 none;font-size:13px;padding:2px;margin:5px 15px}
+legend{padding:0;margin:0;font-size:11px;color:rgba(255,255,255,0.5);}
+#contents{padding:20px;}
+</style>
 </head>
 <body>
 
 <?php
 
+echo '<div id="heading">';
 echo $test_obj->Summary();
 echo '<h1>Less.php Testing</h1>';
+echo '</div>';
 
 
 if( isset($_GET['file']) ){
 	echo '<script src="js/less-1.4.2.js" ></script>';
 }
 
+echo '<div id="contents">';
 echo $content;
+echo '</div>';
 
 ?>
 </body></html>
