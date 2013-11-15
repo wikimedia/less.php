@@ -1,5 +1,7 @@
 <?php
 
+define('phpless_start_time',microtime());
+
 //error_reporting(E_ALL | E_STRICT);
 //error_reporting(E_ALL);
 error_reporting(E_ALL ^ E_STRICT);
@@ -23,10 +25,10 @@ class ParserTest{
 	//options
 	var $compress = false;
 	var $test_folder = 'less.js'; //'bootstrap3';
-
-
 	var $cache_dir;
 	var $head;
+	var $files_tested = 0;
+	var $matched_count = 0;
 
 	function __construct(){
 
@@ -69,6 +71,7 @@ class ParserTest{
 
     public function testLessJsCssGeneration($dir, $less, $css){
 
+		$this->files_tested++;
 		$basename = basename($less);
 		$basename = substr($basename,0,-5); //remove .less extension
 		echo '<br/><a href="?file='.$basename.'">'.$basename.'</a>';
@@ -131,6 +134,7 @@ class ParserTest{
 
 
 		if( $css === $compiled ){
+			$this->matched_count++;
 			echo ' (equals) ';
 
 			if( !isset($_GET['file']) ){
@@ -215,6 +219,49 @@ class ParserTest{
 		}
 
 	}
+
+	function Summary(){
+
+		if( !$this->files_tested ){
+			return;
+		}
+
+		echo '<div style="float:right">';
+		echo '<table cellspacing="5">';
+
+		//success rate
+		echo '<tr><td>Success Rate</td><td>'.$this->matched_count.' out of '.$this->files_tested.'  less files</td></tr>';
+
+		//current memory usage
+		$memory = memory_get_usage();
+		echo '<tr><td>Memory</td><td> '.self::FormatBytes($memory).' ('.number_format($memory).')</td></tr>';
+
+		//max memory usage
+		$memory = memory_get_peak_usage();
+		echo '<tr><td>Memory Peak</td><td> '.self::FormatBytes($memory).' ('.number_format($memory).')</td></tr>';
+
+		//time
+		echo '<tr><td>Time (PHP):</td><td> '.self::microtime_diff(phpless_start_time,microtime()).'</td></tr>';
+		echo '<tr><td>Time (Request)</td><td> '.self::microtime_diff($_SERVER['REQUEST_TIME'],microtime()).'</td></tr>';
+		echo '</table>';
+		echo '</div>';
+
+	}
+
+
+	function microtime_diff($a, $b = false, $eff = 6) {
+		if( !$b ) $b = microtime();
+		$a = array_sum(explode(" ", $a));
+		$b = array_sum(explode(" ", $b));
+		return sprintf('%0.'.$eff.'f', $b-$a);
+	}
+
+	static function FormatBytes($size, $precision = 2){
+		$base = log($size) / log(1024);
+		$suffixes = array('B', 'KB', 'MB', 'GB', 'TB');
+		$floor = max(0,floor($base));
+		return round(pow(1024, $base - $floor), $precision) .' '. $suffixes[$floor];
+	}
 }
 
 ob_start();
@@ -230,37 +277,18 @@ $content = ob_get_clean();
 <?php echo $test_obj->head ?>
 </head>
 <body>
+
 <?php
 
-echo $content;
+echo $test_obj->Summary();
+echo '<h1>Less.php Testing</h1>';
+
 
 if( isset($_GET['file']) ){
 	echo '<script src="js/less-1.4.2.js" ></script>';
 }
 
-
-	$max_used = memory_get_peak_usage();
-	//$limit = @ini_get('memory_limit'); //need to convert to byte value
-	//$percentage = round($max_used/$limit,2);
-	echo '<div style="position:absolute;top:-1px;right:0;z-index:10000;padding:5px 10px;background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.2);font-size:11px">';
-	echo '<b>Performance</b>';
-	echo '<table>';
-	//.'<tr><td>Memory Usage:</td><td> '.number_format(memory_get_usage()).'</td></tr>';
-	echo '<tr><td>Error Level</td><td> '.error_reporting().'</td></tr>';
-	echo '<tr><td>Memory:</td><td> '.number_format($max_used).'</td></tr>';
-	//.'<tr><td>% of Limit:</td><td> '.$percentage.'%</td></tr>';
-	echo '<tr><td>Time (Request):</td><td> '.microtime_diff($_SERVER['REQUEST_TIME'],microtime()).'</td></tr>';
-	echo '</table>';
-	echo '</div>';
-
-function microtime_diff($a, $b = false, $eff = 6) {
-	if( !$b ) $b = microtime();
-	$a = array_sum(explode(" ", $a));
-	$b = array_sum(explode(" ", $b));
-	return sprintf('%0.'.$eff.'f', $b-$a);
-}
-
-
+echo $content;
 
 ?>
 </body></html>
