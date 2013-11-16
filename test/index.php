@@ -362,7 +362,7 @@ echo $test_obj->Summary();
 
 
 if( isset($_GET['file']) ){
-	echo '<script src="js/less-1.4.2.js" ></script>';
+	echo '<script src="assets/less-1.4.2.js" ></script>';
 }
 
 echo '<div id="contents">';
