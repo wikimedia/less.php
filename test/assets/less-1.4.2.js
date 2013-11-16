@@ -5412,12 +5412,24 @@ less.refresh = function (reload) {
             //log("loading " + sheet.href + " from cache.");
         } else {
             //log("parsed " + sheet.href + " successfully.");
-            createCSS(root.toCSS(less), sheet, env.lastModified);
+            //createCSS(root.toCSS(less), sheet, env.lastModified);
+            //log( root.toCSS(less));
 
-            log( root.toCSS(less));
+			// less.php changes
+            var css = root.toCSS(less);
+			function totextarea(){
+				var textarea = document.getElementById('lessjs_textarea');
+				if( textarea ){
+					textarea.value = css;
+					diffUsingJS(0);
+				}else{
+					window.setTimeout(totextarea,300);
+				}
+			}
+			totextarea();
         }
-        log("css for " + sheet.href + " generated in " + (new(Date) - endTime) + 'ms');
-        (env.remaining === 0) && log("css generated in " + (new(Date) - startTime) + 'ms');
+        //log("css for " + sheet.href + " generated in " + (new(Date) - endTime) + 'ms');
+        //(env.remaining === 0) && log("css generated in " + (new(Date) - startTime) + 'ms');
         endTime = new(Date);
     }, reload);
 

@@ -176,43 +176,61 @@ class ParserTest{
 			}
 
 		}else{
-
-			$compiled = explode("\n", $compiled );
-			$css = explode("\n", $css );
-
-
-			$options = array();
-			$diff = new Diff($compiled, $css, $options);
-			$renderer = new Diff_Renderer_Html_SideBySide();
-			//$renderer = new Diff_Renderer_Html_Inline();
-			echo $diff->Render($renderer);
-
-
-			if( isset($_GET['file']) ){
-				echo '</table>';
-				echo '<table style="width:100%"><tr><td>';
-				echo '<pre>';
-				echo implode("\n",$compiled);
-				echo '</pre>';
-				echo '</td><td>';
-				echo '<pre>';
-				echo implode("\n",$css);
-				echo '</pre>';
-				echo '</td></tr></table>';
-			}
+			echo ' (<b>compiled css did not match</b>)';
+			$this->PHPDiff($compiled,$css);
 		}
 
 
 		$pos = strpos($less,'/less.php');
 
 		if( isset($_GET['file']) ){
+			echo '<table><tr><td>';
+			echo '<textarea id="lessphp_textarea" autocomplete="off">'.htmlspecialchars($compiled).'</textarea>';
+			echo '</td><td>';
+			echo '<textarea id="lessjs_textarea" autocomplete="off"></textarea>';
+			echo '</td></tr></table>';
+			echo '<div id="diffoutput"></div>';
+
 			$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
 		}
 		//echo '<textarea>'.htmlspecialchars(file_get_contents($less)).'</textara>';
 
     }
 
+	/**
+	 * Show diff using php (optional)
+	 *
+	 */
+    function PHPDiff($compiled,$css){
 
+		if( isset($_COOKIE['phpdiff']) && $_COOKIE['phpdiff'] == 0 ){
+			return;
+		}
+
+		$compiled = explode("\n", $compiled );
+		$css = explode("\n", $css );
+
+		$options = array();
+		$diff = new Diff($compiled, $css, $options);
+		$renderer = new Diff_Renderer_Html_SideBySide();
+		//$renderer = new Diff_Renderer_Html_Inline();
+		echo $diff->Render($renderer);
+
+
+		//show the full contents
+		if( isset($_GET['file']) ){
+			echo '</table>';
+			echo '<table style="width:100%"><tr><td>';
+			echo '<pre>';
+			echo implode("\n",$compiled);
+			echo '</pre>';
+			echo '</td><td>';
+			echo '<pre>';
+			echo implode("\n",$css);
+			echo '</pre>';
+			echo '</td></tr></table>';
+		}
+	}
 
 
 
@@ -308,6 +326,21 @@ class ParserTest{
 		$floor = max(0,floor($base));
 		return round(pow(1024, $base - $floor), $precision) .' '. $suffixes[$floor];
 	}
+
+	static function Options(){
+		echo '<div id="options">';
+		echo '<b>Options</b>';
+
+
+		$checked = 'checked="checked"';
+		if( isset($_COOKIE['phpdiff']) && $_COOKIE['phpdiff'] == 0 ){
+			$checked = '';
+		}
+		echo '<label><input type="checkbox" name="phpdiff" value="phpdiff" '.$checked.' autocomplete="off"/><span>Show PHP Diff</span></label>';
+
+
+		echo '</div>';
+	}
 }
 
 ob_start();
@@ -321,33 +354,19 @@ $content = ob_get_clean();
 	<title>Less.php Tests</title>
 	<link rel="stylesheet" href="php-diff/styles.css" type="text/css" />
 	<?php echo $test_obj->head ?>
-	<style>
-		html,body{padding:0;margin:0;}
-		body{line-height:150%;font-size:13px;}
-		a{color:#18BC9C;}
+	<link rel="stylesheet" type="text/css" href="assets/style.css" />
+	<link rel="stylesheet" type="text/css" href="assets/jsdiff.css" />
 
-		fieldset{display:inline-block;border:0 none;font-size:13px;padding:2px;margin:5px 30px 5px 0;line-height:110%;width:auto;}
-		legend{padding:0;margin:0;font-size:11px;color:rgba(255,255,255,0.5);}
+	<script src="assets/jquery-1.10.2.min.js"></script>
+	<script src="assets/diffview.js"></script>
+	<script src="assets/difflib.js"></script>
+	<script src="assets/script.js"></script>
 
-		#heading *,
-		#contents *{min-width:0;width:auto;}
-
-		#heading{background:#2C3E50;color:#fff;padding:0 20px;height:70px;margin:0;}
-		#heading *{color:#fff;}
-		#heading h1{font-size:20px;line-height:70px;height:70px;margin:0;padding:0;}
-
-		#links{float:right;margin:0;}
-		#links li, #links a{display:inline-block;list-style:none;padding:0;height:70px;line-height:70px;}
-		#links a{text-decoration:none;padding:0 20px;}
-
-		#links .active a{background:#1A252F;}
-		#links a:hover{color:#18BC9C;text-decoration:none;}
-
-
-		#summary{background:#1A252F;padding:10px 20px;color:#fff;}
-
-		#contents{padding:20px;}
-	</style>
+	<?php
+		if( isset($_GET['file']) ){
+			echo '<script src="assets/less-1.4.2.js"></script>';
+		}
+	?>
 </head>
 <body>
 
@@ -359,11 +378,8 @@ echo '<h1>Less.php Testing</h1>';
 echo '</div>';
 
 echo $test_obj->Summary();
+echo $test_obj->Options();
 
-
-if( isset($_GET['file']) ){
-	echo '<script src="assets/less-1.4.2.js" ></script>';
-}
 
 echo '<div id="contents">';
 echo $content;
