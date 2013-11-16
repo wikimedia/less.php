@@ -24,7 +24,8 @@ class ParserTest{
 
 	//options
 	var $compress = false;
-	var $test_folder = 'less.js'; //'bootstrap3';
+	var $dir;
+	var $test_dirs = array('less.js','bootstrap3','bootstrap-2.0.2');
 	var $cache_dir;
 	var $head;
 	var $files_tested = 0;
@@ -40,7 +41,31 @@ class ParserTest{
 			echo '<p>Cache directory not writable</p>';
 		}
 
-		$dir = __DIR__ .'/Fixtures/'.$this->test_folder;
+
+		//get any other possible test folders
+		$fixtures_dir = rtrim(__DIR__,'/').'/Fixtures';
+		$temp = scandir($fixtures_dir);
+		foreach($temp as $dir){
+			if( $dir == '.' || $dir == '..' ){
+				continue;
+			}
+			$full_path = $fixtures_dir.'/'.$dir.'/less';
+			if( !file_exists($full_path) || !is_dir($full_path) ){
+				continue;
+			}
+			$this->test_dirs[] = $dir;
+		}
+		$this->test_dirs = array_unique($this->test_dirs);
+
+
+		//Set the directory to test
+		if( !empty($_REQUEST['dir']) && in_array($_REQUEST['dir'],$this->test_dirs) ){
+			$this->dir = $_REQUEST['dir'];
+		}else{
+			$this->dir = reset($this->test_dirs);
+		}
+		$dir = $fixtures_dir.'/'.$this->dir;
+
 		$this->lessJsProvider($dir);
 	}
 
@@ -74,10 +99,19 @@ class ParserTest{
 		$this->files_tested++;
 		$basename = basename($less);
 		$basename = substr($basename,0,-5); //remove .less extension
-		echo '<br/><a href="?file='.$basename.'">'.$basename.'</a>';
 
 		$less = $dir.$less;
 		$css = $dir.$css;
+
+		echo '<br/><a href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">'.$basename.'</a>';
+
+		if( !file_exists($less) ){
+			echo '<p>LESS file missing: '.$less.'</p>';
+			return false;
+		}elseif( !file_exists($css) ){
+			echo '<p>CSS file missing: '.$css.'</p>';
+			return false;
+		}
 
 
 		$options = array();
@@ -220,16 +254,29 @@ class ParserTest{
 
 	}
 
+	function Links(){
+
+		echo '<ul id="links">';
+		foreach($this->test_dirs as $dir){
+			$class = '';
+			if( $dir == $this->dir){
+				$class = ' class="active"';
+			}
+			echo '<li '.$class.'><a href="?dir='.$dir.'">'.$dir.'</a></li>';
+		}
+		echo '</ul>';
+	}
+
 	function Summary(){
 
 		if( !$this->files_tested ){
 			return;
 		}
 
-		echo '<div style="float:right">';
+		echo '<div id="summary">';
 
 		//success rate
-		echo '<fieldset><legend>Success Rate</legend>'.$this->matched_count.' out of '.$this->files_tested.'  less files</fieldset>';
+		echo '<fieldset><legend>Success Rate</legend>'.$this->matched_count.' out of '.$this->files_tested.'  files</fieldset>';
 
 		//current memory usage
 		$memory = memory_get_usage();
@@ -271,25 +318,47 @@ $content = ob_get_clean();
 <!DOCTYPE html>
 <html><head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>Parser Tests</title>
-<link rel="stylesheet" href="php-diff/styles.css" type="text/css" />
-<?php echo $test_obj->head ?>
-<style>
-html,body{padding:0;margin:0;}
-#heading{background:#2C3E50;color:#fff;padding:5px 20px;}
-fieldset{display:inline-block;border:0 none;font-size:13px;padding:2px;margin:5px 15px}
-legend{padding:0;margin:0;font-size:11px;color:rgba(255,255,255,0.5);}
-#contents{padding:20px;}
-</style>
+	<title>Less.php Tests</title>
+	<link rel="stylesheet" href="php-diff/styles.css" type="text/css" />
+	<?php echo $test_obj->head ?>
+	<style>
+		html,body{padding:0;margin:0;}
+		body{line-height:150%;font-size:13px;}
+		a{color:#18BC9C;}
+
+		fieldset{display:inline-block;border:0 none;font-size:13px;padding:2px;margin:5px 30px 5px 0;line-height:110%;width:auto;}
+		legend{padding:0;margin:0;font-size:11px;color:rgba(255,255,255,0.5);}
+
+		#heading *,
+		#contents *{min-width:0;width:auto;}
+
+		#heading{background:#2C3E50;color:#fff;padding:0 20px;height:70px;margin:0;}
+		#heading *{color:#fff;}
+		#heading h1{font-size:20px;line-height:70px;height:70px;margin:0;padding:0;}
+
+		#links{float:right;margin:0;}
+		#links li, #links a{display:inline-block;list-style:none;padding:0;height:70px;line-height:70px;}
+		#links a{text-decoration:none;padding:0 20px;}
+
+		#links .active a{background:#1A252F;}
+		#links a:hover{color:#18BC9C;text-decoration:none;}
+
+
+		#summary{background:#1A252F;padding:10px 20px;color:#fff;}
+
+		#contents{padding:20px;}
+	</style>
 </head>
 <body>
 
 <?php
 
 echo '<div id="heading">';
-echo $test_obj->Summary();
+echo $test_obj->Links();
 echo '<h1>Less.php Testing</h1>';
 echo '</div>';
+
+echo $test_obj->Summary();
 
 
 if( isset($_GET['file']) ){
