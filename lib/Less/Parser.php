@@ -1786,6 +1786,21 @@ class Less_Parser extends Less_Cache{
 		return is_object($a) && method_exists($a,$b);
 	}
 
+	/**
+	 *
+	 * Round 1.499999 to 1 instead of 2
+	 *
+	 */
+	public static function round($i){
+		$ceil = ceil($i);
+		$floor = floor($i);
+		if( ($ceil - $i) <= ($i - $floor) ){
+			return $ceil;
+		}else{
+			return $floor;
+		}
+	}
+
 
 }
 

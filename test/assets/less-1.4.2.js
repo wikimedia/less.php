@@ -1749,9 +1749,9 @@ tree.functions = {
     },
     darken: function (color, amount) {
         var hsl = color.toHSL();
-
         hsl.l -= amount.value / 100;
         hsl.l = clamp(hsl.l);
+
         return hsla(hsl);
     },
     fadein: function (color, amount) {
@@ -5747,7 +5747,8 @@ function removeNode(node) {
 }
 
 function log(str) {
-    if (less.env == 'development' && typeof(console) !== "undefined") { console.log('less: ' + str) }
+	console.log(str);
+    //if (less.env == 'development' && typeof(console) !== "undefined") { console.log('less: ' + str) }
 }
 
 function error(e, rootHref) {

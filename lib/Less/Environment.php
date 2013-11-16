@@ -238,33 +238,33 @@ class Less_Environment{
 
 	public static function hue($color){
 		$c = $color->toHSL();
-		return new Less_Tree_Dimension(round($c['h']));
+		return new Less_Tree_Dimension(Less_Parser::round($c['h']));
 	}
 
 	public static function saturation($color){
 		$c = $color->toHSL();
-		return new Less_Tree_Dimension(round($c['s'] * 100), '%');
+		return new Less_Tree_Dimension(Less_Parser::round($c['s'] * 100), '%');
 	}
 
 	public static function lightness($color){
 		$c = $color->toHSL();
-		return new Less_Tree_Dimension(round($c['l'] * 100), '%');
+		return new Less_Tree_Dimension(Less_Parser::round($c['l'] * 100), '%');
 	}
 
 	public static function hsvhue( $color ){
 		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( round($hsv['h']) );
+		return new Less_Tree_Dimension( Less_Parser::round($hsv['h']) );
 	}
 
 
 	public static function hsvsaturation( $color ){
 		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( round($hsv['s'] * 100), '%' );
+		return new Less_Tree_Dimension( Less_Parser::round($hsv['s'] * 100), '%' );
 	}
 
 	public static function hsvvalue( $color ){
 		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( round($hsv['v'] * 100), '%' );
+		return new Less_Tree_Dimension( Less_Parser::round($hsv['v'] * 100), '%' );
 	}
 
 	public static function red($color) {
@@ -285,7 +285,7 @@ class Less_Environment{
 	}
 
 	public static function luma ($color) {
-		return new Less_Tree_Dimension(round( $color->luma() * $color->alpha * 100), '%');
+		return new Less_Tree_Dimension(Less_Parser::round( $color->luma() * $color->alpha * 100), '%');
 	}
 
 	public static function saturate($color, $amount){
@@ -321,7 +321,6 @@ class Less_Environment{
 
 		if( $color instanceof Less_Tree_Color ){
 			$hsl = $color->toHSL();
-
 			$hsl['l'] -= $amount->value / 100;
 			$hsl['l'] = self::clamp($hsl['l']);
 
@@ -476,7 +475,7 @@ class Less_Environment{
 			$fraction = $f->value;
 		}
 
-		return Less_Environment::_math('round',null, $n, $fraction);
+		return Less_Environment::_math('Less_Parser::round',null, $n, $fraction);
 	}
 
 	public static function pi(){

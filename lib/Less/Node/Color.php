@@ -48,7 +48,7 @@ class Less_Tree_Color{
 
 			$color = '';
 			foreach($this->rgb as $i){
-				$i = round($i);
+				$i = Less_Parser::round($i);
 				$i = ($i > 255 ? 255 : ($i < 0 ? 0 : $i));
 				$i = dechex($i);
 				$color .= str_pad($i, 2, '0', STR_PAD_LEFT);
@@ -144,11 +144,11 @@ class Less_Tree_Color{
 	}
 
 	public function toARGB(){
-		$argb = array_merge( (array) round($this->alpha * 255), $this->rgb);
+		$argb = array_merge( (array) Less_Parser::round($this->alpha * 255), $this->rgb);
 
 		$temp = '';
 		foreach($argb as $i){
-			$i = round($i);
+			$i = Less_Parser::round($i);
 			$i = dechex($i > 255 ? 255 : ($i < 0 ? 0 : $i));
 			$temp .= str_pad($i, 2, '0', STR_PAD_LEFT);
 		}
