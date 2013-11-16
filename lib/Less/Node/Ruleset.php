@@ -101,9 +101,9 @@ class Less_Tree_Ruleset{
         }
 
 
-		foreach($ruleset->rules as $i => $rule) {
-			if(! ($rule instanceof Less_Tree_MixinDefinition) ){
-				$ruleset->rules[$i] = Less_Parser::is_method($rule,'compile') ? $rule->compile($env) : $rule;
+		for( $i=0, $rule_len=count($ruleset->rules); $i<$rule_len; $i++ ){
+			if(! ($ruleset->rules[$i] instanceof Less_Tree_MixinDefinition) ){
+				$ruleset->rules[$i] = Less_Parser::is_method($ruleset->rules[$i],'compile') ? $ruleset->rules[$i]->compile($env) : $ruleset->rules[$i];
 			}
 		}
 
