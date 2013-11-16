@@ -387,8 +387,6 @@ less.Parser = function Parser(env) {
                 return chunks.map(function (c) { return c.join('') });;
             })([[]]);
 
-            console.log('--- CHUNKS --- ');
-            console.log(chunks);
 
             if (error) {
                 return callback(new(LessError)(error, env));
@@ -3238,12 +3236,6 @@ tree.Import = function (path, features, options, index, currentFileInfo) {
     if (this.options.less !== undefined) {
         this.css = !this.options.less;
     } else {
-        log('----------------------------------------');
-        log('Construct');
-        log(this.path);
-        var pathValue = this.getPath();
-        log('pathValue: '+pathValue);
-        log('----------------------------------------');
         if (pathValue && /css([\?;].*)?$/.test(pathValue)) {
             this.css = true;
         }
@@ -3278,17 +3270,13 @@ tree.Import.prototype = {
     getPath: function () {
         if (this.path instanceof tree.Quoted) {
             var path = this.path.value;
-			log('quoted: '+path);
             return (this.css !== undefined || /(\.[a-z]*$)|([\?;].*)$/.test(path)) ? path : path + '.less';
         } else if (this.path instanceof tree.URL) {
-			log('url');
             return this.path.value.value;
         }
         return null;
     },
     evalForImport: function (env) {
-		log('eval for import');
-		log(this.path);
         return new(tree.Import)(this.path.eval(env), this.features, this.options, this.index, this.currentFileInfo);
     },
     evalPath: function (env) {
@@ -3309,7 +3297,6 @@ tree.Import.prototype = {
         if (this.skip) { return []; }
 
         if (this.css) {
-			log('this.css');
             var newImport = new(tree.Import)(this.evalPath(env), features, this.options, this.index);
             if (!newImport.css && this.error) {
                 throw this.error;
@@ -5483,7 +5470,7 @@ less.refresh = function (reload) {
         } else {
             createCSS(root.toCSS(less), sheet, env.lastModified);
 
-            //log( root.toCSS(less));
+            log( root.toCSS(less));
         }
         (env.remaining === 0) && log("css generated in " + (new(Date) - startTime) + 'ms');
         endTime = new(Date);

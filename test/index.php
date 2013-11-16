@@ -103,7 +103,7 @@ class ParserTest{
 		$less = $dir.$less;
 		$css = $dir.$css;
 
-		echo '<br/><a href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">'.$basename.'</a>';
+		echo '<br/><a href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">File: '.$basename.'</a>';
 
 		if( !file_exists($less) ){
 			echo '<p>LESS file missing: '.$less.'</p>';
