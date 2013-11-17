@@ -431,7 +431,10 @@ class Less_Environment{
 	}
 
 	public static function escape ($str){
-		return new Less_Tree_Anonymous(urlencode($str->value));
+
+		$revert = array('%21'=>'!', '%2A'=>'*', '%27'=>"'",'%3F'=>'?','%26'=>'&','%2C'=>',','%2F'=>'/','%40'=>'@','%2B'=>'+','%24'=>'$');
+
+		return new Less_Tree_Anonymous(strtr(rawurlencode($str->value), $revert));
 	}
 
 
