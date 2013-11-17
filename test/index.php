@@ -376,7 +376,7 @@ $content = ob_get_clean();
 
 echo '<div id="heading">';
 echo $test_obj->Links();
-echo '<h1>Less.php Testing</h1>';
+echo '<h1><a href="?">Less.php Testing</a></h1>';
 echo '</div>';
 
 echo $test_obj->Summary();

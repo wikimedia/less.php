@@ -15,8 +15,9 @@ pre{
 #contents *{min-width:0;width:auto;}
 
 #heading{background:#2C3E50;color:#fff;padding:0 20px;height:70px;margin:0;}
-#heading *{color:#fff;}
+#heading *{color:#fff;text-decoration:none;}
 #heading h1{font-size:20px;line-height:70px;height:70px;margin:0;padding:0;}
+#heading a:hover{color:#18BC9C;}
 
 #links{float:right;margin:0;}
 #links li, #links a{display:inline-block;list-style:none;padding:0;height:70px;line-height:70px;}
