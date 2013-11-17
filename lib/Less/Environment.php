@@ -347,13 +347,8 @@ class Less_Environment{
 	public static function fade($color, $amount){
 		$hsl = $color->toHSL();
 
-		if ($amount->unit == '%') {
-			$hsl['a'] = $amount->value / 100;
-		} else {
-			$hsl['a'] = $amount->value;
-		}
+		$hsl['a'] = $amount->value / 100;
 		$hsl['a'] = self::clamp($hsl['a']);
-
 		return Less_Environment::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
