@@ -23,6 +23,7 @@ class Less_Tree_Selector {
 	*/
 
 	public function match($other) {
+		global $debug;
 		$len   = count($this->elements);
 
 		$olen = $offset = 0;
@@ -34,11 +35,11 @@ class Less_Tree_Selector {
 			$olen = count($other->elements) - $offset;
 		}
 
-		$max = min($len, $olen);
-
-		if( !$max ){
+        if( $olen === 0 || $len < $olen ){
 			return false;
 		}
+
+		$max = min($len, $olen);
 
 		for ($i = 0; $i < $max; $i ++) {
 			if ($this->elements[$i]->value !== $other->elements[$i + $offset]->value) {

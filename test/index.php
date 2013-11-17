@@ -218,6 +218,7 @@ class ParserTest{
 
 
 		//show the full contents
+		/*
 		if( isset($_GET['file']) ){
 			echo '</table>';
 			echo '<table style="width:100%"><tr><td>';
@@ -230,6 +231,7 @@ class ParserTest{
 			echo '</pre>';
 			echo '</td></tr></table>';
 		}
+		*/
 	}
 
 
