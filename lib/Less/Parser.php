@@ -1791,13 +1791,17 @@ class Less_Parser extends Less_Cache{
 	 * Round 1.499999 to 1 instead of 2
 	 *
 	 */
-	public static function round($i){
+	public static function round($i, $precision = 0){
+
+		$precision = pow(10,$precision);
+		$i = $i*$precision;
+
 		$ceil = ceil($i);
 		$floor = floor($i);
 		if( ($ceil - $i) <= ($i - $floor) ){
-			return $ceil;
+			return $ceil/$precision;
 		}else{
-			return $floor;
+			return $floor/$precision;
 		}
 	}
 
