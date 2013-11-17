@@ -343,6 +343,33 @@ class ParserTest{
 	}
 }
 
+
+
+function pre($arg){
+	global $debug;
+
+	if( !isset($debug) || !$debug ){
+		//return;
+	}
+	ob_start();
+	echo "\n\n<pre>";
+	if( $arg === 0 ){
+		echo '0';
+	}elseif( !$arg ){
+		var_dump($arg);
+	}else{
+		print_r($arg);
+	}
+	echo "</pre>\n";
+	return ob_get_clean();
+}
+
+function msg($arg){
+	echo Pre($arg);
+}
+
+
+
 ob_start();
 $test_obj = new ParserTest();
 $content = ob_get_clean();

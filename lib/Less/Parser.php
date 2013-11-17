@@ -1805,34 +1805,6 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
-
 }
 
-
-	if( !function_exists('pre') ){
-		function pre($arg){
-			global $debug;
-
-			if( !isset($debug) || !$debug ){
-				//return;
-			}
-			ob_start();
-			echo "\n\n<pre>";
-			if( $arg === 0 ){
-				echo '0';
-			}elseif( !$arg ){
-				var_dump($arg);
-			}else{
-				print_r($arg);
-			}
-			echo "</pre>\n";
-			return ob_get_clean();
-		}
-	}
-
-	if( !function_exists('msg') ){
-		function msg($arg){
-			echo Pre($arg);
-		}
-	}
 
