@@ -2,9 +2,7 @@
 
 define('phpless_start_time',microtime());
 
-//error_reporting(E_ALL | E_STRICT);
-//error_reporting(E_ALL);
-error_reporting(E_ALL ^ E_STRICT);
+error_reporting(E_ALL | E_STRICT); //previous to php 5.4, E_ALL did not include E_STRICT
 ini_set('display_errors',1);
 
 
