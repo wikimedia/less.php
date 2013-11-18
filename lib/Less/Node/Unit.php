@@ -1,9 +1,8 @@
 <?php
 
 
-class Less_Tree_Unit{
+class Less_Tree_Unit extends Less_Tree{
 
-	//public $type = 'Unit';
 	var $numerator = array();
 	var $denominator = array();
 
@@ -16,18 +15,16 @@ class Less_Tree_Unit{
 	function __clone(){
 	}
 
-	function toCSS($env){
+	function genCSS( $env, &$strs ){
 
 		if( count($this->numerator) ){
-			return $this->numerator[0];
+			$this->toCSS_Add( $strs, $this->numerator[0] );
+		}elseif( count($this->denominator) ){
+			$this->toCSS_Add( $strs, $this->denominator[0] );
+		}elseif( (!$env || !$env->strictUnits) && $this->backupUnit ){
+			$this->toCSS_Add( $strs, $this->backupUnit );
+			return ;
 		}
-		if( count($this->denominator) ){
-			return $this->denominator[0];
-		}
-		if( (!$env || !$env->strictUnits) && $this->backupUnit ){
-			return $this->backupUnit;
-		}
-		return "";
 	}
 
 	function toString(){
@@ -44,6 +41,11 @@ class Less_Tree_Unit{
 
 	function is($unitString){
 		return $this->toString() === $unitString;
+	}
+
+	function isLength(){
+		$css = $this->toCSS();
+		return !!preg_match('/px|em|%|in|cm|mm|pc|pt|ex/',$css);
 	}
 
 	function isAngle() {
