@@ -1,9 +1,7 @@
 <?php
 
 
-class Less_Tree_Dimension{
-
-	//public $type = 'Dimension';
+class Less_Tree_Dimension extends Less_Tree{
 
     public function __construct($value, $unit = false){
         $this->value = floatval($value);
@@ -17,11 +15,9 @@ class Less_Tree_Dimension{
 		}
     }
 
-	/*
 	function accept( $visitor ){
 		$visitor->visit( $this->unit );
 	}
-	*/
 
     public function compile($env = null) {
         return $this;
@@ -31,7 +27,7 @@ class Less_Tree_Dimension{
         return new Less_Tree_Color(array($this->value, $this->value, $this->value));
     }
 
-	public function toCSS( $env = null ){
+	public function genCSS( $env, &$strs ){
 
 		if( ($env && $env->strictUnits) && !$this->unit->isSingular() ){
 			throw new Less_CompilerException("Multiple units in dimension. Correct the units or use the unit function. Bad unit: ".$this->unit->toString());
@@ -48,7 +44,8 @@ class Less_Tree_Dimension{
 
 		if( $env && $env->compress ){
 			// Zero values doesn't need a unit
-			if( $value === 0 && !$this->unit->isAngle() ){
+			if( $value === 0 && $this->unit->isLength() ){
+				$this->toCSS_Add( $strs, $strValue );
 				return $strValue;
 			}
 
@@ -58,7 +55,8 @@ class Less_Tree_Dimension{
 			}
 		}
 
-		return $strValue . $this->unit->toCSS($env);
+		$this->toCSS_Add( $strs, $strValue );
+		$this->unit->genCSS($env, $strs);
 	}
 
     public function __toString(){
