@@ -45,7 +45,7 @@ class Less_Tree_Dimension extends Less_Tree{
 		if( $env && $env->compress ){
 			// Zero values doesn't need a unit
 			if( $value === 0 && $this->unit->isLength() ){
-				$this->toCSS_Add( $strs, $strValue );
+				self::toCSS_Add( $strs, $strValue );
 				return $strValue;
 			}
 
@@ -55,7 +55,7 @@ class Less_Tree_Dimension extends Less_Tree{
 			}
 		}
 
-		$this->toCSS_Add( $strs, $strValue );
+		self::toCSS_Add( $strs, $strValue );
 		$this->unit->genCSS($env, $strs);
 	}
 

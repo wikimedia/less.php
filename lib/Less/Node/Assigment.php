@@ -24,9 +24,9 @@ class Less_Tree_Assignment extends Less_Tree{
 	}
 
 	public function genCSS( $env, &$strs ){
-		$this->toCSS_Add( $strs, $this->key . '=' );
+		self::toCSS_Add( $strs, $this->key . '=' );
 		if( is_string($this->value) ){
-			$this->toCSS_Add( $strs, $this->value );
+			self::toCSS_Add( $strs, $this->value );
 		}else{
 			$this->value->genCSS( $env, $strs );
 		}

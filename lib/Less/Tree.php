@@ -8,26 +8,30 @@ class Less_Tree{
 		return implode('',$strs);
 	}
 
-	public function toCSS_Add( &$strs, $chunk, $fileInfo = null, $index = null ){
+	public static function toCSS_Add( &$strs, $chunk, $fileInfo = null, $index = null ){
 		$strs[] = $chunk;
 	}
 
 
-	/*
-	public function outputRuleset($env, $output, $rules ){
+	public static function outputRuleset($env, $strs, $rules ){
 
-		output.add((env.compress ? '{' : ' {\n'));
-		env.tabLevel = (env.tabLevel || 0) + 1;
-		var tabRuleStr = env.compress ? '' : Array(env.tabLevel + 1).join("  "),
-			tabSetStr = env.compress ? '' : Array(env.tabLevel).join("  ");
-		for(var i = 0; i < rules.length; i++) {
-			output.add(tabRuleStr);
-			rules[i].genCSS(env, output);
-			output.add(env.compress ? '' : '\n');
+		self::toCSS_Add( &$strs, ($env->compress ? '{' : ' {\n') );
+
+		if( !isset($env->tabLevel) ){
+			$env->tabLevel = 0;
 		}
-		env.tabLevel--;
-		output.add(tabSetStr + "}");
+		$env->tabLevel++;
+
+		$tabRuleStr = $env->compress ? '' : str_repeat( '  ' , $env->tabLevel + 1 );
+		$tabSetStr = $env->compress ? '' : str_repeat( '  ' , $env->tabLevel );
+
+		for($i = 0; $i < count($rules); $i++ ){
+			self::toCSS_Add( &$strs, $tabRuleStr );
+			$rules[$i]->genCSS( $env, $strs );
+			self::toCSS_Add( &$strs, ($env->compress ? '' : '\n') );
+		}
+		$env->tabLevel--;
+		self::toCSS_Add( &$strs, $tabSetStr.'}' );
 	}
-	*/
 
 }
