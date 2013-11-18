@@ -3,7 +3,6 @@
 
 class Less_Tree_Alpha extends Less_Tree{
 	private $value;
-	//public $type = 'Alpha';
 
 	public function __construct($val){
 		$this->value = $val;
