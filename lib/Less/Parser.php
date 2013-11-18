@@ -230,8 +230,6 @@ class Less_Parser extends Less_Cache{
 		$this->pos = 0;
 		$this->input = preg_replace('/\r\n/', "\n", $this->input);
 
-		//$this->Chunkify();
-
 		// Remove potential UTF Byte Order Mark
 		$this->input = preg_replace('/\\G\xEF\xBB\xBF/', '', $this->input);
 		$this->input_len = strlen($this->input);
@@ -254,111 +252,6 @@ class Less_Parser extends Less_Cache{
 		}
 
 		return $rules;
-	}
-
-
-	private function Chunkify(){
-
-		$j = 0;
-		$skip = '/(?:@\{[\w-]+\}|[^"\'`\{\}\/\(\)\\\\])+/';
-		$comment = '/\/\*(?:[^*]|\*+[^\/*])*\*+\/|\/\/.*/';
-		$string = '/"((?:[^"\\\r\n]|\\.)*)"|\'((?:[^\'\\\r\n]|\\.)*)\'|`((?:[^`]|\\.)*)`/';
-		$level = 0;
-		//$chunk = $chunks[0];
-		$inParam = false;
-
-		$chunks = array('');
-
-
-
-
-
-		for( $i = 0; $i < $this->input_len; ){
-
-			$lastIndex = $i;
-			if( preg_match($skip, $this->input, $match, PREG_OFFSET_CAPTURE, $i ) ){
-
-				if( $match[0][1] === $i ){
-					$i += strlen($match[0][0]);
-					$chunks[$j] .= $match[0][0];
-				}
-			}
-
-			$c = @$this->input[$i];
-
-			//comment.lastIndex = string.lastIndex = i;
-
-			if( preg_match($string, $this->input, $match, PREG_OFFSET_CAPTURE, $i ) ){
-				if( $match[0][1] === $i ){
-					$i += strlen($match[0][0]);
-					$chunks[$j] .= $match[0][0];
-					continue;
-				}
-			}
-
-
-
-			if( !$inParam && $c === '/' ){
-				$cc = $this->input[$i + 1];
-				if( $cc === '/' || $cc === '*' ){
-
-					if( preg_match($comment, $this->input, $match, PREG_OFFSET_CAPTURE, $i ) ){
-						if( $match[0][1] === $i ){
-							$i += strlen($match[0][0]);
-							$chunks[$j] .= $match[0][0];
-							continue;
-						}
-					}
-				}
-			}
-
-
-			switch( $c ){
-				case '{':
-					if (! $inParam) {
-						$level ++;
-						$chunks[$j] .= $c;
-						break;
-					}
-
-				case '}':
-					if(! $inParam ){
-						$level --;
-						$chunks[$j] .= $c;
-						$chunks[++$j] = '';
-						break;
-					}
-
-				case '(':
-					if(! $inParam ){
-						$inParam = true;
-						$chunks[$j] .= $c;
-						break;
-					}
-
-				case ')':
-					if(  $inParam ){
-						$inParam = false;
-						$chunks[$j] .= $c;
-						break;
-					}
-
-				default:
-					$chunks[$j] .= $c;
-			}
-
-			$i++;
-
-		}
-
-
-		if( $level != 0 ){
-
-			throw new Less_ParserException(
-				($level > 0) ? 'missing closing `}`' : 'missing opening `{` at index '.($i-1)
-			);
-		}
-
 	}
 
 
