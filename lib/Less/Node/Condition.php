@@ -1,8 +1,7 @@
 <?php
 
-class Less_Tree_Condition {
+class Less_Tree_Condition extends Less_Tree{
 
-	//public $type = 'Condition';
 	private $op;
 	private $lvalue;
 	private $rvalue;
@@ -17,12 +16,10 @@ class Less_Tree_Condition {
 		$this->negate = $negate;
 	}
 
-	/*
 	public function accept($visitor){
 		$visitor->visit( $this->lvalue );
 		$visitor->visit( $this->rvalue );
 	}
-	*/
 
     public function compile($env) {
 		$a = $this->lvalue->compile($env);
@@ -50,11 +47,11 @@ class Less_Tree_Condition {
 
 				switch ($result) {
 					case -1:
-					$result = $this->op === '<' || $this->op === '=<';
+					$result = $this->op === '<' || $this->op === '=<' || $this->op === '<=';
 					break;
 
 					case  0:
-					$result = $this->op === '=' || $this->op === '>=' || $this->op === '=<';
+					$result = $this->op === '=' || $this->op === '>=' || $this->op === '=<' || $this->op === '<=';
 					break;
 
 					case  1:
