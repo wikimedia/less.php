@@ -5,8 +5,7 @@
 // A function call node.
 //
 
-class Less_Tree_Call{
-    public $type = 'Call';
+class Less_Tree_Call extends Less_Tree{
     private $value;
 
     var $name;
@@ -21,11 +20,9 @@ class Less_Tree_Call{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
-	/*
 	function accept( $visitor ){
 		$visitor->visit( $this->args );
 	}
-	*/
 
     //
     // When evaluating a function call,
@@ -65,14 +62,22 @@ class Less_Tree_Call{
 			}
 		}
 
-		// 2.
-		$temp = array();
-		foreach($args as $a){
-			$temp[] = $a->toCSS($env);
-		}
-		return new Less_Tree_Anonymous($this->name .
-				   "(" . implode(', ', $temp) . ")");
+		return new Less_Tree_Call( $this->name, $args, $this->index, $this->currentFileInfo );
     }
+
+	public function genCSS( $env, &$strs ){
+
+		$this->toCSS_Add( $strs, $this->name . '(', $this->currentFileInfo, $this->index );
+		$args_len = count($this->args);
+		for($i = 0; $i < $args_len; $i++ ){
+			$this->args[$i]->genCSS($env, $strs );
+			if( $i + 1 < $args_len ){
+				$this->toCSS_Add( $strs, ', ' );
+			}
+		}
+
+		$this->toCSS_Add( $strs, ')' );
+	}
 
     public function toCSS ($env) {
         return $this->compile($env)->toCSS();

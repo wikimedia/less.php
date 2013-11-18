@@ -13,10 +13,9 @@ class Less_Tree{
 	}
 
 
+	/*
 	public function outputRuleset($env, $output, $rules ){
-		$output->add( ($env->compress ? '{' : " {\n") );
 
-		/*
 		output.add((env.compress ? '{' : ' {\n'));
 		env.tabLevel = (env.tabLevel || 0) + 1;
 		var tabRuleStr = env.compress ? '' : Array(env.tabLevel + 1).join("  "),
@@ -28,7 +27,7 @@ class Less_Tree{
 		}
 		env.tabLevel--;
 		output.add(tabSetStr + "}");
-		*/
 	}
+	*/
 
 }
