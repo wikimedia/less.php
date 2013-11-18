@@ -3,6 +3,7 @@
 ./Colors.php
 ./Environment.php
 ./Mime.php
+./Tree.php
 ./Node
 ./Visitor
 ./Exception
