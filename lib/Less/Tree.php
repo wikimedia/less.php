@@ -13,7 +13,7 @@ class Less_Tree{
 	}
 
 
-	public static function outputRuleset($env, $strs, $rules ){
+	public static function outputRuleset($env, &$strs, $rules ){
 
 		self::toCSS_Add( $strs, ($env->compress ? '{' : ' {\n') );
 
