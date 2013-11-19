@@ -15,7 +15,7 @@ class Less_Tree{
 
 	public static function outputRuleset($env, $strs, $rules ){
 
-		self::toCSS_Add( &$strs, ($env->compress ? '{' : ' {\n') );
+		self::toCSS_Add( $strs, ($env->compress ? '{' : ' {\n') );
 
 		if( !isset($env->tabLevel) ){
 			$env->tabLevel = 0;
@@ -26,12 +26,12 @@ class Less_Tree{
 		$tabSetStr = $env->compress ? '' : str_repeat( '  ' , $env->tabLevel );
 
 		for($i = 0; $i < count($rules); $i++ ){
-			self::toCSS_Add( &$strs, $tabRuleStr );
+			self::toCSS_Add( $strs, $tabRuleStr );
 			$rules[$i]->genCSS( $env, $strs );
-			self::toCSS_Add( &$strs, ($env->compress ? '' : '\n') );
+			self::toCSS_Add( $strs, ($env->compress ? '' : '\n') );
 		}
 		$env->tabLevel--;
-		self::toCSS_Add( &$strs, $tabSetStr.'}' );
+		self::toCSS_Add( $strs, $tabSetStr.'}' );
 	}
 
 }
