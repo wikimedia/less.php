@@ -1,19 +1,18 @@
 <?php
 
 
-class Less_Tree_Keyword{
+class Less_Tree_Keyword extends Less_Tree{
 
-	//public $type = 'Keyword';
 	public function __construct($value){
 		$this->value = $value;
 	}
 
-	public function toCss(){
-		return $this->value;
-	}
-
 	public function compile($env){
 		return $this;
+	}
+
+	public function genCSS( $env, &$strs ){
+		self::toCSS_Add( $strs, $this->value );
 	}
 
 	public function compare($other) {
