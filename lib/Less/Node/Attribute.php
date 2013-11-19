@@ -1,9 +1,8 @@
 <?php
 
 
-class Less_Tree_Attribute{
+class Less_Tree_Attribute extends Less_Tree{
 
-	//public $type = "Attribute";
 	public $key;
 	public $op;
 	public $value;
@@ -14,15 +13,17 @@ class Less_Tree_Attribute{
 		$this->value = $value;
 	}
 
-	/*
 	function accept($visitor){
 		$visitor->visit($this->value);
 	}
-	*/
 
 	function compile($env){
 		return new Less_Tree_Attribute( ( (Less_Parser::is_method($this->key,'compile')) ? $this->key->compile($env) : $this->key),
 			$this->op, ( Less_Parser::is_method($this->value,'compile')) ? $this->value->compile($env) : $this->value);
+	}
+
+	function genCSS( $env, &$strs ){
+		self::toCSS_Add( $strs, $this->toCSS($env) );
 	}
 
 	function toCSS($env){
