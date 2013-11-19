@@ -55,14 +55,14 @@ class Less_Tree_Expression {
 		return $returnValue;
 	}
 
-	public function toCSS ($env) {
-
-		$ret = array();
-		foreach($this->value as $e){
-			$ret[] = Less_Parser::is_method($e, 'toCSS') ? $e->toCSS($env) : '';
+	function genCSS( $env, &$strs ){
+		$val_len = count($this->value);
+		for( $i = 0; $i < $val_len; $i++ ){
+			$this->value[$i]->genCSS( $env, $strs );
+			if( $i + 1 < $val_len ){
+				self::toCSS_Add( $strs, ' ' );
+			}
 		}
-
-		return implode(' ',$ret);
 	}
 
 	function throwAwayComments() {
