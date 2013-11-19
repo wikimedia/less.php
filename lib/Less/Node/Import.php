@@ -14,9 +14,8 @@
 // `import,push`, we also pass it a callback, which it'll call once
 // the file has been fetched, and parsed.
 //
-class Less_Tree_Import{
+class Less_Tree_Import extends Less_Tree{
 
-	//public $type = 'Import';
 	public $options;
 	public $index;
 	public $path;
@@ -33,16 +32,17 @@ class Less_Tree_Import{
 		$this->features = $features;
 		$this->currentFileInfo = $currentFileInfo;
 
+		$this->options += array('inline'=>false);
 
-		if( isset($this->options['less']) ){
-			$this->css = !$this->options['less'];
+		if( isset($this->options['less']) || $this->options['inline'] ){
+			$this->css = !$this->options['less'] || $this->options['inline'];
 		} else {
 			$pathValue = $this->getPath();
 			if( $pathValue && preg_match('/css([\?;].*)?$/',$pathValue) ){
 				$this->css = true;
 			}
 		}
-    }
+	}
 
 //
 // The actual import node doesn't return anything, when converted to CSS.
@@ -53,13 +53,29 @@ class Less_Tree_Import{
 // we end up with a flat structure, which can easily be imported in the parent
 // ruleset.
 //
-	/*
+
 	function accept($visitor) {
 		$visitor->visit($this->features);
 		$visitor->visit($this->path);
-		$visitor->visit($this->root);
+
+		if( !$this->options['inline'] ){
+			$visitor->visit($this->root);
+		}
 	}
-	*/
+
+	function genCSS( $env, &$strs ){
+		if( $this->css ){
+
+			self::toCSS_Add( $strs, '@import ', $this->currentFileInfo, $this->index );
+
+			$this->path->genCSS( $env, $strs );
+			if( $this->features ){
+				self::toCSS_Add( $strs, ' ' );
+				$this->features->genCSS( $env, $strs );
+			}
+			self::toCSS_Add( $strs, ';' );
+		}
+	}
 
 	function toCSS($env) {
 		$features = $this->features ? ' ' . $this->features->toCSS($env) : '';
@@ -87,13 +103,23 @@ class Less_Tree_Import{
 
 	function compilePath($env) {
 		$path = $this->path->compile($env);
-		if( $this->currentFileInfo && $this->currentFileInfo['rootpath'] && !($path instanceof Less_Tree_URL)) {
-			$pathValue = $path->value;
-			// Add the base path if the import is relative
-			if( $pathValue && $env->isPathRelative($pathValue) ){
-				$path->value = Less_Environment::NormPath($this->currentFileInfo['uri_root']. $pathValue);
-			}
+		$rootpath = '';
+		if( $this->currentFileInfo && $this->currentFileInfo['rootpath'] ){
+			$rootpath = $this->currentFileInfo['rootpath'];
 		}
+
+
+		if( !($path instanceof Less_Tree_URL) ){
+			if( $rootpath ){
+				$pathValue = $path->value;
+				// Add the base path if the import is relative
+				if( $pathValue && $env->isPathRelative($pathValue) ){
+					$path->value = $this->currentFileInfo['uri_root'].$pathValue;
+				}
+			}
+			$path->value = Less_Environment::NormPath($path->value);
+		}
+
 		return $path;
 	}
 
@@ -130,7 +156,17 @@ class Less_Tree_Import{
 
 		if ($evald->skip) { return array(); }
 
-		if( $evald->css ){
+
+		if( $this->options['inline'] ){
+			//todo needs to reference css file not import
+			$contents = new Less_Tree_Expression($this->root, 0, array('filename'=>$this->importedFilename), true );
+
+			if( $this->features ){
+				return new Less_Tree_Media( array($contents), $this->features->value );
+			}
+			return array( $contents );
+
+		}elseif( $evald->css ){
 			$temp = $this->compilePath( $env);
 			return new Less_Tree_Import( $this->compilePath( $env), $features, $this->options, $this->index);
 		}
