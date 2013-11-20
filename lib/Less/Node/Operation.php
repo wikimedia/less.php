@@ -1,8 +1,7 @@
 <?php
 
-class Less_Tree_Operation{
 
-	//public $type = 'Operation';
+class Less_Tree_Operation extends Less_Tree{
 
 	public function __construct($op, $operands, $isSpaced = false){
 		$this->op = trim($op);
@@ -10,9 +9,9 @@ class Less_Tree_Operation{
 		$this->isSpaced = $isSpaced;
 	}
 
-	/*function accept($visitor) {
+	function accept($visitor) {
 		$visitor->visit($this->operands);
-	}*/
+	}
 
 	public function compile($env){
 		$a = $this->operands[0]->compile($env);
@@ -39,8 +38,16 @@ class Less_Tree_Operation{
 		}
 	}
 
-	function toCSS($env){
-		$separator = $this->isSpaced ? " " : "";
-		return $this->operands[0]->toCSS($env) . $separator . $this->op . $separator . $this->operands[1]->toCSS($env);
+	function genCSS( $env, &$strs ){
+		$this->operands[0]->genCSS( $env, $strs );
+		if( $this->isSpaced ){
+			self::toCSS_Add( $strs, " " );
+		}
+		self::toCSS_Add( $strs, $this->op );
+		if( $this->isSpaced ){
+			self::toCSS_Add( $strs, ' ' );
+		}
+		$this->operands[1]->genCSS( $env, $strs );
 	}
+
 }
