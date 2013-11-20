@@ -1,23 +1,21 @@
 <?php
 
 
-class Less_Tree_Negative{
+class Less_Tree_Negative extends Less_Tree{
 
-	//public $type = 'Negative';
 	public $value;
 
 	function __construct($node){
 		$this->value = $node;
 	}
 
-	/*
 	function accept($visitor) {
 		$visitor->visit($this->value);
 	}
-	*/
 
-	function toCSS($env){
-		return '-'.$this->value->toCSS($env);
+	function genCSS( $env, &$strs ){
+		self::toCSS_Add( $strs, '-' );
+		$this->value->genCSS( $env, $strs );
 	}
 
 	function compile($env) {
