@@ -1,9 +1,8 @@
 <?php
 
 
-class Less_Tree_MixinCall{
+class Less_Tree_MixinCall extends Less_Tree{
 
-	//public $type = 'MixinCall';
 	private $selector;
 	private $arguments;
 	private $index;
@@ -15,31 +14,29 @@ class Less_Tree_MixinCall{
 	 * less.js: tree.mixin.Call
 	 *
 	 */
-    public function __construct($elements, $args, $index, $currentFileInfo, $important = false){
-        $this->selector = new Less_Tree_Selector($elements);
-        $this->arguments = $args;
-        $this->index = $index;
+	public function __construct($elements, $args, $index, $currentFileInfo, $important = false){
+		$this->selector = new Less_Tree_Selector($elements);
+		$this->arguments = $args;
+		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 		$this->important = $important;
-    }
+	}
 
-	/*
 	function accept($visitor){
 		$visitor->visit($this->selector);
 		$visitor->visit($this->arguments);
 	}
-	*/
 
 
 	/**
 	 * less.js: tree.mixin.Call.prototype()
 	 *
 	 */
-    public function compile($env){
+	public function compile($env){
 
-        $rules = array();
-        $match = false;
-        $isOneFound = false;
+		$rules = array();
+		$match = false;
+		$isOneFound = false;
 
 		$args = array();
 		foreach($this->arguments as $a){
@@ -50,12 +47,13 @@ class Less_Tree_MixinCall{
 
 			$mixins = $env->frames[$i]->find($this->selector, null, $env);
 
-            if( !$mixins ){
+			if( !$mixins ){
 				continue;
 			}
 
 			$isOneFound = true;
-			foreach( $mixins as $mixin ){
+			for( $m = 0; $m < count($mixins); $m++ ){
+				$mixin = $mixins[$m];
 
 				$isRecursive = false;
 				foreach($env->frames as $recur_frame){
@@ -72,8 +70,25 @@ class Less_Tree_MixinCall{
 
 				if ($mixin->matchArgs($args, $env)) {
 					if( !Less_Parser::is_method($mixin,'matchCondition') || $mixin->matchCondition($args, $env) ){
-						try {
+						try{
+
+							if( !($mixin instanceof Less_Tree_MixinDefinition) ){
+								$mixin = new Less_Tree_MixinDefinition('', array(), $mixin->rules, null, false);
+								if( $mixins[$m]->originalRuleset ){
+									$mixin->originalRuleset = $mixins[$m]->originalRuleset;
+								}else{
+									$mixin->originalRuleset = $mixins[$m];
+								}
+							}
+							//if (this.important) {
+							//	isImportant = env.isImportant;
+							//	env.isImportant = true;
+							//}
+
 							$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
+							//if (this.important) {
+							//	env.isImportant = isImportant;
+							//}
 						} catch (Exception $e) {
 							//throw new Less_CompilerException($e->getMessage(), $e->index, null, $this->currentFileInfo['filename']);
 							throw new Less_CompilerException($e->getMessage(), null, null, $this->currentFileInfo['filename']);
@@ -85,13 +100,20 @@ class Less_Tree_MixinCall{
 			}
 
 			if( $match ){
+				if( !$this->currentFileInfo || !$this->currentFileInfo['reference'] ){
+					for( $i = 0; $i < count($rules); $i++ ){
+						$rule = $rules[$i];
+						if( Less_Parser::is_method($rule,'markReferenced') ){
+							$rule->markReferenced();
+						}
+					}
+				}
 				return $rules;
 			}
+		}
 
-        }
 
-
-        if( $isOneFound ){
+		if( $isOneFound ){
 
 			$message = array();
 			if( $args ){
@@ -118,7 +140,7 @@ class Less_Tree_MixinCall{
 		}else{
 			throw new Less_CompilerException(trim($this->selector->toCSS($env)) . " is undefined", $this->index);
 		}
-    }
+	}
 }
 
 

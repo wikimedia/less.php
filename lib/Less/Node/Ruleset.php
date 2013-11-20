@@ -141,12 +141,12 @@ class Less_Tree_Ruleset{
 		}
     }
 
-	static function makeImportant($selectors = null, $rules = null, $strictImports = false) {
+	static function makeImportant(){
 
 		$important_rules = array();
-		foreach($rules as $rule){
+		foreach($this->rules as $rule){
 			if( Less_Parser::is_method($rule,'makeImportant') && property_exists($rule,'selectors') ){
-				$important_rules[] = $rule->makeImportant($rule->selectors, $rule->rules, $strictImports);
+				$important_rules[] = $rule->makeImportant();
 			}elseif( Less_Parser::is_method($rule,'makeImportant') ){
 				$important_rules[] = $rule->makeImportant();
 			}else{
@@ -154,7 +154,7 @@ class Less_Tree_Ruleset{
 			}
 		}
 
-		return new Less_Tree_Ruleset($selectors, $important_rules, $strictImports );
+		return new Less_Tree_Ruleset($this->selectors, $important_rules, $this->strictImports );
 	}
 
 	public function matchArgs($args){
