@@ -1,8 +1,8 @@
 <?php
 
 
-class Less_Tree_Url{
-	//public $type = "Url";
+class Less_Tree_Url extends Less_Tree{
+
 	public $attrs;
 	public $value;
 	public $currentFileInfo;
@@ -12,14 +12,14 @@ class Less_Tree_Url{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
-	/*
 	function accept( $visitor ){
 		$visitor->visit($this->value);
 	}
-	*/
 
-	public function toCSS(){
-		return "url(" . $this->value->toCSS() . ")";
+	function genCSS( $env, &$strs ){
+		self::toCSS_Add( $strs, 'url(' );
+		$this->value->genCSS( $env, $strs );
+		self::toCSS_Add( $strs, ')' );
 	}
 
 	public function compile($ctx){
@@ -34,6 +34,7 @@ class Less_Tree_Url{
 			$val->value = $rootpath . $val->value;
 		}
 
+		$val->value = Less_Environment::NormPath( $val->value);
 
 		return new Less_Tree_URL($val, null);
 	}
