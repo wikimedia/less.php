@@ -40,7 +40,7 @@ class Less_Tree_Element extends Less_Tree{
 	}
 
 	public function genCSS( $env, &$strs ){
-		self::toCSS_Add( $strs, $this->toCSS($env), $this->currentFileInfo, $this->index );
+		self::OutputAdd( $strs, $this->toCSS($env), $this->currentFileInfo, $this->index );
 	}
 
 	public function toCSS ($env) {

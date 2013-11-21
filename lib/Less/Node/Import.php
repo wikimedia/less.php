@@ -66,14 +66,14 @@ class Less_Tree_Import extends Less_Tree{
 	function genCSS( $env, &$strs ){
 		if( $this->css ){
 
-			self::toCSS_Add( $strs, '@import ', $this->currentFileInfo, $this->index );
+			self::OutputAdd( $strs, '@import ', $this->currentFileInfo, $this->index );
 
 			$this->path->genCSS( $env, $strs );
 			if( $this->features ){
-				self::toCSS_Add( $strs, ' ' );
+				self::OutputAdd( $strs, ' ' );
 				$this->features->genCSS( $env, $strs );
 			}
-			self::toCSS_Add( $strs, ';' );
+			self::OutputAdd( $strs, ';' );
 		}
 	}
 

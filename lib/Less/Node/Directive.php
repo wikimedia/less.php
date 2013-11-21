@@ -26,14 +26,14 @@ class Less_Tree_Directive extends Less_Tree{
 
 	function genCSS( $env, &$strs ){
 
-		self::toCSS_Add( $strs, $this->name, $this->currentFileInfo, $this->index );
+		self::OutputAdd( $strs, $this->name, $this->currentFileInfo, $this->index );
 
 		if( $this->rules ){
 			Less_Tree::outputRuleset( $env, $strs, $this->rules);
 		}else{
-			self::toCSS_Add( $strs, ' ' );
+			self::OutputAdd( $strs, ' ' );
 			$this->value->genCSS( $env, $strs );
-			self::toCSS_Add( $strs, ';' );
+			self::OutputAdd( $strs, ';' );
 		}
 	}
 

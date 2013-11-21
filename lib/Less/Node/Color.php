@@ -30,7 +30,7 @@ class Less_Tree_Color extends Less_Tree{
 	}
 
 	public function genCSS( $env, &$strs ){
-		self::toCSS_Add( $strs, $this->toCSS($env) );
+		self::OutputAdd( $strs, $this->toCSS($env) );
 	}
 
     public function toCSS($env = null, $doNotCompress = false ){

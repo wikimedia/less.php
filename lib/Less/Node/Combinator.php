@@ -35,9 +35,9 @@ class Less_Tree_Combinator extends Less_Tree{
 
 	function genCSS($env, &$strs ){
 		if( $env->compress ){
-			self::toCSS_Add( $strs, self::$_outputMapCompressed[$this->value] );
+			self::OutputAdd( $strs, self::$_outputMapCompressed[$this->value] );
 		}else{
-			self::toCSS_Add( $strs, self::$_outputMap[$this->value] );
+			self::OutputAdd( $strs, self::$_outputMap[$this->value] );
 		}
 	}
 

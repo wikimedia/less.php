@@ -82,7 +82,7 @@ class Less_Tree_Selector extends Less_Tree{
 	function genCSS( $env, &$strs ){
 
 		if( (!$env || !$env->firstSelector) && $this->elements[0]->combinator->value === "" ){
-			self::toCSS_Add( $strs, ' ', $this->currentFileInfo, $this->index );
+			self::OutputAdd( $strs, ' ', $this->currentFileInfo, $this->index );
 		}
 		if( !$this->_css ){
 			//TODO caching? speed comparison?

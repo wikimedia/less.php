@@ -60,7 +60,7 @@ class Less_Tree_Expression {
 		for( $i = 0; $i < $val_len; $i++ ){
 			$this->value[$i]->genCSS( $env, $strs );
 			if( $i + 1 < $val_len ){
-				self::toCSS_Add( $strs, ' ' );
+				self::OutputAdd( $strs, ' ' );
 			}
 		}
 	}

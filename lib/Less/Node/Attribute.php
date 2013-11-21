@@ -23,7 +23,7 @@ class Less_Tree_Attribute extends Less_Tree{
 	}
 
 	function genCSS( $env, &$strs ){
-		self::toCSS_Add( $strs, $this->toCSS($env) );
+		self::OutputAdd( $strs, $this->toCSS($env) );
 	}
 
 	function toCSS($env){

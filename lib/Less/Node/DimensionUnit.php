@@ -18,11 +18,11 @@ class Less_Tree_Unit extends Less_Tree{
 	function genCSS( $env, &$strs ){
 
 		if( count($this->numerator) ){
-			self::toCSS_Add( $strs, $this->numerator[0] );
+			self::OutputAdd( $strs, $this->numerator[0] );
 		}elseif( count($this->denominator) ){
-			self::toCSS_Add( $strs, $this->denominator[0] );
+			self::OutputAdd( $strs, $this->denominator[0] );
 		}elseif( (!$env || !$env->strictUnits) && $this->backupUnit ){
-			self::toCSS_Add( $strs, $this->backupUnit );
+			self::OutputAdd( $strs, $this->backupUnit );
 			return ;
 		}
 	}

@@ -17,11 +17,11 @@ class Less_Tree_Quoted extends Less_Tree{
 
     public function genCSS( $env, &$strs ){
 		if( $this->escaped ){
-			self::toCSS_Add( $strs, $this->quote, $this->currentFileInfo, $this->index );
+			self::OutputAdd( $strs, $this->quote, $this->currentFileInfo, $this->index );
         }
-        self::toCSS_Add( $strs, $this->value );
+        self::OutputAdd( $strs, $this->value );
         if( !$this->escaped ){
-			self::toCSS_Add( $strs, $this->quote );
+			self::OutputAdd( $strs, $this->quote );
         }
     }
 

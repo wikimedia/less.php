@@ -283,11 +283,11 @@ class Less_Tree_Ruleset extends Less_Tree{
 					$env->firstSelector = false;
 				}
 				if( $i + 1 < count($this->paths) ){
-					self::toCSS_Add( $strs, $env->compress ? ',' : (',\n' . $tabSetStr) );
+					self::OutputAdd( $strs, $env->compress ? ',' : (',\n' . $tabSetStr) );
 				}
 			}
 
-			self::toCSS_Add( $strs, ($env->compress ? '{' : ' {\n') . $tabRuleStr );
+			self::OutputAdd( $strs, ($env->compress ? '{' : ' {\n') . $tabRuleStr );
 		}
 
 		// Compile rules and rulesets
@@ -303,34 +303,34 @@ class Less_Tree_Ruleset extends Less_Tree{
 			if( Less_Parser::is_method($rule,'genCSS') ){
 				$rule->genCSS( $env, $strs );
 			}elseif( $rule->value ){
-				self::toCSS_Add( $strs, (string)$rule->value );
+				self::OutputAdd( $strs, (string)$rule->value );
 			}
 
 			if( !$env->lastRule ){
-				self::toCSS_Add( $strs, $env->compress ? '' : ('\n' . $tabRuleStr) );
+				self::OutputAdd( $strs, $env->compress ? '' : ('\n' . $tabRuleStr) );
 			}else{
 				$env->lastRule = false;
 			}
 		}
 
 		if( !$this->root ){
-			self::toCSS_Add( $strs, ($env->compress ? '}' : '\n' . $tabSetStr . '}'));
+			self::OutputAdd( $strs, ($env->compress ? '}' : '\n' . $tabSetStr . '}'));
 			$env->tabLevel--;
 		}
 
 		for( $i = 0; $i < count($rulesetNodes); $i++ ){
 			if( count($ruleNodes) && $firstRuleset ){
-				self::toCSS_Add( $strs, ($env->compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr) );
+				self::OutputAdd( $strs, ($env->compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr) );
 			}
 			if( !$firstRuleset ){
-				self::toCSS_Add( $strs, ($env->compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr));
+				self::OutputAdd( $strs, ($env->compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr));
 			}
 			$firstRuleset = false;
 			$rulesetNodes[$i]->genCSS($env, $strs);
 		}
 
 		if( !count($output) && !$env->compress && $this->firstRoot ){
-			self::toCSS_Add( $strs, "\n" );
+			self::OutputAdd( $strs, "\n" );
 		}
 	}
 

@@ -8,7 +8,7 @@ class Less_Tree_UnicodeDescriptor extends Less_Tree{
 	}
 
 	public function genCSS( $env, &$strs ){
-		self::toCSS_Add( $strs, $this->value );
+		self::OutputAdd( $strs, $this->value );
 	}
 
 	public function compile($env){

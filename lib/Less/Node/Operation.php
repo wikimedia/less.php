@@ -41,11 +41,11 @@ class Less_Tree_Operation extends Less_Tree{
 	function genCSS( $env, &$strs ){
 		$this->operands[0]->genCSS( $env, $strs );
 		if( $this->isSpaced ){
-			self::toCSS_Add( $strs, " " );
+			self::OutputAdd( $strs, " " );
 		}
-		self::toCSS_Add( $strs, $this->op );
+		self::OutputAdd( $strs, $this->op );
 		if( $this->isSpaced ){
-			self::toCSS_Add( $strs, ' ' );
+			self::OutputAdd( $strs, ' ' );
 		}
 		$this->operands[1]->genCSS( $env, $strs );
 	}

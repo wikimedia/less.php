@@ -17,9 +17,9 @@ class Less_Tree_Url extends Less_Tree{
 	}
 
 	function genCSS( $env, &$strs ){
-		self::toCSS_Add( $strs, 'url(' );
+		self::OutputAdd( $strs, 'url(' );
 		$this->value->genCSS( $env, $strs );
-		self::toCSS_Add( $strs, ')' );
+		self::OutputAdd( $strs, ')' );
 	}
 
 	public function compile($ctx){

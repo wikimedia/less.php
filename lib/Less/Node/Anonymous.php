@@ -32,7 +32,7 @@ class Less_Tree_Anonymous extends Less_Tree{
 	}
 
 	public function genCSS( $env, &$strs ){
-		self::toCSS_Add( $strs, $this->value, $this->currentFileInfo, $this->index, $this->mapLines );
+		self::OutputAdd( $strs, $this->value, $this->currentFileInfo, $this->index, $this->mapLines );
 	}
 
 	public function toCss(){

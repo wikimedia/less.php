@@ -12,7 +12,7 @@ class Less_Tree_Keyword extends Less_Tree{
 	}
 
 	public function genCSS( $env, &$strs ){
-		self::toCSS_Add( $strs, $this->value );
+		self::OutputAdd( $strs, $this->value );
 	}
 
 	public function compare($other) {

@@ -29,7 +29,7 @@ class Less_Tree_Rule extends Less_Tree{
 
 	function genCSS( $env, &$strs ){
 
-		self::toCSS_Add( $strs, $this->name . ($env->compress ? ':' : ': '), $this->currentFileInfo, $this->index);
+		self::OutputAdd( $strs, $this->name . ($env->compress ? ':' : ': '), $this->currentFileInfo, $this->index);
 		try{
 			$this->value->genCSS($env, $strs);
 
@@ -38,7 +38,7 @@ class Less_Tree_Rule extends Less_Tree{
 			$e->filename = $this->currentFileInfo['filename'];
 			throw e;
 		}
-		self::toCSS_Add( $strs, $this->important . (($this->inline || ($env->lastRule && $env->compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
+		self::OutputAdd( $strs, $this->important . (($this->inline || ($env->lastRule && $env->compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
 	}
 
 	public function compile ($env){

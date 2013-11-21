@@ -25,7 +25,7 @@ class Less_Tree_Media extends Less_Tree{
 
 	function genCSS( $env, &$strs ){
 
-		self::toCSS_Add( $strs, '@media ', $this->currentFileInfo, $this->index );
+		self::OutputAdd( $strs, '@media ', $this->currentFileInfo, $this->index );
 		$this->features->genCSS( $env, $strs );
 		Less_Tree::outputRuleset( $env, $strs, $this->rules);
 

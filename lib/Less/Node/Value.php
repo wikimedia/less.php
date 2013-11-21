@@ -30,7 +30,7 @@ class Less_Tree_Value extends Less_Tree{
 		for($i = 0; $i < count($this->value); $i++ ){
 			$this->value[$i]->genCSS( $env, $strs);
 			if( $i+1 < count($this->value) ){
-				self::toCSS_Add( $strs, ($env && $env->compress) ? ',' : ', ' );
+				self::OutputAdd( $strs, ($env && $env->compress) ? ',' : ', ' );
 			}
 		}
 	}
