@@ -1,20 +1,16 @@
 <?php
 
 
-class Less_Tree_Value{
-
-	//public $type = 'Value';
+class Less_Tree_Value extends Less_Tree{
 
 	public function __construct($value){
 		$this->value = $value;
 		$this->is = 'value';
 	}
 
-	/*
 	function accept($visitor) {
 		$visitor->visit($this->value);
 	}
-	*/
 
 	public function compile($env){
 
@@ -30,12 +26,13 @@ class Less_Tree_Value{
 		return new Less_Tree_Value($ret);
 	}
 
-	public function toCSS ($env){
-
-		$ret = array();
-		foreach($this->value as $e){
-			$ret[] = $e->toCSS($env);
+	function genCSS( $env, &$strs ){
+		for($i = 0; $i < count($this->value); $i++ ){
+			$this->value[$i]->genCSS( $env, $strs);
+			if( $i+1 < count($this->value) ){
+				self::toCSS_Add( $strs, ($env && $env->compress) ? ',' : ', ' );
+			}
 		}
-		return implode($env->compress ? ',' : ', ', $ret);
 	}
+
 }
