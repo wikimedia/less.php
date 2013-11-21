@@ -293,6 +293,11 @@ class Less_Environment{
 	}
 
 	public static function saturate($color, $amount){
+		// filter: saturate(3.2);
+		// should be kept as is, so check for color
+		if( !$color->rgb ){
+			return null;
+		}
 		$hsl = $color->toHSL();
 
 		$hsl['s'] += $amount->value / 100;
@@ -463,6 +468,9 @@ class Less_Environment{
 	}
 
 	public static function unit($val, $unit = null ){
+		if( !($val instanceof Less_Tree_Dimension) ){
+			throw new Less_CompilerException('The first argument to unit must be a number' . ($val instanceof Less_Tree_Operation ? '. Have you forgotten parenthesis?' : '.') );
+		}
 		return new Less_Tree_Dimension($val->value, $unit ? $unit->toCSS() : "");
 	}
 
@@ -536,6 +544,59 @@ class Less_Environment{
 		}
 	}
 
+	function _minmax( $isMin, $args ){
+
+		switch( count($args) ){
+			case 0: throw new Less_CompilerException( 'one or more arguments required');
+			case 1: return $args[0];
+		}
+
+		$order = array();	// elems only contains original argument values.
+		$values = array();	// key is the unit.toString() for unified tree.Dimension values,
+							// value is the index into the order array.
+
+		for( $i = 0; $i < count($args); $i++ ){
+			$current = $args[$i];
+			if( !($current instanceof Less_Tree_Dimension) ){
+				$order[] = $current;
+				continue;
+			}
+			$currentUnified = $current->unify();
+			$unit = $currentUnified->unit->toString();
+
+			if( !isset($values[$unit]) ){
+				$values[$unit] = count($order);
+				$order[] = $current;
+				continue;
+			}
+
+			$j = $values[$unit];
+			$referenceUnified = $order[$j]->unify();
+			if( ($isMin && $currentUnified->value < $referenceUnified->value) || (!$isMin && $currentUnified->value > $referenceUnified->value) ){
+				$order[$j] = $current;
+			}
+		}
+		if( count($order) == 1 ){
+			return $order[0];
+		}
+
+		foreach($order as $k => $a){
+			$order[$k] = $a->toCSS( $this->env );
+		}
+
+		$args = implode( ($this->env->compress ? ',' : ', '), $order);
+
+		return new Less_Tree_Anonymous( ($isMin ? 'min' : 'max') . '(' . $args . ')');
+	}
+
+	public static function min(){
+		return self::_minmax(true, func_get_args() );
+	}
+
+	public static function max(){
+		return self::_minmax(false, func_get_args() );
+	}
+
 	public static function argb($color) {
 		return new Less_Tree_Anonymous($color->toARGB());
 	}
@@ -545,10 +606,19 @@ class Less_Environment{
 	}
 
 	public static function color($n) {
-		if ($n instanceof Less_Tree_Quoted) {
-			return new Less_Tree_Color(substr($n->value, 1));
+
+		if( $n instanceof Less_Tree_Quoted ){
+			$colorCandidate = $n->value;
+			$returnColor = Less_Tree_Color::fromKeyword($colorCandidate);
+			if( $returnColor ){
+				return $returnColor;
+			}
+			if( preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/',$colorCandidate) ){
+				return new Less_Tree_Color(substr($colorCandidate, 1));
+			}
+			throw new Less_CompilerException("argument must be a color keyword or 3/6 digit hex e.g. #FFF");
 		} else {
-			throw new Less_CompilerException("Argument must be a string");
+			throw new Less_CompilerException("argument must be a string");
 		}
 	}
 
@@ -671,7 +741,23 @@ class Less_Environment{
 
 	public static function extract($values, $index ) {
 		$index = $index->value - 1; // (1-based index)
-		return $values->value[$index];
+		// handle non-array values as an array of length 1
+		// return 'undefined' if index is invalid
+		if( is_array($values->value) ){
+			if( isset($values->value[$index]) ){
+				return $values->value[$index];
+			}
+			return null;
+
+		}elseif( $index === 0 ){
+			return $values->value;
+		}
+		return null;
+	}
+
+	function length($values){
+		$n = is_array($values->value) ? count($values->value) : 1;
+		return new tree.Dimension($n);
 	}
 
 	function datauri($mimetypeNode, $filePathNode = null ) {
@@ -719,7 +805,7 @@ class Less_Environment{
 
 			$charset = Less_Mime::charsets_lookup($mimetype);
 			$useBase64 = !in_array($charset,array('US-ASCII', 'UTF-8'));
-			if ($useBase64) $mimetype .= ';base64';
+			if( $useBase64 ){ $mimetype .= ';base64'; }
 
 		}else{
 			$useBase64 = preg_match('/;base64$/',$mimetype);
@@ -748,6 +834,84 @@ class Less_Environment{
 		}
 
 		return new Less_Tree_Url( new Less_Tree_Anonymous($filePath) );
+	}
+
+	//svg-gradient
+	function svggradient( $direction ){
+
+		$throw_message = 'svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position]';
+		$arguments = func_get_args();
+
+		if( count($arguments) < 3 ){
+			throw new Less_CompilerException( $throw_message );
+		}
+
+		$stops = array_slice($arguments,1);
+		$gradientType = 'linear';
+		$rectangleDimension = 'x="0" y="0" width="1" height="1"';
+		$useBase64 = true;
+		$renderEnv = new Less_Environment();
+		$directionValue = $direction->toCSS($renderEnv);
+
+
+		switch( $directionValue ){
+			case "to bottom":
+				$gradientDirectionSvg = 'x1="0%" y1="0%" x2="0%" y2="100%"';
+				break;
+			case "to right":
+				$gradientDirectionSvg = 'x1="0%" y1="0%" x2="100%" y2="0%"';
+				break;
+			case "to bottom right":
+				$gradientDirectionSvg = 'x1="0%" y1="0%" x2="100%" y2="100%"';
+				break;
+			case "to top right":
+				$gradientDirectionSvg = 'x1="0%" y1="100%" x2="100%" y2="0%"';
+				break;
+			case "ellipse":
+			case "ellipse at center":
+				$gradientType = "radial";
+				$gradientDirectionSvg = 'cx="50%" cy="50%" r="75%"';
+				$rectangleDimension = 'x="-50" y="-50" width="101" height="101"';
+				break;
+			default:
+				throw new Less_CompilerException( "svg-gradient direction must be 'to bottom', 'to right', 'to bottom right', 'to top right' or 'ellipse at center'" );
+		}
+
+		$returner = '<?xml version="1.0" ?>' .
+			'<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none">' .
+			'<' . $gradientType . 'Gradient id="gradient" gradientUnits="userSpaceOnUse" ' . $gradientDirectionSvg . '>';
+
+		for( $i = 0; $i < count($stops); $i++ ){
+			if( is_object($stops[$i]) ){
+				$color = $stops[$i]->value[0];
+				$position = $stops[$i]->value[1];
+			}else{
+				$color = $stops[$i];
+				$position = null;
+			}
+
+			if( !($color instanceof Less_Tree_Color) || (!(($i === 0 || $i+1 === count($stops)) && $position === null) && !($position instanceof Less_Tree_Dimension)) ){
+				throw new Less_CompilerException( $throw_message );
+			}
+			$positionValue = $position ? $position->toCSS($renderEnv) : $i === 0 ? "0%" : "100%";
+			$alpha = $color->alpha;
+			$returner .= '<stop offset="' . $positionValue . '" stop-color="' . $color->toRGB() . '"' . ($alpha < 1 ? ' stop-opacity="' . $alpha . '"' : '') . '/>';
+		}
+
+		$returner .= '</' . $gradientType . 'Gradient><rect ' . $rectangleDimension . ' fill="url(#gradient)" /></svg>';
+
+
+		if( $useBase64 ){
+			// only works in node, needs interface to what is supported in environment
+			try{
+				$returner = base64_encode($returner);
+			}catch(Exception $e){
+				$useBase64 = false;
+			}
+		}
+
+		$returner = "'data:image/svg+xml" . ($useBase64 ? ";base64" : "") . "," . $returner . "'";
+		return new Less_Tree_URL( new Less_Tree_Anonymous( $returner ) );
 	}
 
 
