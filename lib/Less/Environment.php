@@ -8,9 +8,13 @@ class Less_Environment{
 	public $paths = array();			// option - unmodified - paths to search for imports on
 	static $files = array();			// list of files that have been imported, used for import-once
 	public $relativeUrls;				// option - whether to adjust URL's to be relative
+	public $rootpath;					// option - rootpath to append to URL's
 	public $strictImports = false;		// option -
+	public $insecure;					// option - whether to allow imports from insecure ssl hosts
 	public $compress = false;			// option - whether to compress
 	public $processImports;				// option - whether to process imports. if false then imports will not be imported
+	public $javascriptEnabled;			// option - whether JavaScript is enabled. if undefined, defaults to true
+	public $useFileCache;				// browser only - whether to use the per file session cache
 	public $currentFileInfo;			// information about the current file - for error reporting and importing and making urls relative etc.
 
 	/**
