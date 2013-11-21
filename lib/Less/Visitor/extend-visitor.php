@@ -32,6 +32,7 @@ class Less_extendFinderVisitor extends Less_visitor{
 		for( $i = 0; $i < count($rulesetNode->rules); $i++ ){
 			if( $rulesetNode->rules[$i] instanceof Less_Tree_Extend ){
 				$allSelectorsExtendList[] = $rulesetNode->rules[$i];
+				$rulesetNode->extendOnEveryPath = true;
 			}
 		}
 

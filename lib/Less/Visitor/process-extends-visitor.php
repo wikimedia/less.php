@@ -150,7 +150,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$selectorPath = $rulesetNode->paths[$pathIndex];
 
 				// extending extends happens initially, before the main pass
-				if( end($selectorPath)->extendList ){ continue; }
+				if( $rulesetNode->extendOnEveryPath || end($selectorPath)->extendList ){ continue; }
 
 				$matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
 
@@ -185,7 +185,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$haystackElement = $hackstackSelector->elements[$hackstackElementIndex];
 
 				// if we allow elements before our match we can add a potential match every time. otherwise only at the first element.
-				if( $extend->allowBefore || ($haystackSelectorIndex == 0 && $hackstackElementIndex == 0) ){
+				if( $extend->allowBefore || ($haystackSelectorIndex === 0 && $hackstackElementIndex === 0) ){
 					$potentialMatches[] = array('pathIndex'=> $haystackSelectorIndex, 'index'=> $hackstackElementIndex, 'matched'=> 0, 'initialCombinator'=> $haystackElement->combinator);
 					$potentialMatches_len++;
 				}
@@ -197,7 +197,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 					// then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
 					// what the resulting combinator will be
 					$targetCombinator = $haystackElement->combinator->value;
-					if( $targetCombinator == '' && $hackstackElementIndex === 0 ){
+					if( $targetCombinator === '' && $hackstackElementIndex === 0 ){
 						$targetCombinator = ' ';
 					}
 
@@ -261,6 +261,26 @@ class Less_processExtendsVisitor extends Less_visitor{
 			$elementValue2 = ($elementValue2->value->value ? $elementValue2->value->value : $elementValue2->value );
 			return $elementValue1 === $elementValue2;
 		}
+
+		$elementValue1 = $elementValue1->value;
+		if( $elementValue1 instanceof Less_Tree_Selector ){
+			$elementValue2 = $elementValue2->value;
+			if( !($elementValue2 instanceof Less_Tree_Selector) || count($elementValue1->elements) !== count($elementValue2->elements) ){
+				return false;
+			}
+			for( $i = 0; $i < count($elementValue1->elements); $i++ ){
+				if( $elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value ){
+					if( $i !== 0 || ($elementValue1->elements[$i]->combinator->value || ' ') !== ($elementValue2->elements[$i]->combinator->value || ' ') ){
+						return false;
+					}
+				}
+				if( !$this->isElementValuesEqual($elementValue1->elements[$i]->value, $elementValue2->elements[$i]->value) ){
+					return false;
+				}
+			}
+			return true;
+		}
+
 		return false;
 	}
 
@@ -281,7 +301,8 @@ class Less_processExtendsVisitor extends Less_visitor{
 			$firstElement = new Less_Tree_Element(
 				$match['initialCombinator'],
 				$replacementSelector->elements[0]->value,
-				$replacementSelector->elements[0]->index
+				$replacementSelector->elements[0]->index,
+				$replacementSelector->elements[0]->currentFileInfo
 			);
 
 			if( $match['pathIndex'] > $currentSelectorPathIndex && $currentSelectorPathElementIndex > 0 ){
@@ -291,19 +312,23 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$currentSelectorPathIndex++;
 			}
 
-			$slice_len = $match['pathIndex'] - $currentSelectorPathIndex;
-			$temp = array_slice($selectorPath, $currentSelectorPathIndex, $slice_len);
-			$path = array_merge( $path, $temp);
+			$newElements = array_merge(
+				array_slice($selector->elements, $currentSelectorPathElementIndex, $match->index)
+				, array($firstElement)
+				, array_slice($replacementSelector->elements,1)
+				);
 
-			$slice_len = $match['index'] - $currentSelectorPathElementIndex;
-			$new_elements = array_slice($selector->elements,$currentSelectorPathElementIndex, $slice_len);
-			$new_elements = array_merge($new_elements, array($firstElement) );
-			$new_elements = array_merge($new_elements, array_slice($replacementSelector->elements,1) );
-			$path[] = new Less_Tree_Selector( $new_elements );
+			if( $currentSelectorPathIndex === $match['pathIndex'] && $matchIndex > 0 ){
+				$last_key = count($path)-1;
+				$path[$last_key]->elements = array_merge($path[$last_key]->elements,$newElements);
+			}else{
+				$path = array_merge( $path, array_slice( $selectorPath, $currentSelectorPathIndex, $match['pathIndex'] ));
+				$path[] = Less_Tree_Selector( $newElements );
+			}
 
 			$currentSelectorPathIndex = $match['endPathIndex'];
 			$currentSelectorPathElementIndex = $match['endPathElementIndex'];
-			if( $currentSelectorPathElementIndex >= count($selector->elements) ){
+			if( $currentSelectorPathElementIndex >= count($selectorPath[$currentSelectorPathIndex]->elements) ){
 				$currentSelectorPathElementIndex = 0;
 				$currentSelectorPathIndex++;
 			}
@@ -312,7 +337,6 @@ class Less_processExtendsVisitor extends Less_visitor{
 		if( $currentSelectorPathIndex < $selectorPath_len && $currentSelectorPathElementIndex > 0 ){
 			$last_path = end($path);
 			$last_path->elements = array_merge( $last_path->elements, array_slice($selectorPath[$currentSelectorPathIndex]->elements, $currentSelectorPathElementIndex));
-			$currentSelectorPathElementIndex = 0;
 			$currentSelectorPathIndex++;
 		}
 
