@@ -27,7 +27,7 @@ class Less_joinSelectorVisitor extends Less_visitor{
 				}
 			}
 
-			$rulesetNode->selectors = $selectors
+			$rulesetNode->selectors = $selectors;
 			if( count($rulesetNode->selectors) === 0 ){
 				$rulesetNode->rules = array();
 			}
