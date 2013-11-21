@@ -1,26 +1,35 @@
 <?php
 
-//less.js : lib/less/tree/selector.js
 
+class Less_Tree_Selector extends Less_Tree{
 
-class Less_Tree_Selector {
-
-	//public $type = 'Selector';
 	public $elements;
 	public $extendList = array();
 	private $_css;
 
-	public function __construct($elements, $extendList = array() ){
+	public function __construct($elements, $extendList=array() , $condition = null, $index=null, $currentFileInfo=array(), $isReferenced=null ){
 		$this->elements = $elements;
 		$this->extendList = $extendList;
+		$this->condition = $condition;
+		$this->currentFileInfo = $currentFileInfo;
+		$this->isReferenced = $isReferenced;
+		if( !$condition ){
+			$this->evaldCondition = true;
+		}
 	}
 
-	/*
 	function accept($visitor) {
 		$visitor->visit($this->elements);
 		$visitor->visit($this->extendList);
+		$visitor->visit($this->condition);
 	}
-	*/
+
+	function createDerived( $elements, $extendList, $evaldCondition ){
+		$evaldCondition = $evaldCondition != null ? $evaldCondition : $this->evaldCondition;
+		$newSelector = new Less_Tree_Selector( $elements, ($extendList ? $extendList : $this->extendList), $this->condition, $this->index, $this->currentFileInfo, $this->isReferenced);
+		$newSelector->evaldCondition = $evaldCondition;
+		return $newSelector;
+	}
 
 	public function match($other) {
 		global $debug;
@@ -35,63 +44,65 @@ class Less_Tree_Selector {
 			$olen = count($other->elements) - $offset;
 		}
 
-        if( $olen === 0 || $len < $olen ){
-			return false;
+		if( $olen === 0 || $len < $olen ){
+			return 0;
 		}
 
 		$max = min($len, $olen);
 
 		for ($i = 0; $i < $max; $i ++) {
 			if ($this->elements[$i]->value !== $other->elements[$i + $offset]->value) {
-				return false;
+				return 0;
 			}
 		}
 
-		return true;
+		return $max; // return number of matched selectors
 	}
 
-
-
-
-
 	public function compile($env) {
-		$extendList = array();
-
-		for($i = 0, $len = count($this->extendList); $i < $len; $i++){
-			$extendList[] = $this->extendList[$i]->compile($this->extendList[$i]);
-		}
 
 		$elements = array();
 		for( $i = 0, $len = count($this->elements); $i < $len; $i++){
 			$elements[] = $this->elements[$i]->compile($env);
 		}
 
-		return new Less_Tree_Selector($elements, $extendList);
+		$extendList = array();
+		for($i = 0, $len = count($this->extendList); $i < $len; $i++){
+			$extendList[] = $this->extendList[$i]->compile($this->extendList[$i]);
+		}
+
+		$evaldCondition = false;
+		if( $this->condition ){
+			$evaldCondition = $this->condition->compile($env);
+		}
+
+		return $this->createDerived( $elements, $extendList, $evaldCondition );
 	}
 
-	public function toCSS ($env){
+	function genCSS( $env, &$strs ){
 
-		if ($this->_css) {
-			return $this->_css;
+		if( (!$env || !$env->firstSelector) && $this->elements[0]->combinator->value === "" ){
+			self::toCSS_Add( $strs, ' ', $this->currentFileInfo, $this->index );
 		}
-
-		if (is_array($this->elements) && isset($this->elements[0]) &&
-			$this->elements[0]->combinator instanceof Less_Tree_Combinator &&
-			$this->elements[0]->combinator->value === '') {
-				$this->_css = ' ';
-		}else{
-			$this->_css = '';
-		}
-
-		foreach($this->elements as $e){
-			if( is_string($e) ){
-				$this->_css .= ' ' . trim($e);
-			}else{
-				$this->_css .= $e->toCSS($env);
+		if( !$this->_css ){
+			//TODO caching? speed comparison?
+			for($i = 0; $i < count($this->elements); $i++ ){
+				$element = $this->elements[$i];
+				$element->genCSS( $env, $strs );
 			}
 		}
+	}
 
-		return $this->_css;
+	function markReferenced(){
+		$this->isReferenced = true;
+	}
+
+	function getIsReferenced(){
+		return !$this->currentFileInfo['reference'] || $this->isReferenced;
+	}
+
+	function getIsOutput(){
+		return $this->evaldCondition;
 	}
 
 }
