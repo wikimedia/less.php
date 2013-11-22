@@ -2,14 +2,16 @@
 
 class Less_visitor{
 
-	function visit($nodes){
+	var $isReplacing = true;
 
-		if( is_array($nodes) ){
-			return $this->visitArray($nodes);
+	function visit($node){
+
+		if( is_array($node) ){
+			return $this->visitArray($node);
 		}
 
 		if( !is_object($node) ){
-			continue;
+			return $node;
 		}
 
 		$class = get_class($node);
