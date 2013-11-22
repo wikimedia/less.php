@@ -165,7 +165,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		return !is_array($args) || count($args) === 0;
 	}
 
-	public function matchCondition( $args, &$strs ){
+	public function matchCondition( $args, $env ){
 		$lastSelector = end($this->selectors);
 		if( $lastSelector->condition && !$lastSelector->condition->compile( $env->copyEvalEnv( $env->frames ) ) ){
 			return false;

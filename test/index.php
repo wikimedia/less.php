@@ -31,6 +31,7 @@ class ParserTest{
 
 	function __construct(){
 
+		/*
 		$this->cache_dir = __DIR__.'/_cache';
 
 		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
@@ -38,6 +39,7 @@ class ParserTest{
 		}elseif( !is_writable($this->cache_dir) ){
 			echo '<p>Cache directory not writable</p>';
 		}
+		*/
 
 
 		//get any other possible test folders
@@ -129,7 +131,7 @@ class ParserTest{
 			*/
 
 			$parser = new Less_Parser( $options );
-			$parser->SetCacheDir( $this->cache_dir );
+			//$parser->SetCacheDir( $this->cache_dir );
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 

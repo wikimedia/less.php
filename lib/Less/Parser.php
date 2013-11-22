@@ -1323,6 +1323,9 @@ class Less_Parser extends Less_Cache{
 		$options = array();
 		if( $dir ){
 			$options = $this->parseImportOptions();
+			if( !$options ){
+				$options = array();
+			}
 		}
 
 		if( $dir && ($path = $this->MatchFuncs('parseEntitiesQuoted','parseEntitiesUrl')) ){
