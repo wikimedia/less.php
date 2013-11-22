@@ -87,9 +87,6 @@ class Less_Parser extends Less_Cache{
 		$toCSSVisitor = new Less_toCSSVisitor( $this->env );
 		$toCSSVisitor->run($evaldRoot);
 
-
-		msg(get_class($evaldRoot));
-
 		$css = $evaldRoot->toCSS($this->env);
 
 		if( $this->env->compress ){

@@ -255,7 +255,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		for( $i = 0; $i < count($this->rules); $i++ ){
 			$rule = $this->rules[$i];
-			if( $rule->rules || ($rule instanceof Less_Tree_Media) || $rule instanceof Less_Tree_Directive || ($this->root && $rule instanceof Less_Tree_Comment) ){
+			if( (property_exists($rule,'rules') && $rule->rules) || ($rule instanceof Less_Tree_Media) || $rule instanceof Less_Tree_Directive || ($this->root && $rule instanceof Less_Tree_Comment) ){
 				$rulesetNodes[] = $rule;
 			} else {
 				$ruleNodes[] = $rule;
@@ -283,11 +283,11 @@ class Less_Tree_Ruleset extends Less_Tree{
 					$env->firstSelector = false;
 				}
 				if( $i + 1 < count($this->paths) ){
-					self::OutputAdd( $strs, $env->compress ? ',' : (',\n' . $tabSetStr) );
+					self::OutputAdd( $strs, $env->compress ? ',' : (",\n" . $tabSetStr) );
 				}
 			}
 
-			self::OutputAdd( $strs, ($env->compress ? '{' : ' {\n') . $tabRuleStr );
+			self::OutputAdd( $strs, ($env->compress ? '{' : " {\n") . $tabRuleStr );
 		}
 
 		// Compile rules and rulesets
@@ -306,15 +306,15 @@ class Less_Tree_Ruleset extends Less_Tree{
 				self::OutputAdd( $strs, (string)$rule->value );
 			}
 
-			if( !$env->lastRule ){
-				self::OutputAdd( $strs, $env->compress ? '' : ('\n' . $tabRuleStr) );
+			if( !property_exists($env,'lastRule') || !$env->lastRule ){
+				self::OutputAdd( $strs, $env->compress ? '' : ("\n" . $tabRuleStr) );
 			}else{
 				$env->lastRule = false;
 			}
 		}
 
 		if( !$this->root ){
-			self::OutputAdd( $strs, ($env->compress ? '}' : '\n' . $tabSetStr . '}'));
+			self::OutputAdd( $strs, ($env->compress ? '}' : "\n" . $tabSetStr . '}'));
 			$env->tabLevel--;
 		}
 

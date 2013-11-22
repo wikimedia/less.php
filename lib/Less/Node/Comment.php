@@ -2,7 +2,7 @@
 
 class Less_Tree_Comment extends Less_Tree{
 
-	public function __construct($value, $silent, $index, $currentFileInfo ){
+	public function __construct($value, $silent, $index = null, $currentFileInfo = null ){
 		$this->value = $value;
 		$this->silent = !! $silent;
 		$this->currentFileInfo = $currentFileInfo;
@@ -20,7 +20,7 @@ class Less_Tree_Comment extends Less_Tree{
 	}
 
 	public function isSilent( $env ){
-		$isReference = ($this->currentFileInfo && $this->currentFileInfo['reference'] && (!isset($this->isReferenced) || !$this->isReferenced) );
+		$isReference = ($this->currentFileInfo && isset($this->currentFileInfo['reference']) && (!isset($this->isReferenced) || !$this->isReferenced) );
 		$isCompressed = $env->compress && !preg_match('/^\/\*!/', $this->value);
 		return $this->silent || $isReference || $isCompressed;
 	}
