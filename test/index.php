@@ -393,7 +393,8 @@ $content = ob_get_clean();
 
 	<?php
 		if( isset($_GET['file']) ){
-			echo '<script src="assets/less-1.4.2.js"></script>';
+			//echo '<script src="assets/less-1.4.2.js"></script>';
+			echo '<script src="assets/less-1.5.1.js"></script>';
 		}
 	?>
 </head>

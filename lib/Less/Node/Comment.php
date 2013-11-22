@@ -9,9 +9,9 @@ class Less_Tree_Comment extends Less_Tree{
 	}
 
 	public function genCSS( $env, &$strs ){
-		if( $this->debugInfo ){
+		//if( $this->debugInfo ){
 			//self::OutputAdd( $strs, tree.debugInfo($env, $this), $this->currentFileInfo, $this->index);
-		}
+		//}
 		self::OutputAdd( $strs, trim($this->value) );//TODO shouldn't need to trim, we shouldn't grab the \n
 	}
 
