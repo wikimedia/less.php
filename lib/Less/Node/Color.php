@@ -188,7 +188,7 @@ class Less_Tree_Color extends Less_Tree{
 
 		if( Less_Colors::hasOwnProperty($keyword) ){
 			// detect named color
-			return new Less_Tree_Color(substr(Less_Colors::color($k), 1));
+			return new Less_Tree_Color(substr(Less_Colors::color($keyword), 1));
 		}
 
 		if( $keyword === 'transparent' ){
