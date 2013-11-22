@@ -27,8 +27,8 @@ class Less_Tree_Element extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		$visitor->visit( $this->combinator );
-		$visitor->visit( $this->value );
+		$this->combinator = $visitor->visit( $this->combinator );
+		$this->value = $visitor->visit( $this->value );
 	}
 
 	public function compile($env) {

@@ -13,8 +13,9 @@ class Less_extendFinderVisitor extends Less_visitor{
 	}
 
 	function run($root) {
-		$this->visit($root);
+		$root = $this->visit($root);
 		$root->allExtends =& $this->allExtendsStack[0];
+		return $root;
 	}
 
 	function visitRule($ruleNode, &$visitDeeper ){

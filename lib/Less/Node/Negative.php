@@ -10,7 +10,7 @@ class Less_Tree_Negative extends Less_Tree{
 	}
 
 	function accept($visitor) {
-		$visitor->visit($this->value);
+		$this->value = $visitor->visit($this->value);
 	}
 
 	function genCSS( $env, &$strs ){

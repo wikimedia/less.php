@@ -20,9 +20,9 @@ class Less_Tree_Selector extends Less_Tree{
 	}
 
 	function accept($visitor) {
-		$visitor->visit($this->elements);
-		$visitor->visit($this->extendList);
-		$visitor->visit($this->condition);
+		$this->elements = $visitor->visit($this->elements);
+		$this->extendList = $visitor->visit($this->extendList);
+		$this->condition = $visitor->visit($this->condition);
 	}
 
 	function createDerived( $elements, $extendList, $evaldCondition ){

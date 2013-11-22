@@ -10,7 +10,7 @@ class Less_Tree_Operation extends Less_Tree{
 	}
 
 	function accept($visitor) {
-		$visitor->visit($this->operands);
+		$this->operands = $visitor->visit($this->operands);
 	}
 
 	public function compile($env){

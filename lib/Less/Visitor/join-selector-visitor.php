@@ -5,7 +5,7 @@ class Less_joinSelectorVisitor extends Less_visitor{
 	public $contexts = array( array() );
 
 	function run( $root ){
-		$this->visit($root);
+		return $this->visit($root);
 	}
 
 	function visitRule( $ruleNode, &$visitDeeper ){

@@ -21,8 +21,8 @@ class Less_Tree_Directive extends Less_Tree{
 
 
 	function accept( $visitor ){
-		$visitor->visit( $this->rules );
-		$visitor->visit( $this->value );
+		$this->rules = $visitor->visit( $this->rules );
+		$this->value = $visitor->visit( $this->value );
 	}
 
 	function genCSS( $env, &$strs ){

@@ -19,8 +19,8 @@ class Less_Tree_Media extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		$visitor->visit($this->features);
-		$visitor->visit($this->rules);
+		$this->features = $visitor->visit($this->features);
+		$this->rules = $visitor->visit($this->rules);
 	}
 
 	function genCSS( $env, &$strs ){

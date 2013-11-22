@@ -12,7 +12,7 @@ class Less_Tree_Assignment extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		$visitor->visit( $this->value );
+		$this->value = $visitor->visit( $this->value );
 	}
 
 

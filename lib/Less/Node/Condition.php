@@ -17,8 +17,8 @@ class Less_Tree_Condition extends Less_Tree{
 	}
 
 	public function accept($visitor){
-		$visitor->visit( $this->lvalue );
-		$visitor->visit( $this->rvalue );
+		$this->lvalue = $visitor->visit( $this->lvalue );
+		$this->rvalue = $visitor->visit( $this->rvalue );
 	}
 
     public function compile($env) {

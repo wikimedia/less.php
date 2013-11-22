@@ -11,10 +11,9 @@ class Less_Tree_Expression {
 		$this->value = $value;
 	}
 
-	/*function accept( $visitor ){
-		$visitor->visit( $this->value );
+	function accept( $visitor ){
+		$this->value = $visitor->visit( $this->value );
 	}
-	*/
 
 	public function compile($env) {
 

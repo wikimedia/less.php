@@ -32,7 +32,7 @@ class Less_Tree_Extend extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		$visitor->visit( $this->selector );
+		$this->selector = $visitor->visit( $this->selector );
 	}
 
 	function compile( $env ){

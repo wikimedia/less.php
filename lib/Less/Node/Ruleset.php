@@ -26,12 +26,12 @@ class Less_Tree_Ruleset extends Less_Tree{
 	function accept( $visitor ){
 		if( $this->paths ){
 			for($i = 0; $i < count($this->paths); $i++ ){
-				$visitor->visit($this->paths[$i]);
+				$this->paths[$i] = $visitor->visit($this->paths[$i]);
 			}
 		}else{
-			$visitor->visit($this->selectors);
+			$this->selectors = $visitor->visit($this->selectors);
 		}
-		$visitor->visit($this->rules);
+		$this->rules = $visitor->visit($this->rules);
 	}
 
 	public function compile($env){

@@ -16,7 +16,7 @@ class Less_Tree_Dimension extends Less_Tree{
     }
 
 	function accept( $visitor ){
-		$visitor->visit( $this->unit );
+		$this->unit = $visitor->visit( $this->unit );
 	}
 
     public function compile($env = null) {
