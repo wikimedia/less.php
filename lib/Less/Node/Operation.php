@@ -25,11 +25,11 @@ class Less_Tree_Operation extends Less_Tree{
 					$b = $a;
 					$a = $temp;
 				} else {
-					throw new Less_CompilerError("Operation on an invalid type");
+					throw new Less_CompilerException("Operation on an invalid type");
 				}
 			}
 			if ( !Less_Parser::is_method($a,'operate') ) {
-				throw new Less_CompilerError("Operation on an invalid type");
+				throw new Less_CompilerException("Operation on an invalid type");
 			}
 
 			return $a->operate($env,$this->op, $b);
