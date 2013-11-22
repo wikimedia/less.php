@@ -5,12 +5,6 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 	public $allExtendsStack;
 
-	public $visitRuleDeeper = false;
-	public $visitMixinDefinitionDeeper = false;
-	public $visitSelectorDeeper = false;
-
-
-
 	function run( $root ){
 		$extendFinder = new Less_extendFinderVisitor();
 		$extendFinder->run( $root );
@@ -132,6 +126,17 @@ class Less_processExtendsVisitor extends Less_visitor{
 		return false;
 	}
 
+	function visitRule( $ruleNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitMixinDefinition( $mixinDefinitionNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitSelector( $selectorNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
 
 	function visitRuleset($rulesetNode){
 

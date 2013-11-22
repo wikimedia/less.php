@@ -7,9 +7,6 @@ class Less_extendFinderVisitor extends Less_visitor{
 	public $allExtendsStack;
 	public $foundExtends;
 
-	public $visitRuleDeeper = false;
-	public $visitMixinDefinitionDeeper = false;
-
 	function __construct(){
 		$this->contexts = array();
 		$this->allExtendsStack = array(array());
@@ -20,7 +17,15 @@ class Less_extendFinderVisitor extends Less_visitor{
 		$root->allExtends =& $this->allExtendsStack[0];
 	}
 
-	function visitRuleset($rulesetNode) {
+	function visitRule($ruleNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitMixinDefinition( $mixinDefinitionNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitRuleset($rulesetNode){
 
 		if( $rulesetNode->root ){
 			return;
@@ -67,7 +72,7 @@ class Less_extendFinderVisitor extends Less_visitor{
 	}
 
 	function visitRulesetOut( $rulesetNode ){
-		if( !$rulesetNode->root) {
+		if( !is_object($rulesetNode) || !$rulesetNode->root ){
 			array_pop($this->contexts);
 		}
 	}

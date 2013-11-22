@@ -4,12 +4,16 @@ class Less_joinSelectorVisitor extends Less_visitor{
 
 	public $contexts = array( array() );
 
-	public $visitRuleDeeper = false;
-	public $visitMixinDefinition = false;
-
-
 	function run( $root ){
 		$this->visit($root);
+	}
+
+	function visitRule( $ruleNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitMixinDefinition( $mixinDefinitionNode, &$visitDeeper ){
+		$visitDeeper = false;
 	}
 
 	function visitRuleset($rulesetNode) {

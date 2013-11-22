@@ -18,11 +18,14 @@ class Less_visitor{
 		$funcName = 'visit'.substr($class,10); //remove 'Less_Tree_' from the class name
 
 		if( method_exists($this,$funcName) ){
-			$this->$funcName( $node );
+			$visitDeeper = true;
+			$newNode = $this->$funcName( $node, $visitDeeper );
+			if( $this->isReplacing ){
+				$node = $newNode;
+			}
 		}
 
-		$deeper_property = $funcName.'Deeper';
-		if( !isset($this->$deeper_property) && Less_Parser::is_method($node,'accept') ){
+		if( ( !isset($visitDeeper) || $visitDeeper ) && Less_Parser::is_method($node,'accept') ){
 			$node->accept($this);
 		}
 
