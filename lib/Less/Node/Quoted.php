@@ -16,7 +16,7 @@ class Less_Tree_Quoted extends Less_Tree{
 	}
 
     public function genCSS( $env, &$strs ){
-		if( $this->escaped ){
+		if( !$this->escaped ){
 			self::OutputAdd( $strs, $this->quote, $this->currentFileInfo, $this->index );
         }
         self::OutputAdd( $strs, $this->value );
