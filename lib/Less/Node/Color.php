@@ -184,7 +184,7 @@ class Less_Tree_Color extends Less_Tree{
     }
 
 
-	public function fromKeyword( $keyword ){
+	public static function fromKeyword( $keyword ){
 
 		if( Less_Colors::hasOwnProperty($keyword) ){
 			// detect named color

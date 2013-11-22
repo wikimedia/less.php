@@ -87,6 +87,9 @@ class Less_Parser extends Less_Cache{
 		$toCSSVisitor = new Less_toCSSVisitor( $this->env );
 		$toCSSVisitor->run($evaldRoot);
 
+
+		msg(get_class($evaldRoot));
+
 		$css = $evaldRoot->toCSS($this->env);
 
 		if( $this->env->compress ){
@@ -496,6 +499,7 @@ class Less_Parser extends Less_Cache{
 	}
 
 	private function parseComments(){
+		$comments = array();
 
 		while($comment = $this->parseComment() ){
 			$comments[] = $comment;
@@ -544,7 +548,7 @@ class Less_Parser extends Less_Cache{
 	private function parseEntitiesKeyword(){
 
 		if( $k = $this->MatchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/') ){
-			$color = Less_Color::fromKeyword($k);
+			$color = Less_Tree_Color::fromKeyword($k);
 			if( $color ){
 				return $color;
 			}
@@ -1154,6 +1158,7 @@ class Less_Parser extends Less_Cache{
 	private function parseSelector( $isLess = false ){
 		$elements = array();
 		$extendList = array();
+		$condition = false;
 
 
 		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchString('when') )) || ($e = $this->parseElement()) ){

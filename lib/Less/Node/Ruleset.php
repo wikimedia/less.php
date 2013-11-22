@@ -332,6 +332,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		if( !count($strs) && !$env->compress && $this->firstRoot ){
 			self::OutputAdd( $strs, "\n" );
 		}
+
 	}
 
 	function markReferenced(){

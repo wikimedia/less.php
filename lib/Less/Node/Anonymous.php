@@ -5,7 +5,7 @@ class Less_Tree_Anonymous extends Less_Tree{
 	public $value;
 	public $quote;
 
-	public function __construct($value, $index, $currentFileInfo, $mapLines ){
+	public function __construct($value, $index = null, $currentFileInfo = null, $mapLines = null ){
 		$this->value = is_string($value) ? $value : $value->value;
 		$this->index = $index;
 		$this->mapLines = $mapLines;
