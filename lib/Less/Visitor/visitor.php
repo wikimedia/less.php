@@ -2,7 +2,7 @@
 
 class Less_visitor{
 
-	var $isReplacing = true;
+	var $isReplacing = false;
 
 	function visit($node){
 
