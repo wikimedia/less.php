@@ -341,12 +341,14 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 	}
 
-	public function joinSelectors( &$paths, $context, $selectors ){
+	public function joinSelectors( $context, $selectors ){
+		$paths = array();
 		if( is_array($selectors) ){
 			foreach($selectors as $selector) {
 				$this->joinSelector($paths, $context, $selector);
 			}
 		}
+		return $paths;
 	}
 
 	public function joinSelector (&$paths, $context, $selector){

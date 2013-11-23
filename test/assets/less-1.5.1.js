@@ -5323,7 +5323,7 @@ tree.Variable.prototype = {
             for(i = 0; i < nodes.length; i++) {
                 var evald = this.visit(nodes[i]);
                 if (evald instanceof Array) {
-                    evald = this.flatten(evald);
+                    evjoinald = this.flatten(evald);
                     newNodes = newNodes.concat(evald);
                 } else {
                     newNodes.push(evald);
@@ -5487,6 +5487,7 @@ tree.Variable.prototype = {
         },
 
         visitRuleset: function (rulesetNode, visitArgs) {
+
             var context = this.contexts[this.contexts.length - 1];
             var paths = [];
             this.contexts.push(paths);
