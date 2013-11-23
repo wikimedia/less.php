@@ -241,17 +241,15 @@ class Less_Tree_Ruleset extends Less_Tree{
 		$rulesetNodes = array();
 		$firstRuleset = true;
 
-
-		if( !isset($env->tabLevel) ){
-			$env->tabLevel = 0;
-		}
-
 		if( !$this->root ){
 			$env->tabLevel++;
 		}
 
-		$tabRuleStr = $env->compress ? '' : str_repeat( '  ' , $env->tabLevel + 1 );
-		$tabSetStr = $env->compress ? '' : str_repeat( '  ' , $env->tabLevel );
+		$tabRuleStr = $tabSetStr = '';
+		if( !$env->compress && $env->tabLevel ){
+			$tabRuleStr = str_repeat( '  ' , $env->tabLevel );
+			$tabSetStr = str_repeat( '  ' , $env->tabLevel-1 );
+		}
 
 		for( $i = 0; $i < count($this->rules); $i++ ){
 			$rule = $this->rules[$i];

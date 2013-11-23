@@ -17,13 +17,13 @@ class Less_Tree{
 
 		self::OutputAdd( $strs, ($env->compress ? '{' : ' {\n') );
 
-		if( !isset($env->tabLevel) ){
-			$env->tabLevel = 0;
-		}
 		$env->tabLevel++;
 
-		$tabRuleStr = $env->compress ? '' : str_repeat( '  ' , $env->tabLevel + 1 );
-		$tabSetStr = $env->compress ? '' : str_repeat( '  ' , $env->tabLevel );
+		$tabRuleStr = $tabSetStr = '';
+		if( !$env->compress && $env->tabLevel ){
+			$tabRuleStr = str_repeat( '  ' , $env->tabLevel );
+			$tabSetStr = str_repeat( '  ' , $env->tabLevel-1 );
+		}
 
 		for($i = 0; $i < count($rules); $i++ ){
 			self::OutputAdd( $strs, $tabRuleStr );

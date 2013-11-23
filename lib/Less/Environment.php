@@ -49,6 +49,8 @@ class Less_Environment{
 
 	public $strictUnits = false;
 
+	public $tabLevel = 0;
+
 	public function __construct( $options = null ){
 		$this->frames = array();
 
