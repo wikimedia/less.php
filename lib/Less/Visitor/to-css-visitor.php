@@ -126,13 +126,15 @@ class Less_toCSSVisitor extends Less_visitor{
 
 			// now decide whether we keep the ruleset
 			if( count($rulesetNode->rules) > 0 && count($rulesetNode->paths) > 0 ){
-				array_splice($rulesets,0,0,$rulesetNode);
+				//array_unshift($rulesets, $rulesetNode);
+				array_splice($rulesets,0,0,array($rulesetNode));
 			}
 		}else{
 			$rulesetNode->accept( $this );
 			$visitDeeper = false;
 			if( $rulesetNode->firstRoot || count($rulesetNode->rules) > 0 ){
-				array_splice($rulesets,0,0,$rulesetNode);
+				//array_unshift($rulesets, $rulesetNode);
+				array_splice($rulesets,0,0,array($rulesetNode));
 			}
 		}
 		if( count($rulesets) === 1 ){
