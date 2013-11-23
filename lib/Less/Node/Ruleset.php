@@ -302,7 +302,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 			if( Less_Parser::is_method($rule,'genCSS') ){
 				$rule->genCSS( $env, $strs );
-			}elseif( $rule->value ){
+			}elseif( is_object($rule) && property_exists($rule,'value') && $rule->value ){
 				self::OutputAdd( $strs, (string)$rule->value );
 			}
 
