@@ -255,7 +255,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		for( $i = 0; $i < count($this->rules); $i++ ){
 			$rule = $this->rules[$i];
-			if( (property_exists($rule,'rules') && $rule->rules) || ($rule instanceof Less_Tree_Media) || $rule instanceof Less_Tree_Directive || ($this->root && $rule instanceof Less_Tree_Comment) ){
+			if( ( is_object($rule) && property_exists($rule,'rules') && $rule->rules) || ($rule instanceof Less_Tree_Media) || $rule instanceof Less_Tree_Directive || ($this->root && $rule instanceof Less_Tree_Comment) ){
 				$rulesetNodes[] = $rule;
 			} else {
 				$ruleNodes[] = $rule;

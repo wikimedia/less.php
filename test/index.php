@@ -2,9 +2,9 @@
 
 define('phpless_start_time',microtime());
 
-error_reporting(E_ALL | E_STRICT); //previous to php 5.4, E_ALL did not include E_STRICT
-ini_set('display_errors',0);
-set_error_handler(array('ParserTest','showError'));
+error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
+ini_set('display_errors',1);
+set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
 
 
 //get parser
