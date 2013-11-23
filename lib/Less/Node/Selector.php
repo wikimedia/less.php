@@ -99,7 +99,7 @@ class Less_Tree_Selector extends Less_Tree{
 	}
 
 	function getIsReferenced(){
-		return !$this->currentFileInfo['reference'] || $this->isReferenced;
+		return !isset($this->currentFileInfo['reference']) || !$this->currentFileInfo['reference'] || $this->isReferenced;
 	}
 
 	function getIsOutput(){

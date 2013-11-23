@@ -3,7 +3,8 @@
 define('phpless_start_time',microtime());
 
 error_reporting(E_ALL | E_STRICT); //previous to php 5.4, E_ALL did not include E_STRICT
-ini_set('display_errors',1);
+ini_set('display_errors',0);
+set_error_handler(array('ParserTest','showError'));
 
 
 //get parser
@@ -342,6 +343,85 @@ class ParserTest{
 
 
 		echo '</div>';
+	}
+
+
+	/**
+	 * Error Handling
+	 *
+	 */
+	static function showError($errno, $errmsg, $filename, $linenum, $vars){
+		static $reported = array();
+
+		//readable types
+		$errortype = array (
+					E_ERROR				=> 'Fatal Error',
+					E_WARNING			=> 'Warning',
+					E_PARSE				=> 'Parsing Error',
+					E_NOTICE 			=> 'Notice',
+					E_CORE_ERROR		=> 'Core Error',
+					E_CORE_WARNING 		=> 'Core Warning',
+					E_COMPILE_ERROR		=> 'Compile Error',
+					E_COMPILE_WARNING 	=> 'Compile Warning',
+					E_USER_ERROR		=> 'User Error',
+					E_USER_WARNING 		=> 'User Warning',
+					E_USER_NOTICE		=> 'User Notice',
+					E_STRICT			=> 'Strict Notice',
+					E_RECOVERABLE_ERROR => 'Recoverable Error',
+					E_DEPRECATED		=> 'Deprecated',
+					E_USER_DEPRECATED	=> 'User Deprecated',
+				 );
+
+		//get the backtrace and function where the error was thrown
+		$backtrace = debug_backtrace();
+		//remove showError() from backtrace
+		if( strtolower($backtrace[0]['function']) == 'showerror' ){
+			@array_shift($backtrace);
+		}
+
+		//record one error per function and only record the error once per request
+		if( isset($backtrace[0]['function']) ){
+			$uniq = $filename.$backtrace[0]['function'];
+		}else{
+			$uniq = $filename.$linenum;
+		}
+		if( isset($reported[$uniq]) ){
+			return false;
+		}
+		$reported[$uniq] = true;
+
+
+
+
+		//build message
+		$mess = '';
+		$mess .= '<fieldset style="padding:1em">';
+		$mess .= '<legend>'.$errortype[$errno].' ('.$errno.')</legend> '.$errmsg;
+		$mess .= '<br/> &nbsp; &nbsp; <b>in:</b> '.$filename;
+		$mess .= '<br/> &nbsp; &nbsp; <b>on line:</b> '.$linenum;
+		if( isset($_SERVER['REQUEST_URI']) ){
+			$mess .= '<br/> &nbsp; &nbsp; <b>Request:</b> '.$_SERVER['REQUEST_URI'];
+		}
+		if( isset($_SERVER['REQUEST_METHOD']) ){
+			$mess .= '<br/> &nbsp; &nbsp; <b>Method:</b> '.$_SERVER['REQUEST_METHOD'];
+		}
+
+
+		//backtrace, don't add entire object to backtrace
+		$backtrace = array_slice($backtrace,0,7);
+		foreach($backtrace as $i => $trace){
+			if( !empty($trace['object']) ){
+				$backtrace[$i]['object'] = get_class($trace['object']);
+			}
+		}
+
+		$mess .= '<div><a href="javascript:void(0)" onclick="var st = this.nextSibling.style; if( st.display==\'block\'){ st.display=\'none\' }else{st.display=\'block\'};return false;">Show Backtrace</a>';
+		$mess .= '<div style="display:none">';
+		$mess .= pre($backtrace);
+		$mess .= '</div></div>';
+		$mess .= '</p></fieldset>';
+		echo $mess;
+		return false;
 	}
 }
 

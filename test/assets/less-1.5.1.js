@@ -5592,7 +5592,6 @@ tree.Variable.prototype = {
                 this.checkPropertiesInRoot(rulesetNode.rules);
             }
             if (! rulesetNode.root) {
-				//log('visitRuleset '+($z++)+' paths '+(rulesetNode.paths.length));
 
                 rulesetNode.paths = rulesetNode.paths
                     .filter(function(p) {
