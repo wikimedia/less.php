@@ -84,7 +84,7 @@ class Less_Environment{
 		return $this->strictMath ? ($this->parensStack && count($this->parensStack)) : true;
 	}
 
-	public function isPathRelative($path){
+	public static function isPathRelative($path){
 		return !preg_match('/^(?:[a-z-]+:|\/)/',$path);
 	}
 
