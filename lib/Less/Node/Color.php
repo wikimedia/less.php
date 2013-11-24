@@ -84,7 +84,7 @@ class Less_Tree_Color extends Less_Tree{
         }
 
         for ($c = 0; $c < 3; $c++) {
-            $result[$c] = Less_Environment::operate($env, $op, $this->rgb[$c], $other->rgb[$c]);
+            $result[$c] = Less_Functions::operate($env, $op, $this->rgb[$c], $other->rgb[$c]);
         }
         return new Less_Tree_Color($result, $this->alpha + $other->alpha);
     }

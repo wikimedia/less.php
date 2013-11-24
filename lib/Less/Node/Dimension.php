@@ -68,7 +68,7 @@ class Less_Tree_Dimension extends Less_Tree{
     // so `1px + 2em` will yield `3px`.
     public function operate($env, $op, $other){
 
-		$value = Less_Environment::operate($env, $op, $this->value, $other->value);
+		$value = Less_Functions::operate($env, $op, $this->value, $other->value);
 		$unit = clone $this->unit;
 
 		if( $op === '+' || $op === '-' ){
@@ -85,7 +85,7 @@ class Less_Tree_Dimension extends Less_Tree{
 					throw new Less_CompilerException("Incompatible units. Change the units or use the unit function. Bad units: '".$unit->toString() . "' and ".$other->unit->toString()+"'.");
 				}
 
-				$value = Less_Environment::operate($env, $op, $this->value, $other->value);
+				$value = Less_Functions::operate($env, $op, $this->value, $other->value);
 			}
 		}elseif( $op === '*' ){
 			$unit->numerator = array_merge($unit->numerator, $other->unit->numerator);

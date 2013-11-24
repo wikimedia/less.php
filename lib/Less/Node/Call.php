@@ -49,6 +49,20 @@ class Less_Tree_Call extends Less_Tree{
 			$name = 'datauri';
 		}
 
+		if( is_callable( array('Less_Functions',$name) ) ){ // 1.
+			try {
+				$func = new Less_Functions($env, $this->currentFileInfo);
+				$result = $func->$name($args);
+				if( $result != null ){
+					return $result;
+				}
+
+			} catch (Exception $e) {
+				throw Less_CompilerException('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
+			}
+
+		}
+		/*
 		if( Less_Parser::is_method($env, $name) ){ // 1.
 			try {
 
@@ -61,6 +75,7 @@ class Less_Tree_Call extends Less_Tree{
 				throw Less_CompilerException('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
 			}
 		}
+		*/
 
 		return new Less_Tree_Call( $this->name, $args, $this->index, $this->currentFileInfo );
     }
