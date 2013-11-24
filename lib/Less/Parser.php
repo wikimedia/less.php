@@ -70,7 +70,7 @@ class Less_Parser extends Less_Cache{
 		$precision = ini_get('precision');
 		@ini_set('precision',16);
 
- 		$root = new Less_Tree_Ruleset(null, $this->rules );
+ 		$root = new Less_Tree_Ruleset(array(), $this->rules );
 		$root->root = true;
 
 		//$importVisitor = new Less_importVisitor();
@@ -136,7 +136,7 @@ class Less_Parser extends Less_Cache{
 		$return = null;
 		if( $returnRoot ){
 			$rules = $this->GetRules( $filename );
-			$return = new Less_Tree_Ruleset(null, $rules );
+			$return = new Less_Tree_Ruleset(array(), $rules );
 		}else{
 			$this->_parse( $filename );
 		}
@@ -1234,15 +1234,6 @@ class Less_Parser extends Less_Cache{
 				//error("Guards are only currently allowed on a single selector.");
 			}
 			$this->parseComments();
-		}
-
-
-		while( $selectors[] = $this->parseSelector() ){
-			$this->parseComment();
-			if( !$this->MatchChar(',') ){
-				break;
-			}
-			$this->parseComment();
 		}
 
 		if( count($selectors) > 0 && (is_array($rules = $this->parseBlock())) ){
