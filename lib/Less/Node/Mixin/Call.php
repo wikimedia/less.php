@@ -74,7 +74,7 @@ class Less_Tree_MixinCall extends Less_Tree{
 
 							if( !($mixin instanceof Less_Tree_MixinDefinition) ){
 								$mixin = new Less_Tree_MixinDefinition('', array(), $mixin->rules, null, false);
-								if( $mixins[$m]->originalRuleset ){
+								if( property_exists($mixins[$m],'originalRuleset') && $mixins[$m]->originalRuleset ){
 									$mixin->originalRuleset = $mixins[$m]->originalRuleset;
 								}else{
 									$mixin->originalRuleset = $mixins[$m];
