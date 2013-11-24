@@ -1156,6 +1156,8 @@ class Less_Parser extends Less_Cache{
 		$elements = array();
 		$extendList = array();
 		$condition = false;
+		$when = false;
+		$extend = false;
 
 
 		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchString('when') )) || ($e = $this->parseElement()) ){
