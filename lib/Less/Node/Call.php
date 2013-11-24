@@ -52,7 +52,7 @@ class Less_Tree_Call extends Less_Tree{
 		if( is_callable( array('Less_Functions',$name) ) ){ // 1.
 			try {
 				$func = new Less_Functions($env, $this->currentFileInfo);
-				$result = $func->$name($args);
+				$result = call_user_func_array( array($func,$name),$args);
 				if( $result != null ){
 					return $result;
 				}
