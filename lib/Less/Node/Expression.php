@@ -1,8 +1,7 @@
 <?php
 
-class Less_Tree_Expression {
+class Less_Tree_Expression extends Less_Tree{
 
-	//public $type = 'Expression';
 	public $value = array();
 	public $parens = false;
 	public $parensInOp = false;
