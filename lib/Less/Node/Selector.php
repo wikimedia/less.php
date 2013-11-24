@@ -25,7 +25,7 @@ class Less_Tree_Selector extends Less_Tree{
 		$this->condition = $visitor->visit($this->condition);
 	}
 
-	function createDerived( $elements, $extendList, $evaldCondition ){
+	function createDerived( $elements, $extendList = null, $evaldCondition = null ){
 		$evaldCondition = $evaldCondition != null ? $evaldCondition : $this->evaldCondition;
 		$newSelector = new Less_Tree_Selector( $elements, ($extendList ? $extendList : $this->extendList), $this->condition, $this->index, $this->currentFileInfo, $this->isReferenced);
 		$newSelector->evaldCondition = $evaldCondition;
