@@ -745,7 +745,7 @@ class Less_Environment{
 		$index = (int)$index->value - 1; // (1-based index)
 		// handle non-array values as an array of length 1
 		// return 'undefined' if index is invalid
-		if( is_array($values->value) ){
+		if( property_exists($values,'value') && is_array($values->value) ){
 			if( isset($values->value[$index]) ){
 				return $values->value[$index];
 			}
@@ -759,7 +759,7 @@ class Less_Environment{
 	}
 
 	function length($values){
-		$n = is_array($values->value) ? count($values->value) : 1;
+		$n = (property_exists($values,'value') && is_array($values->value)) ? count($values->value) : 1;
 		return new Less_Tree_Dimension($n);
 	}
 
