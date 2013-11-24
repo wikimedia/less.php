@@ -18,6 +18,7 @@ class Less_joinSelectorVisitor extends Less_visitor{
 
 	function visitRuleset($rulesetNode) {
 
+		$paths = array();
 		if( !$rulesetNode->root ){
 
 			$context = end($this->contexts); //$context = $this->contexts[ count($this->contexts) - 1];
@@ -36,8 +37,8 @@ class Less_joinSelectorVisitor extends Less_visitor{
 			}
 			$paths = $rulesetNode->joinSelectors($context, $rulesetNode->selectors );
 			$rulesetNode->paths = $paths;
-			$this->contexts[] = $paths; //different from less.js. Placed after joinSelectors() so that $this->contexts will get correct $paths
 		}
+		$this->contexts[] = $paths; //different from less.js. Placed after joinSelectors() so that $this->contexts will get correct $paths
 
 	}
 
