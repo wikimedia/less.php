@@ -343,7 +343,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		$paths = array();
 		if( is_array($selectors) ){
 			foreach($selectors as $selector) {
-				$this->joinSelector($paths, $context, $selector);
+				$this->joinSelector( $paths, $context, $selector);
 			}
 		}
 		return $paths;
@@ -364,12 +364,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		if( !$hasParentSelector ){
 			if( count($context) > 0 ) {
-
-				if( !is_array($context) ){
-					msg($context);
-					die();
-				}
-
 				foreach($context as $context_el){
 					$paths[] = array_merge($context_el, array($selector) );
 				}
