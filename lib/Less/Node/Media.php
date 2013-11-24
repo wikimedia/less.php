@@ -70,7 +70,7 @@ class Less_Tree_Media extends Less_Tree{
 
 	public function emptySelectors(){
 		$el = new Less_Tree_Element('','&', $this->index, $this->currentFileInfo );
-		return array( new Less_Tree_Selector(array($el), null, null, $this->index, $this->currentFileInfo) );
+		return array( new Less_Tree_Selector(array($el), array(), null, $this->index, $this->currentFileInfo) );
 	}
 
 	public function markReferenced(){
