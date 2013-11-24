@@ -42,11 +42,11 @@ class Less_Functions{
 		}
 	}
 
-	public static function rgb ($r, $g, $b){
-		return Less_Functions::rgba($r, $g, $b, 1.0);
+	public function rgb ($r, $g, $b){
+		return $this->rgba($r, $g, $b, 1.0);
 	}
 
-	public static function rgba($r, $g, $b, $a){
+	public function rgba($r, $g, $b, $a){
 		$rgb = array($r, $g, $b);
 		$rgb = array_map(array('Less_Functions','scaled'),$rgb);
 
@@ -54,11 +54,11 @@ class Less_Functions{
 		return new Less_Tree_Color($rgb, $a);
 	}
 
-	public static function hsl($h, $s, $l){
-		return Less_Functions::hsla($h, $s, $l, 1.0);
+	public function hsl($h, $s, $l){
+		return $this->hsla($h, $s, $l, 1.0);
 	}
 
-	public static function hsla($h, $s, $l, $a){
+	public function hsla($h, $s, $l, $a){
 
 		$h = fmod(self::number($h), 360) / 360; // Classic % operator will change float to int
 		$s = self::clamp(self::number($s));
@@ -69,13 +69,13 @@ class Less_Functions{
 
 		$m1 = $l * 2 - $m2;
 
-		return Less_Functions::rgba( self::hsla_hue($h + 1/3, $m1, $m2) * 255,
+		return $this->rgba( self::hsla_hue($h + 1/3, $m1, $m2) * 255,
 							self::hsla_hue($h, $m1, $m2) * 255,
 							self::hsla_hue($h - 1/3, $m1, $m2) * 255,
 							$a);
 	}
 
-	static function hsla_hue($h, $m1, $m2){
+	function hsla_hue($h, $m1, $m2){
 		$h = $h < 0 ? $h + 1 : ($h > 1 ? $h - 1 : $h);
 		if	  ($h * 6 < 1) return $m1 + ($m2 - $m1) * $h * 6;
 		else if ($h * 2 < 1) return $m2;
@@ -83,11 +83,11 @@ class Less_Functions{
 		else				 return $m1;
 	}
 
-	public static function hsv($h, $s, $v) {
-		return Less_Functions::hsva($h, $s, $v, 1.0);
+	public function hsv($h, $s, $v) {
+		return $this->hsva($h, $s, $v, 1.0);
 	}
 
-	public static function hsva($h, $s, $v, $a) {
+	public function hsva($h, $s, $v, $a) {
 		$h = ((Less_Functions::number($h) % 360) / 360 ) * 360;
 		$s = Less_Functions::number($s);
 		$v = Less_Functions::number($v);
@@ -108,65 +108,65 @@ class Less_Functions{
 					array(3, 1, 0),
 					array(0, 1, 2));
 
-		return Less_Functions::rgba($vs[$perm[$i][0]] * 255,
+		return $this->rgba($vs[$perm[$i][0]] * 255,
 						 $vs[$perm[$i][1]] * 255,
 						 $vs[$perm[$i][2]] * 255,
 						 $a);
 	}
 
-	public static function hue($color){
+	public function hue($color){
 		$c = $color->toHSL();
 		return new Less_Tree_Dimension(Less_Parser::round($c['h']));
 	}
 
-	public static function saturation($color){
+	public function saturation($color){
 		$c = $color->toHSL();
 		return new Less_Tree_Dimension(Less_Parser::round($c['s'] * 100), '%');
 	}
 
-	public static function lightness($color){
+	public function lightness($color){
 		$c = $color->toHSL();
 		return new Less_Tree_Dimension(Less_Parser::round($c['l'] * 100), '%');
 	}
 
-	public static function hsvhue( $color ){
+	public function hsvhue( $color ){
 		$hsv = $color->toHSV();
 		return new Less_Tree_Dimension( Less_Parser::round($hsv['h']) );
 	}
 
 
-	public static function hsvsaturation( $color ){
+	public function hsvsaturation( $color ){
 		$hsv = $color->toHSV();
 		return new Less_Tree_Dimension( Less_Parser::round($hsv['s'] * 100), '%' );
 	}
 
-	public static function hsvvalue( $color ){
+	public function hsvvalue( $color ){
 		$hsv = $color->toHSV();
 		return new Less_Tree_Dimension( Less_Parser::round($hsv['v'] * 100), '%' );
 	}
 
-	public static function red($color) {
+	public function red($color) {
 		return new Less_Tree_Dimension( $color->rgb[0] );
 	}
 
-	public static function green($color) {
+	public function green($color) {
 		return new Less_Tree_Dimension( $color->rgb[1] );
 	}
 
-	public static function blue($color) {
+	public function blue($color) {
 		return new Less_Tree_Dimension( $color->rgb[2] );
 	}
 
-	public static function alpha($color){
+	public function alpha($color){
 		$c = $color->toHSL();
 		return new Less_Tree_Dimension($c['a']);
 	}
 
-	public static function luma ($color) {
+	public function luma ($color) {
 		return new Less_Tree_Dimension(Less_Parser::round( $color->luma() * $color->alpha * 100), '%');
 	}
 
-	public static function saturate($color, $amount = null){
+	public function saturate($color, $amount = null){
 		// filter: saturate(3.2);
 		// should be kept as is, so check for color
 		if( !property_exists($color,'rgb') ){
@@ -177,80 +177,80 @@ class Less_Functions{
 		$hsl['s'] += $amount->value / 100;
 		$hsl['s'] = self::clamp($hsl['s']);
 
-		return Less_Functions::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
-	public static function desaturate($color, $amount){
+	public function desaturate($color, $amount){
 		$hsl = $color->toHSL();
 
 		$hsl['s'] -= $amount->value / 100;
 		$hsl['s'] = self::clamp($hsl['s']);
 
-		return Less_Functions::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
 
 
-	public static function lighten($color, $amount){
+	public function lighten($color, $amount){
 		$hsl = $color->toHSL();
 
 		$hsl['l'] += $amount->value / 100;
 		$hsl['l'] = self::clamp($hsl['l']);
 
-		return Less_Functions::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
-	public static function darken($color, $amount){
+	public function darken($color, $amount){
 
 		if( $color instanceof Less_Tree_Color ){
 			$hsl = $color->toHSL();
 			$hsl['l'] -= $amount->value / 100;
 			$hsl['l'] = self::clamp($hsl['l']);
 
-			return Less_Functions::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 		}
 
 		Less_Functions::Expected('color',$color);
 	}
 
-	public static function fadein($color, $amount){
+	public function fadein($color, $amount){
 		$hsl = $color->toHSL();
 		$hsl['a'] += $amount->value / 100;
 		$hsl['a'] = self::clamp($hsl['a']);
-		return Less_Functions::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
-	public static function fadeout($color, $amount){
+	public function fadeout($color, $amount){
 		$hsl = $color->toHSL();
 		$hsl['a'] -= $amount->value / 100;
 		$hsl['a'] = self::clamp($hsl['a']);
-		return Less_Functions::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
-	public static function fade($color, $amount){
+	public function fade($color, $amount){
 		$hsl = $color->toHSL();
 
 		$hsl['a'] = $amount->value / 100;
 		$hsl['a'] = self::clamp($hsl['a']);
-		return Less_Functions::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
 
 
-	public static function spin($color, $amount){
+	public function spin($color, $amount){
 		$hsl = $color->toHSL();
 		$hue = fmod($hsl['h'] + $amount->value, 360);
 
 		$hsl['h'] = $hue < 0 ? 360 + $hue : $hue;
 
-		return Less_Functions::hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
 	//
 	// Copyright (c) 2006-2009 Hampton Catlin, Nathan Weizenbaum, and Chris Eppstein
 	// http://sass-lang.com
 	//
-	public static function mix($color1, $color2, $weight = null){
+	public function mix($color1, $color2, $weight = null){
 		if (!$weight) {
 			$weight = new Less_Tree_Dimension('50', '%');
 		}
@@ -273,22 +273,22 @@ class Less_Functions{
 		return new Less_Tree_Color($rgb, $alpha);
 	}
 
-	public static function greyscale($color){
-		return Less_Functions::desaturate($color, new Less_Tree_Dimension(100));
+	public function greyscale($color){
+		return $this->desaturate($color, new Less_Tree_Dimension(100));
 	}
 
 
-	public static function contrast( $color, $dark = false, $light = false, $threshold = false) {
+	public function contrast( $color, $dark = false, $light = false, $threshold = false) {
 		// filter: contrast(3.2);
 		// should be kept as is, so check for color
 		if( !property_exists($color,'rgb') ){
 			return null;
 		}
 		if( $light === false ){
-			$light = Less_Functions::rgba(255, 255, 255, 1.0);
+			$light = $this->rgba(255, 255, 255, 1.0);
 		}
 		if( $dark === false ){
-			$dark = Less_Functions::rgba(0, 0, 0, 1.0);
+			$dark = $this->rgba(0, 0, 0, 1.0);
 		}
 		//Figure out which is actually light and dark!
 		if( $dark->luma() > $light->luma() ){
@@ -309,11 +309,11 @@ class Less_Functions{
 		}
 	}
 
-	public static function e ($str){
+	public function e ($str){
 		return new Less_Tree_Anonymous($str instanceof Less_Tree_JavaScript ? $str->evaluated : $str);
 	}
 
-	public static function escape ($str){
+	public function escape ($str){
 
 		$revert = array('%21'=>'!', '%2A'=>'*', '%27'=>"'",'%3F'=>'?','%26'=>'&','%2C'=>',','%2F'=>'/','%40'=>'@','%2B'=>'+','%24'=>'$');
 
@@ -321,7 +321,7 @@ class Less_Functions{
 	}
 
 
-	public static function _percent(){
+	public function _percent(){
 		$quoted = func_get_arg(0);
 
 		$args = func_get_args();
@@ -341,38 +341,38 @@ class Less_Functions{
 		return new Less_Tree_Quoted('"' . $str . '"', $str);
 	}
 
-	public static function unit($val, $unit = null ){
+	public function unit($val, $unit = null ){
 		if( !($val instanceof Less_Tree_Dimension) ){
 			throw new Less_CompilerException('The first argument to unit must be a number' . ($val instanceof Less_Tree_Operation ? '. Have you forgotten parenthesis?' : '.') );
 		}
 		return new Less_Tree_Dimension($val->value, $unit ? $unit->toCSS() : "");
 	}
 
-	public static function convert($val, $unit){
+	public function convert($val, $unit){
 		return $val->convertTo($unit->value);
 	}
 
-	public static function round($n, $f = false) {
+	public function round($n, $f = false) {
 
 		$fraction = 0;
 		if( $f !== false ){
 			$fraction = $f->value;
 		}
 
-		return Less_Functions::_math('Less_Parser::round',null, $n, $fraction);
+		return $this->_math('Less_Parser::round',null, $n, $fraction);
 	}
 
-	public static function pi(){
+	public function pi(){
 		return new Less_Tree_Dimension(M_PI);
 	}
 
-	public static function mod($a, $b) {
+	public function mod($a, $b) {
 		return new Less_Tree_Dimension( $a->value % $b->value, $a->unit);
 	}
 
 
 
-	public static function pow($x, $y) {
+	public function pow($x, $y) {
 		if( is_numeric($x) && is_numeric($y) ){
 			$x = new Less_Tree_Dimension($x);
 			$y = new Less_Tree_Dimension($y);
@@ -384,20 +384,20 @@ class Less_Functions{
 	}
 
 	// var mathFunctions = [{name:"ce ...
-	public static function ceil( $n ){		return Less_Functions::_math('ceil', null, $n); }
-	public static function floor( $n ){	return Less_Functions::_math('floor', null, $n); }
-	public static function sqrt( $n ){		return Less_Functions::_math('sqrt', null, $n); }
-	public static function abs( $n ){		return Less_Functions::_math('abs', null, $n); }
+	public function ceil( $n ){		return $this->_math('ceil', null, $n); }
+	public function floor( $n ){	return $this->_math('floor', null, $n); }
+	public function sqrt( $n ){		return $this->_math('sqrt', null, $n); }
+	public function abs( $n ){		return $this->_math('abs', null, $n); }
 
-	public static function tan( $n ){		return Less_Functions::_math('tan', '', $n);	}
-	public static function sin( $n ){		return Less_Functions::_math('sin', '', $n);	}
-	public static function cos( $n ){		return Less_Functions::_math('cos', '', $n);	}
+	public function tan( $n ){		return $this->_math('tan', '', $n);	}
+	public function sin( $n ){		return $this->_math('sin', '', $n);	}
+	public function cos( $n ){		return $this->_math('cos', '', $n);	}
 
-	public static function atan( $n ){		return Less_Functions::_math('atan', 'rad', $n);	}
-	public static function asin( $n ){		return Less_Functions::_math('asin', 'rad', $n);	}
-	public static function acos( $n ){		return Less_Functions::_math('acos', 'rad', $n);	}
+	public function atan( $n ){		return $this->_math('atan', 'rad', $n);	}
+	public function asin( $n ){		return $this->_math('asin', 'rad', $n);	}
+	public function acos( $n ){		return $this->_math('acos', 'rad', $n);	}
 
-	private static function _math() {
+	private function _math() {
 		$args = func_get_args();
 		$fn = array_shift($args);
 		$unit = array_shift($args);
@@ -418,7 +418,7 @@ class Less_Functions{
 		}
 	}
 
-	static function _minmax( $isMin, $args ){
+	function _minmax( $isMin, $args ){
 
 		switch( count($args) ){
 			case 0: throw new Less_CompilerException( 'one or more arguments required');
@@ -463,23 +463,23 @@ class Less_Functions{
 		return new Less_Tree_Anonymous( ($isMin ? 'min' : 'max') . '(' . $args . ')');
 	}
 
-	public static function min(){
-		return self::_minmax(true, func_get_args() );
+	public function min(){
+		return $this->_minmax(true, func_get_args() );
 	}
 
-	public static function max(){
-		return self::_minmax(false, func_get_args() );
+	public function max(){
+		return $this->_minmax(false, func_get_args() );
 	}
 
-	public static function argb($color) {
+	public function argb($color) {
 		return new Less_Tree_Anonymous($color->toARGB());
 	}
 
-	public static function percentage($n) {
+	public function percentage($n) {
 		return new Less_Tree_Dimension($n->value * 100, '%');
 	}
 
-	public static function color($n) {
+	public function color($n) {
 
 		if( $n instanceof Less_Tree_Quoted ){
 			$colorCandidate = $n->value;
@@ -497,123 +497,123 @@ class Less_Functions{
 	}
 
 
-	public static function iscolor($n) {
-		return Less_Functions::_isa($n, 'Less_Tree_Color');
+	public function iscolor($n) {
+		return $this->_isa($n, 'Less_Tree_Color');
 	}
 
-	public static function isnumber($n) {
-		return Less_Functions::_isa($n, 'Less_Tree_Dimension');
+	public function isnumber($n) {
+		return $this->_isa($n, 'Less_Tree_Dimension');
 	}
 
-	public static function isstring($n) {
-		return Less_Functions::_isa($n, 'Less_Tree_Quoted');
+	public function isstring($n) {
+		return $this->_isa($n, 'Less_Tree_Quoted');
 	}
 
-	public static function iskeyword($n) {
-		return Less_Functions::_isa($n, 'Less_Tree_Keyword');
+	public function iskeyword($n) {
+		return $this->_isa($n, 'Less_Tree_Keyword');
 	}
 
-	public static function isurl($n) {
-		return Less_Functions::_isa($n, 'Less_Tree_Url');
+	public function isurl($n) {
+		return $this->_isa($n, 'Less_Tree_Url');
 	}
 
-	public static function ispixel($n) {
-		return Less_Functions::isunit($n, 'px');
+	public function ispixel($n) {
+		return $this->isunit($n, 'px');
 	}
 
-	public static function ispercentage($n) {
-		return Less_Functions::isunit($n, '%');
+	public function ispercentage($n) {
+		return $this->isunit($n, '%');
 	}
 
-	public static function isem($n) {
-		return Less_Functions::isunit($n, 'em');
+	public function isem($n) {
+		return $this->isunit($n, 'em');
 	}
 
-	public static function isunit( $n, $unit ){
+	public function isunit( $n, $unit ){
 		return ($n instanceof Less_Tree_Dimension) && $n->unit->is( ( property_exists($unit,'value') ? $unit->value : $unit) ) ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
 	}
 
-	private static function _isa($n, $type) {
+	private function _isa($n, $type) {
 		return is_a($n, $type) ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
 	}
 
 	/* Blending modes */
 
-	public static function multiply($color1, $color2) {
+	public function multiply($color1, $color2) {
 		$r = $color1->rgb[0] * $color2->rgb[0] / 255;
 		$g = $color1->rgb[1] * $color2->rgb[1] / 255;
 		$b = $color1->rgb[2] * $color2->rgb[2] / 255;
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function screen($color1, $color2) {
+	public function screen($color1, $color2) {
 		$r = 255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255;
 		$g = 255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255;
 		$b = 255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255;
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function overlay($color1, $color2) {
+	public function overlay($color1, $color2) {
 		$r = $color1->rgb[0] < 128 ? 2 * $color1->rgb[0] * $color2->rgb[0] / 255 : 255 - 2 * (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255;
 		$g = $color1->rgb[1] < 128 ? 2 * $color1->rgb[1] * $color2->rgb[1] / 255 : 255 - 2 * (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255;
 		$b = $color1->rgb[2] < 128 ? 2 * $color1->rgb[2] * $color2->rgb[2] / 255 : 255 - 2 * (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255;
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function softlight($color1, $color2) {
+	public function softlight($color1, $color2) {
 		$t = $color2->rgb[0] * $color1->rgb[0] / 255;
 		$r = $t + $color1->rgb[0] * (255 - (255 - $color1->rgb[0]) * (255 - $color2->rgb[0]) / 255 - $t) / 255;
 		$t = $color2->rgb[1] * $color1->rgb[1] / 255;
 		$g = $t + $color1->rgb[1] * (255 - (255 - $color1->rgb[1]) * (255 - $color2->rgb[1]) / 255 - $t) / 255;
 		$t = $color2->rgb[2] * $color1->rgb[2] / 255;
 		$b = $t + $color1->rgb[2] * (255 - (255 - $color1->rgb[2]) * (255 - $color2->rgb[2]) / 255 - $t) / 255;
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function hardlight($color1, $color2) {
+	public function hardlight($color1, $color2) {
 		$r = $color2->rgb[0] < 128 ? 2 * $color2->rgb[0] * $color1->rgb[0] / 255 : 255 - 2 * (255 - $color2->rgb[0]) * (255 - $color1->rgb[0]) / 255;
 		$g = $color2->rgb[1] < 128 ? 2 * $color2->rgb[1] * $color1->rgb[1] / 255 : 255 - 2 * (255 - $color2->rgb[1]) * (255 - $color1->rgb[1]) / 255;
 		$b = $color2->rgb[2] < 128 ? 2 * $color2->rgb[2] * $color1->rgb[2] / 255 : 255 - 2 * (255 - $color2->rgb[2]) * (255 - $color1->rgb[2]) / 255;
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function difference($color1, $color2) {
+	public function difference($color1, $color2) {
 		$r = abs($color1->rgb[0] - $color2->rgb[0]);
 		$g = abs($color1->rgb[1] - $color2->rgb[1]);
 		$b = abs($color1->rgb[2] - $color2->rgb[2]);
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function exclusion($color1, $color2) {
+	public function exclusion($color1, $color2) {
 		$r = $color1->rgb[0] + $color2->rgb[0] * (255 - $color1->rgb[0] - $color1->rgb[0]) / 255;
 		$g = $color1->rgb[1] + $color2->rgb[1] * (255 - $color1->rgb[1] - $color1->rgb[1]) / 255;
 		$b = $color1->rgb[2] + $color2->rgb[2] * (255 - $color1->rgb[2] - $color1->rgb[2]) / 255;
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function average($color1, $color2) {
+	public function average($color1, $color2) {
 		$r = ($color1->rgb[0] + $color2->rgb[0]) / 2;
 		$g = ($color1->rgb[1] + $color2->rgb[1]) / 2;
 		$b = ($color1->rgb[2] + $color2->rgb[2]) / 2;
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function negation($color1, $color2) {
+	public function negation($color1, $color2) {
 		$r = 255 - abs(255 - $color2->rgb[0] - $color1->rgb[0]);
 		$g = 255 - abs(255 - $color2->rgb[1] - $color1->rgb[1]);
 		$b = 255 - abs(255 - $color2->rgb[2] - $color1->rgb[2]);
-		return Less_Functions::rgb($r, $g, $b);
+		return $this->rgb($r, $g, $b);
 	}
 
-	public static function tint($color, $amount) {
-		return Less_Functions::mix( Less_Functions::rgb(255,255,255), $color, $amount);
+	public function tint($color, $amount) {
+		return $this->mix( $this->rgb(255,255,255), $color, $amount);
 	}
 
-	public static function shade($color, $amount) {
-		return Less_Functions::mix(Less_Functions::rgb(0, 0, 0), $color, $amount);
+	public function shade($color, $amount) {
+		return $this->mix($this->rgb(0, 0, 0), $color, $amount);
 	}
 
-	public static function extract($values, $index ){
+	public function extract($values, $index ){
 		$index = (int)$index->value - 1; // (1-based index)
 		// handle non-array values as an array of length 1
 		// return 'undefined' if index is invalid
