@@ -35,7 +35,7 @@ class Less_Tree_Import extends Less_Tree{
 		$this->options += array('inline'=>false);
 
 		if( isset($this->options['less']) || $this->options['inline'] ){
-			$this->css = !$this->options['less'] || $this->options['inline'];
+			$this->css = !isset($this->options['less']) || !$this->options['less'] || $this->options['inline'];
 		} else {
 			$pathValue = $this->getPath();
 			if( $pathValue && preg_match('/css([\?;].*)?$/',$pathValue) ){
@@ -159,7 +159,8 @@ class Less_Tree_Import extends Less_Tree{
 
 		if( $this->options['inline'] ){
 			//todo needs to reference css file not import
-			$contents = new Less_Tree_Expression($this->root, 0, array('filename'=>$this->importedFilename), true );
+			//$contents = new Less_Tree_Expression($this->root, 0, array('filename'=>$this->importedFilename), true );
+			$contents = new Less_Tree_Expression($this->root, 0, array(), true );
 
 			if( $this->features ){
 				return new Less_Tree_Media( array($contents), $this->features->value );
