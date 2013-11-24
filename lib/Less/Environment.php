@@ -759,7 +759,7 @@ class Less_Environment{
 
 	function length($values){
 		$n = is_array($values->value) ? count($values->value) : 1;
-		return new tree.Dimension($n);
+		return new Less_Tree_Dimension($n);
 	}
 
 	function datauri($mimetypeNode, $filePathNode = null ) {
