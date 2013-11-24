@@ -1159,7 +1159,6 @@ class Less_Parser extends Less_Cache{
 		$when = false;
 		$extend = false;
 
-
 		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchString('when') )) || ($e = $this->parseElement()) ){
 			if( $when ){
 				$condition = $this->expect('parseConditions', 'expected condition');
@@ -1598,7 +1597,7 @@ class Less_Parser extends Less_Cache{
 		$index = $this->pos;
 		$condition = null;
 		if( $a = $this->parseCondition() ){
-			while( $this->PeekReg('/^,\s*(not\s*)?\(/') && $this->MatchChar(',') && ($b = $this->parseCondition()) ){
+			while( $this->PeekReg('/\\G,\s*(not\s*)?\(/') && $this->MatchChar(',') && ($b = $this->parseCondition()) ){
 				$condition = new Less_Tree_Condition('or', $condition ? $condition : $a, $b, $index);
 			}
 			return $condition ? $condition : $a;
