@@ -294,10 +294,10 @@ class Less_Environment{
 		return new Less_Tree_Dimension(Less_Parser::round( $color->luma() * $color->alpha * 100), '%');
 	}
 
-	public static function saturate($color, $amount){
+	public static function saturate($color, $amount = null){
 		// filter: saturate(3.2);
 		// should be kept as is, so check for color
-		if( !$color->rgb ){
+		if( !property_exists($color,'rgb') ){
 			return null;
 		}
 		$hsl = $color->toHSL();
