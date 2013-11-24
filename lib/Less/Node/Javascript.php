@@ -14,7 +14,7 @@ class Less_Tree_Javascript{
 		return $this;
 	}
 
-	public function toCss($env){
+	public function toCSS($env = null){
 		return $env->compress ? '' : '/* Sorry, can not do JavaScript evaluation in PHP... :( */';
 	}
 }

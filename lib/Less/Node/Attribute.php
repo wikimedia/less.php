@@ -26,7 +26,7 @@ class Less_Tree_Attribute extends Less_Tree{
 		self::OutputAdd( $strs, $this->toCSS($env) );
 	}
 
-	function toCSS($env){
+	function toCSS($env = null){
 		$value = $this->key;
 
 		if( $this->op ){

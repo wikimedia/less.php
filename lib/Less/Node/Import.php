@@ -77,7 +77,7 @@ class Less_Tree_Import extends Less_Tree{
 		}
 	}
 
-	function toCSS($env) {
+	function toCSS($env = null){
 		$features = $this->features ? ' ' . $this->features->toCSS($env) : '';
 
 		if ($this->css) {

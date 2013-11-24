@@ -32,7 +32,7 @@ class Less_Tree_Assignment extends Less_Tree{
 		}
 	}
 
-	public function toCss($env) {
+	public function toCss($env = null){
 		return $this->key . '=' . (is_string($this->value) ? $this->value : $this->value->toCSS());
 	}
 }

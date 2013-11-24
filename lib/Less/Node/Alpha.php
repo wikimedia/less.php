@@ -32,7 +32,7 @@ class Less_Tree_Alpha extends Less_Tree{
 		self::OutputAdd( $strs, ')' );
 	}
 
-	public function toCss($env){
+	public function toCSS($env = null){
 		return "alpha(opacity=" . (is_string($this->value) ? $this->value : $this->value->toCSS()) . ")";
 	}
 

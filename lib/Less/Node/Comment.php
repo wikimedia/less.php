@@ -15,7 +15,7 @@ class Less_Tree_Comment extends Less_Tree{
 		self::OutputAdd( $strs, trim($this->value) );//TODO shouldn't need to trim, we shouldn't grab the \n
 	}
 
-	public function toCSS($env){
+	public function toCSS($env = null){
 		return $env->compress ? '' : $this->value;
 	}
 

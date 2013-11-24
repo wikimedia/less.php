@@ -79,7 +79,7 @@ class Less_Tree_Call extends Less_Tree{
 		self::OutputAdd( $strs, ')' );
 	}
 
-    public function toCSS ($env) {
+    public function toCSS($env = null){
         return $this->compile($env)->toCSS();
     }
 

@@ -43,7 +43,7 @@ class Less_Tree_Element extends Less_Tree{
 		self::OutputAdd( $strs, $this->toCSS($env), $this->currentFileInfo, $this->index );
 	}
 
-	public function toCSS ($env) {
+	public function toCSS( $env = null ){
 
 		$value = $this->value;
 		if( !is_string($value) ){

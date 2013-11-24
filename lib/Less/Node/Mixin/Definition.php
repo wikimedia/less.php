@@ -43,7 +43,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 	}
 
 
-	public function toCss($env){
+	public function toCSS($env = null){
 		return '';
 	}
 

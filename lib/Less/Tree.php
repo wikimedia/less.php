@@ -2,7 +2,7 @@
 
 class Less_Tree{
 
-	public function toCSS($env){
+	public function toCSS($env = null){
 		$strs = array();
 		$this->genCSS($env, $strs );
 		return implode('',$strs);

@@ -35,7 +35,7 @@ class Less_Tree_Anonymous extends Less_Tree{
 		self::OutputAdd( $strs, $this->value, $this->currentFileInfo, $this->index, $this->mapLines );
 	}
 
-	public function toCSS($env){
+	public function toCSS($env = null){
 		return $this->value;
 	}
 
