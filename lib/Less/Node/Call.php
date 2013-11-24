@@ -62,20 +62,6 @@ class Less_Tree_Call extends Less_Tree{
 			}
 
 		}
-		/*
-		if( Less_Parser::is_method($env, $name) ){ // 1.
-			try {
-
-				$result = call_user_func_array( array($env, $name), $args);
-				if( $result != null ){
-					return $result;
-				}
-
-			} catch (Exception $e) {
-				throw Less_CompilerException('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
-			}
-		}
-		*/
 
 		return new Less_Tree_Call( $this->name, $args, $this->index, $this->currentFileInfo );
     }
