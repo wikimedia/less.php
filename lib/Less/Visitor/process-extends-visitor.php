@@ -155,7 +155,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$selectorPath = $rulesetNode->paths[$pathIndex];
 
 				// extending extends happens initially, before the main pass
-				if( $rulesetNode->extendOnEveryPath || end($selectorPath)->extendList ){ continue; }
+				if( (isset($rulesetNode->extendOnEveryPath) && $rulesetNode->extendOnEveryPath) || end($selectorPath)->extendList ){ continue; }
 
 				$matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
 
@@ -318,7 +318,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 			}
 
 			$newElements = array_merge(
-				array_slice($selector->elements, $currentSelectorPathElementIndex, $match->index)
+				array_slice($selector->elements, $currentSelectorPathElementIndex, $match['index'])
 				, array($firstElement)
 				, array_slice($replacementSelector->elements,1)
 				);
@@ -328,7 +328,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$path[$last_key]->elements = array_merge($path[$last_key]->elements,$newElements);
 			}else{
 				$path = array_merge( $path, array_slice( $selectorPath, $currentSelectorPathIndex, $match['pathIndex'] ));
-				$path[] = Less_Tree_Selector( $newElements );
+				$path[] = new Less_Tree_Selector( $newElements );
 			}
 
 			$currentSelectorPathIndex = $match['endPathIndex'];

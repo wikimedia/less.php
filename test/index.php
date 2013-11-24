@@ -1,10 +1,14 @@
 <?php
 
 define('phpless_start_time',microtime());
-
-error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
 ini_set('display_errors',1);
-set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
+
+//error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
+//ini_set('display_errors',1);
+//set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
+
+error_reporting(E_ALL | E_STRICT);
+
 
 
 //get parser
@@ -391,19 +395,16 @@ class ParserTest{
 		$reported[$uniq] = true;
 
 
-
-
 		//build message
-		$mess = '';
-		$mess .= '<fieldset style="padding:1em">';
-		$mess .= '<legend>'.$errortype[$errno].' ('.$errno.')</legend> '.$errmsg;
-		$mess .= '<br/> &nbsp; &nbsp; <b>in:</b> '.$filename;
-		$mess .= '<br/> &nbsp; &nbsp; <b>on line:</b> '.$linenum;
+		echo '<fieldset style="padding:1em">';
+		echo '<legend>'.$errortype[$errno].' ('.$errno.')</legend> '.$errmsg;
+		echo '<br/> &nbsp; &nbsp; <b>in:</b> '.$filename;
+		echo '<br/> &nbsp; &nbsp; <b>on line:</b> '.$linenum;
 		if( isset($_SERVER['REQUEST_URI']) ){
-			$mess .= '<br/> &nbsp; &nbsp; <b>Request:</b> '.$_SERVER['REQUEST_URI'];
+			echo '<br/> &nbsp; &nbsp; <b>Request:</b> '.$_SERVER['REQUEST_URI'];
 		}
 		if( isset($_SERVER['REQUEST_METHOD']) ){
-			$mess .= '<br/> &nbsp; &nbsp; <b>Method:</b> '.$_SERVER['REQUEST_METHOD'];
+			echo '<br/> &nbsp; &nbsp; <b>Method:</b> '.$_SERVER['REQUEST_METHOD'];
 		}
 
 
@@ -415,12 +416,11 @@ class ParserTest{
 			}
 		}
 
-		$mess .= '<div><a href="javascript:void(0)" onclick="var st = this.nextSibling.style; if( st.display==\'block\'){ st.display=\'none\' }else{st.display=\'block\'};return false;">Show Backtrace</a>';
-		$mess .= '<div style="display:none">';
-		$mess .= pre($backtrace);
-		$mess .= '</div></div>';
-		$mess .= '</p></fieldset>';
-		echo $mess;
+		echo '<div><a href="javascript:void(0)" onclick="var st = this.nextSibling.style; if( st.display==\'block\'){ st.display=\'none\' }else{st.display=\'block\'};return false;">Show Backtrace</a>';
+		echo '<div style="display:none">';
+		echo pre($backtrace);
+		echo '</div></div>';
+		echo '</p></fieldset>';
 		return false;
 	}
 }
