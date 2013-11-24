@@ -7,6 +7,7 @@ class Less_Tree_Selector extends Less_Tree{
 	public $extendList = array();
 	private $_css;
 	public $index;
+	public $evaldCondition = false;
 
 	public function __construct($elements, $extendList=array() , $condition = null, $index=null, $currentFileInfo=array(), $isReferenced=null ){
 		$this->elements = $elements;
