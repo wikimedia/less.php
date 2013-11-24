@@ -15,7 +15,7 @@ class Less_Tree{
 
 	public static function outputRuleset($env, &$strs, $rules ){
 
-		self::OutputAdd( $strs, ($env->compress ? '{' : ' {\n') );
+		self::OutputAdd( $strs, ($env->compress ? '{' : " {\n") );
 
 		$env->tabLevel++;
 
@@ -28,7 +28,7 @@ class Less_Tree{
 		for($i = 0; $i < count($rules); $i++ ){
 			self::OutputAdd( $strs, $tabRuleStr );
 			$rules[$i]->genCSS( $env, $strs );
-			self::OutputAdd( $strs, ($env->compress ? '' : '\n') );
+			self::OutputAdd( $strs, ($env->compress ? '' : "\n") );
 		}
 		$env->tabLevel--;
 		self::OutputAdd( $strs, $tabSetStr.'}' );
