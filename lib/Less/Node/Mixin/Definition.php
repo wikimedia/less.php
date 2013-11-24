@@ -12,10 +12,11 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 	public $condition;
 	public $variadic;
 
+
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition
 	public function __construct($name, $params, $rules, $condition, $variadic = false){
 		$this->name = $name;
-		$this->selectors = array(new Less_Tree_Selector(array( new Less_Tree_Element(null, $name, $this->index, $this->currentFileInfo ))));
+		$this->selectors = array(new Less_Tree_Selector(array( new Less_Tree_Element(null, $name))));
 
 		$this->params = $params;
 		$this->condition = $condition;
@@ -159,7 +160,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 
 
 		$ruleSetEnv = $env->copyEvalEnv( array_merge( array($this, $frame), $mixinFrames ) );
-		$ruleset = $ruleset->complie( $ruleSetEnv );
+		$ruleset = $ruleset->compile( $ruleSetEnv );
 
 		if( $important ){
 			$ruleset = $ruleset->makeImportant();
@@ -174,13 +175,13 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 			return true;
 		}
 
-		$frame = $this->compileParams($env, array_merge($this->frames,$env->frames), $args);
+		$frame = $this->compileParams($env, $env->copyEvalEnv(array_merge($this->frames,$env->frames)), $args );
 
 		$compile_env = $env->copyEvalEnv(
 			array_merge(
-				array($frame)
-				, $this->frames
-				, $env->frames
+				array($frame)		// the parameter variables
+				, $this->frames		// the parent namespace/mixin frames
+				, $env->frames		// the current environment frames
 			)
 		);
 
