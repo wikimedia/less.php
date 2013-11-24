@@ -145,7 +145,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 	}
 
-	static function makeImportant(){
+	function makeImportant(){
 
 		$important_rules = array();
 		foreach($this->rules as $rule){
