@@ -1481,6 +1481,7 @@ class Less_Parser extends Less_Cache{
 			case "@right-bottom":
 				$hasBlock = true;
 				break;
+			case "@host":
 			case "@page":
 			case "@document":
 			case "@supports":
