@@ -741,8 +741,8 @@ class Less_Environment{
 		return Less_Environment::mix(Less_Environment::rgb(0, 0, 0), $color, $amount);
 	}
 
-	public static function extract($values, $index ) {
-		$index = $index->value - 1; // (1-based index)
+	public static function extract($values, $index ){
+		$index = (int)$index->value - 1; // (1-based index)
 		// handle non-array values as an array of length 1
 		// return 'undefined' if index is invalid
 		if( is_array($values->value) ){
@@ -751,9 +751,10 @@ class Less_Environment{
 			}
 			return null;
 
-		}elseif( $index === 0 ){
-			return $values->value;
+		}elseif( (int)$index === 0 ){
+			return $values;
 		}
+
 		return null;
 	}
 
