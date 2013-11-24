@@ -1,7 +1,3 @@
-
-$z = 0;			//for less.php
-$debug = true;	//for less.php
-
 /*!
  * LESS - Leaner CSS v1.5.1
  * http://lesscss.org
@@ -490,7 +486,6 @@ less.Parser = function Parser(env) {
 
                         new(tree.toCSSVisitor)({compress: Boolean(options.compress)})
                             .run(evaldRoot);
-
 
                         if (options.sourceMap) {
                             evaldRoot = new tree.sourceMapOutput(
@@ -3394,6 +3389,7 @@ tree.Directive = function (name, value, index, currentFileInfo) {
         this.value = value;
     }
     this.currentFileInfo = currentFileInfo;
+
 };
 tree.Directive.prototype = {
     type: "Directive",
@@ -4487,10 +4483,7 @@ tree.Ruleset.prototype = {
         } else {
             this.selectors = visitor.visit(this.selectors);
         }
-
-        var before = this.rules.length;
         this.rules = visitor.visit(this.rules);
-        //log('count: '+before+' --- '+this.rules.length);
     },
     eval: function (env) {
         var selectors = this.selectors && this.selectors.map(function (s) { return s.eval(env); });
@@ -5323,7 +5316,7 @@ tree.Variable.prototype = {
             for(i = 0; i < nodes.length; i++) {
                 var evald = this.visit(nodes[i]);
                 if (evald instanceof Array) {
-                    evjoinald = this.flatten(evald);
+                    evald = this.flatten(evald);
                     newNodes = newNodes.concat(evald);
                 } else {
                     newNodes.push(evald);
@@ -5487,7 +5480,6 @@ tree.Variable.prototype = {
         },
 
         visitRuleset: function (rulesetNode, visitArgs) {
-
             var context = this.contexts[this.contexts.length - 1];
             var paths = [];
             this.contexts.push(paths);
@@ -5648,7 +5640,6 @@ tree.Variable.prototype = {
         },
 
         _removeDuplicateRules: function(rules) {
-
             // remove duplicates
             var ruleCache = {},
                 ruleList, rule, i;
@@ -6312,11 +6303,9 @@ var fileCache = {};
 var varsPre = "";
 
 function log(str, level) {
-	/*
-    if (less.env == 'development' && typeof(console) !== 'undefined' && less.logLevel >= level) {
-        console.log('less: ' + str);
-    }
-    */
+    //if (less.env == 'development' && typeof(console) !== 'undefined' && less.logLevel >= level) {
+    //    console.log('less: ' + str);
+    //}
     console.log(str); //less.php changes
 }
 
@@ -6352,7 +6341,7 @@ function errorConsole(e, rootHref) {
     } else if (e.stack) {
         content += e.stack;
     }
-    log(content, logLevel.errors);
+    //log(content, logLevel.errors);
 }
 
 function createCSS(styles, sheet, lastModified) {
@@ -6920,7 +6909,7 @@ less.refresh = function (reload, newVars) {
             return error(e, sheet.href);
         }
         if (env.local) {
-           //log("loading " + sheet.href + " from cache.", logLevel.info);
+            //log("loading " + sheet.href + " from cache.", logLevel.info);
         } else {
             //log("parsed " + sheet.href + " successfully.", logLevel.info);
             //createCSS(root.toCSS(less), sheet, env.lastModified);
@@ -6939,11 +6928,10 @@ less.refresh = function (reload, newVars) {
 			}
 			totextarea();
         }
-
         //log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
-        //if (env.remaining === 0) {
-        //    log("css generated in " + (new Date() - startTime) + 'ms', logLevel.info);
-        //}
+        if (env.remaining === 0) {
+            //log("css generated in " + (new Date() - startTime) + 'ms', logLevel.info);
+        }
         endTime = new Date();
     }, reload, newVars);
 
