@@ -154,7 +154,9 @@ class Less_Tree_Import extends Less_Tree{
 
 		$features = ( $evald->features ? $evald->features->compile($env) : null );
 
-		if ($evald->skip) { return array(); }
+		if ($evald->skip){
+			return array();
+		}
 
 
 		if( $this->options['inline'] ){
@@ -175,10 +177,18 @@ class Less_Tree_Import extends Less_Tree{
 			return new Less_Tree_Import( $this->compilePath( $env), $features, $this->options, $this->index);
 		}
 
-		$parser = new Less_Parser($env);
+
+		// options
+		$import_env = clone $env;
+		if( (isset($this->options['reference']) && $this->options['reference']) ){
+			$import_env->currentFileInfo['reference'] = true;
+		}
+
+		$parser = new Less_Parser($import_env);
 		$evald->root = $parser->parseFile($full_path, $uri, true);
+
 		$ruleset = new Less_Tree_Ruleset(array(), $evald->root->rules );
-		$ruleset->evalImports($env);
+		$ruleset->evalImports($import_env);
 
 		return $this->features ? new Less_Tree_Media($ruleset->rules, $this->features->value) : $ruleset->rules;
 	}

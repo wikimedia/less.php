@@ -169,6 +169,12 @@ class Less_Parser extends Less_Cache{
 			$currentFileInfo['uri_root'] = rtrim($uri_root,'/').'/';
 		}
 
+
+		//inherit reference
+		if( isset($this->env->currentFileInfo['reference']) && $this->env->currentFileInfo['reference'] ){
+			$currentFileInfo['reference'] = true;
+		}
+
 		$this->env->currentFileInfo = $currentFileInfo;
 
 		self::$import_dirs = array_merge( array( $dirname => $currentFileInfo['uri_root'] ), self::$import_dirs );

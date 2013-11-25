@@ -45,7 +45,7 @@ class Less_toCSSVisitor extends Less_visitor{
 	}
 
 	function visitDirective( $directiveNode ){
-		if( isset($directiveNode->currentFileInfo['reference']) && !$directiveNode->isReferenced ){
+		if( isset($directiveNode->currentFileInfo['reference']) && (!property_exists($directiveNode,'isReferenced') || !$directiveNode->isReferenced) ){
 			return array();
 		}
 		if( $directiveNode->name === '@charset' ){

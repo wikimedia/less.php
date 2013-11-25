@@ -3743,7 +3743,11 @@ tree.Import.prototype = {
     eval: function (env) {
         var ruleset, features = this.features && this.features.eval(env);
 
-        if (this.skip) { return []; }
+		log('eval import');
+        if (this.skip) {
+			log('skip');
+			return [];
+		}
 
         if (this.options.inline) {
             //todo needs to reference css file not import
