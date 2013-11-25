@@ -1,3 +1,4 @@
+$z = 0;
 /*!
  * LESS - Leaner CSS v1.5.1
  * http://lesscss.org
@@ -628,7 +629,6 @@ less.Parser = function Parser(env) {
                                || $(/^[\s\n]+/) || $(/^;+/)) {
                     node && root.push(node);
                 }
-                log(root);
                 return root;
             },
 

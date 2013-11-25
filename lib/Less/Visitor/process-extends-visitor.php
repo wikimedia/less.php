@@ -318,7 +318,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 			}
 
 			$newElements = array_merge(
-				array_slice($selector->elements, $currentSelectorPathElementIndex, $match['index'])
+				array_slice($selector->elements, $currentSelectorPathElementIndex, ($match['index'] - $currentSelectorPathElementIndex) ) // last parameter of array_slice is different than the last parameter of javascript's slice
 				, array($firstElement)
 				, array_slice($replacementSelector->elements,1)
 				);
