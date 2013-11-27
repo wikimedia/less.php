@@ -193,6 +193,8 @@ class ParserTest{
 			echo '</td><td>';
 			echo '<textarea id="lessjs_textarea" autocomplete="off"></textarea>';
 			echo '</td></tr></table>';
+
+			echo '<div id="objectdiff"></div>';
 			echo '<div id="diffoutput"></div>';
 
 			$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
@@ -426,6 +428,67 @@ class ParserTest{
 
 
 
+
+/**
+ * Output an object in a readable format for comparison with similar output from javascript
+ *
+ */
+function obj($mixed,$id=''){
+	static $level = 0;
+	$output = '';
+
+	$exclude_keys = array('originalRuleset','currentFileInfo','lookups');
+	//$exclude_keys = array();
+
+	$type = gettype($mixed);
+	switch($type){
+		case 'object':
+				$type = 'object';
+				//$type = get_class($mixed).' object';
+				//$output = $type.'(...)'."\n"; //recursive object references creates an infinite loop
+				$temp = array();
+				foreach($mixed as $key => $value){
+					//declutter
+					if( in_array($key,$exclude_keys,true) ){
+						continue;
+					}
+					$temp[$key] = $value;
+				}
+				$mixed = $temp;
+		case 'array':
+
+			if( !count($mixed) ){
+				$output = $type.'()';
+				break;
+			}
+
+			$output = $type.'('."\n";
+			ksort($mixed);
+			foreach($mixed as $key => $value){
+				$level++;
+				$output .= str_repeat('    ',$level) . '[' . $key . '] => ' . obj($value) . "\n";
+				$level--;
+			}
+			$output .= str_repeat('    ',$level).')';
+		break;
+		case 'boolean':
+			if( $mixed ){
+				$mixed = 'true';
+			}else{
+				$mixed = 'false';
+			}
+		default:
+			$output = '('.$type.')'.htmlspecialchars($mixed,ENT_COMPAT,'UTF-8',false).'';
+		break;
+	}
+
+	if( $level === 0 ){
+		echo '<textarea id="object_'.$id.'">'.htmlspecialchars($output,ENT_COMPAT,'UTF-8',false).'</textarea>';
+	}
+	return $output;
+}
+
+
 function pre($arg){
 	global $debug;
 
@@ -444,6 +507,7 @@ function pre($arg){
 	echo "</pre>\n";
 	return ob_get_clean();
 }
+
 
 function msg($arg){
 	echo Pre($arg);

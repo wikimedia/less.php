@@ -54,8 +54,9 @@ class Less_Tree_Rule extends Less_Tree{
 										$this->value->compile($env),
 										$this->important,
 										$this->merge,
+										$this->index,
 										$this->currentFileInfo,
-										$this->index, $this->inline);
+										$this->inline);
 		}
 		catch(Exception $e){}
 

@@ -36,15 +36,134 @@ $(function(){
 		createCookie(name,"",-1);
 	}
 
+
+
 });
 
+var object_level = 0;
+function obj(mixed,id){
+	var keys = [], k, i, output = '', type, len;
 
-function diffUsingJS(viewType) {
+	id = id||'';
+	var exclude_keys = ['originalRuleset','currentFileInfo','_lookups'];
+
+	if( mixed == null ){
+		output = '(NULL)';
+
+	}else{
+
+		type = typeof mixed;
+		switch(type){
+			case 'object':
+
+				var t = mixed.constructor.name;
+				if( t === 'Array' ){
+					output += 'array(';
+				}else{
+					output += 'object(';
+				}
+
+				//output = mixed.constructor.name+' object(';
+				//output = mixed.getName()+' object(';
+
+				for(k in mixed){
+					if( mixed.hasOwnProperty(k) && exclude_keys.indexOf(k) < 0 ){
+						keys.push(k);
+					}
+				}
+
+				keys.sort();
+				len = keys.length;
+
+				if( len == 0 ){
+					output += ')';
+					break;
+				}
+
+
+				output += "\n";
+				for( i = 0; i < keys.length; i++){
+					k = keys[i];
+					object_level++;
+					output += Array((object_level+1)).join('    ') + '[' + k + '] => ' + obj(mixed[k]) + "\n";
+					object_level--;
+				}
+				output += Array((object_level+1)).join('    ')+')';
+			break;
+			case 'function':
+			break;
+			default:
+				output = '('+type+')'+mixed;
+			break;
+		}
+	}
+
+	if( object_level === 0 ){
+
+		var tries = 0;
+		function showdiff(){
+			//show diff of this javascript object and the corresponding php object
+			var php_area = $('#object_'+id);
+			if( php_area.length ){
+				php_area.hide();
+				diffText(php_area.text(),output);
+			}else if( tries < 100 ){
+				window.setTimeout(showdiff,300);
+				tries++;
+			}else{
+				console.log('couldnt find #object_'+id);
+			}
+		}
+		showdiff();
+
+	}
+	return output;
+}
+
+/**
+ * Function to get an object's class type
+ *
+ */
+Object.prototype.getName = function() {
+   var funcNameRegex = /function (.{1,})\(/;
+   var results = (funcNameRegex).exec((this).constructor.toString());
+   return (results && results.length > 1) ? results[1] : "";
+};
+
+
+function diffText(txt1,txt2){
+
+	function byId(id) { return document.getElementById(id); }
+
+	var base = difflib.stringAsLines(txt1),
+		newtxt = difflib.stringAsLines(txt2);
+		sm = new difflib.SequenceMatcher(base, newtxt),
+		opcodes = sm.get_opcodes(),
+		diffoutputdiv = byId("objectdiff");
+
+		diffoutputdiv.innerHTML = "";
+
+	diffoutputdiv.appendChild(diffview.buildView({
+		baseTextLines: base,
+		newTextLines: newtxt,
+		opcodes: opcodes,
+		baseTextName: "Less.php",
+		newTextName: "Less.js",
+		//contextSize: contextSize,
+		viewType: 0
+	}));
+
+}
+
+function diffUsingJS(viewType, id1, id2) {
 	"use strict";
+	id1 = id1 || 'lessphp_textarea';
+	id2 = id2 || 'lessjs_textarea';
+
 
 	var byId = function (id) { return document.getElementById(id); },
-		base = difflib.stringAsLines(byId("lessphp_textarea").value),
-		newtxt = difflib.stringAsLines(byId("lessjs_textarea").value),
+		base = difflib.stringAsLines(byId(id1).value),
+		newtxt = difflib.stringAsLines(byId(id2).value),
 		sm = new difflib.SequenceMatcher(base, newtxt),
 		opcodes = sm.get_opcodes(),
 		diffoutputdiv = byId("diffoutput");

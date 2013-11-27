@@ -479,6 +479,11 @@ less.Parser = function Parser(env) {
                     try {
                         evaldRoot = evaluate.call(this, evalEnv);
 
+                        //log(evaldRoot);
+                        //throw '';
+
+                        obj(evaldRoot,'evaldRoot');
+
                         new(tree.joinSelectorVisitor)()
                             .run(evaldRoot);
 
@@ -1483,6 +1488,7 @@ less.Parser = function Parser(env) {
                     features = $(this.mediaFeatures);
 
                     if (rules = $(this.block)) {
+
                         media = new(tree.Media)(rules, features, i, env.currentFileInfo);
                         if (env.dumpLineNumbers) {
                             media.debugInfo = debugInfo;
