@@ -76,9 +76,10 @@ class Less_Parser extends Less_Cache{
 		//$importVisitor = new Less_importVisitor();
 		//$importVisitor->run($root);
 
+		obj($root,'comparison');
+
 		$evaldRoot = $root->compile($this->env);
 
-		obj($evaldRoot,'evaldRoot');
 
 		$joinSelector = new Less_joinSelectorVisitor();
 		$joinSelector->run($evaldRoot);

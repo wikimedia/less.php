@@ -5,7 +5,6 @@ class Less_Tree_Value extends Less_Tree{
 
 	public function __construct($value){
 		$this->value = $value;
-		$this->is = 'value';
 	}
 
 	function accept($visitor) {
