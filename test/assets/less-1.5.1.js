@@ -478,9 +478,10 @@ less.Parser = function Parser(env) {
 
                     try {
 
-                        obj(this,'comparison');
 
                         evaldRoot = evaluate.call(this, evalEnv);
+
+                        obj(evaldRoot,'comparison');
 
                         new(tree.joinSelectorVisitor)()
                             .run(evaldRoot);

@@ -72,14 +72,16 @@ class Less_Parser extends Less_Cache{
 
  		$root = new Less_Tree_Ruleset(array(), $this->rules );
 		$root->root = true;
+		$root->firstRoot = true;
+
 
 		//$importVisitor = new Less_importVisitor();
 		//$importVisitor->run($root);
 
-		obj($root,'comparison');
 
 		$evaldRoot = $root->compile($this->env);
 
+		obj($evaldRoot,'comparison');
 
 		$joinSelector = new Less_joinSelectorVisitor();
 		$joinSelector->run($evaldRoot);
