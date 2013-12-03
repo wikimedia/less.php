@@ -14,7 +14,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 	public $root;
 	public $firstRoot;
 	public $allowImports;
-	public $paths = array();
 
 	public function __construct($selectors, $rules, $strictImports = false){
 		$this->selectors = $selectors;
@@ -24,7 +23,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		if( $this->paths ){
+		if( property_exists($this,'paths') && $this->paths ){
 			for($i = 0; $i < count($this->paths); $i++ ){
 				$this->paths[$i] = $visitor->visit($this->paths[$i]);
 			}
