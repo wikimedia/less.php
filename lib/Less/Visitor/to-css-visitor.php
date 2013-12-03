@@ -81,7 +81,7 @@ class Less_toCSSVisitor extends Less_visitor{
 	function visitRuleset( $rulesetNode, &$visitDeeper ){
 
 		$rulesets = array();
-		if( $rulesetNode->firstRoot ){
+		if( property_exists($rulesetNode,'firstRoot') && $rulesetNode->firstRoot ){
 			$this->checkPropertiesInRoot( $rulesetNode->rules );
 		}
 		if( !$rulesetNode->root ){
@@ -132,7 +132,7 @@ class Less_toCSSVisitor extends Less_visitor{
 		}else{
 			$rulesetNode->accept( $this );
 			$visitDeeper = false;
-			if( $rulesetNode->firstRoot || count($rulesetNode->rules) > 0 ){
+			if( (property_exists($rulesetNode,'firstRoot') && $rulesetNode->firstRoot) || count($rulesetNode->rules) > 0 ){
 				//array_unshift($rulesets, $rulesetNode);
 				array_splice($rulesets,0,0,array($rulesetNode));
 			}

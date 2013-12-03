@@ -12,7 +12,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 	public $selectors;
 	public $rules;
 	public $root;
-	public $firstRoot;
 	public $allowImports;
 
 	public function __construct($selectors, $rules, $strictImports = false){
@@ -48,7 +47,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		$ruleset->originalRuleset = $this;
 		$ruleset->root = $this->root;
-		$ruleset->firstRoot = $this->firstRoot;
+		$ruleset->firstRoot = null;
+		if( property_exists($this,'firstRoot') && $this->firstRoot ){
+			$ruleset->firstRoot = $this->firstRoot;
+		}
 		$ruleset->allowImports = $this->allowImports;
 
 		// push the current ruleset to the frames stack
@@ -293,7 +295,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 			// @page{ directive ends up with root elements inside it, a mix of rules and rulesets
 			// In this instance we do not know whether it is the last property
-			if( $i + 1 === count($ruleNodes) && (!$this->root || count($rulesetNodes) === 0 || $this->firstRoot) ){
+			if( $i + 1 === count($ruleNodes) && (!$this->root || count($rulesetNodes) === 0 || (property_exists($this,'firstRoot') && $this->firstRoot)) ){
 				$env->lastRule = true;
 			}
 
@@ -326,7 +328,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$rulesetNodes[$i]->genCSS($env, $strs);
 		}
 
-		if( !count($strs) && !$env->compress && $this->firstRoot ){
+		if( !count($strs) && !$env->compress && property_exists($this,'firstRoot') && $this->firstRoot ){
 			self::OutputAdd( $strs, "\n" );
 		}
 
