@@ -81,7 +81,6 @@ class Less_Parser extends Less_Cache{
 
 		$evaldRoot = $root->compile($this->env);
 
-		obj($evaldRoot,'comparison');
 
 		$joinSelector = new Less_joinSelectorVisitor();
 		$joinSelector->run($evaldRoot);
@@ -1166,7 +1165,7 @@ class Less_Parser extends Less_Cache{
 	private function parseSelector( $isLess = false ){
 		$elements = array();
 		$extendList = array();
-		$condition = false;
+		$condition = null;
 		$when = false;
 		$extend = false;
 

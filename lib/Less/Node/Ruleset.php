@@ -14,7 +14,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 	public $root;
 	public $allowImports;
 
-	public function __construct($selectors, $rules, $strictImports = false){
+	public function __construct($selectors, $rules, $strictImports = null){
 		$this->selectors = $selectors;
 		$this->rules = $rules;
 		$this->lookups = array();

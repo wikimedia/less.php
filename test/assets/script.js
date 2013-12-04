@@ -37,15 +37,25 @@ $(function(){
 	}
 
 
+	function showdiff(){
+		//show diff of this javascript object and the corresponding php object
+		var php_area = $('#object_comparison');
+		if( !php_area.length ){
+			return;
+		}
+		php_area.hide();
+		diffText(php_area.text(),obj_buffer);
+	}
+	showdiff();
 
 });
 
 var object_level = 0;
-function obj(mixed,id){
+var obj_buffer = '';
+function obj(mixed){
 	var keys = [], k, i, output = '', type, len;
 
-	id = id||'';
-	var exclude_keys = ['originalRuleset','currentFileInfo','_lookups'];
+	var exclude_keys = ['originalRuleset','currentFileInfo','_lookups','index'];
 
 	if( mixed == null ){
 		output = '(NULL)';
@@ -99,23 +109,7 @@ function obj(mixed,id){
 	}
 
 	if( object_level === 0 ){
-
-		var tries = 0;
-		function showdiff(){
-			//show diff of this javascript object and the corresponding php object
-			var php_area = $('#object_'+id);
-			if( php_area.length ){
-				php_area.hide();
-				diffText(php_area.text(),output);
-			}else if( tries < 100 ){
-				window.setTimeout(showdiff,300);
-				tries++;
-			}else{
-				console.log('couldnt find #object_'+id);
-			}
-		}
-		showdiff();
-
+		obj_buffer += output +"\n------------------------------------------------------------\n";
 	}
 	return output;
 }

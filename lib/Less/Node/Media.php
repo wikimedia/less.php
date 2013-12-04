@@ -160,7 +160,7 @@ class Less_Tree_Media extends Less_Tree{
 	}
 
 	function bubbleSelectors($selectors) {
-		$this->ruleset = new Less_Tree_Ruleset( $selectors, array($this->rules[0]) );
+		$this->rules = array(new Less_Tree_Ruleset( $selectors, array($this->rules[0])));
 	}
 
 }

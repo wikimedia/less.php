@@ -99,6 +99,7 @@ class ParserTest{
     }
 
     public function testLessJsCssGeneration($dir, $less, $css){
+		global $obj_buffer;
 
 		$this->files_tested++;
 		$basename = basename($less);
@@ -193,6 +194,12 @@ class ParserTest{
 			echo '</td><td>';
 			echo '<textarea id="lessjs_textarea" autocomplete="off"></textarea>';
 			echo '</td></tr></table>';
+
+
+			if( !empty($obj_buffer) ){
+				echo '<h3>Object comparison</h3>';
+				echo '<textarea id="object_comparison">'.htmlspecialchars($obj_buffer,ENT_COMPAT,'UTF-8',false).'</textarea>';
+			}
 
 			echo '<div id="objectdiff"></div>';
 			echo '<div id="diffoutput"></div>';
@@ -433,11 +440,12 @@ class ParserTest{
  * Output an object in a readable format for comparison with similar output from javascript
  *
  */
-function obj($mixed,$id=''){
+function obj($mixed){
+	global $obj_buffer;
 	static $level = 0;
 	$output = '';
 
-	$exclude_keys = array('originalRuleset','currentFileInfo','lookups');
+	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index');
 	//$exclude_keys = array();
 
 	$type = gettype($mixed);
@@ -483,7 +491,7 @@ function obj($mixed,$id=''){
 	}
 
 	if( $level === 0 ){
-		echo '<textarea id="object_'.$id.'">'.htmlspecialchars($output,ENT_COMPAT,'UTF-8',false).'</textarea>';
+		$obj_buffer .= $output . "\n------------------------------------------------------------\n";
 	}
 	return $output;
 }
