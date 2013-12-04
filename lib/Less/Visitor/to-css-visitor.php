@@ -167,7 +167,7 @@ class Less_toCSSVisitor extends Less_visitor{
 		}
 	}
 
-	function _mergeRules( $rules ){
+	function _mergeRules( &$rules ){
 		$groups = array();
 
 		for( $i = 0; $i < count($rules); $i++ ){
@@ -181,7 +181,8 @@ class Less_toCSSVisitor extends Less_visitor{
 				}
 
 				if( !isset($groups[$key]) ){
-					$parts = $groups[$key] = array();
+					$groups[$key] = array();
+					$parts =& $groups[$key];
 				}else{
 					array_splice($rules, $i--, 1);
 				}
