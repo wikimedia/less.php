@@ -1,4 +1,5 @@
-.test-mixin-default-arg {
-  defaults: 1px 1px 1px;
-  defaults: 2px 2px 2px;
+@media (max-width: 1000px) and (max-width: 500px) {
+  body {
+    background: green;
+  }
 }

@@ -3,8 +3,8 @@
 
 class Less_Tree_MixinCall extends Less_Tree{
 
-	private $selector;
-	private $arguments;
+	public $selector;
+	public $arguments;
 	private $index;
 	private $currentFileInfo;
 
