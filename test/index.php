@@ -441,9 +441,11 @@ class ParserTest{
  *
  */
 function obj($mixed){
+	static $objects = array();
 	global $obj_buffer;
 	static $level = 0;
 	$output = '';
+
 
 	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index');
 	//$exclude_keys = array();
@@ -451,18 +453,24 @@ function obj($mixed){
 	$type = gettype($mixed);
 	switch($type){
 		case 'object':
-				$type = 'object';
-				//$type = get_class($mixed).' object';
-				//$output = $type.'(...)'."\n"; //recursive object references creates an infinite loop
-				$temp = array();
-				foreach($mixed as $key => $value){
-					//declutter
-					if( in_array($key,$exclude_keys,true) ){
-						continue;
-					}
-					$temp[$key] = $value;
+
+			if( in_array($mixed,$objects,true) ){
+				return 'recursive';
+			}
+
+			$objects[] = $mixed;
+			$type = 'object';
+			//$type = get_class($mixed).' object';
+			//$output = $type.'(...)'."\n"; //recursive object references creates an infinite loop
+			$temp = array();
+			foreach($mixed as $key => $value){
+				//declutter
+				if( in_array($key,$exclude_keys,true) ){
+					continue;
 				}
-				$mixed = $temp;
+				$temp[$key] = $value;
+			}
+			$mixed = $temp;
 		case 'array':
 
 			if( !count($mixed) ){
@@ -491,6 +499,7 @@ function obj($mixed){
 	}
 
 	if( $level === 0 ){
+		$objects = array();
 		$obj_buffer .= $output . "\n------------------------------------------------------------\n";
 	}
 	return $output;

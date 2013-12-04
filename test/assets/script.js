@@ -52,6 +52,7 @@ $(function(){
 
 var object_level = 0;
 var obj_buffer = '';
+var objects = [];
 function obj(mixed){
 	var keys = [], k, i, output = '', type, len;
 
@@ -65,6 +66,12 @@ function obj(mixed){
 		type = typeof mixed;
 		switch(type){
 			case 'object':
+
+				if( objects.indexOf(mixed) >= 0 ){
+					return 'recursive';
+				}
+				objects.push(mixed);
+
 
 				var t = mixed.constructor.name;
 				if( t === 'Array' ){
@@ -110,6 +117,7 @@ function obj(mixed){
 
 	if( object_level === 0 ){
 		obj_buffer += output +"\n------------------------------------------------------------\n";
+		objects = [];
 	}
 	return output;
 }
