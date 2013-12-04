@@ -5667,10 +5667,8 @@ tree.Variable.prototype = {
                             ruleList = ruleCache[rule.name] = [ruleCache[rule.name].toCSS(this._env)];
                         }
                         var ruleCSS = rule.toCSS(this._env);
-                        obj(ruleCSS);
                         if (ruleList.indexOf(ruleCSS) !== -1) {
                             rules.splice(i, 1);
-                            obj('splice');
                         } else {
                             ruleList.push(ruleCSS);
                         }

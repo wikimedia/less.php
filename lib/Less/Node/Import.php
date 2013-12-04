@@ -148,13 +148,15 @@ class Less_Tree_Import extends Less_Tree{
 
 		//import once
 		$realpath = realpath($full_path);
-		if( !isset($evald->options['multiple']) && $realpath && Less_Parser::FileParsed($realpath) ){
+
+
+		if( !isset($evald->options['multiple']) && !property_exists($env,'importMultiple') && $realpath && Less_Parser::FileParsed($realpath) ){
 			$evald->skip = true;
 		}
 
 		$features = ( $evald->features ? $evald->features->compile($env) : null );
 
-		if ($evald->skip){
+		if( $evald->skip ){
 			return array();
 		}
 
@@ -180,8 +182,12 @@ class Less_Tree_Import extends Less_Tree{
 
 		// options
 		$import_env = clone $env;
-		if( (isset($this->options['reference']) && $this->options['reference']) ){
+		if( (isset($this->options['reference']) && $this->options['reference']) || isset($import_env->currentFileInfo['reference']) ){
 			$import_env->currentFileInfo['reference'] = true;
+		}
+
+		if( (isset($this->options['multiple']) && $this->options['multiple']) ){
+			$import_env->importMultiple = true;
 		}
 
 		$parser = new Less_Parser($import_env);
