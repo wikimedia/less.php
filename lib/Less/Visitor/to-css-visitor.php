@@ -143,7 +143,7 @@ class Less_toCSSVisitor extends Less_visitor{
 		return $rulesets;
 	}
 
-	function _removeDuplicateRules( $rules ){
+	function _removeDuplicateRules( &$rules ){
 		// remove duplicates
 		$ruleCache = array();
 		for( $i = count($rules)-1; $i >= 0 ; $i-- ){
