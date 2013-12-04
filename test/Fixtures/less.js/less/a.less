@@ -1,5 +1,9 @@
-.testPollution {
-    @a: 'no-pollution';
-    a: @a;
-	a: @a;
+.mixin-default-arg(@a: 1px, @b: @a, @c: @b) {
+  defaults: 1px 1px 1px;
+  defaults: 2px 2px 2px;
+}
+
+.test-mixin-default-arg {
+  .mixin-default-arg();
+  .mixin-default-arg(2px);
 }

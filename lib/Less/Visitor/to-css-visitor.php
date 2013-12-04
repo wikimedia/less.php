@@ -152,7 +152,7 @@ class Less_toCSSVisitor extends Less_visitor{
 				if( !isset($ruleCache[$rule->name]) ){
 					$ruleCache[$rule->name] = $rule;
 				}else{
-					$ruleList = $ruleCache[$rule->name];
+					$ruleList =& $ruleCache[$rule->name];
 					if( $ruleList instanceof Less_Tree_Rule ){
 						$ruleList = $ruleCache[$rule->name] = array( $ruleCache[$rule->name]->toCSS($this->_env) );
 					}
