@@ -38,7 +38,7 @@ class Less_visitor{
 
 	function visitArray( $nodes ){
 		$newNodes = array();
-		for($i = 0; $i < count($nodes); $i++ ){
+		for($i = 0,$node_len=count($nodes); $i < $node_len; $i++ ){
 			$evald = $this->visit($nodes[$i]);
 			if( is_array($evald) ){
 				$evald = self::flatten($evald);
