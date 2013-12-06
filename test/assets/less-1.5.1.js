@@ -67,6 +67,7 @@ if (less === undefined) {
 //
 //
 less.Parser = function Parser(env) {
+
     var input,       // LeSS input string
         i,           // current index in `input`
         j,           // current chunk
@@ -482,7 +483,7 @@ less.Parser = function Parser(env) {
 
                         evaldRoot = evaluate.call(this, evalEnv);
 
-                        obj(evaldRoot);
+                        //obj(evaldRoot);
 
                         new(tree.joinSelectorVisitor)()
                             .run(evaldRoot);

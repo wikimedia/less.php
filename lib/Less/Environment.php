@@ -87,7 +87,6 @@ class Less_Environment{
 				$new_env->$property = $this->$property;
 			}
 		}
-		//$new_env = clone $this;
 		$new_env->frames = $frames;
 		return $new_env;
 	}

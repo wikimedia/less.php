@@ -43,11 +43,20 @@ class Less_Tree_Call extends Less_Tree{
 		}
 
 		$name = $this->name;
-		if( $name == '%' ){
+		switch($name){
+			case '%':
 			$name = '_percent';
-		}elseif( $name == 'data-uri' ){
+			break;
+
+			case 'data-uri':
 			$name = 'datauri';
+			break;
+
+			case 'svg-gradient':
+			$name = 'svggradient';
+			break;
 		}
+
 
 		if( is_callable( array('Less_Functions',$name) ) ){ // 1.
 			try {

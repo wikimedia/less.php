@@ -757,7 +757,7 @@ class Less_Functions{
 			'<' . $gradientType . 'Gradient id="gradient" gradientUnits="userSpaceOnUse" ' . $gradientDirectionSvg . '>';
 
 		for( $i = 0; $i < count($stops); $i++ ){
-			if( is_object($stops[$i]) ){
+			if( is_object($stops[$i]) && property_exists($stops[$i],'value') ){
 				$color = $stops[$i]->value[0];
 				$position = $stops[$i]->value[1];
 			}else{
@@ -768,7 +768,13 @@ class Less_Functions{
 			if( !($color instanceof Less_Tree_Color) || (!(($i === 0 || $i+1 === count($stops)) && $position === null) && !($position instanceof Less_Tree_Dimension)) ){
 				throw new Less_CompilerException( $throw_message );
 			}
-			$positionValue = $position ? $position->toCSS($renderEnv) : $i === 0 ? "0%" : "100%";
+			if( $position ){
+				$positionValue = $position->toCSS($renderEnv);
+			}elseif( $i === 0 ){
+				$positionValue = '0%';
+			}else{
+				$positionValue = '100%';
+			}
 			$alpha = $color->alpha;
 			$returner .= '<stop offset="' . $positionValue . '" stop-color="' . $color->toRGB() . '"' . ($alpha < 1 ? ' stop-opacity="' . $alpha . '"' : '') . '/>';
 		}
