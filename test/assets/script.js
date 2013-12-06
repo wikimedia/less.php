@@ -67,10 +67,6 @@ function obj(mixed){
 		switch(type){
 			case 'object':
 
-				if( objects.indexOf(mixed) >= 0 ){
-					return 'recursive';
-				}
-				objects.push(mixed);
 
 
 				var t = mixed.constructor.name;
@@ -78,6 +74,12 @@ function obj(mixed){
 					output += 'array(';
 				}else{
 					output += 'object(';
+
+					if( objects.indexOf(mixed) >= 0 ){
+						return 'recursive';
+					}
+					objects.push(mixed);
+
 				}
 
 				//output = mixed.constructor.name+' object(';

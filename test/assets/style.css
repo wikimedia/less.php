@@ -54,3 +54,8 @@ pre{
 .diff{
 	font-size:11px;
 	}
+table.diff tbody th,
+table.diff tbody td{
+	padding:0 .5em;
+	line-height:130%;
+	}

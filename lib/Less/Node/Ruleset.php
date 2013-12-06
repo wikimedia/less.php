@@ -68,9 +68,9 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		// Store the frames around mixin definitions,
 		// so they can be evaluated like closures when the time comes.
-		foreach($ruleset->rules as $i => $rule) {
-			if ($rule instanceof Less_Tree_MixinDefinition) {
-				$ruleset->rules[$i]->frames = $env->frames;
+		for( $i = 0; $i < count($ruleset->rules); $i++ ){
+			if( $ruleset->rules[$i] instanceof Less_Tree_MixinDefinition ){
+				$ruleset->rules[$i]->frames = array_slice($env->frames,0);;
 			}
 		}
 
