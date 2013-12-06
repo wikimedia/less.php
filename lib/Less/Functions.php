@@ -657,7 +657,7 @@ class Less_Functions{
 			}
 
 			if( !empty($temp) ){
-				$filePath = Less_Environment::NormPath(rtrim($temp,'/').'/'.$filePath);
+				$filePath = Less_Environment::normalizePath(rtrim($temp,'/').'/'.$filePath);
 			}
 
 		}

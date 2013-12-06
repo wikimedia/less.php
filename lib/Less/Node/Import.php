@@ -117,7 +117,7 @@ class Less_Tree_Import extends Less_Tree{
 					$path->value = $this->currentFileInfo['uri_root'].$pathValue;
 				}
 			}
-			$path->value = Less_Environment::NormPath($path->value);
+			$path->value = Less_Environment::normalizePath($path->value);
 		}
 
 		return $path;
@@ -134,8 +134,8 @@ class Less_Tree_Import extends Less_Tree{
 			foreach(Less_Parser::$import_dirs as $rootpath => $rooturi){
 				$temp = $rootpath.$evald_path;
 				if( file_exists($temp) ){
-					$full_path = Less_Environment::NormPath($temp);
-					$uri = Less_Environment::NormPath(dirname($rooturi.$evald_path));
+					$full_path = Less_Environment::normalizePath($temp);
+					$uri = Less_Environment::normalizePath(dirname($rooturi.$evald_path));
 					break;
 				}
 			}

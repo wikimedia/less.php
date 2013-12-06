@@ -159,7 +159,7 @@ class Less_Parser extends Less_Cache{
 	public function SetFileInfo( $filename, $uri_root = ''){
 
 		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
-		$this->filename = Less_Environment::NormPath($filename);
+		$this->filename = Less_Environment::normalizePath($filename);
 
 		$dirname = preg_replace('/[^\/\\\\]*$/','',$this->filename);
 

@@ -115,26 +115,32 @@ class Less_Environment{
 	 * @return string Canonicalized path
 	 *
 	 */
-	static function NormPath($path){
+	static function normalizePath($path){
 
-		$temp = explode('/',$path);
-		$result = array();
-		foreach($temp as $i => $p){
-			if( $p == '.' ){
-				continue;
-			}
-			if( $p == '..' ){
-				for($j=$i-1;$j>0;$j--){
-					if( isset($result[$j]) ){
-						unset($result[$j]);
-						continue 2;
+    	$segments = explode('/',$path);
+    	$segments = array_reverse($segments);
+
+    	$path = array();
+
+		while( count($segments) !== 0 ){
+			$segment = array_pop($segments);
+			switch( $segment ) {
+				case '.':
+					break;
+				case '..':
+					if( (count($path) === 0) || ( $path[count($path)-1] === '..') ){
+						$path[] = $segment;
+					}else{
+						array_pop($path);
 					}
-				}
+					break;
+				default:
+					$path[] = $segment;
+					break;
 			}
-			$result[$i] = $p;
 		}
 
-		return implode('/',$result);
+		return implode('/',$path);
 	}
 
 	/**

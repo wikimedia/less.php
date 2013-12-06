@@ -34,7 +34,7 @@ class Less_Tree_Url extends Less_Tree{
 			$val->value = $rootpath . $val->value;
 		}
 
-		$val->value = Less_Environment::NormPath( $val->value);
+		$val->value = Less_Environment::normalizePath( $val->value);
 
 		return new Less_Tree_URL($val, null);
 	}
