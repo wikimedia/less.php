@@ -37,8 +37,19 @@ class Less_visitor{
 	}
 
 	function visitArray( $nodes ){
+
+		$node_len = count($nodes);
+
+		if( !$this->isReplacing ){
+			for( $i = 0; $i < $node_len; $i++ ){
+				$this->visit($nodes[$i]);
+			}
+			return $nodes;
+		}
+
+
 		$newNodes = array();
-		for($i = 0,$node_len=count($nodes); $i < $node_len; $i++ ){
+		for($i = 0; $i < $node_len; $i++ ){
 			$evald = $this->visit($nodes[$i]);
 			if( is_array($evald) ){
 				$evald = self::flatten($evald);
@@ -47,10 +58,7 @@ class Less_visitor{
 				$newNodes[] = $evald;
 			}
 		}
-		if( $this->isReplacing ){
-			return $newNodes;
-		}
-		return $nodes;
+		return $newNodes;
 	}
 
 	function doAccept($node){
