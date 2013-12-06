@@ -52,8 +52,7 @@ class Less_visitor{
 		for($i = 0; $i < $node_len; $i++ ){
 			$evald = $this->visit($nodes[$i]);
 			if( is_array($evald) ){
-				$evald = self::flatten($evald);
-				$newNodes = array_merge($newNodes,$evald);
+				self::flatten($evald,$newNodes);
 			}else{
 				$newNodes[] = $evald;
 			}
@@ -61,20 +60,30 @@ class Less_visitor{
 		return $newNodes;
 	}
 
-	function doAccept($node){
-		$node->accept($this);
+	function flatten( $arr, &$out ){
+
+		$cnt = count($arr);
+
+		for( $i = 0; $i < $cnt; $i++ ){
+			$item = $arr[$i];
+			if( !is_array($item) ){
+				$out[] = $item;
+				continue;
+			}
+
+			$nestedCnt = count($item);
+			for( $j = 0; $j < $nestedCnt; $j++ ){
+				$nestedItem = $item[$j];
+				if( is_array($nestedItem) ){
+					self::flatten( $nestedItem, $out);
+				}else{
+					$out[] = $nestedItem;
+				}
+			}
+		}
+
+		return $out;
 	}
 
-	static function flatten($array) {
-	    $result = array();
-	    foreach($array as $value){
-			if( is_array($value) ){
-				$result = array_merge($result, self::flatten($value));
-			}else{
-				$result[] = $value;
-			}
-	    }
-	    return $result;
-	}
 }
 
