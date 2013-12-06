@@ -16,30 +16,33 @@ class Less_joinSelectorVisitor extends Less_visitor{
 		$visitDeeper = false;
 	}
 
-	function visitRuleset($rulesetNode) {
+	function visitRuleset( $rulesetNode ){
 
 		$paths = array();
+
 		if( !$rulesetNode->root ){
-
-			$context = end($this->contexts); //$context = $this->contexts[ count($this->contexts) - 1];
-			$paths = array();
-
 			$selectors = array();
-			foreach($rulesetNode->selectors as $selector){
-				if( $selector->getIsOutput() ){
-					$selectors[] = $selector;
+
+			if( $rulesetNode->selectors && count($rulesetNode->selectors) ){
+				foreach($rulesetNode->selectors as $selector){
+					if( $selector->getIsOutput() ){
+						$selectors[] = $selector;
+					}
 				}
 			}
 
-			$rulesetNode->selectors = $selectors;
-			if( count($rulesetNode->selectors) === 0 ){
-				$rulesetNode->rules = array();
+			if( !count($selectors) ){
+				$rulesetNode->selectors = $selectors = null;
+				$rulesetNode->rules = null;
+			}else{
+				$context = end($this->contexts); //$context = $this->contexts[ count($this->contexts) - 1];
+				$paths = $rulesetNode->joinSelectors( $context, $selectors);
 			}
-			$paths = $rulesetNode->joinSelectors($context, $rulesetNode->selectors );
+
 			$rulesetNode->paths = $paths;
 		}
-		$this->contexts[] = $paths; //different from less.js. Placed after joinSelectors() so that $this->contexts will get correct $paths
 
+		$this->contexts[] = $paths; //different from less.js. Placed after joinSelectors() so that $this->contexts will get correct $paths
 	}
 
 	function visitRulesetOut( $rulesetNode ){

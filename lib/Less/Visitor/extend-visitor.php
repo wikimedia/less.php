@@ -35,18 +35,23 @@ class Less_extendFinderVisitor extends Less_visitor{
 		$allSelectorsExtendList = array();
 
 		// get &:extend(.a); rules which apply to all selectors in this ruleset
-		for( $i = 0; $i < count($rulesetNode->rules); $i++ ){
-			if( $rulesetNode->rules[$i] instanceof Less_Tree_Extend ){
-				$allSelectorsExtendList[] = $rulesetNode->rules[$i];
+		$rules = $rulesetNode->rules;
+		$ruleCnt = count($rules);
+		for($i = 0; $i < $ruleCnt; $i++ ){
+			if( $rules[$i] instanceof Less_Tree_Extend ){
+				$allSelectorsExtendList[] = $rules[$i];
 				$rulesetNode->extendOnEveryPath = true;
 			}
 		}
 
+
+
 		// now find every selector and apply the extends that apply to all extends
 		// and the ones which apply to an individual extend
-		for($i = 0; $i < count($rulesetNode->paths); $i++ ){
+		$paths = $rulesetNode->paths;
+		for($i = 0; $i < count($paths); $i++ ){
 
-			$selectorPath = $rulesetNode->paths[$i];
+			$selectorPath = $paths[$i];
 			$selector = end($selectorPath); //$selectorPath[ count($selectorPath)-1];
 
 

@@ -155,7 +155,8 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$selectorPath = $rulesetNode->paths[$pathIndex];
 
 				// extending extends happens initially, before the main pass
-				if( (isset($rulesetNode->extendOnEveryPath) && $rulesetNode->extendOnEveryPath) || end($selectorPath)->extendList ){ continue; }
+				if( isset($rulesetNode->extendOnEveryPath) && $rulesetNode->extendOnEveryPath ){ continue; }
+				if( end($selectorPath)->extendList ){ continue; }
 
 				$matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
 
