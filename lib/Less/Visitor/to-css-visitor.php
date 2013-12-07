@@ -80,6 +80,7 @@ class Less_toCSSVisitor extends Less_visitor{
 
 	function visitRuleset( $rulesetNode, &$visitDeeper ){
 
+		$visitDeeper = false;
 		$rulesets = array();
 		if( property_exists($rulesetNode,'firstRoot') && $rulesetNode->firstRoot ){
 			$this->checkPropertiesInRoot( $rulesetNode->rules );
@@ -100,41 +101,52 @@ class Less_toCSSVisitor extends Less_visitor{
 			$rulesetNode->paths = $paths;
 
 			// Compile rules and rulesets
-			for( $i = 0; $i < count($rulesetNode->rules); $i++ ){
+			$nodeRuleCnt = count($rulesetNode->rules);
+			for( $i = 0; $i < $nodeRuleCnt; ){
 				$rule = $rulesetNode->rules[$i];
 
 				if( property_exists($rule,'rules') ){
 					// visit because we are moving them out from being a child
 					$rulesets[] = $this->visit($rule);
 					array_splice($rulesetNode->rules,$i,1);
-					$i--;
+					$nodeRuleCnt--;
 					continue;
 				}
+				$i++;
 			}
+
 
 			// accept the visitor to remove rules and refactor itself
 			// then we can decide now whether we want it or not
-			if( count($rulesetNode->rules) > 0) {
+			if( $nodeRuleCnt > 0 ){
 				$rulesetNode->accept($this);
-			}
-			$visitDeeper = false;
+				$nodeRuleCnt = count($rulesetNode->rules);
 
-			$this->_mergeRules( $rulesetNode->rules );
-			$this->_removeDuplicateRules( $rulesetNode->rules );
+				if( $nodeRuleCnt > 0 ){
 
-			// now decide whether we keep the ruleset
-			if( count($rulesetNode->rules) > 0 && count($rulesetNode->paths) > 0 ){
-				//array_unshift($rulesets, $rulesetNode);
-				array_splice($rulesets,0,0,array($rulesetNode));
+					if( $nodeRuleCnt >  1 ){
+						$this->_mergeRules( $rulesetNode->rules );
+						$this->_removeDuplicateRules( $rulesetNode->rules );
+					}
+
+					// now decide whether we keep the ruleset
+					if( count($rulesetNode->paths) > 0 ){
+						//array_unshift($rulesets, $rulesetNode);
+						array_splice($rulesets,0,0,array($rulesetNode));
+					}
+				}
+
 			}
+
 		}else{
 			$rulesetNode->accept( $this );
-			$visitDeeper = false;
 			if( (property_exists($rulesetNode,'firstRoot') && $rulesetNode->firstRoot) || count($rulesetNode->rules) > 0 ){
+				return $rulesetNode;
 				//array_unshift($rulesets, $rulesetNode);
-				array_splice($rulesets,0,0,array($rulesetNode));
 			}
+			return $rulesets;
 		}
+
 		if( count($rulesets) === 1 ){
 			return $rulesets[0];
 		}
