@@ -15,23 +15,34 @@ class Less_Tree{
 
 	public static function outputRuleset($env, &$strs, $rules ){
 
-		self::OutputAdd( $strs, ($env->compress ? '{' : " {\n") );
-
+		$ruleCnt = count($rules);
 		$env->tabLevel++;
 
-		$tabRuleStr = $tabSetStr = '';
-		if( !$env->compress && $env->tabLevel ){
-			$tabRuleStr = str_repeat( '  ' , $env->tabLevel );
-			$tabSetStr = str_repeat( '  ' , $env->tabLevel-1 );
+
+		// Compressed
+		if( $env->compress ){
+			self::OutputAdd( $strs, '{' );
+			for( $i = 0; $i < $ruleCnt; $i++ ){
+				$rules[$i]->genCSS( $env, $strs );
+			}
+			self::OutputAdd( $strs, '}' );
+			$env->tabLevel--;
+			return;
 		}
 
-		for($i = 0; $i < count($rules); $i++ ){
+
+		// Non-compressed
+		$tabSetStr = "\n".str_repeat( '  ' , $env->tabLevel-1 );
+		$tabRuleStr = $tabSetStr.'  ';
+
+		self::OutputAdd( $strs, " {" );
+		for($i = 0; $i < $ruleCnt; $i++ ){
 			self::OutputAdd( $strs, $tabRuleStr );
 			$rules[$i]->genCSS( $env, $strs );
-			self::OutputAdd( $strs, ($env->compress ? '' : "\n") );
 		}
 		$env->tabLevel--;
 		self::OutputAdd( $strs, $tabSetStr.'}' );
+
 	}
 
 }
