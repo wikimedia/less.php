@@ -91,11 +91,9 @@ class Less_toCSSVisitor extends Less_visitor{
 				if( $p[0]->elements[0]->combinator->value === ' ' ){
 					$p[0]->elements[0]->combinator = new Less_Tree_Combinator('');
 				}
-				for( $i=0; $i<count($p); $i++ ){
-					if( $p[$i]->getIsReferenced() && $p[$i]->getIsOutput() ){
-						$paths[] = $p;
-					}
-					continue 2;
+
+				if( $p[0]->getIsReferenced() && $p[0]->getIsOutput() ){
+					$paths[] = $p;
 				}
 			}
 
