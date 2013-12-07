@@ -13,10 +13,6 @@ class Less_Tree_Attribute extends Less_Tree{
 		$this->value = $value;
 	}
 
-	function accept($visitor){
-		$this->value = $visitor->visit($this->value);
-	}
-
 	function compile($env){
 		return new Less_Tree_Attribute( ( (Less_Parser::is_method($this->key,'compile')) ? $this->key->compile($env) : $this->key),
 			$this->op, ( Less_Parser::is_method($this->value,'compile')) ? $this->value->compile($env) : $this->value);
