@@ -1,9 +1,13 @@
 <?php
 
 define('phpless_start_time',microtime());
-
-error_reporting(E_ALL | E_STRICT); //previous to php 5.4, E_ALL did not include E_STRICT
 ini_set('display_errors',1);
+
+//error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
+//set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
+
+error_reporting(E_ALL | E_STRICT);
+
 
 
 //get parser
@@ -31,6 +35,7 @@ class ParserTest{
 
 	function __construct(){
 
+		/*
 		$this->cache_dir = __DIR__.'/_cache';
 
 		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
@@ -38,6 +43,7 @@ class ParserTest{
 		}elseif( !is_writable($this->cache_dir) ){
 			echo '<p>Cache directory not writable</p>';
 		}
+		*/
 
 
 		//get any other possible test folders
@@ -93,6 +99,7 @@ class ParserTest{
     }
 
     public function testLessJsCssGeneration($dir, $less, $css){
+		global $obj_buffer;
 
 		$this->files_tested++;
 		$basename = basename($less);
@@ -129,7 +136,7 @@ class ParserTest{
 			*/
 
 			$parser = new Less_Parser( $options );
-			$parser->SetCacheDir( $this->cache_dir );
+			//$parser->SetCacheDir( $this->cache_dir );
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 
@@ -187,6 +194,14 @@ class ParserTest{
 			echo '</td><td>';
 			echo '<textarea id="lessjs_textarea" autocomplete="off"></textarea>';
 			echo '</td></tr></table>';
+
+
+			if( !empty($obj_buffer) ){
+				echo '<h3>Object comparison</h3>';
+				echo '<textarea id="object_comparison">'.htmlspecialchars($obj_buffer,ENT_COMPAT,'UTF-8',false).'</textarea>';
+			}
+
+			echo '<div id="objectdiff"></div>';
 			echo '<div id="diffoutput"></div>';
 
 			$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
@@ -341,8 +356,154 @@ class ParserTest{
 
 		echo '</div>';
 	}
+
+
+	/**
+	 * Error Handling
+	 *
+	 */
+	static function showError($errno, $errmsg, $filename, $linenum, $vars){
+		static $reported = array();
+
+		//readable types
+		$errortype = array (
+					E_ERROR				=> 'Fatal Error',
+					E_WARNING			=> 'Warning',
+					E_PARSE				=> 'Parsing Error',
+					E_NOTICE 			=> 'Notice',
+					E_CORE_ERROR		=> 'Core Error',
+					E_CORE_WARNING 		=> 'Core Warning',
+					E_COMPILE_ERROR		=> 'Compile Error',
+					E_COMPILE_WARNING 	=> 'Compile Warning',
+					E_USER_ERROR		=> 'User Error',
+					E_USER_WARNING 		=> 'User Warning',
+					E_USER_NOTICE		=> 'User Notice',
+					E_STRICT			=> 'Strict Notice',
+					E_RECOVERABLE_ERROR => 'Recoverable Error',
+					E_DEPRECATED		=> 'Deprecated',
+					E_USER_DEPRECATED	=> 'User Deprecated',
+				 );
+
+		//get the backtrace and function where the error was thrown
+		$backtrace = debug_backtrace();
+		//remove showError() from backtrace
+		if( strtolower($backtrace[0]['function']) == 'showerror' ){
+			@array_shift($backtrace);
+		}
+
+		//record one error per function and only record the error once per request
+		if( isset($backtrace[0]['function']) ){
+			$uniq = $filename.$backtrace[0]['function'];
+		}else{
+			$uniq = $filename.$linenum;
+		}
+		if( isset($reported[$uniq]) ){
+			return false;
+		}
+		$reported[$uniq] = true;
+
+
+		//build message
+		echo '<fieldset style="padding:1em">';
+		echo '<legend>'.$errortype[$errno].' ('.$errno.')</legend> '.$errmsg;
+		echo '<br/> &nbsp; &nbsp; <b>in:</b> '.$filename;
+		echo '<br/> &nbsp; &nbsp; <b>on line:</b> '.$linenum;
+		if( isset($_SERVER['REQUEST_URI']) ){
+			echo '<br/> &nbsp; &nbsp; <b>Request:</b> '.$_SERVER['REQUEST_URI'];
+		}
+		if( isset($_SERVER['REQUEST_METHOD']) ){
+			echo '<br/> &nbsp; &nbsp; <b>Method:</b> '.$_SERVER['REQUEST_METHOD'];
+		}
+
+
+		//backtrace, don't add entire object to backtrace
+		$backtrace = array_slice($backtrace,0,7);
+		foreach($backtrace as $i => $trace){
+			if( !empty($trace['object']) ){
+				$backtrace[$i]['object'] = get_class($trace['object']);
+			}
+		}
+
+		echo '<div><a href="javascript:void(0)" onclick="var st = this.nextSibling.style; if( st.display==\'block\'){ st.display=\'none\' }else{st.display=\'block\'};return false;">Show Backtrace</a>';
+		echo '<div style="display:none">';
+		echo pre($backtrace);
+		echo '</div></div>';
+		echo '</p></fieldset>';
+		return false;
+	}
 }
 
+
+
+
+/**
+ * Output an object in a readable format for comparison with similar output from javascript
+ *
+ */
+function obj($mixed){
+	static $objects = array();
+	global $obj_buffer;
+	static $level = 0;
+	$output = '';
+
+
+	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index');
+	//$exclude_keys = array();
+
+	$type = gettype($mixed);
+	switch($type){
+		case 'object':
+
+			if( in_array($mixed,$objects,true) ){
+				return 'recursive';
+			}
+
+			$objects[] = $mixed;
+			$type = 'object';
+			//$type = get_class($mixed).' object';
+			//$output = $type.'(...)'."\n"; //recursive object references creates an infinite loop
+			$temp = array();
+			foreach($mixed as $key => $value){
+				//declutter
+				if( in_array($key,$exclude_keys,true) ){
+					continue;
+				}
+				$temp[$key] = $value;
+			}
+			$mixed = $temp;
+		case 'array':
+
+			if( !count($mixed) ){
+				$output = $type.'()';
+				break;
+			}
+
+			$output = $type.'('."\n";
+			ksort($mixed);
+			foreach($mixed as $key => $value){
+				$level++;
+				$output .= str_repeat('    ',$level) . '[' . $key . '] => ' . obj($value) . "\n";
+				$level--;
+			}
+			$output .= str_repeat('    ',$level).')';
+		break;
+		case 'boolean':
+			if( $mixed ){
+				$mixed = 'true';
+			}else{
+				$mixed = 'false';
+			}
+		default:
+			$output = '('.$type.')'.htmlspecialchars($mixed,ENT_COMPAT,'UTF-8',false).'';
+		break;
+	}
+
+	if( $level === 0 ){
+		$objects = array();
+		$obj_buffer .= $output . "\n------------------------------------------------------------\n";
+	}
+	return $output;
+}
 
 
 function pre($arg){
@@ -363,6 +524,7 @@ function pre($arg){
 	echo "</pre>\n";
 	return ob_get_clean();
 }
+
 
 function msg($arg){
 	echo Pre($arg);
@@ -391,7 +553,8 @@ $content = ob_get_clean();
 
 	<?php
 		if( isset($_GET['file']) ){
-			echo '<script src="assets/less-1.4.2.js"></script>';
+			//echo '<script src="assets/less-1.4.2.js"></script>';
+			echo '<script src="assets/less-1.5.1.js"></script>';
 		}
 	?>
 </head>
