@@ -23,7 +23,12 @@ class Less_Tree_Expression extends Less_Tree{
 			$env->inParenthesis();
 		}
 
-		if (is_array($this->value) && count($this->value) > 1) {
+		$count = 0;
+		if( is_array($this->value) ){
+			$count = count($this->value);
+		}
+
+		if( $count > 1 ){
 
 			$ret = array();
 			foreach($this->value as $e){
@@ -31,7 +36,7 @@ class Less_Tree_Expression extends Less_Tree{
 			}
 			$returnValue = new Less_Tree_Expression($ret);
 
-		} else if (is_array($this->value) && count($this->value) == 1) {
+		}elseif( $count === 1 ){
 
 			if( !isset($this->value[0]) ){
 				$this->value = array_slice($this->value,0);

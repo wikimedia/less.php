@@ -252,8 +252,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$tabSetStr = str_repeat( '  ' , $env->tabLevel-1 );
 		}
 
-		for( $i = 0; $i < count($this->rules); $i++ ){
-			$rule = $this->rules[$i];
+		foreach($this->rules as $rule){
 			if( ( is_object($rule) && property_exists($rule,'rules') && $rule->rules) || ($rule instanceof Less_Tree_Media) || $rule instanceof Less_Tree_Directive || ($this->root && $rule instanceof Less_Tree_Comment) ){
 				$rulesetNodes[] = $rule;
 			} else {
@@ -274,14 +273,14 @@ class Less_Tree_Ruleset extends Less_Tree{
 			}
 			*/
 
-			for( $i = 0; $i < count($this->paths); $i++ ){
+			for( $i = 0,$paths_len = count($this->paths); $i < $paths_len; $i++ ){
 				$path = $this->paths[$i];
 				$env->firstSelector = true;
 				for($j = 0; $j < count($path); $j++ ){
 					$path[$j]->genCSS($env, $strs );
 					$env->firstSelector = false;
 				}
-				if( $i + 1 < count($this->paths) ){
+				if( $i + 1 < $paths_len ){
 					self::OutputAdd( $strs, $env->compress ? ',' : (",\n" . $tabSetStr) );
 				}
 			}
@@ -290,12 +289,14 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 
 		// Compile rules and rulesets
-		for( $i = 0; $i < count($ruleNodes); $i++ ){
+		$ruleNodes_len = count($ruleNodes);
+		$rulesetNodes_len = count($rulesetNodes);
+		for( $i = 0; $i < $ruleNodes_len; $i++ ){
 			$rule = $ruleNodes[$i];
 
 			// @page{ directive ends up with root elements inside it, a mix of rules and rulesets
 			// In this instance we do not know whether it is the last property
-			if( $i + 1 === count($ruleNodes) && (!$this->root || count($rulesetNodes) === 0 || $this->firstRoot ) ){
+			if( $i + 1 === $ruleNodes_len && (!$this->root || $rulesetNodes_len === 0 || $this->firstRoot ) ){
 				$env->lastRule = true;
 			}
 
@@ -317,8 +318,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$env->tabLevel--;
 		}
 
-		for( $i = 0; $i < count($rulesetNodes); $i++ ){
-			if( count($ruleNodes) && $firstRuleset ){
+		for( $i = 0; $i < $rulesetNodes_len; $i++ ){
+			if( $ruleNodes_len && $firstRuleset ){
 				self::OutputAdd( $strs, ($env->compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr) );
 			}
 			if( !$firstRuleset ){
@@ -335,8 +336,9 @@ class Less_Tree_Ruleset extends Less_Tree{
 	}
 
 	function markReferenced(){
-		for( $s = 0; $s < count($this->selectors); $s++ ){
-			$this->selectors[$s]->markReferenced();
+
+		foreach($this->selectors as $selector){
+			$selector->markReferenced();
 		}
 	}
 
