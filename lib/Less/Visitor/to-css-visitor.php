@@ -6,6 +6,7 @@ class Less_toCSSVisitor extends Less_visitor{
 
 	function __construct($env){
 		$this->_env = $env;
+		parent::__construct();
 	}
 
 	function run( $root ){

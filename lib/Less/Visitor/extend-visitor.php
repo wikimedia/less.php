@@ -10,6 +10,7 @@ class Less_extendFinderVisitor extends Less_visitor{
 	function __construct(){
 		$this->contexts = array();
 		$this->allExtendsStack = array(array());
+		parent::__construct();
 	}
 
 	function run($root) {

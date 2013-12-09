@@ -4,6 +4,14 @@ class Less_visitor{
 
 	var $isReplacing = false;
 
+	var $methods = array();
+	var $_visitFnCache = array();
+
+	function __construct(){
+		$this->_visitFnCache = get_class_methods(get_class($this));
+	}
+
+
 	function visit($node){
 
 		if( is_array($node) ){
@@ -15,23 +23,28 @@ class Less_visitor{
 		}
 
 		$funcName = 'visit'.$node->type;
+		if( in_array($funcName,$this->_visitFnCache) ){
 
-		if( method_exists($this,$funcName) ){
 			$visitDeeper = true;
 			$newNode = $this->$funcName( $node, $visitDeeper );
 			if( $this->isReplacing ){
 				$node = $newNode;
 			}
-		}
 
-		if( ( !isset($visitDeeper) || $visitDeeper ) && Less_Parser::is_method($node,'accept') ){
+			if( $visitDeeper && method_exists($node,'accept') ){
+				$node->accept($this);
+			}
+
+			$funcName = $funcName . "Out";
+			if( in_array($funcName,$this->_visitFnCache) ){
+				$this->$funcName( $node );
+			}
+
+		}elseif( method_exists($node,'accept') ){
 			$node->accept($this);
 		}
 
-		$funcName = $funcName . "Out";
-		if( method_exists($this,$funcName) ){
-			$this->$funcName( $node );
-		}
+
 		return $node;
 	}
 
