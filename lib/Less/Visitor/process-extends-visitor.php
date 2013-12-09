@@ -251,8 +251,11 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 	function isElementValuesEqual( $elementValue1, $elementValue2 ){
 
+		if( $elementValue1 === $elementValue2 ){
+			return true;
+		}
 		if( is_string($elementValue1) || is_string($elementValue2) ) {
-			return $elementValue1 === $elementValue2;
+			return false;
 		}
 
 		if( $elementValue1 instanceof Less_Tree_Attribute ){
