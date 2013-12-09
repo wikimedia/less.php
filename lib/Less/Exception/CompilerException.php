@@ -5,8 +5,8 @@ class Less_CompilerException extends Exception {
 
 	private $filename;
 
-	public function __construct($message = null, $code = 0, Exception $previous = null, $filename = null) {
-		parent::__construct($message, $code, $previous);
+	public function __construct($message = null, $code = 0, Exception $previous = null, $filename = null ){
+		parent::__construct($message, $code);
 		$this->filename = $filename;
 	}
 
