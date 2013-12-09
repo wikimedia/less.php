@@ -14,11 +14,13 @@ class Less_visitor{
 
 	function visit($node){
 
-		if( is_array($node) ){
+		$type = getType($node);
+
+		if( $type === 'array' ){
 			return $this->visitArray($node);
 		}
 
-		if( !is_object($node) || !property_exists($node,'type') ){
+		if( $type !== 'object' || !property_exists($node,'type') ){
 			return $node;
 		}
 
@@ -31,7 +33,7 @@ class Less_visitor{
 				$node = $newNode;
 			}
 
-			if( $visitDeeper && method_exists($node,'accept') ){
+			if( $visitDeeper && Less_Parser::is_method($node,'accept') ){
 				$node->accept($this);
 			}
 
