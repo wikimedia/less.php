@@ -1260,7 +1260,7 @@ class Less_Parser extends Less_Cache{
 
 			// prefer to try to parse first if its a variable or we are compressing
 			// but always fallback on the other one
-			if( !$tryAnonymous && ($this->env->compress || ( $name[0] === '@')) ){
+			if( !$tryAnonymous && ($name[0] === '@') ){
 				$value = $this->MatchFuncs('parseValue','parseAnonymousValue');
 			}else{
 				$value = $this->MatchFuncs('parseAnonymousValue','parseValue');
