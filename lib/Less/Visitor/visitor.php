@@ -50,19 +50,17 @@ class Less_visitor{
 
 	function visitArray( $nodes ){
 
-		$node_len = count($nodes);
-
 		if( !$this->isReplacing ){
-			for( $i = 0; $i < $node_len; $i++ ){
-				$this->visit($nodes[$i]);
+			foreach($nodes as $node){
+				$this->visit($node);
 			}
 			return $nodes;
 		}
 
 
 		$newNodes = array();
-		for($i = 0; $i < $node_len; $i++ ){
-			$evald = $this->visit($nodes[$i]);
+		foreach($nodes as $node){
+			$evald = $this->visit($node);
 			if( is_array($evald) ){
 				self::flatten($evald,$newNodes);
 			}else{
@@ -74,18 +72,13 @@ class Less_visitor{
 
 	function flatten( $arr, &$out ){
 
-		$cnt = count($arr);
-
-		for( $i = 0; $i < $cnt; $i++ ){
-			$item = $arr[$i];
+		foreach($arr as $item){
 			if( !is_array($item) ){
 				$out[] = $item;
 				continue;
 			}
 
-			$nestedCnt = count($item);
-			for( $j = 0; $j < $nestedCnt; $j++ ){
-				$nestedItem = $item[$j];
+			foreach($item as $nestedItem){
 				if( is_array($nestedItem) ){
 					self::flatten( $nestedItem, $out);
 				}else{

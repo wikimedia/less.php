@@ -1,26 +1,25 @@
 <?php
-if ( $argc <= 1 || $argc > 4 )
-{
-	showUsage();
-}
 
-$fileName = $argv[1];
-$sortKey  = 'time-own';
+/*
+echo '<pre>';
+$time = '0.011';
+echo printf('%8.4f',$time);
+$time = '10.09';
+echo "\n";
+echo printf('%8.4f',$time);
+die();
+*/
+
+
+
+
+$fileName = '/tmp/trace.2043925204.xt';
+$sortKey  = 'time-own'; //array( 'calls', 'time-inclusive', 'memory-inclusive', 'time-own', 'memory-own','time-own-percall' )
 $elements = 25;
-if ( $argc > 2 )
-{
-	$sortKey = $argv[2];
-	if ( !in_array( $sortKey, array( 'calls', 'time-inclusive', 'memory-inclusive', 'time-own', 'memory-own' ) ) )
-	{
-		showUsage();
-	}
-}
-if ( $argc > 3 )
-{
-	$elements = (int) $argv[3];
-}
+set_time_limit(60);
+echo '<pre>';
 
-$o = new drXdebugTraceFileParser( $argv[1] );
+$o = new drXdebugTraceFileParser( $fileName );
 $o->parse();
 $functions = $o->getFunctions( $sortKey );
 
@@ -36,23 +35,18 @@ foreach( $functions as $name => $f )
 
 echo "Showing the {$elements} most costly calls sorted by '{$sortKey}'.\n\n";
 
-echo "        ", str_repeat( ' ', $maxLen - 8 ), "        Inclusive        Own\n";
-echo "function", str_repeat( ' ', $maxLen - 8 ), "#calls  time     memory  time     memory\n";
-echo "--------", str_repeat( '-', $maxLen - 8 ), "----------------------------------------\n";
+echo "        ", str_repeat( ' ', $maxLen - 8 ), "         Inclusive          Own \n";
+echo "function", str_repeat( ' ', $maxLen - 8 ), "#calls   time      memory   time      memory   time-percall\n";
+echo "--------", str_repeat( '-', $maxLen - 8 ), "-----------------------------------------------------------\n";
 
 // display functions
 $c = 0;
-foreach( $functions as $name => $f )
-{
+foreach( $functions as $name => $f ){
 	$c++;
-	if ( $c > $elements )
-	{
+	if ( $c > $elements ){
 		break;
 	}
-	printf( "%-{$maxLen}s %5d  %3.4f %8d  %3.4f %8d\n",
-		$name, $f['calls'],
-		$f['time-inclusive'], $f['memory-inclusive'],
-		$f['time-own'], $f['memory-own'] );
+	printf( "%-{$maxLen}s %6d  %8.4f %8d  %8.4f %8d %8.4f\n", $name, $f['calls'], $f['time-inclusive'], $f['memory-inclusive'], $f['time-own'], $f['memory-own'], $f['time-own-percall'] );
 }
 
 function showUsage()
@@ -83,11 +77,9 @@ class drXdebugTraceFileParser
 	 */
 	protected $stackFunctions;
 
-	public function __construct( $fileName )
-	{
+	public function __construct( $fileName ){
 		$this->handle = fopen( $fileName, 'r' );
-		if ( !$this->handle )
-		{
+		if ( !$this->handle ){
 			throw new Exception( "Can't open '$fileName'" );
 		}
 		$this->stack[-1] = array( '', 0, 0, 0, 0 );
@@ -96,8 +88,7 @@ class drXdebugTraceFileParser
 		$this->stackFunctions = array();
 		$header1 = fgets( $this->handle );
 		$header2 = fgets( $this->handle );
-		if ( !preg_match( '@Version: 2.*@', $header1 ) || !preg_match( '@File format: 2@', $header2 ) )
-		{
+		if ( !preg_match( '@Version: 2.*@', $header1 ) || !preg_match( '@File format: 2@', $header2 ) ){
 			echo "\nThis file is not an Xdebug trace file made with format option '1'.\n";
 			showUsage();
 		}
@@ -120,7 +111,7 @@ class drXdebugTraceFileParser
 
 			if ( $c % 25000 === 0 )
 			{
-				printf( " (%5.2f%%)\n", ( $read / $size ) * 100 );
+				//printf( " (%5.2f%%)\n", ( $read / $size ) * 100 );
 			}
 		}
 		echo "\nDone.\n\n";
@@ -203,10 +194,12 @@ class drXdebugTraceFileParser
 				'calls'                 => $function[0],
 				'time-inclusive'        => $function[1],
 				'memory-inclusive'      => $function[2],
-				'time-children'         => $function[3],
-				'memory-children'       => $function[4],
+				//'time-children'         => $function[3],
+				//'memory-children'       => $function[4],
 				'time-own'              => $function[1] - $function[3],
-				'memory-own'            => $function[2] - $function[4]
+				'memory-own'            => $function[2] - $function[4],
+				'time-own-percall'      => ($function[1] - $function[3])/$function[0],
+
 			);
 		}
 

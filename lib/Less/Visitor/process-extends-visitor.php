@@ -176,7 +176,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 		// returns an array of selector matches that can then be replaced
 		//
 		$needleElements = $extend->selector->elements;
-		$needleElements_len = count($needleElements);
+		$needleElements_len = false;
 		$potentialMatches = array();
 		$potentialMatches_len = 0;
 		$potentialMatch = null;
@@ -217,6 +217,10 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 					// if we are still valid and have finished, test whether we have elements after and whether these are allowed
 					if( $potentialMatch ){
+						if( $needleElements_len === false ){
+							$needleElements_len = count($needleElements);
+						}
+
 						$potentialMatch['finished'] = ($potentialMatch['matched'] === $needleElements_len );
 
 						if( $potentialMatch['finished'] &&
