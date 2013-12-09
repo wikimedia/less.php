@@ -20,7 +20,7 @@ class Less_visitor{
 			return $this->visitArray($node);
 		}
 
-		if( $type !== 'object' || !property_exists($node,'type') ){
+		if( $type !== 'object' ){
 			return $node;
 		}
 

@@ -1,16 +1,5 @@
 <?php
 
-/*
-echo '<pre>';
-$time = '0.011';
-echo printf('%8.4f',$time);
-$time = '10.09';
-echo "\n";
-echo printf('%8.4f',$time);
-die();
-*/
-
-
 
 
 $fileName = '/tmp/trace.2043925204.xt';
