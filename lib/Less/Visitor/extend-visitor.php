@@ -50,7 +50,8 @@ class Less_extendFinderVisitor extends Less_visitor{
 		// now find every selector and apply the extends that apply to all extends
 		// and the ones which apply to an individual extend
 		$paths = $rulesetNode->paths;
-		for($i = 0; $i < count($paths); $i++ ){
+		$paths_len = count($paths);
+		for($i = 0; $i < $paths_len; $i++ ){
 
 			$selectorPath = $paths[$i];
 			$selector = end($selectorPath); //$selectorPath[ count($selectorPath)-1];
@@ -63,7 +64,8 @@ class Less_extendFinderVisitor extends Less_visitor{
 				$extendList[] = clone $allSelectorsExtend;
 			}
 
-			for($j = 0; $j < count($extendList); $j++ ){
+			$extendList_len = count($extendList);
+			for($j = 0; $j < $extendList_len; $j++ ){
 				$this->foundExtends = true;
 				$extend = $extendList[$j];
 				$extend->findSelfSelectors( $selectorPath );
