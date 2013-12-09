@@ -39,12 +39,14 @@ class Less_Tree_Selector extends Less_Tree{
 		$len   = count($this->elements);
 
 		$olen = $offset = 0;
-		if( $other && count($other->elements) ){
-
-			if( $other->elements[0]->value === "&" ){
-				$offset = 1;
+		if( $other ){
+			$olen = count($other->elements);
+			if( $olen ){
+				if( $other->elements[0]->value === "&" ){
+					$offset = 1;
+				}
+				$olen -= $offset;
 			}
-			$olen = count($other->elements) - $offset;
 		}
 
 		if( $olen === 0 || $len < $olen ){
@@ -89,8 +91,7 @@ class Less_Tree_Selector extends Less_Tree{
 		}
 		if( !$this->_css ){
 			//TODO caching? speed comparison?
-			for($i = 0; $i < count($this->elements); $i++ ){
-				$element = $this->elements[$i];
+			foreach($this->elements as $element){
 				$element->genCSS( $env, $strs );
 			}
 		}
