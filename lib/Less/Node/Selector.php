@@ -36,20 +36,26 @@ class Less_Tree_Selector extends Less_Tree{
 
 	public function match($other) {
 		global $debug;
-		$len   = count($this->elements);
 
-		$olen = $offset = 0;
-		if( $other ){
-			$olen = count($other->elements);
-			if( $olen ){
-				if( $other->elements[0]->value === "&" ){
-					$offset = 1;
-				}
-				$olen -= $offset;
-			}
+		if( !$other ){
+			return 0;
 		}
 
-		if( $olen === 0 || $len < $olen ){
+		$offset = 0;
+		$olen = count($other->elements);
+		if( $olen ){
+			if( $other->elements[0]->value === "&" ){
+				$offset = 1;
+			}
+			$olen -= $offset;
+		}
+
+		if( $olen === 0 ){
+			return 0;
+		}
+
+		$len = count($this->elements);
+		if( $len < $olen ){
 			return 0;
 		}
 
