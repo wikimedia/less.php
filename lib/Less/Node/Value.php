@@ -28,9 +28,10 @@ class Less_Tree_Value extends Less_Tree{
 	}
 
 	function genCSS( $env, &$strs ){
-		for($i = 0; $i < count($this->value); $i++ ){
+		$len = count($this->value);
+		for($i = 0; $i < $len; $i++ ){
 			$this->value[$i]->genCSS( $env, $strs);
-			if( $i+1 < count($this->value) ){
+			if( $i+1 < $len ){
 				self::OutputAdd( $strs, ($env && $env->compress) ? ',' : ', ' );
 			}
 		}
