@@ -51,9 +51,7 @@ class Less_visitor{
 	function visitArray( $nodes ){
 
 		if( !$this->isReplacing ){
-			foreach($nodes as $node){
-				$this->visit($node);
-			}
+			array_map( array($this,'visit'), $nodes);
 			return $nodes;
 		}
 
