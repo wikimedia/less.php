@@ -11,6 +11,7 @@ class Less_Tree_Extend extends Less_Tree{
 	public $allowAfter;
 	public $parents = array();
 	public $firstExtendOnThisSelectorPath;
+	public $type = 'Extend';
 
 
 	function __construct($selector, $option, $index){

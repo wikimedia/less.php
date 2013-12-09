@@ -13,6 +13,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 	public $rules;
 	public $root;
 	public $allowImports;
+	public $type = 'Ruleset';
 
 	public function __construct($selectors, $rules, $strictImports = null){
 		$this->selectors = $selectors;

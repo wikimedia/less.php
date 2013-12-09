@@ -4,6 +4,7 @@
 class Less_Tree_Negative extends Less_Tree{
 
 	public $value;
+	public $type = 'Negative';
 
 	function __construct($node){
 		$this->value = $node;

@@ -4,6 +4,7 @@
 class Less_Tree_Anonymous extends Less_Tree{
 	public $value;
 	public $quote;
+	public $type = 'Anonymous';
 
 	public function __construct($value, $index = null, $currentFileInfo = null, $mapLines = null ){
 		$this->value = is_object($value) ? $value->value : $value;

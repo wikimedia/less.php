@@ -3,6 +3,7 @@
 class Less_Tree_Paren extends Less_Tree{
 
 	public $value;
+	public $type = 'Paren';
 
 	public function __construct($value) {
 		$this->value = $value;

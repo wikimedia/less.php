@@ -11,6 +11,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 	public $frames;
 	public $condition;
 	public $variadic;
+	public $type = 'MixinDefinition';
 
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition

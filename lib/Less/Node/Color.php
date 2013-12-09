@@ -4,6 +4,7 @@
 class Less_Tree_Color extends Less_Tree{
 	var $rgb;
 	var $alpha;
+	public $type = 'Color';
 
 	public function __construct($rgb, $a = 1){
 		$this->rgb = array();

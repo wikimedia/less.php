@@ -11,6 +11,7 @@ class Less_Tree_Rule extends Less_Tree{
 	public $inline;
 	public $variable;
 	public $currentFileInfo;
+	public $type = 'Rule';
 
 	public function __construct($name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null,  $inline = false){
 		$this->name = $name;

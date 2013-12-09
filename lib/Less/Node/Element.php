@@ -7,6 +7,7 @@ class Less_Tree_Element extends Less_Tree{
 	public $combinator;
 	public $value;
 	public $index;
+	public $type = 'Element';
 
 	public function __construct($combinator, $value, $index = null, $currentFileInfo = null ){
 		if( ! ($combinator instanceof Less_Tree_Combinator)) {

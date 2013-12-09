@@ -5,6 +5,7 @@ class Less_Tree_Expression extends Less_Tree{
 	public $value = array();
 	public $parens = false;
 	public $parensInOp = false;
+	public $type = 'Expression';
 
 	public function __construct($value) {
 		$this->value = $value;

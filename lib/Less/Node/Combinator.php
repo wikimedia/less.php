@@ -4,6 +4,7 @@
 class Less_Tree_Combinator extends Less_Tree{
 
 	public $value;
+	public $type = 'Combinator';
 
 	public function __construct($value = null) {
 		if( $value == ' ' ){

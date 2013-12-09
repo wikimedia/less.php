@@ -10,12 +10,11 @@ class Less_visitor{
 			return $this->visitArray($node);
 		}
 
-		if( !is_object($node) ){
+		if( !is_object($node) || !property_exists($node,'type') ){
 			return $node;
 		}
 
-		$class = get_class($node);
-		$funcName = 'visit'.substr($class,10); //remove 'Less_Tree_' from the class name
+		$funcName = 'visit'.$node->type;
 
 		if( method_exists($this,$funcName) ){
 			$visitDeeper = true;

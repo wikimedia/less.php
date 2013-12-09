@@ -3,6 +3,8 @@
 
 class Less_Tree_Value extends Less_Tree{
 
+	public $type = 'Value';
+
 	public function __construct($value){
 		$this->value = $value;
 	}

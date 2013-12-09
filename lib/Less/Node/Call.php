@@ -12,6 +12,7 @@ class Less_Tree_Call extends Less_Tree{
     var $args;
     var $index;
     var $currentFileInfo;
+    public $type = 'Call';
 
 	public function __construct($name, $args, $index, $currentFileInfo = null ){
 		$this->name = $name;

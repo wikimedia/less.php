@@ -4,6 +4,7 @@ class Less_Tree_Media extends Less_Tree{
 
 	public $features;
 	public $ruleset;
+	public $type = 'Media';
 
 	public function __construct($value = array(), $features = array(), $index = null, $currentFileInfo = null ){
 

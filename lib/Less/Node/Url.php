@@ -6,6 +6,7 @@ class Less_Tree_Url extends Less_Tree{
 	public $attrs;
 	public $value;
 	public $currentFileInfo;
+	public $type = 'Url';
 
 	public function __construct($value, $currentFileInfo = null){
 		$this->value = $value;

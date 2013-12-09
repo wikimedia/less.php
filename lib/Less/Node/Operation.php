@@ -3,6 +3,8 @@
 
 class Less_Tree_Operation extends Less_Tree{
 
+	public $type = 'Operation';
+
 	public function __construct($op, $operands, $isSpaced = false){
 		$this->op = trim($op);
 		$this->operands = $operands;
