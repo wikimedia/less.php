@@ -26,7 +26,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 	function accept( $visitor ){
 		if( $this->paths ){
-			for($i = 0; $i < count($this->paths); $i++ ){
+			$paths_len = count($this->paths);
+			for($i = 0,$paths_len; $i < $paths_len; $i++ ){
 				$this->paths[$i] = $visitor->visit($this->paths[$i]);
 			}
 		}else{
@@ -130,19 +131,20 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 	function evalImports($env) {
 
-		for($i=0; $i < count($this->rules); $i++){
+		$rules_len = count($this->rules);
+		for($i=0; $i < $rules_len; $i++){
 			$rule = $this->rules[$i];
 
-			if( $rule instanceof Less_Tree_Import  ){
+			if( $rule instanceof Less_Tree_Import ){
 				$rules = $rule->compile($env);
 				if( is_array($rules) ){
 					array_splice($this->rules, $i, 1, $rules);
+					$i += count($rules)-1;
+					$rules_len = count($this->rules);
 				}else{
 					array_splice($this->rules, $i, 1, array($rules));
 				}
-				if( count($rules) ){
-					$i += count($rules)-1;
-				}
+
 				$this->resetCache();
 			}
 		}
