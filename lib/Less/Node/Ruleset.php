@@ -17,11 +17,23 @@ class Less_Tree_Ruleset extends Less_Tree{
 	public $firstRoot;
 	public $type = 'Ruleset';
 
+
+	var $ruleset_id;
+	var $originalRuleset;
+	static $id_iterator;
+
+
+	public function SetRulesetIndex(){
+		static $i = 0;
+		$this->ruleset_id = $i++;
+	}
+
 	public function __construct($selectors, $rules, $strictImports = null){
 		$this->selectors = $selectors;
 		$this->rules = $rules;
 		$this->lookups = array();
 		$this->strictImports = $strictImports;
+		$this->SetRulesetIndex();
 	}
 
 	function accept( $visitor ){
@@ -49,7 +61,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);
 		$rules = array();
 
-		$ruleset->originalRuleset = $this;
+		$ruleset->originalRuleset = $this->ruleset_id;
+
 		$ruleset->root = $this->root;
 		$ruleset->firstRoot = $this->firstRoot;
 		$ruleset->allowImports = $this->allowImports;

@@ -57,7 +57,8 @@ class Less_Tree_MixinCall extends Less_Tree{
 				$isRecursive = false;
 				foreach($env->frames as $recur_frame){
 					if( !($mixin instanceof Less_Tree_MixinDefinition) ){
-						if( (isset($recur_frame->originalRuleset) && $mixin === $recur_frame->originalRuleset) || ($mixin === $recur_frame) ){
+						if( (isset($recur_frame->originalRuleset) && $mixin->ruleset_id === $recur_frame->originalRuleset)
+							|| ($mixin === $recur_frame) ){
 							$isRecursive = true;
 							break;
 						}
@@ -73,10 +74,10 @@ class Less_Tree_MixinCall extends Less_Tree{
 
 							if( !($mixin instanceof Less_Tree_MixinDefinition) ){
 								$mixin = new Less_Tree_MixinDefinition('', array(), $mixin->rules, null, false);
-								if( property_exists($mixins[$m],'originalRuleset') && $mixins[$m]->originalRuleset ){
+								if( $mixins[$m]->originalRuleset ){
 									$mixin->originalRuleset = $mixins[$m]->originalRuleset;
 								}else{
-									$mixin->originalRuleset = $mixins[$m];
+									$mixin->originalRuleset = $mixins[$m]->ruleset_id;
 								}
 							}
 							//if (this.important) {

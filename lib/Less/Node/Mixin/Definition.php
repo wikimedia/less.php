@@ -34,6 +34,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 		}
 
 		$this->frames = array();
+		$this->SetRulesetIndex();
 	}
 
 
@@ -157,7 +158,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 		$rules = array_slice($this->rules,0);
 
 		$ruleset = new Less_Tree_Ruleset(null, $rules);
-		$ruleset->originalRuleset = $this;
+		$ruleset->originalRuleset = $this->ruleset_id;
 
 
 		$ruleSetEnv = $env->copyEvalEnv( array_merge( array($this, $frame), $mixinFrames ) );
