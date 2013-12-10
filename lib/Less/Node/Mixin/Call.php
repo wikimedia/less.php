@@ -43,9 +43,8 @@ class Less_Tree_MixinCall extends Less_Tree{
 			$args[] = array('name'=> $a['name'], 'value' => $a['value']->compile($env) );
 		}
 
-		for($i = 0; $i< count($env->frames); $i++){
-
-			$mixins = $env->frames[$i]->find($this->selector, null, $env);
+		foreach($env->frames as $frame){
+			$mixins = $frame->find($this->selector, null, $env);
 
 			if( !$mixins ){
 				continue;
@@ -101,8 +100,7 @@ class Less_Tree_MixinCall extends Less_Tree{
 
 			if( $match ){
 				if( !$this->currentFileInfo || !isset($this->currentFileInfo['reference']) || !$this->currentFileInfo['reference'] ){
-					for( $i = 0; $i < count($rules); $i++ ){
-						$rule = $rules[$i];
+					foreach($rules as $rule){
 						if( Less_Parser::is_method($rule,'markReferenced') ){
 							$rule->markReferenced();
 						}
