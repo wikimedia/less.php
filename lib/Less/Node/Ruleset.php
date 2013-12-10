@@ -26,6 +26,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 	public function SetRulesetIndex(){
 		static $i = 0;
 		$this->ruleset_id = $i++;
+		$this->originalRuleset = $this->ruleset_id;
 	}
 
 	public function __construct($selectors, $rules, $strictImports = null){
