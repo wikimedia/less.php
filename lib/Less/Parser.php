@@ -26,8 +26,8 @@ class Less_Parser extends Less_Cache{
 	/**
 	 *
 	 */
-	const version = '1.4.2.2';
-	const less_version = '1.4.2';
+	const version = '1.5.1b1';
+	const less_version = '1.5.1';
 
 	/**
 	 * @var Less_Environment
