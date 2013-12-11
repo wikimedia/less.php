@@ -1,8 +1,20 @@
 #svg-functions {
-  background-image: svg-gradient(to bottom, black, white);
-  background-image: svg-gradient(to bottom, black, orange 3%, white);
-  @green_5: green 5%;
-  @orange_percentage: 3%;
-  @orange_color: orange;
-  background-image: svg-gradient(to bottom, (mix(black, white) + #444) 1%, @orange_color @orange_percentage, ((@green_5)), white 95%);
+	width:blue;
+}
+#svg {
+	.some{
+		width:red;
+	}
+	height:yellow;
+}
+
+.me{
+	&:extend(.ma,.md);
+}
+
+.ma{
+	color: black;
+}
+.md {
+	color: white;
 }

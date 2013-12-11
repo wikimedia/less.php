@@ -94,8 +94,10 @@ class Less_toCSSVisitor extends Less_visitor{
 					$p[0]->elements[0]->combinator = new Less_Tree_Combinator('');
 				}
 
-				if( $p[0]->getIsReferenced() && $p[0]->getIsOutput() ){
-					$paths[] = $p;
+				foreach($p as $pi){
+					if( $pi->getIsReferenced() && $pi->getIsOutput() ){
+						$paths[] = $p;
+					}
 				}
 			}
 
