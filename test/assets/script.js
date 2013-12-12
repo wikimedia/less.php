@@ -73,12 +73,19 @@ function obj(mixed){
 				if( t === 'Array' ){
 					output += 'array(';
 				}else{
-					output += 'object(';
+					output += 'object';
+
+					if( mixed.type ){
+						output += ' '+mixed.type;
+					}
 
 					if( objects.indexOf(mixed) >= 0 ){
 						return 'recursive';
 					}
 					objects.push(mixed);
+
+
+					output += '(';
 
 				}
 

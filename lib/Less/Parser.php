@@ -78,10 +78,10 @@ class Less_Parser extends Less_Cache{
 		//$importVisitor = new Less_importVisitor();
 		//$importVisitor->run($root);
 
+		//obj($root);
 
 		$evaldRoot = $root->compile($this->env);
 
-		//obj($evaldRoot);
 
 
 		$joinSelector = new Less_joinSelectorVisitor();
@@ -470,12 +470,13 @@ class Less_Parser extends Less_Cache{
 		while( ($node = $this->MatchFuncs('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective' ))
 							|| $this->skipSemicolons()
 		){
-			//not the same as less.js
+
 			if( is_array($node) ){
-				$root[] = $node[0];
+				$root = array_merge($root,$node);
 			}elseif( $node ){
 				$root[] = $node;
 			}
+
 		}
 
 		return $root;
@@ -1190,7 +1191,9 @@ class Less_Parser extends Less_Cache{
 			if( $c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')') { break; }
 		}
 
-		if( count($elements) ) { return new Less_Tree_Selector( $elements, $extendList, $condition, $this->pos, $this->env->currentFileInfo); }
+		if( count($elements) ) {
+			return new Less_Tree_Selector( $elements, $extendList, $condition, $this->pos, $this->env->currentFileInfo);
+		}
 		if( count($extendList) ) { throw new Less_ParserException('Extend must be used to extend a selector, it cannot be used on its own'); }
 	}
 

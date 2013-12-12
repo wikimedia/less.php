@@ -481,9 +481,10 @@ less.Parser = function Parser(env) {
                     try {
 
 
+                        //obj(this);
+
                         evaldRoot = evaluate.call(this, evalEnv);
 
-                        //obj(evaldRoot);
 
                         new(tree.joinSelectorVisitor)()
                             .run(evaldRoot);
@@ -929,6 +930,7 @@ less.Parser = function Parser(env) {
                     expect(/^;/);
                 }
 
+				//obj(extendList);
                 return extendList;
             },
 
@@ -5607,12 +5609,21 @@ tree.Variable.prototype = {
                         if (p[0].elements[0].combinator.value === ' ') {
                             p[0].elements[0].combinator = new(tree.Combinator)('');
                         }
+
+						for(i = 0; i < p.length; i++) {
+							if (p[i].getIsReferenced() && p[i].getIsOutput()) {
+								return true;
+							}
+						}
+						return false;
+						/*
                         for(i = 0; i < p.length; i++) {
                             if (p[i].getIsReferenced() && p[i].getIsOutput()) {
                                 return true;
                             }
                             return false;
                         }
+                        */
                     });
 
                 // Compile rules and rulesets

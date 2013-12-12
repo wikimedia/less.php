@@ -447,7 +447,7 @@ function obj($mixed){
 	$output = '';
 
 
-	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index');
+	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index','ruleset_id','type');
 	//$exclude_keys = array();
 
 	$type = gettype($mixed);
@@ -460,6 +460,11 @@ function obj($mixed){
 
 			$objects[] = $mixed;
 			$type = 'object';
+
+			if( property_exists($mixed,'type') ){
+				$type .= ' '.$mixed->type;
+			}
+
 			//$type = get_class($mixed).' object';
 			//$output = $type.'(...)'."\n"; //recursive object references creates an infinite loop
 			$temp = array();
