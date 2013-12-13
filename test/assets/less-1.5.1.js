@@ -930,7 +930,6 @@ less.Parser = function Parser(env) {
                     expect(/^;/);
                 }
 
-				//obj(extendList);
                 return extendList;
             },
 
@@ -5603,7 +5602,8 @@ tree.Variable.prototype = {
             }
             if (! rulesetNode.root) {
 
-                rulesetNode.paths = rulesetNode.paths
+
+               rulesetNode.paths = rulesetNode.paths
                     .filter(function(p) {
                         var i;
                         if (p[0].elements[0].combinator.value === ' ') {
@@ -5616,15 +5616,8 @@ tree.Variable.prototype = {
 							}
 						}
 						return false;
-						/*
-                        for(i = 0; i < p.length; i++) {
-                            if (p[i].getIsReferenced() && p[i].getIsOutput()) {
-                                return true;
-                            }
-                            return false;
-                        }
-                        */
                     });
+
 
                 // Compile rules and rulesets
                 for (var i = 0; i < rulesetNode.rules.length; i++) {

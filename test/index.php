@@ -3,10 +3,10 @@
 define('phpless_start_time',microtime());
 ini_set('display_errors',1);
 
-//error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
-//set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
+error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
+set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
 
-error_reporting(E_ALL | E_STRICT);
+//error_reporting(E_ALL | E_STRICT);
 
 
 
