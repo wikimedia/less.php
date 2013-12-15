@@ -6,7 +6,7 @@
 //
 
 class Less_Tree_Call extends Less_Tree{
-    private $value;
+    public $value;
 
     var $name;
     var $args;

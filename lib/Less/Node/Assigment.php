@@ -3,8 +3,8 @@
 
 class Less_Tree_Assignment extends Less_Tree{
 
-	private $key;
-	private $value;
+	public $key;
+	public $value;
 	public $type = 'Assignment';
 
 	function __construct($key, $val) {

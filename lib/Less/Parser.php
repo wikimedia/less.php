@@ -188,12 +188,15 @@ class Less_Parser extends Less_Cache{
 
 	public function SetCacheDir( $dir ){
 
-		if( is_dir($dir) && is_writable($dir) ){
+		if( !is_dir($dir) ){
+			throw new Less_ParserException('Less.php cache directory doesn\'t exist: '.$dir);
+		}elseif( !is_writable($dir) ){
+			throw new Less_ParserException('Less.php cache directory isn\'t writable: '.$dir);
+		}else{
 			$dir = str_replace('\\','/',$dir);
 			self::$cache_dir = rtrim($dir,'/').'/';
 			return true;
 		}
-
 	}
 
 	public function SetImportDirs( $dirs ){
@@ -222,20 +225,37 @@ class Less_Parser extends Less_Cache{
 	 * Use cache and save cached results if possible
 	 *
 	 */
+	var $cache_method = 'json';
 	private function GetRules( $file_path ){
 
 		$cache_file = false;
 		if( $file_path ){
-
-			$cache_file = substr($file_path,0,-5).'.lesscache';
-			if( file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
-				return $cache;
-			}
-
 			$cache_file = $this->CacheFile( $file_path );
-			if( $cache_file && file_exists($cache_file) && ($cache = file_get_contents( $cache_file )) && ($cache = unserialize($cache)) ){
-				touch($cache_file);
-				return $cache;
+
+			if( $cache_file && file_exists($cache_file) ){
+				switch($this->cache_method){
+
+					// Using serialize
+					// Faster but uses more memory
+					case 'serialize':
+						$cache = unserialize(file_get_contents($cache_file));
+						if( $cache ){
+							touch($cache_file);
+							return $cache;
+						}
+					break;
+
+
+					// Using json_encode
+					// Uses less memory, but not as fast as serialize
+					case 'json':
+						$cache = json_decode(file_get_contents($cache_file),true);
+						if( $cache ){
+							touch($cache_file);
+							return self::RulesArray($cache);
+						}
+					break;
+				}
 			}
 
 			$this->input = file_get_contents( $file_path );
@@ -257,7 +277,15 @@ class Less_Parser extends Less_Cache{
 
 		//save the cache
 		if( $cache_file ){
-			file_put_contents( $cache_file, serialize($rules) );
+
+			switch($this->cache_method){
+				case 'serialize':
+					file_put_contents( $cache_file, serialize($rules) );
+				break;
+				case 'json':
+					file_put_contents( $cache_file, json_encode($rules) );
+				break;
+			}
 
 			if( self::$clean_cache ){
 				self::CleanCache();
@@ -268,13 +296,46 @@ class Less_Parser extends Less_Cache{
 		return $rules;
 	}
 
+	public static function RulesArray( $mixed ){
+
+		if( !is_array($mixed) ){
+			return $mixed;
+		}
+
+
+		// object
+		if( array_key_exists('type',$mixed) ){
+			$class = 'Less_Tree_'.$mixed['type'];
+			$obj = new $class(null,null,null,null);
+			unset($mixed['type']);
+			foreach($mixed as $key => $val){
+				$obj->$key = self::RulesArray($val);
+			}
+			return $obj;
+		}
+
+
+		// array
+		foreach($mixed as $key => $val){
+			$mixed[$key] = self::RulesArray($val);
+		}
+
+		return $mixed;
+	}
+
 
 	public function CacheFile( $file_path ){
 
 		if( $file_path && self::$cache_dir ){
-			$file_size = filesize( $file_path );
-			$file_mtime = filemtime( $file_path );
-			return self::$cache_dir.'lessphp_'.base_convert( md5($file_path), 16, 36).'.'.base_convert($file_size,10,36).'.'.base_convert($file_mtime,10,36).'.'.self::cache_version.'.lesscache';
+
+			$parts = array();
+			$parts[] = $file_path;
+			$parts[] = filesize( $file_path );
+			$parts[] = filemtime( $file_path );
+			$parts[] = $this->env;
+			$parts[] = self::cache_version;
+			$parts[] = $this->cache_method;
+			return self::$cache_dir.'lessphp_'.base_convert( sha1(json_encode($parts) ), 16, 36).'.lesscache';
 		}
 	}
 

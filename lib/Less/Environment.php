@@ -51,6 +51,8 @@ class Less_Environment{
 
 	public $tabLevel = 0;
 
+	//public $type = 'Environment';
+
 	public function __construct( $options = null ){
 		$this->frames = array();
 

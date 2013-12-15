@@ -4,8 +4,8 @@
 class Less_Tree_Ruleset extends Less_Tree{
 
 	protected $lookups;
-	private $_variables;
-	private $_rulesets;
+	public $_variables;
+	public $_rulesets;
 
 	public $strictImports;
 

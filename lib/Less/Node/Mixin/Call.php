@@ -5,10 +5,11 @@ class Less_Tree_MixinCall extends Less_Tree{
 
 	public $selector;
 	public $arguments;
-	private $index;
-	private $currentFileInfo;
+	public $index;
+	public $currentFileInfo;
 
 	public $important;
+	public $type = 'MixinCall';
 
 	/**
 	 * less.js: tree.mixin.Call

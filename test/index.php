@@ -34,17 +34,7 @@ class ParserTest{
 	var $matched_count = 0;
 
 	function __construct(){
-
-		/*
 		$this->cache_dir = __DIR__.'/_cache';
-
-		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
-			echo '<p>Invalid cache directory</p>';
-		}elseif( !is_writable($this->cache_dir) ){
-			echo '<p>Cache directory not writable</p>';
-		}
-		*/
-
 
 		//get any other possible test folders
 		$fixtures_dir = rtrim(__DIR__,'/').'/Fixtures';
@@ -136,11 +126,11 @@ class ParserTest{
 			*/
 
 			$parser = new Less_Parser( $options );
-			//$parser->SetCacheDir( $this->cache_dir );
+			$parser->SetCacheDir( $this->cache_dir );
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 
-		}catch(\Exception $e){
+		}catch(Exception $e){
 			echo '<h1>Parser Error</h1>';
 			echo '<p>'.$e->getMessage().'</p>';
 		}

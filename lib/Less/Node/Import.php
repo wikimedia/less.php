@@ -33,14 +33,16 @@ class Less_Tree_Import extends Less_Tree{
 		$this->features = $features;
 		$this->currentFileInfo = $currentFileInfo;
 
-		$this->options += array('inline'=>false);
+		if( is_array($options) ){
+			$this->options += array('inline'=>false);
 
-		if( isset($this->options['less']) || $this->options['inline'] ){
-			$this->css = !isset($this->options['less']) || !$this->options['less'] || $this->options['inline'];
-		} else {
-			$pathValue = $this->getPath();
-			if( $pathValue && preg_match('/css([\?;].*)?$/',$pathValue) ){
-				$this->css = true;
+			if( isset($this->options['less']) || $this->options['inline'] ){
+				$this->css = !isset($this->options['less']) || !$this->options['less'] || $this->options['inline'];
+			} else {
+				$pathValue = $this->getPath();
+				if( $pathValue && preg_match('/css([\?;].*)?$/',$pathValue) ){
+					$this->css = true;
+				}
 			}
 		}
 	}

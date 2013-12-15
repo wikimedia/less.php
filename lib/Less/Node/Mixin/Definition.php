@@ -27,9 +27,11 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 		$this->lookups = array();
 
 		$this->required = 0;
-		foreach( $params as $p ){
-			if (! isset($p['name']) || ($p['name'] && !isset($p['value']))) {
-				$this->required++;
+		if( is_array($params) ){
+			foreach( $params as $p ){
+				if (! isset($p['name']) || ($p['name'] && !isset($p['value']))) {
+					$this->required++;
+				}
 			}
 		}
 

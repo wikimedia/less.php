@@ -2,11 +2,11 @@
 
 class Less_Tree_Condition extends Less_Tree{
 
-	private $op;
-	private $lvalue;
-	private $rvalue;
-	private $index;
-	private $negate;
+	public $op;
+	public $lvalue;
+	public $rvalue;
+	public $index;
+	public $negate;
 	public $type = 'Condition';
 
 	public function __construct($op, $l, $r, $i = 0, $negate = false) {
