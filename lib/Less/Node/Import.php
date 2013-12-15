@@ -200,6 +200,7 @@ class Less_Tree_Import extends Less_Tree{
 		$parser = new Less_Parser($import_env);
 		$evald->root = $parser->parseFile($full_path, $uri, true);
 
+
 		$ruleset = new Less_Tree_Ruleset(array(), $evald->root->rules );
 		$ruleset->evalImports($import_env);
 

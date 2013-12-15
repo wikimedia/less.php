@@ -234,6 +234,8 @@ class Less_Parser extends Less_Cache{
 			$cache_file = $this->CacheFile( $file_path );
 
 			if( $cache_file && file_exists($cache_file) && ($cache = unserialize(file_get_contents($cache_file))) ){
+				msg(number_format(memory_get_usage()));
+
 				touch($cache_file);
 				return $cache;
 			}
@@ -278,11 +280,14 @@ class Less_Parser extends Less_Cache{
 
 		if( $file_path && self::$cache_dir ){
 
+			$env = get_object_vars($this->env);
+			unset($env['frames']);
+
 			$parts = array();
 			$parts[] = $file_path;
 			$parts[] = filesize( $file_path );
 			$parts[] = filemtime( $file_path );
-			$parts[] = $this->env;
+			$parts[] = $env;
 			$parts[] = self::cache_version;
 			return self::$cache_dir.'lessphp_'.base_convert( sha1(json_encode($parts) ), 16, 36).'.lesscache';
 		}
