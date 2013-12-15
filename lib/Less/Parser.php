@@ -142,6 +142,7 @@ class Less_Parser extends Less_Cache{
 		$return = null;
 		if( $returnRoot ){
 			$rules = $this->GetRules( $filename );
+			self::ReleaseMemory();
 			$return = new Less_Tree_Ruleset(array(), $rules );
 		}else{
 			$this->_parse( $filename );
@@ -217,6 +218,7 @@ class Less_Parser extends Less_Cache{
 
 	private function _parse( $file_path = false ){
 		$this->rules = array_merge($this->rules, $this->GetRules( $file_path ));
+		self::ReleaseMemory();
 	}
 
 
@@ -225,41 +227,15 @@ class Less_Parser extends Less_Cache{
 	 * Use cache and save cached results if possible
 	 *
 	 */
-	var $cache_method = 'php';
 	private function GetRules( $file_path ){
 
 		$cache_file = false;
 		if( $file_path ){
 			$cache_file = $this->CacheFile( $file_path );
 
-			if( $cache_file && file_exists($cache_file) ){
-				switch($this->cache_method){
-
-					// Using serialize
-					// Faster but uses more memory
-					case 'serialize':
-						$cache = unserialize(file_get_contents($cache_file));
-						if( $cache ){
-							touch($cache_file);
-							return $cache;
-						}
-					break;
-
-
-					// Using json_encode
-					// Uses less memory, but not as fast as serialize
-					case 'json':
-						$cache = json_decode(file_get_contents($cache_file),true);
-						if( $cache ){
-							touch($cache_file);
-							return self::RulesArray($cache);
-						}
-					break;
-
-					// Using generated php code
-					case 'php':
-					return include($cache_file);
-				}
+			if( $cache_file && file_exists($cache_file) && ($cache = unserialize(file_get_contents($cache_file))) ){
+				touch($cache_file);
+				return $cache;
 			}
 
 			$this->input = file_get_contents( $file_path );
@@ -282,21 +258,7 @@ class Less_Parser extends Less_Cache{
 		//save the cache
 		if( $cache_file ){
 
-			switch($this->cache_method){
-				case 'serialize':
-					file_put_contents( $cache_file, serialize($rules) );
-				break;
-				case 'json':
-					file_put_contents( $cache_file, json_encode($rules) );
-				break;
-				case 'php':
-					file_put_contents( $cache_file, '<?php return '.var_export($rules,true).';' );
-				break;
-				default:
-					throw new Less_ParserException('Unknown caching option: "'.$this->cache_method.'"');
-				break;
-			}
-
+			file_put_contents( $cache_file, serialize($rules) );
 			if( self::$clean_cache ){
 				self::CleanCache();
 			}
@@ -306,33 +268,11 @@ class Less_Parser extends Less_Cache{
 		return $rules;
 	}
 
-	public static function RulesArray( $mixed ){
-
-		if( !is_array($mixed) ){
-			return $mixed;
+	public static function ReleaseMemory(){
+		if( function_exists('gc_collect_cycles') ){
+			gc_collect_cycles();
 		}
-
-
-		// object
-		if( array_key_exists('type',$mixed) ){
-			$class = 'Less_Tree_'.$mixed['type'];
-			$obj = new $class(null,null,null,null);
-			unset($mixed['type']);
-			foreach($mixed as $key => $val){
-				$obj->$key = self::RulesArray($val);
-			}
-			return $obj;
-		}
-
-
-		// array
-		foreach($mixed as $key => $val){
-			$mixed[$key] = self::RulesArray($val);
-		}
-
-		return $mixed;
 	}
-
 
 	public function CacheFile( $file_path ){
 
@@ -344,7 +284,6 @@ class Less_Parser extends Less_Cache{
 			$parts[] = filemtime( $file_path );
 			$parts[] = $this->env;
 			$parts[] = self::cache_version;
-			$parts[] = $this->cache_method;
 			return self::$cache_dir.'lessphp_'.base_convert( sha1(json_encode($parts) ), 16, 36).'.lesscache';
 		}
 	}
