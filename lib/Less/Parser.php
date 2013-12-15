@@ -225,7 +225,7 @@ class Less_Parser extends Less_Cache{
 	 * Use cache and save cached results if possible
 	 *
 	 */
-	var $cache_method = 'json';
+	var $cache_method = 'php';
 	private function GetRules( $file_path ){
 
 		$cache_file = false;
@@ -255,6 +255,10 @@ class Less_Parser extends Less_Cache{
 							return self::RulesArray($cache);
 						}
 					break;
+
+					// Using generated php code
+					case 'php':
+					return include($cache_file);
 				}
 			}
 
@@ -284,6 +288,12 @@ class Less_Parser extends Less_Cache{
 				break;
 				case 'json':
 					file_put_contents( $cache_file, json_encode($rules) );
+				break;
+				case 'php':
+					file_put_contents( $cache_file, '<?php return '.var_export($rules,true).';' );
+				break;
+				default:
+					throw new Less_ParserException('Unknown caching option: "'.$this->cache_method.'"');
 				break;
 			}
 

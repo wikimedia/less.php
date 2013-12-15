@@ -45,4 +45,19 @@ class Less_Tree{
 
 	}
 
+
+	/**
+	 * Requires php 5.3+
+	 */
+	public static function __set_state(){
+
+		$class = get_called_class();
+		$obj = new $class(null,null,null,null);
+		$args = func_get_arg(0);
+		foreach($args as $key => $val){
+			$obj->$key = $val;
+		}
+		return $obj;
+	}
+
 }
