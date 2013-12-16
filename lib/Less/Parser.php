@@ -227,17 +227,31 @@ class Less_Parser extends Less_Cache{
 	 * Use cache and save cached results if possible
 	 *
 	 */
+	var $cache_method = 'serialize';
 	private function GetRules( $file_path ){
 
 		$cache_file = false;
 		if( $file_path ){
 			$cache_file = $this->CacheFile( $file_path );
 
-			if( $cache_file && file_exists($cache_file) && ($cache = unserialize(file_get_contents($cache_file))) ){
-				msg(number_format(memory_get_usage()));
+			if( $cache_file && file_exists($cache_file) ){
+				switch($this->cache_method){
 
-				touch($cache_file);
-				return $cache;
+					// Using serialize
+					// Faster but uses more memory
+					case 'serialize':
+						$cache = unserialize(file_get_contents($cache_file));
+						if( $cache ){
+							touch($cache_file);
+							return $cache;
+						}
+					break;
+
+
+					// Using generated php code
+					case 'php':
+					return include($cache_file);
+				}
 			}
 
 			$this->input = file_get_contents( $file_path );
@@ -260,7 +274,18 @@ class Less_Parser extends Less_Cache{
 		//save the cache
 		if( $cache_file ){
 
-			file_put_contents( $cache_file, serialize($rules) );
+			switch($this->cache_method){
+				case 'serialize':
+					file_put_contents( $cache_file, serialize($rules) );
+				break;
+				case 'php':
+					file_put_contents( $cache_file, '<?php return '.var_export($rules,true).'; ?>' );
+				break;
+				default:
+					throw new Less_ParserException('Unknown caching option: "'.$this->cache_method.'"');
+				break;
+			}
+
 			if( self::$clean_cache ){
 				self::CleanCache();
 			}
@@ -269,6 +294,7 @@ class Less_Parser extends Less_Cache{
 
 		return $rules;
 	}
+
 
 	public static function ReleaseMemory(){
 		if( function_exists('gc_collect_cycles') ){
@@ -289,6 +315,7 @@ class Less_Parser extends Less_Cache{
 			$parts[] = filemtime( $file_path );
 			$parts[] = $env;
 			$parts[] = self::cache_version;
+			$parts[] = $this->cache_method;
 			return self::$cache_dir.'lessphp_'.base_convert( sha1(json_encode($parts) ), 16, 36).'.lesscache';
 		}
 	}
