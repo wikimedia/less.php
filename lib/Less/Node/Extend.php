@@ -9,7 +9,6 @@ class Less_Tree_Extend extends Less_Tree{
 	public $selfSelectors = array();
 	public $allowBefore;
 	public $allowAfter;
-	public $parents = array();
 	public $firstExtendOnThisSelectorPath;
 	public $type = 'Extend';
 
