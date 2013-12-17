@@ -44,7 +44,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 				$targetExtend = $extendsListTarget[$targetExtendIndex];
 
 				// look for circular references
-				if( $this->inInheritanceChain( $targetExtend, $extend)) {
+				if( in_array($targetExtend->object_id, $extend->parent_ids,true) ){
 					continue;
 				}
 
@@ -75,7 +75,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 						$newExtend->ruleset = $targetExtend->ruleset;
 
 						//remember its parents for circular references
-						$newExtend->parents = array($targetExtend, $extend);
+						$newExtend->parent_ids = array_merge($newExtend->parent_ids,$targetExtend->parent_ids,$extend->parent_ids);
 
 						// only process the selector once.. if we have :extend(.a,.b) then multiple
 						// extends will look at the same selector path, so when extending
@@ -109,22 +109,6 @@ class Less_processExtendsVisitor extends Less_visitor{
 		return array_merge($extendsList, $extendsToAdd);
 	}
 
-	function inInheritanceChain( $possibleParent, $possibleChild ){
-
-		if( $possibleParent === $possibleChild) {
-			return true;
-		}
-
-		if( $possibleChild->parents ){
-			if( $this->inInheritanceChain( $possibleParent, $possibleChild->parents[0]) ){
-				return true;
-			}
-			if( $this->inInheritanceChain( $possibleParent, $possibleChild->parents[1]) ){
-				return true;
-			}
-		}
-		return false;
-	}
 
 	function visitRule( $ruleNode, &$visitDeeper ){
 		$visitDeeper = false;

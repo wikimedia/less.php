@@ -14,7 +14,11 @@ class Less_Tree_Extend extends Less_Tree{
 	public $type = 'Extend';
 
 
+	public $object_id;
+	public $parent_ids = array();
+
 	function __construct($selector, $option, $index){
+		static $i = 0;
 		$this->selector = $selector;
 		$this->option = $option;
 		$this->index = $index;
@@ -30,6 +34,8 @@ class Less_Tree_Extend extends Less_Tree{
 			break;
 		}
 
+		$this->object_id = $i++;
+		$this->parent_ids = array($this->object_id);
 	}
 
 	function accept( $visitor ){

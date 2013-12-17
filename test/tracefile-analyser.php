@@ -3,7 +3,7 @@
 
 
 $fileName = '/tmp/trace.2043925204.xt';
-$sortKey  = 'time-inclusive'; //array( 'calls','time-inclusive' , 'memory-inclusive', 'time-own', 'memory-own','time-own-percall' )
+$sortKey  = 'time-own'; //array( 'calls','time-inclusive' , 'memory-inclusive', 'time-own', 'memory-own','time-own-percall' )
 $elements = 50;
 set_time_limit(60);
 echo '<pre>';
