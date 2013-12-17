@@ -45,6 +45,8 @@ class Less_Tree{
 
 	}
 
+	public function accept($visitor){}
+
 	/**
 	 * Requires php 5.3+
 	 */

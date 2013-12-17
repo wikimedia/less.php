@@ -33,7 +33,7 @@ class Less_visitor{
 				$node = $newNode;
 			}
 
-			if( $visitDeeper && Less_Parser::is_method($node,'accept') ){
+			if( $visitDeeper && is_object($node) ){
 				$node->accept($this);
 			}
 
@@ -42,7 +42,7 @@ class Less_visitor{
 				$this->$funcName( $node );
 			}
 
-		}elseif( method_exists($node,'accept') ){
+		}else{
 			$node->accept($this);
 		}
 

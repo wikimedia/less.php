@@ -20,7 +20,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 	var $ruleset_id;
 	var $originalRuleset;
-	static $id_iterator;
 
 
 	public function SetRulesetIndex(){
@@ -373,10 +372,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 	public function joinSelector( &$paths, $context, $selector){
 
-		$hasParentSelector = false; $newSelectors; $el; $sel; $parentSel;
-		$newSelectorPath; $afterParentJoin; $newJoinedSelector;
-		$newJoinedSelectorEmpty; $lastSelector; $currentElements;
-		$selectorsMultiplied;
+		$hasParentSelector = false;
 
 		foreach($selector->elements as $el) {
 			if( $el->value === '&') {
