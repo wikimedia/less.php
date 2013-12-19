@@ -9,9 +9,11 @@ class Less_Tree_Selector extends Less_Tree{
 	public $index;
 	public $evaldCondition = false;
 	public $type = 'Selector';
+	public $elements_len;
 
 	public function __construct($elements, $extendList=array() , $condition = null, $index=null, $currentFileInfo=array(), $isReferenced=null ){
 		$this->elements = $elements;
+		$this->elements_len = count($elements);
 		$this->extendList = $extendList;
 		$this->condition = $condition;
 		$this->currentFileInfo = $currentFileInfo;
@@ -42,7 +44,7 @@ class Less_Tree_Selector extends Less_Tree{
 		}
 
 		$offset = 0;
-		$olen = count($other->elements);
+		$olen = $other->elements_len;//count($other->elements);
 		if( $olen ){
 			if( $other->elements[0]->value === "&" ){
 				$offset = 1;
@@ -54,7 +56,7 @@ class Less_Tree_Selector extends Less_Tree{
 			return 0;
 		}
 
-		$len = count($this->elements);
+		$len = $this->elements_len; //count($this->elements);
 		if( $len < $olen ){
 			return 0;
 		}
