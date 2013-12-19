@@ -324,7 +324,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 				self::OutputAdd( $strs, (string)$rule->value );
 			}
 
-			if( !property_exists($env,'lastRule') || !$env->lastRule ){
+			if( !$env->lastRule ){
 				self::OutputAdd( $strs, Less_Environment::$compress ? '' : ("\n" . $tabRuleStr) );
 			}else{
 				$env->lastRule = false;

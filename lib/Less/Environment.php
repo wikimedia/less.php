@@ -51,6 +51,8 @@ class Less_Environment{
 
 	public $tabLevel = 0;
 
+	public $lastRule = false;
+
 	//public $type = 'Environment';
 
 
