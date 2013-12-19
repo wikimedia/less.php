@@ -267,10 +267,13 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$tabSetStr = str_repeat( '  ' , $env->tabLevel-1 );
 		}
 
+		static $classes = array();
 		foreach($this->rules as $rule){
-			if( ( is_object($rule) && property_exists($rule,'rules') && $rule->rules) || ($rule instanceof Less_Tree_Media) || $rule instanceof Less_Tree_Directive || ($this->root && $rule instanceof Less_Tree_Comment) ){
+
+			$class = get_class($rule);
+			if( ($class === 'Less_Tree_Media') || ($class === 'Less_Tree_Directive') || ($this->root && $class === 'Less_Tree_Comment') || ($class === 'Less_Tree_Ruleset' && $rule->rules) ){
 				$rulesetNodes[] = $rule;
-			} else {
+			}else{
 				$ruleNodes[] = $rule;
 			}
 		}
