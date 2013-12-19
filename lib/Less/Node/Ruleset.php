@@ -381,7 +381,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 
 		if( !$hasParentSelector ){
-			if( count($context) > 0 ) {
+			if( $context ){
 				foreach($context as $context_el){
 					$paths[] = array_merge($context_el, array($selector) );
 				}
