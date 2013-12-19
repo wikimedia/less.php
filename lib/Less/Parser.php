@@ -856,7 +856,7 @@ class Less_Parser extends Less_Cache{
 			$this->expect('/\\G;/');
 		}
 
-		if( count($extendList) ){
+		if( $extendList ){
 			self::$has_extends = true;
 		}
 
@@ -911,7 +911,7 @@ class Less_Parser extends Less_Cache{
 			$important = true;
 		}
 
-		if( count($elements) > 0 && ($this->MatchChar(';') || $this->PeekChar('}')) ){
+		if( $elements && ($this->MatchChar(';') || $this->PeekChar('}')) ){
 			return new Less_Tree_MixinCall($elements, $args, $index, $this->env->currentFileInfo, $important);
 		}
 
@@ -965,7 +965,7 @@ class Less_Parser extends Less_Cache{
 
 			if( $isCall ){
 				// Variable
-				if( count($arg->value) == 1) {
+				if( count($arg->value) == 1 ){
 					$val = $arg->value[0];
 				}
 			} else {
@@ -976,7 +976,7 @@ class Less_Parser extends Less_Cache{
 			if( $val && $val instanceof Less_Tree_Variable ){
 
 				if( $this->MatchChar(':') ){
-					if( count($expressions) > 0 ){
+					if( $expressions ){
 						if( $isSemiColonSeperated ){
 							throw new Less_ParserException('Cannot mix ; and , as delimiter types');
 						}
@@ -1227,9 +1227,9 @@ class Less_Parser extends Less_Cache{
 			}elseif( $extend ){
 				$extendList = array_merge($extendList,$extend);
 			}else{
-				if( count($extendList) ){
+				//if( count($extendList) ){
 					//error("Extend can only be used at the end of selector");
-				}
+				//}
 				$c = $this->input[ $this->pos ];
 				$elements[] = $e;
 				$e = null;
@@ -1238,10 +1238,10 @@ class Less_Parser extends Less_Cache{
 			if( $c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')') { break; }
 		}
 
-		if( count($elements) ) {
+		if( $elements ){
 			return new Less_Tree_Selector( $elements, $extendList, $condition, $this->pos, $this->env->currentFileInfo);
 		}
-		if( count($extendList) ) { throw new Less_ParserException('Extend must be used to extend a selector, it cannot be used on its own'); }
+		if( $extendList ) { throw new Less_ParserException('Extend must be used to extend a selector, it cannot be used on its own'); }
 	}
 
 	private function parseTag(){
@@ -1299,7 +1299,7 @@ class Less_Parser extends Less_Cache{
 			$this->parseComments();
 		}
 
-		if( count($selectors) > 0 && (is_array($rules = $this->parseBlock())) ){
+		if( $selectors && (is_array($rules = $this->parseBlock())) ){
 			return new Less_Tree_Ruleset($selectors, $rules, $this->env->strictImports);
 		} else {
 			// Backtrack
@@ -1586,8 +1586,7 @@ class Less_Parser extends Less_Cache{
 	// In a Rule, a Value represents everything after the `:`,
 	// and before the `;`.
 	//
-	private function parseValue ()
-	{
+	private function parseValue(){
 		$expressions = array();
 
 		while ($e = $this->parseExpression()) {
@@ -1597,7 +1596,7 @@ class Less_Parser extends Less_Cache{
 			}
 		}
 
-		if (count($expressions) > 0) {
+		if( $expressions ){
 			return new Less_Tree_Value($expressions);
 		}
 	}
@@ -1730,7 +1729,7 @@ class Less_Parser extends Less_Cache{
 			}
 
 		}
-		if (count($entities) > 0) {
+		if( $entities ){
 			return new Less_Tree_Expression($entities);
 		}
 	}
