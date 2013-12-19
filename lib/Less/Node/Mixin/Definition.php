@@ -65,7 +65,8 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 		$mixinEnv->frames = array_merge( array($frame), $mixinEnv->frames);
 		//$mixinEnv = $mixinEnv->copyEvalEnv( array_merge( array($frame), $mixinEnv->frames) );
 
-		for($i = 0; $i < count($args); $i++ ){
+		$args_len = count($args);
+		for($i = 0; $i < $args_len; $i++ ){
 			$arg = $args[$i];
 
 			if( $arg && $arg['name'] ){
@@ -83,6 +84,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 				if ($isNamedFound) {
 					array_splice($args, $i, 1);
 					$i--;
+					$args_len--;
 					continue;
 				} else {
 					throw new Less_CompilerException("Named argument for " . $this->name .' '.$args[$i]['name'] . ' not found');
@@ -105,7 +107,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 
 				if( isset($param['variadic']) && $args ){
 					$varargs = array();
-					for ($j = $argIndex; $j < count($args); $j++) {
+					for ($j = $argIndex; $j < $args_len; $j++) {
 						$varargs[] = $args[$j]['value']->compile($env);
 					}
 					$expression = new Less_Tree_Expression($varargs);
@@ -128,7 +130,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 			}
 
 			if ( isset($param['variadic']) && $args) {
-				for ($j = $argIndex; $j < count($args); $j++) {
+				for ($j = $argIndex; $j < $args_len; $j++) {
 					$evaldArguments[$j] = $args[$j]['value']->compile($env);
 				}
 			}

@@ -52,7 +52,8 @@ class Less_Tree_MixinCall extends Less_Tree{
 			}
 
 			$isOneFound = true;
-			for( $m = 0; $m < count($mixins); $m++ ){
+			$mixins_len = count($mixins);
+			for( $m = 0; $m < $mixins_len; $m++ ){
 				$mixin = $mixins[$m];
 
 				$isRecursive = false;

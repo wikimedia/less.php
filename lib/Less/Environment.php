@@ -118,7 +118,7 @@ class Less_Environment{
 	}
 
 	public function isMathOn() {
-		return $this->strictMath ? ($this->parensStack && count($this->parensStack)) : true;
+		return $this->strictMath ? !!$this->parensStack : true;
 	}
 
 	public static function isPathRelative($path){
@@ -139,22 +139,29 @@ class Less_Environment{
     	$segments = array_reverse($segments);
 
     	$path = array();
+    	$path_len = 0;
 
-		while( count($segments) !== 0 ){
+		while( $segments ){
 			$segment = array_pop($segments);
 			switch( $segment ) {
+
 				case '.':
-					break;
+				break;
+
 				case '..':
-					if( (count($path) === 0) || ( $path[count($path)-1] === '..') ){
+					if( !$path_len || ( $path[$path_len-1] === '..') ){
 						$path[] = $segment;
+						$path_len++;
 					}else{
 						array_pop($path);
+						$path_len--;
 					}
-					break;
+				break;
+
 				default:
 					$path[] = $segment;
-					break;
+					$path_len++;
+				break;
 			}
 		}
 
