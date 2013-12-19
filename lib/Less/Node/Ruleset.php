@@ -85,7 +85,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		$ruleset_len = count($ruleset->rules);
 		for( $i = 0; $i < $ruleset_len; $i++ ){
 			if( $ruleset->rules[$i] instanceof Less_Tree_MixinDefinition ){
-				$ruleset->rules[$i]->frames = array_slice($env->frames,0);;
+				$ruleset->rules[$i]->frames = array_slice($env->frames,0);
 			}
 		}
 
@@ -113,10 +113,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 						$temp[] = $r;
 					}
 				}
-				$rules = $temp;
-				array_splice($ruleset->rules, $i, 1, $rules);
-				$ruleset_len = count($ruleset->rules);
-				$i += count($rules)-1;
+				$temp_count = count($temp)-1;
+				array_splice($ruleset->rules, $i, 1, $temp);
+				$ruleset_len += $temp_count;
+				$i += $temp_count;
 				$ruleset->resetCache();
 			}
 		}
@@ -153,8 +153,9 @@ class Less_Tree_Ruleset extends Less_Tree{
 				$rules = $rule->compile($env);
 				if( is_array($rules) ){
 					array_splice($this->rules, $i, 1, $rules);
-					$i += count($rules)-1;
-					$rules_len = count($this->rules);
+					$temp_count = count($rules)-1;
+					$i += $temp_count;
+					$rules_len += $temp_count;
 				}else{
 					array_splice($this->rules, $i, 1, array($rules));
 				}
@@ -294,9 +295,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 			for( $i = 0,$paths_len = count($this->paths); $i < $paths_len; $i++ ){
 				$path = $this->paths[$i];
 				Less_Environment::$firstSelector = true;
-				$path_len = count($path);
-				for($j = 0; $j < $path_len; $j++ ){
-					$path[$j]->genCSS($env, $strs );
+				foreach($path as $p){
+					$p->genCSS($env, $strs );
 					Less_Environment::$firstSelector = false;
 				}
 				if( $i + 1 < $paths_len ){
