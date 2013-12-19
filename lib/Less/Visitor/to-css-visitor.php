@@ -39,7 +39,7 @@ class Less_toCSSVisitor extends Less_visitor{
 		$mediaNode->accept($this);
 		$visitDeeper = false;
 
-		if( !count($mediaNode->rules) ){
+		if( !$mediaNode->rules ){
 			return array();
 		}
 		return $mediaNode;
@@ -70,8 +70,7 @@ class Less_toCSSVisitor extends Less_visitor{
 	}
 
 	function checkPropertiesInRoot( $rules ){
-		for( $i = 0; $i < count($rules); $i++ ){
-			$ruleNode = $rules[$i];
+		foreach($rules as $ruleNode){
 			if( $ruleNode instanceof Less_Tree_Rule && !$ruleNode->variable ){
 				$msg = "properties must be inside selector blocks, they cannot be in the root. Index ".$ruleNode->index.($ruleNode->currentFileInfo ? (' Filename: '.$ruleNode->currentFileInfo['filename']) : null);
 				throw new Less_CompilerException($msg);
@@ -183,7 +182,8 @@ class Less_toCSSVisitor extends Less_visitor{
 	function _mergeRules( &$rules ){
 		$groups = array();
 
-		for( $i = 0; $i < count($rules); $i++ ){
+		$rules_len = count($rules);
+		for( $i = 0; $i < $rules_len; $i++ ){
 			$rule = $rules[$i];
 
 			if( ($rule instanceof Less_Tree_Rule) && $rule->merge ){
@@ -198,6 +198,7 @@ class Less_toCSSVisitor extends Less_visitor{
 					$parts =& $groups[$key];
 				}else{
 					array_splice($rules, $i--, 1);
+					$rules_len--;
 				}
 
 				$parts[] = $rule;
