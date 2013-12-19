@@ -167,9 +167,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		$important_rules = array();
 		foreach($this->rules as $rule){
-			if( Less_Parser::is_method($rule,'makeImportant') && property_exists($rule,'selectors') ){
-				$important_rules[] = $rule->makeImportant();
-			}elseif( Less_Parser::is_method($rule,'makeImportant') ){
+			if( Less_Parser::is_method($rule,'makeImportant') ){
 				$important_rules[] = $rule->makeImportant();
 			}else{
 				$important_rules[] = $rule;
