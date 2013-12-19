@@ -58,7 +58,7 @@ class Less_Tree_Media extends Less_Tree{
 
 		array_pop($env->mediaPath);
 
-		return count($env->mediaPath) == 0 ? $media->compileTop($env) : $media->compileNested($env);
+		return !$env->mediaPath ? $media->compileTop($env) : $media->compileNested($env);
 	}
 
 	public function variable($name) {
@@ -75,11 +75,10 @@ class Less_Tree_Media extends Less_Tree{
 	}
 
 	public function markReferenced(){
-		$rules = $this->rules[0]->rules;
 		$this->isReferenced = true;
-		for( $i = 0; $i < count($rules); $i++ ){
-			if( Less_Parser::is_method($rules[$i],'markReferenced') ){
-				$rules[$i]->markReferenced();
+		foreach($this->rules[0]->rules as $rule){
+			if( Less_Parser::is_method($rule,'markReferenced') ){
+				$rule->markReferenced();
 			}
 		}
 	}
