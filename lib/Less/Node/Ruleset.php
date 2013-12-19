@@ -292,11 +292,11 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 			for( $i = 0,$paths_len = count($this->paths); $i < $paths_len; $i++ ){
 				$path = $this->paths[$i];
-				$env->firstSelector = true;
+				Less_Environment::$firstSelector = true;
 				$path_len = count($path);
 				for($j = 0; $j < $path_len; $j++ ){
 					$path[$j]->genCSS($env, $strs );
-					$env->firstSelector = false;
+					Less_Environment::$firstSelector = false;
 				}
 				if( $i + 1 < $paths_len ){
 					self::OutputAdd( $strs, Less_Environment::$compress ? ',' : (",\n" . $tabSetStr) );

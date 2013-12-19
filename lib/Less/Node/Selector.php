@@ -92,7 +92,7 @@ class Less_Tree_Selector extends Less_Tree{
 
 	function genCSS( $env, &$strs ){
 
-		if( (!$env || !property_exists($env,'firstSelector') || !$env->firstSelector) && $this->elements[0]->combinator->value === "" ){
+		if( !Less_Environment::$firstSelector && $this->elements[0]->combinator->value === "" ){
 			self::OutputAdd( $strs, ' ', $this->currentFileInfo, $this->index );
 		}
 		if( !$this->_css ){

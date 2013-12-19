@@ -56,6 +56,7 @@ class Less_Environment{
 
 	public static $comma_space;
 	public static $colon_space;
+	public static $firstSelector;
 
 	public function __construct( $options = null ){
 		$this->frames = array();
