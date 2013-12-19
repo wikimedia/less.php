@@ -71,11 +71,11 @@ class Less_Environment{
 
 
 		if( self::$compress ){
-			self::$comma_space = ', ';
-			self::$colon_space = ': ';
+			self::$comma_space = ',';
+			self::$colon_space = ':';
 		}else{
 			self::$comma_space = ', ';
-			self::$colon_space = ':';
+			self::$colon_space = ': ';
 		}
 
 
