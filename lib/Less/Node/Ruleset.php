@@ -267,7 +267,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$tabSetStr = str_repeat( '  ' , $env->tabLevel-1 );
 		}
 
-		static $classes = array();
 		foreach($this->rules as $rule){
 
 			$class = get_class($rule);

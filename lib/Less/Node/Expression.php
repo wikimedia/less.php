@@ -42,7 +42,7 @@ class Less_Tree_Expression extends Less_Tree{
 				$this->value = array_slice($this->value,0);
 			}
 
-			if( property_exists($this->value[0], 'parens') && $this->value[0]->parens && !$this->value[0]->parensInOp ){
+			if( ($this->value[0] instanceof Less_Tree_Expression) && $this->value[0]->parens && !$this->value[0]->parensInOp ){
 				$doubleParen = true;
 			}
 
