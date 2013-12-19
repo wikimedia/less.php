@@ -83,7 +83,7 @@ class Less_toCSSVisitor extends Less_visitor{
 
 		$visitDeeper = false;
 		$rulesets = array();
-		if( property_exists($rulesetNode,'firstRoot') && $rulesetNode->firstRoot ){
+		if( $rulesetNode->firstRoot ){
 			$this->checkPropertiesInRoot( $rulesetNode->rules );
 		}
 		if( !$rulesetNode->root ){
