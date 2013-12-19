@@ -354,7 +354,7 @@ class Less_Parser extends Less_Cache{
 	 * @param string $tok
 	 * @return null|bool|object
 	 */
-	private function match(){
+	private function match($toks){
 
 		// The match is confirmed, add the match length to `this::pos`,
 		// and consume any extra white-space characters (' ' || '\n')
@@ -362,8 +362,7 @@ class Less_Parser extends Less_Cache{
 		// grammar is mostly white-space insensitive.
 		//
 
-		for($i = 0, $len = func_num_args(); $i< $len; $i++){
-			$tok = func_get_arg($i);
+		foreach($toks as $tok){
 
 			if( strlen($tok) == 1 ){
 				$match = $this->MatchChar($tok);
@@ -382,16 +381,15 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
-	private function MatchFuncs(){
+	private function MatchFuncs($toks){
 
-		for($i = 0, $len = func_num_args(); $i< $len; $i++){
-			$tok = func_get_arg($i);
+		foreach($toks as $tok){
 			$match = $this->$tok();
-
 			if( $match ){
 				return $match;
 			}
 		}
+
 	}
 
 	// Match a single character in the input,
@@ -448,7 +446,7 @@ class Less_Parser extends Less_Cache{
 
 
 	public function expect($tok, $msg = NULL) {
-		$result = $this->match($tok);
+		$result = $this->match( array($tok) );
 		if (!$result) {
 			throw new Less_ParserException(
 				$msg === NULL
@@ -510,7 +508,7 @@ class Less_Parser extends Less_Cache{
 
 		$this->skipWhitespace(0);
 
-		while( ($node = $this->MatchFuncs('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective' ))
+		while( ($node = $this->MatchFuncs( array('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective') ))
 							|| $this->skipSemicolons()
 		){
 
@@ -661,7 +659,7 @@ class Less_Parser extends Less_Cache{
 	 */
 	private function parseEntitiesArguments(){
 		$args = array();
-		while( $arg = $this->MatchFuncs('parseEntitiesAssignment','parseExpression') ){
+		while( $arg = $this->MatchFuncs( array('parseEntitiesAssignment','parseExpression') ) ){
 			$args[] = $arg;
 			if (! $this->MatchChar(',')) {
 				break;
@@ -671,7 +669,7 @@ class Less_Parser extends Less_Cache{
 	}
 
 	private function parseEntitiesLiteral(){
-		return $this->MatchFuncs('parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor');
+		return $this->MatchFuncs( array('parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor') );
 	}
 
 	// Assignments are argument entities for calls.
@@ -699,7 +697,7 @@ class Less_Parser extends Less_Cache{
 			return;
 		}
 
-		$value = $this->match('parseEntitiesQuoted','parseEntitiesVariable','/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/');
+		$value = $this->match( array('parseEntitiesQuoted','parseEntitiesVariable','/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/') );
 		if( !$value ){
 			$value = '';
 		}
@@ -947,7 +945,7 @@ class Less_Parser extends Less_Cache{
 					}
 					break;
 				}
-				$arg = $this->MatchFuncs('parseEntitiesVariable','parseEntitiesLiteral','parseEntitiesKeyword');
+				$arg = $this->MatchFuncs( array('parseEntitiesVariable','parseEntitiesLiteral','parseEntitiesKeyword') );
 			}
 
 
@@ -1103,7 +1101,7 @@ class Less_Parser extends Less_Cache{
 	//
 	private function parseEntity(){
 
-		return $this->MatchFuncs('parseEntitiesLiteral','parseEntitiesVariable','parseEntitiesUrl','parseEntitiesCall','parseEntitiesKeyword','parseEntitiesJavascript','parseComment');
+		return $this->MatchFuncs( array('parseEntitiesLiteral','parseEntitiesVariable','parseEntitiesUrl','parseEntitiesCall','parseEntitiesKeyword','parseEntitiesJavascript','parseComment') );
 	}
 
 	//
@@ -1155,8 +1153,8 @@ class Less_Parser extends Less_Cache{
 	private function parseElement(){
 		$c = $this->parseCombinator();
 
-		$e = $this->match( '/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
-			'*', '&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#](?=@)/', 'parseEntitiesVariableCurly');
+		$e = $this->match( array('/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
+			'*', '&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#](?=@)/', 'parseEntitiesVariableCurly') );
 
 		if( !$e ){
 			if( $this->MatchChar('(') ){
@@ -1262,7 +1260,7 @@ class Less_Parser extends Less_Cache{
 		}
 
 		if( ($op = $this->MatchReg('/\\G[|~*$^]?=/')) ){
-			$val = $this->match('parseEntitiesQuoted','/\\G[0-9]+%/','/\\G[\w-]+/','parseEntitiesVariableCurly');
+			$val = $this->match( array('parseEntitiesQuoted','/\\G[0-9]+%/','/\\G[\w-]+/','parseEntitiesVariableCurly') );
 		}
 
 		$this->expect(']');
@@ -1321,15 +1319,15 @@ class Less_Parser extends Less_Cache{
 			}
 		}
 
-		if( $name = $this->MatchFuncs('parseVariable','parseRuleProperty') ){
+		if( $name = $this->MatchFuncs( array('parseVariable','parseRuleProperty')) ){
 
 
 			// prefer to try to parse first if its a variable or we are compressing
 			// but always fallback on the other one
 			if( !$tryAnonymous && (Less_Environment::$compress || ( $name[0] === '@')) ){
-				$value = $this->MatchFuncs('parseValue','parseAnonymousValue');
+				$value = $this->MatchFuncs( array('parseValue','parseAnonymousValue'));
 			}else{
-				$value = $this->MatchFuncs('parseAnonymousValue','parseValue');
+				$value = $this->MatchFuncs( array('parseAnonymousValue','parseValue'));
 			}
 
 			$important = $this->parseImportant();
@@ -1384,7 +1382,7 @@ class Less_Parser extends Less_Cache{
 			}
 		}
 
-		if( $dir && ($path = $this->MatchFuncs('parseEntitiesQuoted','parseEntitiesUrl')) ){
+		if( $dir && ($path = $this->MatchFuncs( array('parseEntitiesQuoted','parseEntitiesUrl'))) ){
 			$features = $this->parseMediaFeatures();
 			if( $this->MatchChar(';') ){
 				if( $features ){
@@ -1438,7 +1436,7 @@ class Less_Parser extends Less_Cache{
 
 		do {
 
-			if( $e = $this->MatchFuncs('parseEntitiesKeyword','parseEntitiesVariable') ){
+			if( $e = $this->MatchFuncs(array('parseEntitiesKeyword','parseEntitiesVariable')) ){
 				$nodes[] = $e;
 			} elseif ($this->MatchChar('(')) {
 				$p = $this->parseProperty();
@@ -1502,7 +1500,7 @@ class Less_Parser extends Less_Cache{
 			return;
 		}
 
-		$value = $this->MatchFuncs('parseImport','parseMedia');
+		$value = $this->MatchFuncs(array('parseImport','parseMedia'));
 		if( $value ){
 			return $value;
 		}
@@ -1624,7 +1622,7 @@ class Less_Parser extends Less_Cache{
 
 		if ($m = $this->parseOperand()) {
 			$isSpaced = $this->isWhitespace( -1 );
-			while( !$this->PeekReg('/\\G\/[*\/]/') && ($op = $this->match('/','*')) ){
+			while( !$this->PeekReg('/\\G\/[*\/]/') && ($op = $this->match(array('/','*'))) ){
 
 				if( $a = $this->parseOperand() ){
 					$m->parensInOp = true;
@@ -1644,7 +1642,7 @@ class Less_Parser extends Less_Cache{
 		if ($m = $this->parseMultiplication()) {
 			$isSpaced = $this->isWhitespace( -1 );
 
-			while( ($op = ($op = $this->MatchReg('/\\G[-+]\s+/')) ? $op : ( !$isSpaced ? ($this->match('+','-')) : false )) && ($a = $this->parseMultiplication()) ){
+			while( ($op = ($op = $this->MatchReg('/\\G[-+]\s+/')) ? $op : ( !$isSpaced ? ($this->match(array('+','-'))) : false )) && ($a = $this->parseMultiplication()) ){
 				$m->parensInOp = true;
 				$a->parensInOp = true;
 				$operation = new Less_Tree_Operation($op, array($operation ? $operation : $m, $a), $isSpaced);
@@ -1673,10 +1671,10 @@ class Less_Parser extends Less_Cache{
 		if ($this->MatchString('not')) $negate = true;
 		//if ($this->MatchReg('/\\Gnot/')) $negate = true;
 		$this->expect('(');
-		if ($a = ($this->MatchFuncs('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted')) ) {
+		if ($a = ($this->MatchFuncs(array('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted'))) ) {
 
 			if( $op = $this->MatchReg('/\\G(?:>=|<=|=<|[<=>])/') ){
-				if ($b = ($this->MatchFuncs('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted'))) {
+				if ($b = ($this->MatchFuncs(array('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted')))) {
 					$c = new Less_Tree_Condition($op, $a, $b, $index, $negate);
 				} else {
 					throw new Less_ParserException('Unexpected expression');
@@ -1701,7 +1699,7 @@ class Less_Parser extends Less_Cache{
 			$negate = $this->MatchChar('-');
 		}
 
-		$o = $this->MatchFuncs('parseSub','parseEntitiesDimension','parseEntitiesColor','parseEntitiesVariable','parseEntitiesCall');
+		$o = $this->MatchFuncs(array('parseSub','parseEntitiesDimension','parseEntitiesColor','parseEntitiesVariable','parseEntitiesCall'));
 
 		if( $negate ){
 			$o->parensInOp = true;
@@ -1721,7 +1719,7 @@ class Less_Parser extends Less_Cache{
 	private function parseExpression (){
 		$entities = array();
 
-		while( $e = $this->MatchFuncs('parseAddition','parseEntity') ){
+		while( $e = $this->MatchFuncs(array('parseAddition','parseEntity')) ){
 			$entities[] = $e;
 			// operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
 			if( !$this->PeekReg('/\\G\/[\/*]/') && ($delim = $this->MatchChar('/')) ){
