@@ -53,6 +53,8 @@ class Less_Environment{
 
 	public $lastRule = false;
 
+	public $importMultiple = false;
+
 	//public $type = 'Environment';
 
 
@@ -88,22 +90,20 @@ class Less_Environment{
 	public function copyEvalEnv($frames = array() ){
 
 		$evalCopyProperties = array(
-			'silent',      // whether to swallow errors and warnings
-			'verbose',     // whether to log more activity
-			'yuicompress', // whether to compress with the outside tool yui compressor
-			'ieCompat',    // whether to enforce IE compatibility (IE8 data-uri)
+			//'silent',      // whether to swallow errors and warnings
+			//'verbose',     // whether to log more activity
+			//'yuicompress', // whether to compress with the outside tool yui compressor
+			//'ieCompat',    // whether to enforce IE compatibility (IE8 data-uri)
 			'strictMath',  // whether math has to be within parenthesis
 			'strictUnits', // whether units need to evaluate correctly
-			'cleancss',    // whether to compress with clean-css
-			'sourceMap',   // whether to output a source map
-			'importMultiple'// whether we are currently importing multiple copies
+			//'cleancss',    // whether to compress with clean-css
+			//'sourceMap',   // whether to output a source map
+			//'importMultiple'// whether we are currently importing multiple copies
 			);
 
 		$new_env = new Less_Environment();
 		foreach($evalCopyProperties as $property){
-			if( property_exists($this,$property) ){
-				$new_env->$property = $this->$property;
-			}
+			$new_env->$property = $this->$property;
 		}
 		$new_env->frames = $frames;
 		return $new_env;

@@ -156,7 +156,7 @@ class Less_Tree_Import extends Less_Tree{
 		if( $realpath && Less_Parser::FileParsed($realpath) ){
 			if( isset($this->currentFileInfo['reference']) ){
 				$evald->skip = true;
-			}elseif( !isset($evald->options['multiple']) && !property_exists($env,'importMultiple') ){
+			}elseif( !isset($evald->options['multiple']) && !$env->importMultiple ){
 				$evald->skip = true;
 			}
 		}
