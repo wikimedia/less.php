@@ -134,7 +134,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 		array_shift($env->selectors);
 
 		if ($mediaBlockCount) {
-			for($i = $mediaBlockCount; $i < count($env->mediaBlocks); $i++ ){
+			$len = count($env->mediaBlocks);
+			for($i = $mediaBlockCount; $i < $len; $i++ ){
 				$env->mediaBlocks[$i]->bubbleSelectors($selectors);
 			}
 		}
@@ -178,7 +179,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 	}
 
 	public function matchArgs($args){
-		return !is_array($args) || count($args) === 0;
+		return !is_array($args) || !$args;
 	}
 
 	public function matchCondition( $args, $env ){
@@ -512,7 +513,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 	function mergeElementsOnToSelectors( $elements, &$selectors){
 
-		if( count($selectors) == 0) {
+		if( !$selectors ){
 			$selectors[] = array( new Less_Tree_Selector($elements) );
 			return;
 		}
@@ -521,7 +522,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		foreach( $selectors as &$sel){
 
 			// if the previous thing in sel is a parent this needs to join on to it
-			if ( count($sel) > 0) {
+			if( $sel ){
 				$last = count($sel)-1;
 				$sel[$last] = $sel[$last]->createDerived( array_merge($sel[$last]->elements, $elements) );
 			}else{
