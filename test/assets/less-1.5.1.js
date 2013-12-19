@@ -3611,9 +3611,11 @@ tree.Expression.prototype = {
 (function (tree) {
 
 tree.Extend = function Extend(selector, option, index) {
-    this.selector = selector;
+	this.selector = selector;
     this.option = option;
     this.index = index;
+    this.object_id = tree.Extend.i++;
+	this.parent_ids = [this.object_id];
 
     switch(option) {
         case "all":
@@ -3625,7 +3627,10 @@ tree.Extend = function Extend(selector, option, index) {
             this.allowAfter = false;
         break;
     }
+
 };
+
+tree.Extend.i = 0;
 
 tree.Extend.prototype = {
     type: "Extend",
@@ -5839,7 +5844,8 @@ tree.Variable.prototype = {
                     targetExtend = extendsListTarget[targetExtendIndex];
 
                     // look for circular references
-                    if (this.inInheritanceChain(targetExtend, extend)) { continue; }
+                    if( extend.parent_ids.indexOf( targetExtend.object_id ) >= 0 ){ continue; }
+                    //if (this.inInheritanceChain(targetExtend, extend)) { continue; }
 
                     // find a match in the target extends self selector (the bit before :extend)
                     selectorPath = [targetExtend.selfSelectors[0]];
@@ -5865,7 +5871,7 @@ tree.Variable.prototype = {
                             newExtend.ruleset = targetExtend.ruleset;
 
                             //remember its parents for circular references
-                            newExtend.parents = [targetExtend, extend];
+                            newExtend.parent_ids = newExtend.parent_ids.concat(targetExtend.parent_ids, extend.parent_ids);
 
                             // only process the selector once.. if we have :extend(.a,.b) then multiple
                             // extends will look at the same selector path, so when extending
@@ -5900,20 +5906,6 @@ tree.Variable.prototype = {
             } else {
                 return extendsToAdd;
             }
-        },
-        inInheritanceChain: function (possibleParent, possibleChild) {
-            if (possibleParent === possibleChild) {
-                return true;
-            }
-            if (possibleChild.parents) {
-                if (this.inInheritanceChain(possibleParent, possibleChild.parents[0])) {
-                    return true;
-                }
-                if (this.inInheritanceChain(possibleParent, possibleChild.parents[1])) {
-                    return true;
-                }
-            }
-            return false;
         },
         visitRule: function (ruleNode, visitArgs) {
             visitArgs.visitDeeper = false;

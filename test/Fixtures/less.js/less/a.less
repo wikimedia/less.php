@@ -1,6 +1,30 @@
-//very simple chaining
-.a {
+
+.replace.replace,
+.c.replace + .replace {
+  .replace{
+    prop: copy-paste-replace;
+  }
+}
+.rep_ace:extend(.replace.replace .replace) {}
+
+
+/*
+.a > .d,
+.z .y{
   color: black;
 }
-.b:extend(.a) {}
-.c:extend(.b) {}
+.f:extend(.a) {}
+.g:extend(.d) {}
+.h:extend(.z) {}
+.i:extend(.y) {}
+.b:extend(.a > .d, .z) {}
+.c.e:extend(.b) {}
+*/
+
+/*
+.i.j:extend(.g all) {
+  color: white;
+}
+.k:extend(.i all) {}
+.l:extend(.j all) {}
+*/

@@ -6,6 +6,7 @@ ini_set('display_errors',1);
 error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
 set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
 
+set_time_limit(60);
 //error_reporting(E_ALL | E_STRICT);
 
 
@@ -114,7 +115,6 @@ class ParserTest{
 			$options = array( 'compress'=>true );
 		}
 
-
 		$compiled = '';
 		try{
 
@@ -126,7 +126,7 @@ class ParserTest{
 			*/
 
 			$parser = new Less_Parser( $options );
-			$parser->SetCacheDir( $this->cache_dir );
+			//$parser->SetCacheDir( $this->cache_dir );
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 
@@ -134,6 +134,7 @@ class ParserTest{
 			echo '<h1>Parser Error</h1>';
 			echo '<p>'.$e->getMessage().'</p>';
 		}
+
 
 		$css = file_get_contents($css);
 

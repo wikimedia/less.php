@@ -37,12 +37,15 @@ class Less_Parser extends Less_Cache{
 
 	private static $imports = array();
 
+	public static $has_extends = false;
+
 
 
 	/**
 	 * @param Environment|null $env
 	 */
 	public function __construct( $env = null ){
+
 
 		// Top parser on an import tree must be sure there is one "env"
 		// which will then be passed around by reference.
@@ -52,11 +55,11 @@ class Less_Parser extends Less_Cache{
 			$this->env = new Less_Environment( $env );
 			self::$imports = array();
 			self::$import_dirs = array();
+			self::$has_extends = false;
 		}
 
 		$this->pos = 0;
 	}
-
 
 
 
@@ -85,8 +88,11 @@ class Less_Parser extends Less_Cache{
 		$joinSelector = new Less_joinSelectorVisitor();
 		$joinSelector->run($evaldRoot);
 
-		$extendsVisitor = new Less_processExtendsVisitor();
-		$extendsVisitor->run($evaldRoot);
+
+		if( self::$has_extends ){
+			$extendsVisitor = new Less_processExtendsVisitor();
+			$extendsVisitor->run($evaldRoot);
+		}
 
 		$toCSSVisitor = new Less_toCSSVisitor( $this->env );
 		$toCSSVisitor->run($evaldRoot);
@@ -851,6 +857,10 @@ class Less_Parser extends Less_Cache{
 
 		if( $isRule ){
 			$this->expect('/\\G;/');
+		}
+
+		if( count($extendList) ){
+			self::$has_extends = true;
 		}
 
 		return $extendList;
