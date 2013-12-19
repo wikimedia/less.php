@@ -347,7 +347,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$rulesetNodes[$i]->genCSS($env, $strs);
 		}
 
-		if( !count($strs) && !Less_Environment::$compress && $this->firstRoot ){
+		if( !$strs && !Less_Environment::$compress && $this->firstRoot ){
 			self::OutputAdd( $strs, "\n" );
 		}
 
