@@ -75,10 +75,10 @@ class Less_Tree_Dimension extends Less_Tree{
 
 		if( $op === '+' || $op === '-' ){
 
-			if( !count($unit->numerator) && !count($unit->denominator) ){
+			if( !$unit->numerator && !$unit->denominator ){
 				$unit->numerator = $other->unit->numerator;
 				$unit->denominator = $other->unit->denominator;
-			}elseif( !count($other->unit->numerator) && !count($other->unit->denominator) ){
+			}elseif( !$other->unit->numerator && !$other->unit->denominator ){
 				// do nothing
 			}else{
 				$other = $other->convertTo( $this->unit->usedUnits());
@@ -151,7 +151,8 @@ class Less_Tree_Dimension extends Less_Tree{
 			$group = Less_Tree_UnitConversions::${$groupName};
 
 			//numerator
-			for($i=0; $i < count($unit->numerator); $i++ ){
+			$len = count($unit->numerator);
+			for($i=0; $i < $len; $i++ ){
 				$atomicUnit = $unit->numerator[$i];
 				if( !isset($group[$atomicUnit]) ){
 					continue;
@@ -163,7 +164,8 @@ class Less_Tree_Dimension extends Less_Tree{
 			}
 
 			//denominator
-			for($i=0; $i < count($unit->denominator); $i++ ){
+			$len = count($unit->denominator);
+			for($i=0; $i < $len; $i++ ){
 				$atomicUnit = $unit->denominator[$i];
 				if( !isset($group[$atomicUnit]) ){
 					continue;
