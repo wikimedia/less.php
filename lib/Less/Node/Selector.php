@@ -73,13 +73,13 @@ class Less_Tree_Selector extends Less_Tree{
 	public function compile($env) {
 
 		$elements = array();
-		for( $i = 0, $len = count($this->elements); $i < $len; $i++){
-			$elements[] = $this->elements[$i]->compile($env);
+		foreach($this->elements as $el){
+			$elements[] = $el->compile($env);
 		}
 
 		$extendList = array();
-		for($i = 0, $len = count($this->extendList); $i < $len; $i++){
-			$extendList[] = $this->extendList[$i]->compile($this->extendList[$i]);
+		foreach($this->extendList as $el){
+			$extendList[] = $el->compile($el);
 		}
 
 		$evaldCondition = false;
