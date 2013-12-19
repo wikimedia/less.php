@@ -18,9 +18,9 @@ class Less_Tree_Unit extends Less_Tree{
 
 	function genCSS( $env, &$strs ){
 
-		if( count($this->numerator) ){
+		if( $this->numerator ){
 			self::OutputAdd( $strs, $this->numerator[0] );
-		}elseif( count($this->denominator) ){
+		}elseif( $this->denominator ){
 			self::OutputAdd( $strs, $this->denominator[0] );
 		}elseif( (!$env || !$env->strictUnits) && $this->backupUnit ){
 			self::OutputAdd( $strs, $this->backupUnit );
@@ -54,11 +54,11 @@ class Less_Tree_Unit extends Less_Tree{
 	}
 
 	function isEmpty(){
-		return count($this->numerator) === 0 && count($this->denominator) === 0;
+		return !$this->numerator && !$this->denominator;
 	}
 
 	function isSingular() {
-		return count($this->numerator) <= 1 && count($this->denominator) == 0;
+		return count($this->numerator) <= 1 && !$this->denominator;
 	}
 
 
@@ -68,15 +68,13 @@ class Less_Tree_Unit extends Less_Tree{
 		foreach(Less_Tree_UnitConversions::$groups as $groupName){
 			$group = Less_Tree_UnitConversions::${$groupName};
 
-			for($i=0; $i < count($this->numerator); $i++ ){
-				$atomicUnit = $this->numerator[$i];
+			foreach($this->numerator as $atomicUnit){
 				if( isset($group[$atomicUnit]) && !isset($result[$groupName]) ){
 					$result[$groupName] = $atomicUnit;
 				}
 			}
 
-			for($i=0; $i < count($this->denominator); $i++ ){
-				$atomicUnit = $this->denominator[$i];
+			foreach($this->denominator as $atomicUnit){
 				if( isset($group[$atomicUnit]) && !isset($result[$groupName]) ){
 					$result[$groupName] = $atomicUnit;
 				}
@@ -90,16 +88,14 @@ class Less_Tree_Unit extends Less_Tree{
 		$counter = array();
 		$backup = null;
 
-		for( $i = 0; $i < count($this->numerator); $i++ ){
-			$atomicUnit = $this->numerator[$i];
+		foreach($this->numerator as $atomicUnit){
 			if( !$backup ){
 				$backup = $atomicUnit;
 			}
 			$counter[$atomicUnit] = ( isset($counter[$atomicUnit]) ? $counter[$atomicUnit] : 0) + 1;
 		}
 
-		for( $i = 0; $i < count($this->denominator); $i++ ){
-			$atomicUnit = $this->denominator[$i];
+		foreach($this->denominator as $atomicUnit){
 			if( !$backup ){
 				$backup = $atomicUnit;
 			}
@@ -121,7 +117,7 @@ class Less_Tree_Unit extends Less_Tree{
 			}
 		}
 
-		if( count($this->numerator) === 0 && count($this->denominator) === 0 && $backup ){
+		if( !$this->numerator && !$this->denominator && $backup ){
 			$this->backupUnit = $backup;
 		}
 
