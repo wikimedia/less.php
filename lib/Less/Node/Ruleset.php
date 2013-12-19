@@ -422,7 +422,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 				// merge the current list of non parent selector elements
 				// on to the current list of selectors to add
-				if( count($currentElements) > 0) {
+				if( $currentElements ){
 					$this->mergeElementsOnToSelectors( $currentElements, $newSelectors);
 				}
 
@@ -431,10 +431,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 					// if we don't have any parent paths, the & might be in a mixin so that it can be used
 					// whether there are parents or not
-					if( !count($context) ){
+					if( !$context ){
 						// the combinator used on el should now be applied to the next element instead so that
 						// it is not lost
-						if( count($sel) > 0 ){
+						if( $sel ){
 							$sel[0]->elements = array_slice($sel[0]->elements,0);
 							$sel[0]->elements[] = new Less_Tree_Element($el->combinator, '', 0, $el->index, $el->currentFileInfo );
 						}
@@ -454,7 +454,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 							//construct the joined selector - if & is the first thing this will be empty,
 							// if not newJoinedSelector will be the last set of elements in the selector
-							if ( count($sel) > 0) {
+							if( $sel ){
 								$newSelectorPath = $sel;
 								$lastSelector = array_pop($newSelectorPath);
 								$newJoinedSelector = $selector->createDerived( array_slice($lastSelector->elements,0) );
@@ -469,7 +469,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 								$afterParentJoin = array_merge($afterParentJoin, array_slice($parentSel,1) );
 							}
 
-							if ( count($parentSel) > 0) {
+							if ( $parentSel ){
 								$newJoinedSelectorEmpty = false;
 
 								// join the elements so far with the first part of the parent
@@ -500,11 +500,11 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		// if we have any elements left over (e.g. .a& .b == .b)
 		// add them on to all the current selectors
-		if( count($currentElements) > 0) {
+		if( $currentElements ){
 			$this->mergeElementsOnToSelectors($currentElements, $newSelectors);
 		}
 		foreach( $newSelectors as $new_sel){
-			if( count($new_sel) ){
+			if( $new_sel ){
 				$paths[] = $new_sel;
 			}
 		}
