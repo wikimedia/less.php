@@ -160,7 +160,6 @@ class Less_processExtendsVisitor extends Less_visitor{
 		// returns an array of selector matches that can then be replaced
 		//
 		$needleElements = $extend->selector->elements;
-		$needleElements_len = false;
 		$potentialMatches = array();
 		$potentialMatches_len = 0;
 		$potentialMatch = null;
@@ -201,11 +200,8 @@ class Less_processExtendsVisitor extends Less_visitor{
 
 					// if we are still valid and have finished, test whether we have elements after and whether these are allowed
 					if( $potentialMatch ){
-						if( $needleElements_len === false ){
-							$needleElements_len = count($needleElements);
-						}
 
-						$potentialMatch['finished'] = ($potentialMatch['matched'] === $needleElements_len );
+						$potentialMatch['finished'] = ($potentialMatch['matched'] === $extend->selector->elements_len );
 
 						if( $potentialMatch['finished'] &&
 							(!$extend->allowAfter && ($hackstackElementIndex+1 < $haystack_elements_len || $haystackSelectorIndex+1 < $haystack_path_len)) ){
@@ -215,7 +211,7 @@ class Less_processExtendsVisitor extends Less_visitor{
 					// if null we remove, if not, we are still valid, so either push as a valid match or continue
 					if( $potentialMatch ){
 						if( $potentialMatch['finished'] ){
-							$potentialMatch['length'] = $needleElements_len;
+							$potentialMatch['length'] = $extend->selector->elements_len;
 							$potentialMatch['endPathIndex'] = $haystackSelectorIndex;
 							$potentialMatch['endPathElementIndex'] = $hackstackElementIndex + 1; // index after end of match
 							$potentialMatches = array(); // we don't allow matches to overlap, so start matching again
@@ -262,10 +258,10 @@ class Less_processExtendsVisitor extends Less_visitor{
 		$elementValue1 = $elementValue1->value;
 		if( $elementValue1 instanceof Less_Tree_Selector ){
 			$elementValue2 = $elementValue2->value;
-			if( !($elementValue2 instanceof Less_Tree_Selector) || count($elementValue1->elements) !== count($elementValue2->elements) ){
+			if( !($elementValue2 instanceof Less_Tree_Selector) || $elementValue1->elements_len !== $elementValue2->elements_len ){
 				return false;
 			}
-			for( $i = 0; $i < count($elementValue1->elements); $i++ ){
+			for( $i = 0; $i < $elementValue1->elements_len; $i++ ){
 				if( $elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value ){
 					if( $i !== 0 || ($elementValue1->elements[$i]->combinator->value || ' ') !== ($elementValue2->elements[$i]->combinator->value || ' ') ){
 						return false;

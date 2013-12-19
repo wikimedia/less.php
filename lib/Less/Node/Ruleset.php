@@ -239,7 +239,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 					foreach( $rule->selectors as $ruleSelector ){
 						$match = $selector->match($ruleSelector);
 						if( $match ){
-							if( count($selector->elements) > $match ){
+							if( $selector->elements_len > $match ){
 								$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, $match)), $self, $env));
 							} else {
 								$this->lookups[$key][] = $rule;
