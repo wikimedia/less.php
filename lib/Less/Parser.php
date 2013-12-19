@@ -145,7 +145,6 @@ class Less_Parser extends Less_Cache{
 		$return = null;
 		if( $returnRoot ){
 			$rules = $this->GetRules( $filename );
-			self::ReleaseMemory();
 			$return = new Less_Tree_Ruleset(array(), $rules );
 		}else{
 			$this->_parse( $filename );
@@ -221,7 +220,6 @@ class Less_Parser extends Less_Cache{
 
 	private function _parse( $file_path = false ){
 		$this->rules = array_merge($this->rules, $this->GetRules( $file_path ));
-		self::ReleaseMemory();
 	}
 
 
