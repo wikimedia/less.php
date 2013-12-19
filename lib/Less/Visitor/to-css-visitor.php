@@ -124,17 +124,16 @@ class Less_toCSSVisitor extends Less_visitor{
 			// then we can decide now whether we want it or not
 			if( $nodeRuleCnt > 0 ){
 				$rulesetNode->accept($this);
-				$nodeRuleCnt = count($rulesetNode->rules);
 
-				if( $nodeRuleCnt > 0 ){
+				if( $rulesetNode->rules ){
 
-					if( $nodeRuleCnt >  1 ){
+					if( count($rulesetNode->rules) >  1 ){
 						$this->_mergeRules( $rulesetNode->rules );
 						$this->_removeDuplicateRules( $rulesetNode->rules );
 					}
 
 					// now decide whether we keep the ruleset
-					if( count($rulesetNode->paths) > 0 ){
+					if( $rulesetNode->paths ){
 						//array_unshift($rulesets, $rulesetNode);
 						array_splice($rulesets,0,0,array($rulesetNode));
 					}
@@ -144,7 +143,7 @@ class Less_toCSSVisitor extends Less_visitor{
 
 		}else{
 			$rulesetNode->accept( $this );
-			if( (property_exists($rulesetNode,'firstRoot') && $rulesetNode->firstRoot) || count($rulesetNode->rules) > 0 ){
+			if( $rulesetNode->firstRoot || $rulesetNode->rules ){
 				return $rulesetNode;
 				//array_unshift($rulesets, $rulesetNode);
 			}
