@@ -18,12 +18,12 @@ class Less_Tree_Comment extends Less_Tree{
 	}
 
 	public function toCSS($env = null){
-		return $env->compress ? '' : $this->value;
+		return Less_Environment::$compress ? '' : $this->value;
 	}
 
 	public function isSilent( $env ){
 		$isReference = ($this->currentFileInfo && isset($this->currentFileInfo['reference']) && (!isset($this->isReferenced) || !$this->isReferenced) );
-		$isCompressed = $env->compress && !preg_match('/^\/\*!/', $this->value);
+		$isCompressed = Less_Environment::$compress && !preg_match('/^\/\*!/', $this->value);
 		return $this->silent || $isReference || $isCompressed;
 	}
 

@@ -30,7 +30,7 @@ class Less_Tree_Rule extends Less_Tree{
 
 	function genCSS( $env, &$strs ){
 
-		self::OutputAdd( $strs, $this->name . ($env->compress ? ':' : ': '), $this->currentFileInfo, $this->index);
+		self::OutputAdd( $strs, $this->name . Less_Environment::$colon_space, $this->currentFileInfo, $this->index);
 		try{
 			$this->value->genCSS($env, $strs);
 
@@ -39,7 +39,7 @@ class Less_Tree_Rule extends Less_Tree{
 			$e->filename = $this->currentFileInfo['filename'];
 			throw e;
 		}
-		self::OutputAdd( $strs, $this->important . (($this->inline || (property_exists($env,'lastRule') && $env->lastRule && $env->compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
+		self::OutputAdd( $strs, $this->important . (($this->inline || (property_exists($env,'lastRule') && $env->lastRule && Less_Environment::$compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
 	}
 
 	public function compile ($env){

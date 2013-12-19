@@ -264,7 +264,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 
 		$tabRuleStr = $tabSetStr = '';
-		if( !$env->compress && $env->tabLevel ){
+		if( !Less_Environment::$compress && $env->tabLevel ){
 			$tabRuleStr = str_repeat( '  ' , $env->tabLevel );
 			$tabSetStr = str_repeat( '  ' , $env->tabLevel-1 );
 		}
@@ -299,11 +299,11 @@ class Less_Tree_Ruleset extends Less_Tree{
 					$env->firstSelector = false;
 				}
 				if( $i + 1 < $paths_len ){
-					self::OutputAdd( $strs, $env->compress ? ',' : (",\n" . $tabSetStr) );
+					self::OutputAdd( $strs, Less_Environment::$compress ? ',' : (",\n" . $tabSetStr) );
 				}
 			}
 
-			self::OutputAdd( $strs, ($env->compress ? '{' : " {\n") . $tabRuleStr );
+			self::OutputAdd( $strs, (Less_Environment::$compress ? '{' : " {\n") . $tabRuleStr );
 		}
 
 		// Compile rules and rulesets
@@ -325,29 +325,29 @@ class Less_Tree_Ruleset extends Less_Tree{
 			}
 
 			if( !property_exists($env,'lastRule') || !$env->lastRule ){
-				self::OutputAdd( $strs, $env->compress ? '' : ("\n" . $tabRuleStr) );
+				self::OutputAdd( $strs, Less_Environment::$compress ? '' : ("\n" . $tabRuleStr) );
 			}else{
 				$env->lastRule = false;
 			}
 		}
 
 		if( !$this->root ){
-			self::OutputAdd( $strs, ($env->compress ? '}' : "\n" . $tabSetStr . '}'));
+			self::OutputAdd( $strs, (Less_Environment::$compress ? '}' : "\n" . $tabSetStr . '}'));
 			$env->tabLevel--;
 		}
 
 		for( $i = 0; $i < $rulesetNodes_len; $i++ ){
 			if( $ruleNodes_len && $firstRuleset ){
-				self::OutputAdd( $strs, ($env->compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr) );
+				self::OutputAdd( $strs, (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr) );
 			}
 			if( !$firstRuleset ){
-				self::OutputAdd( $strs, ($env->compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr));
+				self::OutputAdd( $strs, (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr));
 			}
 			$firstRuleset = false;
 			$rulesetNodes[$i]->genCSS($env, $strs);
 		}
 
-		if( !count($strs) && !$env->compress && $this->firstRoot ){
+		if( !count($strs) && !Less_Environment::$compress && $this->firstRoot ){
 			self::OutputAdd( $strs, "\n" );
 		}
 

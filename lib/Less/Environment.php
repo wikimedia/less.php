@@ -11,7 +11,7 @@ class Less_Environment{
 	public $rootpath;					// option - rootpath to append to URL's
 	public $strictImports = null;		// option -
 	public $insecure;					// option - whether to allow imports from insecure ssl hosts
-	public $compress = false;			// option - whether to compress
+	public static $compress = false;	// option - whether to compress
 	public $processImports;				// option - whether to process imports. if false then imports will not be imported
 	public $javascriptEnabled;			// option - whether JavaScript is enabled. if undefined, defaults to true
 	public $useFileCache;				// browser only - whether to use the per file session cache
@@ -53,16 +53,30 @@ class Less_Environment{
 
 	//public $type = 'Environment';
 
+
+	public static $comma_space;
+	public static $colon_space;
+
 	public function __construct( $options = null ){
 		$this->frames = array();
 
 
 		if( isset($options['compress']) ){
-			$this->compress = (bool)$options['compress'];
+			self::$compress = (bool)$options['compress'];
 		}
 		if( isset($options['strictUnits']) ){
 			$this->strictUnits = (bool)$options['strictUnits'];
 		}
+
+
+		if( self::$compress ){
+			self::$comma_space = ', ';
+			self::$colon_space = ': ';
+		}else{
+			self::$comma_space = ', ';
+			self::$colon_space = ':';
+		}
+
 
 	}
 
@@ -73,7 +87,6 @@ class Less_Environment{
 		$evalCopyProperties = array(
 			'silent',      // whether to swallow errors and warnings
 			'verbose',     // whether to log more activity
-			'compress',    // whether to compress
 			'yuicompress', // whether to compress with the outside tool yui compressor
 			'ieCompat',    // whether to enforce IE compatibility (IE8 data-uri)
 			'strictMath',  // whether math has to be within parenthesis
@@ -145,20 +158,6 @@ class Less_Environment{
 		return implode('/',$path);
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function getCompress(){
-		return $this->compress;
-	}
-
-	/**
-	 * @param bool $compress
-	 * @return void
-	 */
-	public function setCompress($compress){
-		$this->compress = $compress;
-	}
 
 	/**
 	 * @return bool

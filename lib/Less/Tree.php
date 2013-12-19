@@ -20,7 +20,7 @@ class Less_Tree{
 
 
 		// Compressed
-		if( $env->compress ){
+		if( Less_Environment::$compress ){
 			self::OutputAdd( $strs, '{' );
 			for( $i = 0; $i < $ruleCnt; $i++ ){
 				$rules[$i]->genCSS( $env, $strs );

@@ -32,7 +32,7 @@ class Less_Tree_Value extends Less_Tree{
 		for($i = 0; $i < $len; $i++ ){
 			$this->value[$i]->genCSS( $env, $strs);
 			if( $i+1 < $len ){
-				self::OutputAdd( $strs, ($env && $env->compress) ? ',' : ', ' );
+				self::OutputAdd( $strs, Less_Environment::$comma_space );
 			}
 		}
 	}
