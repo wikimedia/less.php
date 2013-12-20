@@ -372,6 +372,10 @@ class Less_Parser extends Less_Cache{
 			if( $tok[0] === '/' ){
 				$match = $this->MatchReg($tok);
 
+				if( $match ){
+					return count($match) === 1 ? $match[0] : $match;
+				}
+
 			}elseif( strlen($tok) == 1 ){
 				$match = $this->MatchChar($tok);
 
@@ -409,22 +413,9 @@ class Less_Parser extends Less_Cache{
 	// Match a regexp from the current start point
 	private function MatchReg($tok){
 
-
 		if( preg_match($tok, $this->input, $match, 0, $this->pos) ){
 			$this->skipWhitespace(strlen($match[0]));
-
-			/*
-			static $messaged = array();
-			static $i = 0;
-			if( count($match) === 1 ){
-				$msg = 'one result: '.$tok;
-				if( !in_array($msg,$messaged) ){
-					$messaged[] = $msg;
-					msg($i++.' '.$msg);
-				}
-			}
-			*/
-			return count($match) === 1 ? $match[0] : $match;
+			return $match;
 		}
 	}
 
@@ -572,13 +563,14 @@ class Less_Parser extends Less_Cache{
 		}
 
 		if( $this->input[$this->pos+1] === '/' ){
-			return new Less_Tree_Comment($this->MatchReg('/\\G\/\/.*/'), true, $this->pos, $this->env->currentFileInfo);
+			$match = $this->MatchReg('/\\G\/\/.*/');
+			return new Less_Tree_Comment($match[0], true, $this->pos, $this->env->currentFileInfo);
 		}
 
 		//$comment = $this->MatchReg('/\\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/');
 		$comment = $this->MatchReg('/\\G\/\*(?s).*?\*+\/\n?/');//not the same as less.js to prevent fatal errors
 		if( $comment ){
-			return new Less_Tree_Comment($comment, false, $this->pos, $this->env->currentFileInfo);
+			return new Less_Tree_Comment($comment[0], false, $this->pos, $this->env->currentFileInfo);
 		}
 	}
 
@@ -639,6 +631,7 @@ class Less_Parser extends Less_Cache{
 
 		$k = $this->MatchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/');
 		if( $k ){
+			$k = $k[0];
 			$color = Less_Tree_Color::fromKeyword($k);
 			if( $color ){
 				return $color;
@@ -736,7 +729,7 @@ class Less_Parser extends Less_Cache{
 
 		$value = $this->parseEntity();
 		if( $value ){
-			return new Less_Tree_Assignment($key, $value);
+			return new Less_Tree_Assignment($key[0], $value);
 		}
 	}
 
@@ -779,7 +772,7 @@ class Less_Parser extends Less_Cache{
 	private function parseEntitiesVariable(){
 		$index = $this->pos;
 		if ($this->PeekChar('@') && ($name = $this->MatchReg('/\\G@@?[\w-]+/'))) {
-			return new Less_Tree_Variable($name, $index, $this->env->currentFileInfo);
+			return new Less_Tree_Variable($name[0], $index, $this->env->currentFileInfo);
 		}
 	}
 
@@ -955,7 +948,7 @@ class Less_Parser extends Less_Cache{
 			if( !$e ){
 				break;
 			}
-			$elements[] = new Less_Tree_Element($c, $e, $this->pos, $this->env->currentFileInfo);
+			$elements[] = new Less_Tree_Element($c, $e[0], $this->pos, $this->env->currentFileInfo);
 			$c = $this->MatchChar('>');
 		}
 
@@ -1193,14 +1186,17 @@ class Less_Parser extends Less_Cache{
 		}
 
 		$value = $this->MatchReg('/\\G[0-9]+/');
-		if ($value === null) {
+		if( $value ){
+			$value = $value[0];
+		}else{
 			$value = $this->parseEntitiesVariable();
+			if( !$value ){
+				return;
+			}
 		}
 
-		if ($value !== null) {
-			$this->expectChar(')');
-			return new Less_Tree_Alpha($value);
-		}
+		$this->expectChar(')');
+		return new Less_Tree_Alpha($value);
 	}
 
 
@@ -1330,7 +1326,7 @@ class Less_Parser extends Less_Cache{
 
 		$this->expectChar(']');
 
-		return new Less_Tree_Attribute($key, $op, $val);
+		return new Less_Tree_Attribute($key, $op[0], $val);
 	}
 
 	//
@@ -1408,7 +1404,7 @@ class Less_Parser extends Less_Cache{
 			}
 
 			if( $value && $this->parseEnd() ){
-				return new Less_Tree_Rule($name, $value, $important, $merge, $start, $this->env->currentFileInfo);
+				return new Less_Tree_Rule($name, $value, $important[0], $merge, $start, $this->env->currentFileInfo);
 			}else{
 				$this->restore();
 				if( $value && !$tryAnonymous ){
@@ -1584,6 +1580,7 @@ class Less_Parser extends Less_Cache{
 		$name = $this->MatchReg('/\\G@[a-z-]+/');
 
 		if( !$name ) return;
+		$name = $name[0];
 
 		$nonVendorSpecificName = $name;
 		$pos = strpos($name,'-', 2);
@@ -1630,7 +1627,7 @@ class Less_Parser extends Less_Cache{
 		if( $hasIdentifier ){
 			$identifier = $this->MatchReg('/\\G[^{]+/');
 			if( $identifier ){
-				$name .= " " .trim($identifier);
+				$name .= " " .trim($identifier[0]);
 			}
 		}
 
@@ -1735,7 +1732,9 @@ class Less_Parser extends Less_Cache{
 
 			while( true ){
 				$op = $this->MatchReg('/\\G[-+]\s+/');
-				if( !$op && !$isSpaced ){
+				if( $op ){
+					$op = $op[0];
+				}elseif( !$isSpaced ){
 					$op = $this->match(array('+','-'));
 				}
 				if( !$op ){
@@ -1788,7 +1787,7 @@ class Less_Parser extends Less_Cache{
 			if( $op ){
 				$b = $this->MatchFuncs(array('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted'));
 				if( $b ){
-					$c = new Less_Tree_Condition($op, $a, $b, $index, $negate);
+					$c = new Less_Tree_Condition($op[0], $a, $b, $index, $negate);
 				} else {
 					throw new Less_ParserException('Unexpected expression');
 				}
