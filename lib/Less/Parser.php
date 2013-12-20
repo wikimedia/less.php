@@ -604,8 +604,8 @@ class Less_Parser extends Less_Cache{
 		if ($e) {
 			$this->MatchChar('~');
 		}
-
-		if ($str = $this->MatchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/')) {
+		$str = $this->MatchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/');
+		if( $str ){
 			$result = $str[0][0] == '"' ? $str[1] : $str[2];
 			return new Less_Tree_Quoted($str[0], $result, $e, $index, $this->env->currentFileInfo );
 		}
@@ -619,7 +619,8 @@ class Less_Parser extends Less_Cache{
 	//
 	private function parseEntitiesKeyword(){
 
-		if( $k = $this->MatchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/') ){
+		$k = $this->MatchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/');
+		if( $k ){
 			$color = Less_Tree_Color::fromKeyword($k);
 			if( $color ){
 				return $color;
@@ -649,9 +650,9 @@ class Less_Parser extends Less_Cache{
 
 		if ($nameLC === 'url') {
 			return null;
-		} else {
-			$this->pos += strlen($name);
 		}
+
+		$this->pos += strlen($name);
 
 		if( $nameLC === 'alpha' ){
 			$alpha_ret = $this->parseAlpha();
@@ -679,10 +680,16 @@ class Less_Parser extends Less_Cache{
 	 * @return array
 	 */
 	private function parseEntitiesArguments(){
+
 		$args = array();
-		while( $arg = $this->MatchFuncs( array('parseEntitiesAssignment','parseExpression') ) ){
+		while( true ){
+			$arg = $this->MatchFuncs( array('parseEntitiesAssignment','parseExpression') );
+			if( !$arg ){
+				break;
+			}
+
 			$args[] = $arg;
-			if (! $this->MatchChar(',')) {
+			if( !$this->MatchChar(',') ){
 				break;
 			}
 		}
@@ -699,7 +706,18 @@ class Less_Parser extends Less_Cache{
 	//	 filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
 	//
 	private function parseEntitiesAssignment() {
-		if (($key = $this->MatchReg('/\\G\w+(?=\s?=)/')) && $this->MatchChar('=') && ($value = $this->parseEntity())) {
+
+		$key = $this->MatchReg('/\\G\w+(?=\s?=)/');
+		if( !$key ){
+			return;
+		}
+
+		if( !$this->MatchChar('=') ){
+			return;
+		}
+
+		$value = $this->parseEntity();
+		if( $value ){
 			return new Less_Tree_Assignment($key, $value);
 		}
 	}
@@ -785,7 +803,8 @@ class Less_Parser extends Less_Cache{
 			return;
 		}
 
-		if ($value = $this->MatchReg('/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/')) {
+		$value = $this->MatchReg('/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/');
+		if( $value ){
 			return new Less_Tree_Dimension($value[1], isset($value[2]) ? $value[2] : null);
 		}
 	}
@@ -797,8 +816,8 @@ class Less_Parser extends Less_Cache{
 	// U+0?? or U+00A1-00A9
 	//
 	function parseUnicodeDescriptor() {
-
-		if ($ud = $this->MatchReg('/\\G(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/')) {
+		$ud = $this->MatchReg('/\\G(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/');
+		if( $ud ){
 			return new Less_Tree_UnicodeDescriptor($ud[0]);
 		}
 	}
@@ -822,7 +841,8 @@ class Less_Parser extends Less_Cache{
 		if( $e ){
 			$this->MatchChar('~');
 		}
-		if ($str = $this->MatchReg('/\\G`([^`]*)`/')) {
+		$str = $this->MatchReg('/\\G`([^`]*)`/');
+		if( $str ){
 			return new Less_Tree_Javascript($str[1], $this->pos, $e);
 		}
 	}
@@ -913,7 +933,11 @@ class Less_Parser extends Less_Cache{
 
 		$this->save(); // stop us absorbing part of an invalid selector
 
-		while( $e = $this->MatchReg('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/') ){
+		while( true ){
+			$e = $this->MatchReg('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/');
+			if( !$e ){
+				break;
+			}
 			$elements[] = new Less_Tree_Element($c, $e, $this->pos, $this->env->currentFileInfo);
 			$c = $this->MatchChar('>');
 		}
@@ -1087,7 +1111,8 @@ class Less_Parser extends Less_Cache{
 
 		$this->save();
 
-		if ($match = $this->MatchReg('/\\G([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/')) {
+		$match = $this->MatchReg('/\\G([#.](?:[\w-]|\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+)\s*\(/');
+		if( $match ){
 			$name = $match[1];
 
 			$argInfo = $this->parseMixinArgs( false );
@@ -1201,17 +1226,14 @@ class Less_Parser extends Less_Cache{
 	// as it's an empty space. We have to check the previous character
 	// in the input, to see if it's a ` ` character.
 	//
-	private function parseCombinator()
-	{
+	private function parseCombinator(){
 		$c = isset($this->input[$this->pos]) ? $this->input[$this->pos] : '';
 		if ($c === '>' || $c === '+' || $c === '~' || $c === '|') {
 
-			$this->pos++;
-			while( $this->isWhitespace() ){
-				$this->pos++;
-			}
+			$this->skipWhitespace(1);
+
 			return new Less_Tree_Combinator($c);
-		} elseif ($this->pos > 0 && (preg_match('/\s/', $this->input[$this->pos - 1]))) {
+		}elseif( $this->pos > 0 && $this->isWhitespace(-1) ){
 			return new Less_Tree_Combinator(' ');
 		} else {
 			return new Less_Tree_Combinator();
