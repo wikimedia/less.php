@@ -414,7 +414,7 @@ class Less_Parser extends Less_Cache{
 		$len = strlen($string);
 
 		if( ($this->input_len >= ($this->pos+$len)) && substr_compare( $this->input, $string, $this->pos, $len, true ) === 0 ){
-			$this->skipWhitespace( $len );
+			$this->skipWhitespace($len);
 			return $string;
 		}
 
@@ -439,9 +439,17 @@ class Less_Parser extends Less_Cache{
 	}
 
 
-	public function skipWhitespace($length) {
+	public function skipWhitespace($length){
+
 		$this->pos += $length;
-		$this->pos += strspn($this->input, "\n\r\t ", $this->pos);
+
+		for(; $this->pos < $this->input_len; $this->pos++ ){
+			$c = $this->input[$this->pos];
+
+			if( ($c !== "\n") && ($c !== "\r") && ($c !== "\t") && ($c !== ' ') ){
+				break;
+			}
+		}
 	}
 
 
@@ -506,33 +514,28 @@ class Less_Parser extends Less_Cache{
 	private function parsePrimary(){
 		$root = array();
 
-		$this->skipWhitespace(0);
+		while( true ){
 
-		while( ($node = $this->MatchFuncs( array('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective') ))
-							|| $this->skipSemicolons()
-		){
+			if( $this->pos >= $this->input_len ){
+				break;
+			}
+
+			$node = $this->MatchFuncs( array('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
+
 
 			if( is_array($node) ){
 				$root = array_merge($root,$node);
 			}elseif( $node ){
 				$root[] = $node;
-			}
-
-			if( $this->pos >= $this->input_len ){
+			}elseif( !$this->MatchReg('/\\G[\s\n;]+/') ){
 				break;
 			}
+
 		}
 
 		return $root;
 	}
 
-	public function skipSemicolons(){
-		$len = strspn($this->input, ";", $this->pos);
-		if( $len ){
-			$this->skipWhitespace($len);
-			return true;
-		}
-	}
 
 
 	// We create a Comment node for CSS comments `/* */`,
