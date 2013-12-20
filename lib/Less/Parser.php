@@ -71,6 +71,9 @@ class Less_Parser extends Less_Cache{
 
 		$precision = ini_get('precision');
 		@ini_set('precision',16);
+		$locale = setlocale(LC_NUMERIC, 0);
+		setlocale(LC_NUMERIC, "C");
+
 
  		$root = new Less_Tree_Ruleset(array(), $this->rules );
 		$root->root = true;
@@ -102,7 +105,9 @@ class Less_Parser extends Less_Cache{
 			$css = preg_replace('/(^(\s)+)|((\s)+$)/', '', $css);
 		}
 
+		//reset php settings
 		@ini_set('precision',$precision);
+		setlocale(LC_NUMERIC, $locale);
 
 		return $css;
 	}
