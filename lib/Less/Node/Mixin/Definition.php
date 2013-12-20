@@ -40,11 +40,12 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 	}
 
 
-	function accept( $visitor ){
-		$this->params = $visitor->visit($this->params);
-		$this->rules = $visitor->visit($this->rules);
-		$this->condition = $visitor->visit($this->condition);
-	}
+
+	//function accept( $visitor ){
+	//	$this->params = $visitor->visit($this->params);
+	//	$this->rules = $visitor->visit($this->rules);
+	//	$this->condition = $visitor->visit($this->condition);
+	//}
 
 
 	public function toCSS($env = null){

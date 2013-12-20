@@ -14,7 +14,7 @@ class Less_Tree_Url extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		$this->value = $visitor->visit($this->value);
+		$this->value = $visitor->visitObj($this->value);
 	}
 
 	function genCSS( $env, &$strs ){

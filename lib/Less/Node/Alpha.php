@@ -9,9 +9,9 @@ class Less_Tree_Alpha extends Less_Tree{
 		$this->value = $val;
 	}
 
-	function accept( $visitor ){
-		$this->value = $visitor->visit( $this->value );
-	}
+	//function accept( $visitor ){
+	//	$this->value = $visitor->visit( $this->value );
+	//}
 
 	public function compile($env){
 

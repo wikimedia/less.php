@@ -57,11 +57,14 @@ class Less_Tree_Import extends Less_Tree{
 // ruleset.
 //
 
-	function accept($visitor) {
-		$this->features = $visitor->visit($this->features);
-		$this->path = $visitor->visit($this->path);
+	function accept($visitor){
 
-		if( !$this->options['inline'] ){
+		if( $this->features ){
+			$this->features = $visitor->visitObj($this->features);
+		}
+		$this->path = $visitor->visitObj($this->path);
+
+		if( !$this->options['inline'] && $this->root ){
 			$this->root = $visitor->visit($this->root);
 		}
 	}

@@ -22,7 +22,7 @@ class Less_importVisitor{
 
 	function run( $root ){
 		// process the contents
-		$this->_visitor->visit($root);
+		$this->_visitor->visitObj($root);
 
 		$this->isFinished = true;
 

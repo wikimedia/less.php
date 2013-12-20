@@ -11,18 +11,7 @@ class Less_visitor{
 		$this->_visitFnCache = get_class_methods(get_class($this));
 	}
 
-
-	function visit($node){
-
-		$type = getType($node);
-
-		if( $type === 'array' ){
-			return $this->visitArray($node);
-		}
-
-		if( $type !== 'object' ){
-			return $node;
-		}
+	function visitObj( $node ){
 
 		$funcName = 'visit'.$node->type;
 		if( in_array($funcName,$this->_visitFnCache) ){
@@ -46,21 +35,20 @@ class Less_visitor{
 			$node->accept($this);
 		}
 
-
 		return $node;
 	}
 
 	function visitArray( $nodes ){
 
 		if( !$this->isReplacing ){
-			array_map( array($this,'visit'), $nodes);
+			array_map( array($this,'visitObj'), $nodes);
 			return $nodes;
 		}
 
 
 		$newNodes = array();
 		foreach($nodes as $node){
-			$evald = $this->visit($node);
+			$evald = $this->visitObj($node);
 			if( is_array($evald) ){
 				self::flatten($evald,$newNodes);
 			}else{
@@ -69,6 +57,7 @@ class Less_visitor{
 		}
 		return $newNodes;
 	}
+
 
 	function flatten( $arr, &$out ){
 

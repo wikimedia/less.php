@@ -13,8 +13,8 @@ class Less_extendFinderVisitor extends Less_visitor{
 		parent::__construct();
 	}
 
-	function run($root) {
-		$root = $this->visit($root);
+	function run($root){
+		$root = $this->visitObj($root);
 		$root->allExtends =& $this->allExtendsStack[0];
 		return $root;
 	}

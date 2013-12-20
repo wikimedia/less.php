@@ -24,8 +24,10 @@ class Less_Tree_Element extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		$this->combinator = $visitor->visit( $this->combinator );
-		$this->value = $visitor->visit( $this->value );
+		$this->combinator = $visitor->visitObj( $this->combinator );
+		if( is_object($this->value) ){
+			$this->value = $visitor->visitObj( $this->value );
+		}
 	}
 
 	public function compile($env) {

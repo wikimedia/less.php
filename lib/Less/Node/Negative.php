@@ -10,9 +10,9 @@ class Less_Tree_Negative extends Less_Tree{
 		$this->value = $node;
 	}
 
-	function accept($visitor) {
-		$this->value = $visitor->visit($this->value);
-	}
+	//function accept($visitor) {
+	//	$this->value = $visitor->visit($this->value);
+	//}
 
 	function genCSS( $env, &$strs ){
 		self::OutputAdd( $strs, '-' );

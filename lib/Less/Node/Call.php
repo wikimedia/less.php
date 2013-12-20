@@ -22,7 +22,7 @@ class Less_Tree_Call extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		$this->args = $visitor->visit( $this->args );
+		$this->args = $visitor->visitArray( $this->args );
 	}
 
     //

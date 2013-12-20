@@ -24,9 +24,11 @@ class Less_Tree_Selector extends Less_Tree{
 	}
 
 	function accept($visitor) {
-		$this->elements = $visitor->visit($this->elements);
-		$this->extendList = $visitor->visit($this->extendList);
-		$this->condition = $visitor->visit($this->condition);
+		$this->elements = $visitor->visitArray($this->elements);
+		$this->extendList = $visitor->visitArray($this->extendList);
+		if( $this->condition ){
+			$this->condition = $visitor->visitObj($this->condition);
+		}
 	}
 
 	function createDerived( $elements, $extendList = null, $evaldCondition = null ){

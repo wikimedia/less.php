@@ -10,7 +10,7 @@ class Less_toCSSVisitor extends Less_visitor{
 	}
 
 	function run( $root ){
-		return $this->visit($root);
+		return $this->visitObj($root);
 	}
 
 	function visitRule( $ruleNode ){
@@ -110,7 +110,7 @@ class Less_toCSSVisitor extends Less_visitor{
 
 				if( property_exists($rule,'rules') ){
 					// visit because we are moving them out from being a child
-					$rulesets[] = $this->visit($rule);
+					$rulesets[] = $this->visitObj($rule);
 					array_splice($rulesetNode->rules,$i,1);
 					$nodeRuleCnt--;
 					continue;
