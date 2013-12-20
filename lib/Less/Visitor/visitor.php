@@ -9,12 +9,13 @@ class Less_visitor{
 
 	function __construct(){
 		$this->_visitFnCache = get_class_methods(get_class($this));
+		$this->_visitFnCache = array_flip($this->_visitFnCache);
 	}
 
 	function visitObj( $node ){
 
 		$funcName = 'visit'.$node->type;
-		if( in_array($funcName,$this->_visitFnCache) ){
+		if( isset($this->_visitFnCache[$funcName]) ){
 
 			$visitDeeper = true;
 			$newNode = $this->$funcName( $node, $visitDeeper );
@@ -27,7 +28,7 @@ class Less_visitor{
 			}
 
 			$funcName = $funcName . "Out";
-			if( in_array($funcName,$this->_visitFnCache) ){
+			if( isset($this->_visitFnCache[$funcName]) ){
 				$this->$funcName( $node );
 			}
 
