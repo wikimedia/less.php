@@ -334,6 +334,18 @@ class ParserTest{
 	}
 
 	static function Options(){
+
+		//debugging
+		$request = str_replace( array('XDEBUG_PROFILE','XDEBUG_TRACE'),'',$_SERVER['REQUEST_URI']);
+		echo '<div style="float:right">';
+		echo 'XDEBUG: ';
+		echo '<a href="'.str_replace('&&','&',$request.'&XDEBUG_PROFILE').'">Debug Profile</a>';
+		echo ' - ';
+		echo '<a href="'.str_replace('&&','&',$request.'&XDEBUG_TRACE').'">Debug Trace</a>';
+		echo '</div>';
+
+
+		//options
 		echo '<div id="options">';
 		echo '<b>Options</b>';
 

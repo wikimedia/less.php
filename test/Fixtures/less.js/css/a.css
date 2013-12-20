@@ -1,6 +1,24 @@
-#svg-functions {
-	width:blue;
+.replace.replace .replace,
+.c.replace + .replace .replace,
+.rep_ace {
+  prop: copy-paste-replace;
 }
-#svg {
-	width:red;
+/*
+.a > .d,
+.z .y{
+  color: black;
 }
+.f:extend(.a) {}
+.g:extend(.d) {}
+.h:extend(.z) {}
+.i:extend(.y) {}
+.b:extend(.a > .d, .z) {}
+.c.e:extend(.b) {}
+*/
+/*
+.i.j:extend(.g all) {
+  color: white;
+}
+.k:extend(.i all) {}
+.l:extend(.j all) {}
+*/

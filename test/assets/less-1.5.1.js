@@ -4983,18 +4983,18 @@ tree.Selector.prototype = {
         oelements = other.elements.slice(
             (other.elements.length && other.elements[0].value === "&") ? 1 : 0);
         olen = oelements.length;
-        max = Math.min(len, olen);
 
         if (olen === 0 || len < olen) {
             return 0;
-        } else {
-            for (i = 0; i < max; i++) {
-                if (elements[i].value !== oelements[i].value) {
-                    return 0;
-                }
+        }
+
+        for (i = 0; i < olen; i++) {
+            if (elements[i].value !== oelements[i].value) {
+                return 0;
             }
         }
-        return max; // return number of matched selectors
+
+        return olen; // return number of matched selectors
     },
     eval: function (env) {
         var evaldCondition = this.condition && this.condition.eval(env);
