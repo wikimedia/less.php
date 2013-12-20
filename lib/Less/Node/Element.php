@@ -5,7 +5,7 @@
 class Less_Tree_Element extends Less_Tree{
 
 	public $combinator;
-	public $value;
+	public $value = '';
 	public $index;
 	public $type = 'Element';
 
@@ -14,12 +14,8 @@ class Less_Tree_Element extends Less_Tree{
 			$combinator = new Less_Tree_Combinator($combinator);
 		}
 
-		if (is_string($value)) {
-			$this->value = trim($value);
-		} elseif ($value) {
+		if( $value ){
 			$this->value = $value;
-		} else {
-			$this->value = "";
 		}
 
 		$this->combinator = $combinator;

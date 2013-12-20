@@ -404,8 +404,21 @@ class Less_Parser extends Less_Cache{
 	// Match a regexp from the current start point
 	private function MatchReg($tok){
 
+
 		if( preg_match($tok, $this->input, $match, 0, $this->pos) ){
 			$this->skipWhitespace(strlen($match[0]));
+
+			/*
+			static $messaged = array();
+			static $i = 0;
+			if( count($match) === 1 ){
+				$msg = 'one result: '.$tok;
+				if( !in_array($msg,$messaged) ){
+					$messaged[] = $msg;
+					msg($i++.' '.$msg);
+				}
+			}
+			*/
 			return count($match) === 1 ? $match[0] : $match;
 		}
 	}
@@ -782,8 +795,7 @@ class Less_Parser extends Less_Cache{
 	//
 	// `rgb` and `hsl` colors are parsed through the `entities.call` parser.
 	//
-	private function parseEntitiesColor()
-	{
+	private function parseEntitiesColor(){
 		if ($this->PeekChar('#') && ($rgb = $this->MatchReg('/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/'))) {
 			return new Less_Tree_Color($rgb[1]);
 		}
@@ -1301,7 +1313,8 @@ class Less_Parser extends Less_Cache{
 			return;
 		}
 
-		if( !($key = $this->parseEntitiesVariableCurly()) ){
+		$key = $this->parseEntitiesVariableCurly();
+		if( !$key ){
 			$key = $this->expect('/\\G(?:[_A-Za-z0-9-\*]*\|)?(?:[_A-Za-z0-9-]|\\\\.)+/');
 		}
 
