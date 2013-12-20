@@ -457,12 +457,17 @@ class Less_Parser extends Less_Cache{
 	public function expect($tok, $msg = NULL) {
 		$result = $this->match( array($tok) );
 		if (!$result) {
-			throw new Less_ParserException(
-				$msg === NULL
-					? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'"
-					: $msg
-			);
+			throw new Less_ParserException( $msg	? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 		} else {
+			return $result;
+		}
+	}
+
+	public function expectChar($tok, $msg = null ){
+		$result = $this->MatchChar($tok);
+		if( !$result ){
+			throw new Less_ParserException( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+		}else{
 			return $result;
 		}
 	}
@@ -550,8 +555,11 @@ class Less_Parser extends Less_Cache{
 
 		if( $this->input[$this->pos+1] === '/' ){
 			return new Less_Tree_Comment($this->MatchReg('/\\G\/\/.*/'), true, $this->pos, $this->env->currentFileInfo);
-		//}elseif( $comment = $this->MatchReg('/\\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/')) {
-		}elseif( $comment = $this->MatchReg('/\\G\/\*(?s).*?\*+\/\n?/') ) { //not the same as less.js to prevent fatal errors
+		}
+
+		//$comment = $this->MatchReg('/\\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/');
+		$comment = $this->MatchReg('/\\G\/\*(?s).*?\*+\/\n?/');//not the same as less.js to prevent fatal errors
+		if( $comment ){
 			return new Less_Tree_Comment($comment, false, $this->pos, $this->env->currentFileInfo);
 		}
 	}
@@ -559,7 +567,12 @@ class Less_Parser extends Less_Cache{
 	private function parseComments(){
 		$comments = array();
 
-		while($comment = $this->parseComment() ){
+		while( true ){
+			$comment = $this->parseComment();
+			if( !$comment ){
+				break;
+			}
+
 			$comments[] = $comment;
 		}
 
@@ -711,7 +724,7 @@ class Less_Parser extends Less_Cache{
 		}
 
 
-		$this->expect(')');
+		$this->expectChar(')');
 
 
 		return new Less_Tree_Url((isset($value->value) || $value instanceof Less_Tree_Variable)
@@ -908,7 +921,7 @@ class Less_Parser extends Less_Cache{
 		if( $this->MatchChar('(') ){
 			$returned = $this->parseMixinArgs(true);
 			$args = $returned['args'];
-			$this->expect(')');
+			$this->expectChar(')');
 		}
 
 		if( !$args ){
@@ -1143,7 +1156,7 @@ class Less_Parser extends Less_Cache{
 		}
 
 		if ($value !== null) {
-			$this->expect(')');
+			$this->expectChar(')');
 			return new Less_Tree_Alpha($value);
 		}
 	}
@@ -1274,7 +1287,7 @@ class Less_Parser extends Less_Cache{
 			$val = $this->match( array('parseEntitiesQuoted','/\\G[0-9]+%/','/\\G[\w-]+/','parseEntitiesVariableCurly') );
 		}
 
-		$this->expect(']');
+		$this->expectChar(']');
 
 		return new Less_Tree_Attribute($key, $op, $val);
 	}
@@ -1431,7 +1444,7 @@ class Less_Parser extends Less_Cache{
 				if( !$this->MatchChar(',') ){ break; }
 			}
 		}while($o);
-		$this->expect(')');
+		$this->expectChar(')');
 		return $options;
 	}
 
@@ -1621,7 +1634,7 @@ class Less_Parser extends Less_Cache{
 		if( $this->MatchChar('(') ){
 			if( $a = $this->parseAddition() ){
 				$e = new Less_Tree_Expression( array($a) );
-				$this->expect(')');
+				$this->expectChar(')');
 				$e->parens = true;
 				return $e;
 			}
@@ -1693,7 +1706,7 @@ class Less_Parser extends Less_Cache{
 
 		if ($this->MatchString('not')) $negate = true;
 		//if ($this->MatchReg('/\\Gnot/')) $negate = true;
-		$this->expect('(');
+		$this->expectChar('(');
 		if ($a = ($this->MatchFuncs(array('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted'))) ) {
 
 			if( $op = $this->MatchReg('/\\G(?:>=|<=|=<|[<=>])/') ){
@@ -1705,7 +1718,7 @@ class Less_Parser extends Less_Cache{
 			} else {
 				$c = new Less_Tree_Condition('=', $a, new Less_Tree_Keyword('true'), $index, $negate);
 			}
-			$this->expect(')');
+			$this->expectChar(')');
 			return $this->MatchString('and') ? new Less_Tree_Condition('and', $c, $this->parseCondition()) : $c;
 			//return $this->MatchReg('/\\Gand/') ? new Less_Tree_Condition('and', $c, $this->parseCondition()) : $c;
 		}
