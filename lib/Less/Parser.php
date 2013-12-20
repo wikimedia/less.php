@@ -364,15 +364,16 @@ class Less_Parser extends Less_Cache{
 
 		foreach($toks as $tok){
 
-			if( strlen($tok) == 1 ){
+			if( $tok[0] === '/' ){
+				$match = $this->MatchReg($tok);
+
+			}elseif( strlen($tok) == 1 ){
 				$match = $this->MatchChar($tok);
 
-			}elseif( $tok[0] != '/' ){
+			}else{
 				// Non-terminal, match using a function call
 				$match = $this->$tok();
 
-			}else{
-				$match = $this->MatchReg($tok);
 			}
 
 			if( $match ){
@@ -543,7 +544,7 @@ class Less_Parser extends Less_Cache{
 	// over them.
 	private function parseComment(){
 
-		if( !$this->PeekChar('/') ){
+		if( $this->input[$this->pos] !== '/' ){
 			return;
 		}
 
@@ -1627,21 +1628,33 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
-	private function parseMultiplication() {
+	function parseMultiplication(){
 		$operation = false;
-
-		if ($m = $this->parseOperand()) {
+		$m = $this->parseOperand();
+		if( $m ){
 			$isSpaced = $this->isWhitespace( -1 );
-			while( !$this->PeekReg('/\\G\/[*\/]/') && ($op = $this->match(array('/','*'))) ){
+			while( true ){
 
-				if( $a = $this->parseOperand() ){
-					$m->parensInOp = true;
-					$a->parensInOp = true;
-					$operation = new Less_Tree_Operation( $op, array( $operation ? $operation : $m, $a ), $isSpaced );
-					$isSpaced = $this->isWhitespace( -1 );
-				}else{
+				if( $this->PeekReg('/\\G\/[*\/]/') ){
 					break;
 				}
+
+				$op = $this->MatchChar('/');
+				if( !$op ){
+					$op = $this->MatchChar('*');
+					if( !$op ){
+						break;
+					}
+				}
+
+				$a = $this->parseOperand();
+
+				if(!$a) { break; }
+
+				$m->parensInOp = true;
+				$a->parensInOp = true;
+				$operation = new Less_Tree_Operation( $op, array( $operation ? $operation : $m, $a ), $isSpaced );
+				$isSpaced = $this->isWhitespace( -1 );
 			}
 			return ($operation ? $operation : $m);
 		}

@@ -60,15 +60,13 @@ class Less_Tree_Selector extends Less_Tree{
 			return 0;
 		}
 
-		$max = min($this->elements_len, $olen);
-
-		for ($i = 0; $i < $max; $i ++) {
+		for ($i = 0; $i < $olen; $i ++) {
 			if ($this->elements[$i]->value !== $other->elements[$i + $offset]->value) {
 				return 0;
 			}
 		}
 
-		return $max; // return number of matched selectors
+		return $olen; // return number of matched selectors
 	}
 
 	public function compile($env) {
