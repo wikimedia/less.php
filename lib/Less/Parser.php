@@ -433,9 +433,9 @@ class Less_Parser extends Less_Cache{
 		return preg_match($tok, $this->input, $match, 0, $this->pos);
 	}
 
-	public function PeekChar($tok, $offset = 0){
-		$offset += $this->pos;
-		return ($offset < $this->input_len) && ($this->input[$offset] === $tok );
+	public function PeekChar($tok){
+		return ($this->input[$this->pos] === $tok );
+		//return ($this->pos < $this->input_len) && ($this->input[$this->pos] === $tok );
 	}
 
 
@@ -518,6 +518,9 @@ class Less_Parser extends Less_Cache{
 				$root[] = $node;
 			}
 
+			if( $this->pos >= $this->input_len ){
+				break;
+			}
 		}
 
 		return $root;
@@ -541,7 +544,7 @@ class Less_Parser extends Less_Cache{
 			return;
 		}
 
-		if ($this->PeekChar('/', 1)) {
+		if( $this->input[$this->pos+1] === '/' ){
 			return new Less_Tree_Comment($this->MatchReg('/\\G\/\/.*/'), true, $this->pos, $this->env->currentFileInfo);
 		//}elseif( $comment = $this->MatchReg('/\\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/')) {
 		}elseif( $comment = $this->MatchReg('/\\G\/\*(?s).*?\*+\/\n?/') ) { //not the same as less.js to prevent fatal errors
@@ -576,7 +579,8 @@ class Less_Parser extends Less_Cache{
 			$e = true; // Escaped strings
 		}
 
-		if ( ! $this->PeekChar('"', $j) && ! $this->PeekChar("'", $j)) {
+		$char = $this->input[$this->pos+$j];
+		if( $char != '"' && $char !== "'" ){
 			return;
 		}
 
@@ -788,16 +792,17 @@ class Less_Parser extends Less_Cache{
 	//
 	//	 `window.location.href`
 	//
-	private function parseEntitiesJavascript()
-	{
+	private function parseEntitiesJavascript(){
 		$e = false;
-		if ($this->PeekChar('~')) {
+		$j = $this->pos;
+		if( $this->input[$j] === '~' ){
+			$j++;
 			$e = true;
 		}
-		if (! $this->PeekChar('`', $e)) {
+		if( $this->input[$j] !== '`' ){
 			return;
 		}
-		if ($e) {
+		if( $e ){
 			$this->MatchChar('~');
 		}
 		if ($str = $this->MatchReg('/\\G`([^`]*)`/')) {
@@ -884,7 +889,8 @@ class Less_Parser extends Less_Cache{
 		$args = null;
 		$c = null;
 
-		if( !$this->PeekChar('.') && !$this->PeekChar('#') ){
+		$char = $this->input[$this->pos];
+		if( $char !== '.' && $char !== '#' ){
 			return;
 		}
 
@@ -1057,7 +1063,8 @@ class Less_Parser extends Less_Cache{
 		$variadic = false;
 		$cond = null;
 
-		if ((! $this->PeekChar('.') && ! $this->PeekChar('#')) || $this->PeekChar('/\\G[^{]*\}/')) {
+		$char = $this->input[$this->pos];
+		if( ($char !== '.' && $char !== '#') || ($char === '{' && $this->Peek('/\\G[^{]*\}/')) ){
 			return;
 		}
 
@@ -1695,7 +1702,12 @@ class Less_Parser extends Less_Cache{
 	private function parseOperand (){
 
 		$negate = false;
-		if( $this->PeekChar('@',1) || $this->PeekChar('(',1) ){
+		$offset = $this->pos+1;
+		if( $offset >= $this->input_len ){
+			return;
+		}
+		$char = $this->input[$offset];
+		if( $char === '@' || $char === '(' ){
 			$negate = $this->MatchChar('-');
 		}
 
