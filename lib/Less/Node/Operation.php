@@ -21,16 +21,19 @@ class Less_Tree_Operation extends Less_Tree{
 
 
 		if( $env->isMathOn() ){
-			if( $a instanceof Less_Tree_Dimension && $b instanceof Less_Tree_Color ){
-				if ($this->op === '*' || $this->op === '+') {
-					$temp = $b;
-					$b = $a;
-					$a = $temp;
-				} else {
-					throw new Less_CompilerException("Operation on an invalid type");
+
+			if( $a instanceof Less_Tree_Dimension ){
+
+				if( $b instanceof Less_Tree_Color ){
+					if ($this->op === '*' || $this->op === '+') {
+						$temp = $b;
+						$b = $a;
+						$a = $temp;
+					} else {
+						throw new Less_CompilerException("Operation on an invalid type");
+					}
 				}
-			}
-			if ( !Less_Parser::is_method($a,'operate') ) {
+			}elseif( !($a instanceof Less_Tree_Color) ){
 				throw new Less_CompilerException("Operation on an invalid type");
 			}
 

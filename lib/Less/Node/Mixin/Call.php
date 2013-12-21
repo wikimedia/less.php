@@ -71,6 +71,8 @@ class Less_Tree_MixinCall extends Less_Tree{
 				}
 
 				if ($mixin->matchArgs($args, $env)) {
+
+					//if( !($mixin instanceof Less_Tree_Ruleset || $mixin instanceof Less_Tree_MixinDefinition) || $mixin->matchCondition($args, $env) ){
 					if( !Less_Parser::is_method($mixin,'matchCondition') || $mixin->matchCondition($args, $env) ){
 						try{
 
@@ -119,7 +121,7 @@ class Less_Tree_MixinCall extends Less_Tree{
 					if( $a['name'] ){
 						$argValue += $a['name']+':';
 					}
-					if( Less_Parser::is_method($a['value'],'toCSS') ){
+					if( is_object($a['value']) ){
 						$argValue += $a['value']->toCSS();
 					}else{
 						$argValue += '???';

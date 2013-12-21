@@ -18,7 +18,7 @@ class Less_Tree_Anonymous extends Less_Tree{
 	}
 
 	function compare($x){
-		if( !Less_Parser::is_method( $x, 'toCSS' ) ){
+		if( !is_object($x) ){
 			return -1;
 		}
 

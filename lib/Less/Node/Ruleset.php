@@ -56,9 +56,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		$selectors = array();
 		if( $this->selectors ){
 			foreach($this->selectors as $s){
-				if( Less_Parser::is_method($s,'compile') ){
-					$selectors[] = $s->compile($env);
-				}
+				$selectors[] = $s->compile($env);
 			}
 		}
 		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);
@@ -127,7 +125,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		for( $i=0; $i<$ruleset_len; $i++ ){
 			if(! ($ruleset->rules[$i] instanceof Less_Tree_MixinDefinition) ){
-				$ruleset->rules[$i] = Less_Parser::is_method($ruleset->rules[$i],'compile') ? $ruleset->rules[$i]->compile($env) : $ruleset->rules[$i];
+				$ruleset->rules[$i] = $ruleset->rules[$i]->compile($env);
 			}
 		}
 
@@ -172,7 +170,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		$important_rules = array();
 		foreach($this->rules as $rule){
-			if( Less_Parser::is_method($rule,'makeImportant') ){
+			if( $rule instanceof Less_Tree_Rule || $rule instanceof Less_Tree_Ruleset ){
 				$important_rules[] = $rule->makeImportant();
 			}else{
 				$important_rules[] = $rule;
