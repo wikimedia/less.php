@@ -25,7 +25,7 @@ class Less_Tree_Element extends Less_Tree{
 
 	function accept( $visitor ){
 		$this->combinator = $visitor->visitObj( $this->combinator );
-		if( is_object($this->value) ){
+		if( is_object($this->value) ){ //object or string
 			$this->value = $visitor->visitObj( $this->value );
 		}
 	}
@@ -49,7 +49,7 @@ class Less_Tree_Element extends Less_Tree{
 			$value = $value->toCSS($env);
 		}
 
-		if( $value === '' && strlen($this->combinator->value) && $this->combinator->value[0] === '&' ){
+		if( $value === '' && $this->combinator->value[0] === '&' ){
 			return '';
 		}
 		return $this->combinator->toCSS($env) . $value;

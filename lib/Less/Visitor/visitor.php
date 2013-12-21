@@ -23,7 +23,7 @@ class Less_visitor{
 				$node = $newNode;
 			}
 
-			if( $visitDeeper && is_object($node) ){
+			if( $visitDeeper && (!$this->isReplacing || is_object($node)) ){
 				$node->accept($this);
 			}
 
