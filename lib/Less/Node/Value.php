@@ -15,16 +15,14 @@ class Less_Tree_Value extends Less_Tree{
 
 	public function compile($env){
 
-		if( count($this->value) == 1 ){
-			return $this->value[0]->compile($env);
-		}
-
 		$ret = array();
-		foreach($this->value as $v){
+		foreach($this->value as $i => $v){
 			$ret[] = $v->compile($env);
 		}
-
-		return new Less_Tree_Value($ret);
+		if( $i > 0 ){
+			return new Less_Tree_Value($ret);
+		}
+		return $ret[0];
 	}
 
 	function genCSS( $env, &$strs ){
