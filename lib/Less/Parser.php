@@ -369,15 +369,17 @@ class Less_Parser extends Less_Cache{
 
 		foreach($toks as $tok){
 
-			if( $tok[0] === '/' ){
+			$char = $tok[0];
+
+			if( $char === '/' ){
 				$match = $this->MatchReg($tok);
 
 				if( $match ){
 					return count($match) === 1 ? $match[0] : $match;
 				}
 
-			}elseif( strlen($tok) == 1 ){
-				$match = $this->MatchChar($tok);
+			}elseif( $char === '#' ){
+				$match = $this->MatchChar($tok[1]);
 
 			}else{
 				// Non-terminal, match using a function call
@@ -1202,7 +1204,7 @@ class Less_Parser extends Less_Cache{
 		$c = $this->parseCombinator();
 
 		$e = $this->match( array('/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
-			'*', '&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#](?=@)/', 'parseEntitiesVariableCurly') );
+			'#*', '#&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#](?=@)/', 'parseEntitiesVariableCurly') );
 
 		if( !$e ){
 			if( $this->MatchChar('(') ){
@@ -1719,7 +1721,7 @@ class Less_Parser extends Less_Cache{
 				if( $op ){
 					$op = $op[0];
 				}elseif( !$isSpaced ){
-					$op = $this->match(array('+','-'));
+					$op = $this->match(array('#+','#-'));
 				}
 				if( !$op ){
 					break;
