@@ -1405,7 +1405,7 @@ class Less_Parser extends Less_Cache{
 	function parseAnonymousValue(){
 
 		if( preg_match('/\\G([^@+\/\'"*`(;{}-]*);/',$this->input, $match, 0, $this->pos) ){
-			$this->pos += strlen($match[0]) - 1;
+			$this->pos += strlen($match[1]);
 			return new Less_Tree_Anonymous($match[1]);
 		}
 	}
