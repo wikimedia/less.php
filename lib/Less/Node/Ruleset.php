@@ -320,10 +320,12 @@ class Less_Tree_Ruleset extends Less_Tree{
 				$env->lastRule = true;
 			}
 
-			if( Less_Parser::is_method($rule,'genCSS') ){
-				$rule->genCSS( $env, $strs );
-			}elseif( is_object($rule) && property_exists($rule,'value') && $rule->value ){
-				self::OutputAdd( $strs, (string)$rule->value );
+			if( is_object($rule) ){
+				if( method_exists($rule,'genCSS') ){
+					$rule->genCSS( $env, $strs );
+				}elseif( property_exists($rule,'value') && $rule->value ){
+					self::OutputAdd( $strs, (string)$rule->value );
+				}
 			}
 
 			if( !$env->lastRule ){
