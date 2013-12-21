@@ -419,17 +419,6 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
-	//match a string
-	private function MatchString($string){
-		$len = strlen($string);
-
-		if( ($this->input_len >= ($this->pos+$len)) && substr_compare( $this->input, $string, $this->pos, $len, true ) === 0 ){
-			$this->skipWhitespace($len);
-			return $string;
-		}
-
-	}
-
 
 	/**
 	 * Same as match(), but don't change the state of the parser,
@@ -743,7 +732,7 @@ class Less_Parser extends Less_Cache{
 	private function parseEntitiesUrl(){
 
 
-		if( !$this->MatchString('url(') ){
+		if( $this->input[$this->pos] !== 'u' || !$this->matchReg('/\\Gurl\(/') ){
 			return;
 		}
 
@@ -878,8 +867,7 @@ class Less_Parser extends Less_Cache{
 		$extendList = array();
 
 
-		//if( !$this->MatchReg( $isRule ? '/\\G&:extend\(/' : '/\\G:extend\(/' ) ){ return; }
-		if( !$this->MatchString( $isRule ? '&:extend(' : ':extend(' ) ){ return; }
+		if( !$this->MatchReg( $isRule ? '/\\G&:extend\(/' : '/\\G:extend\(/' ) ){ return; }
 
 		do{
 			$option = null;
@@ -1139,8 +1127,7 @@ class Less_Parser extends Less_Cache{
 
 			$this->parseComments();
 
-			if( $this->MatchString('when') ){ // Guard
-			//if ($this->MatchReg('/\\Gwhen/')) { // Guard
+			if ($this->MatchReg('/\\Gwhen/')) { // Guard
 				$cond = $this->expect('parseConditions', 'Expected conditions');
 			}
 
@@ -1180,8 +1167,7 @@ class Less_Parser extends Less_Cache{
 	//
 	private function parseAlpha(){
 
-		if( !$this->MatchString('(opacity=') ){
-		//if ( ! $this->MatchReg('/\\G\(opacity=/i')) {
+		if ( ! $this->MatchReg('/\\G\(opacity=/i')) {
 			return;
 		}
 
@@ -1276,7 +1262,7 @@ class Less_Parser extends Less_Cache{
 		$when = false;
 		$extend = false;
 
-		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchString('when') )) || ($e = $this->parseElement()) ){
+		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchReg('/\\Gwhen/') )) || ($e = $this->parseElement()) ){
 			if( $when ){
 				$condition = $this->expect('parseConditions', 'expected condition');
 			}elseif( $condition ){
@@ -1437,8 +1423,7 @@ class Less_Parser extends Less_Cache{
 
 		$this->save();
 
-		$dir = $this->MatchString('@import');
-		//$dir = $this->MatchReg('/\\G@import?\s+/');
+		$dir = $this->MatchReg('/\\G@import?\s+/');
 
 		$options = array();
 		if( $dir ){
@@ -1546,8 +1531,7 @@ class Less_Parser extends Less_Cache{
 	}
 
 	private function parseMedia() {
-		if( $this->MatchString('@media') ){
-		//if ($this->MatchReg('/\\G@media/')) {
+		if ($this->MatchReg('/\\G@media/')) {
 			$features = $this->parseMediaFeatures();
 
 			if ($rules = $this->parseBlock()) {
@@ -1777,8 +1761,7 @@ class Less_Parser extends Less_Cache{
 		$negate = false;
 
 
-		if ($this->MatchString('not')) $negate = true;
-		//if ($this->MatchReg('/\\Gnot/')) $negate = true;
+		if ($this->MatchReg('/\\Gnot/')) $negate = true;
 		$this->expectChar('(');
 		$a = $this->MatchFuncs(array('parseAddition','parseEntitiesKeyword','parseEntitiesQuoted'));
 
@@ -1795,8 +1778,7 @@ class Less_Parser extends Less_Cache{
 				$c = new Less_Tree_Condition('=', $a, new Less_Tree_Keyword('true'), $index, $negate);
 			}
 			$this->expectChar(')');
-			return $this->MatchString('and') ? new Less_Tree_Condition('and', $c, $this->parseCondition()) : $c;
-			//return $this->MatchReg('/\\Gand/') ? new Less_Tree_Condition('and', $c, $this->parseCondition()) : $c;
+			return $this->MatchReg('/\\Gand/') ? new Less_Tree_Condition('and', $c, $this->parseCondition()) : $c;
 		}
 	}
 
