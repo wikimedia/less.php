@@ -1,11 +1,10 @@
 <?php
 
 /*
-class Less_importVisitor{
+class Less_importVisitor extends Less_visitor_replacing{
 
 	public $_visitor;
 	public $_importer;
-	public $isReplacing = true;
 	public $importCount;
 
 	function __construct( $importer = null, $evalEnv = null ){

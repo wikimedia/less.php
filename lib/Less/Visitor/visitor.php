@@ -2,8 +2,6 @@
 
 class Less_visitor{
 
-	var $isReplacing = false;
-
 	var $methods = array();
 	var $_visitFnCache = array();
 
@@ -18,12 +16,9 @@ class Less_visitor{
 		if( isset($this->_visitFnCache[$funcName]) ){
 
 			$visitDeeper = true;
-			$newNode = $this->$funcName( $node, $visitDeeper );
-			if( $this->isReplacing ){
-				$node = $newNode;
-			}
+			$this->$funcName( $node, $visitDeeper );
 
-			if( $visitDeeper && (!$this->isReplacing || is_object($node)) ){
+			if( $visitDeeper ){
 				$node->accept($this);
 			}
 
@@ -41,11 +36,39 @@ class Less_visitor{
 
 	function visitArray( $nodes ){
 
-		if( !$this->isReplacing ){
-			array_map( array($this,'visitObj'), $nodes);
-			return $nodes;
+		array_map( array($this,'visitObj'), $nodes);
+		return $nodes;
+	}
+}
+
+
+class Less_visitor_replacing extends Less_visitor{
+
+	function visitObj( $node ){
+
+		$funcName = 'visit'.$node->type;
+		if( isset($this->_visitFnCache[$funcName]) ){
+
+			$visitDeeper = true;
+			$node = $this->$funcName( $node, $visitDeeper );
+
+			if( $visitDeeper && is_object($node) ){
+				$node->accept($this);
+			}
+
+			$funcName = $funcName . "Out";
+			if( isset($this->_visitFnCache[$funcName]) ){
+				$this->$funcName( $node );
+			}
+
+		}else{
+			$node->accept($this);
 		}
 
+		return $node;
+	}
+
+	function visitArray( $nodes ){
 
 		$newNodes = array();
 		foreach($nodes as $node){
@@ -58,7 +81,6 @@ class Less_visitor{
 		}
 		return $newNodes;
 	}
-
 
 	function flatten( $arr, &$out ){
 
@@ -81,4 +103,5 @@ class Less_visitor{
 	}
 
 }
+
 
