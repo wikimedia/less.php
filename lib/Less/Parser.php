@@ -39,6 +39,8 @@ class Less_Parser extends Less_Cache{
 
 	public static $has_extends = false;
 
+	public $cache_method = false; //'serialize' or 'php';
+
 
 	/**
 	 * @param Environment|null $env
@@ -233,30 +235,31 @@ class Less_Parser extends Less_Cache{
 	 * Use cache and save cached results if possible
 	 *
 	 */
-	var $cache_method = 'serialize';
 	private function GetRules( $file_path ){
 
 		$cache_file = false;
 		if( $file_path ){
-			$cache_file = $this->CacheFile( $file_path );
+			if( $this->cache_method ){
+				$cache_file = $this->CacheFile( $file_path );
 
-			if( $cache_file && file_exists($cache_file) ){
-				switch($this->cache_method){
+				if( $cache_file && file_exists($cache_file) ){
+					switch($this->cache_method){
 
-					// Using serialize
-					// Faster but uses more memory
-					case 'serialize':
-						$cache = unserialize(file_get_contents($cache_file));
-						if( $cache ){
-							touch($cache_file);
-							return $cache;
-						}
-					break;
+						// Using serialize
+						// Faster but uses more memory
+						case 'serialize':
+							$cache = unserialize(file_get_contents($cache_file));
+							if( $cache ){
+								touch($cache_file);
+								return $cache;
+							}
+						break;
 
 
-					// Using generated php code
-					case 'php':
-					return include($cache_file);
+						// Using generated php code
+						case 'php':
+						return include($cache_file);
+					}
 				}
 			}
 
@@ -278,7 +281,7 @@ class Less_Parser extends Less_Cache{
 
 
 		//save the cache
-		if( $cache_file ){
+		if( $cache_file && $this->cache_method ){
 
 			switch($this->cache_method){
 				case 'serialize':
@@ -286,9 +289,6 @@ class Less_Parser extends Less_Cache{
 				break;
 				case 'php':
 					file_put_contents( $cache_file, '<?php return '.var_export($rules,true).'; ?>' );
-				break;
-				default:
-					throw new Less_ParserException('Unknown caching option: "'.$this->cache_method.'"');
 				break;
 			}
 
