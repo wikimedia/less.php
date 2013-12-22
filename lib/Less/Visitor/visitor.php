@@ -52,13 +52,15 @@ class Less_visitor_replacing extends Less_visitor{
 			$visitDeeper = true;
 			$node = $this->$funcName( $node, $visitDeeper );
 
-			if( $visitDeeper && is_object($node) ){
-				$node->accept($this);
-			}
+			if( $node ){
+				if( $visitDeeper && is_object($node) ){
+					$node->accept($this);
+				}
 
-			$funcName = $funcName . "Out";
-			if( isset($this->_visitFnCache[$funcName]) ){
-				$this->$funcName( $node );
+				$funcName = $funcName . "Out";
+				if( isset($this->_visitFnCache[$funcName]) ){
+					$this->$funcName( $node );
+				}
 			}
 
 		}else{
@@ -73,10 +75,12 @@ class Less_visitor_replacing extends Less_visitor{
 		$newNodes = array();
 		foreach($nodes as $node){
 			$evald = $this->visitObj($node);
-			if( is_array($evald) ){
-				self::flatten($evald,$newNodes);
-			}else{
-				$newNodes[] = $evald;
+			if( $evald ){
+				if( is_array($evald) ){
+					self::flatten($evald,$newNodes);
+				}else{
+					$newNodes[] = $evald;
+				}
 			}
 		}
 		return $newNodes;
