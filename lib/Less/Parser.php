@@ -1361,12 +1361,9 @@ class Less_Parser extends Less_Cache{
 		$start = $this->pos;
 		$this->save();
 
-		if( isset($this->input[$this->pos]) ){
-			$c = $this->input[$this->pos];
-
-			if( $c === '.' || $c === '#' || $c === '&' ){
-				return;
-			}
+		$c = $this->input[$this->pos];
+		if( $c === '.' || $c === '#' || $c === '&' ){
+			return;
 		}
 
 		if( $name = $this->MatchFuncs( array('parseVariable','parseRuleProperty')) ){
