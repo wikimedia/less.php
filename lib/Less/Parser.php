@@ -54,7 +54,6 @@ class Less_Parser extends Less_Cache{
 			$this->env = new Less_Environment( $env );
 			self::$imports = array();
 			self::$import_dirs = array();
-			self::$has_extends = false;
 		}
 
 		$this->pos = 0;
@@ -85,6 +84,7 @@ class Less_Parser extends Less_Cache{
 
 		//obj($root);
 
+		self::$has_extends = false;
 		$evaldRoot = $root->compile($this->env);
 
 		$joinSelector = new Less_joinSelectorVisitor();
@@ -894,10 +894,6 @@ class Less_Parser extends Less_Cache{
 
 		if( $isRule ){
 			$this->expect('/\\G;/');
-		}
-
-		if( $extendList ){
-			self::$has_extends = true;
 		}
 
 		return $extendList;
