@@ -2,7 +2,9 @@
 ./Parser.php
 ./Colors.php
 ./Environment.php
+./Functions.php
 ./Mime.php
+./Tree.php
 ./Node
 ./Visitor
 ./Exception

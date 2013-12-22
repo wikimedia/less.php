@@ -7,20 +7,27 @@ class Less_extendFinderVisitor extends Less_visitor{
 	public $allExtendsStack;
 	public $foundExtends;
 
-	public $visitRuleDeeper = false;
-	public $visitMixinDefinitionDeeper = false;
-
 	function __construct(){
 		$this->contexts = array();
 		$this->allExtendsStack = array(array());
+		parent::__construct();
 	}
 
-	function run($root) {
-		$this->visit($root);
+	function run($root){
+		$root = $this->visitObj($root);
 		$root->allExtends =& $this->allExtendsStack[0];
+		return $root;
 	}
 
-	function visitRuleset($rulesetNode) {
+	function visitRule($ruleNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitMixinDefinition( $mixinDefinitionNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitRuleset($rulesetNode){
 
 		if( $rulesetNode->root ){
 			return;
@@ -29,17 +36,24 @@ class Less_extendFinderVisitor extends Less_visitor{
 		$allSelectorsExtendList = array();
 
 		// get &:extend(.a); rules which apply to all selectors in this ruleset
-		for( $i = 0; $i < count($rulesetNode->rules); $i++ ){
-			if( $rulesetNode->rules[$i] instanceof Less_Tree_Extend ){
-				$allSelectorsExtendList[] = $rulesetNode->rules[$i];
+		$rules = $rulesetNode->rules;
+		$ruleCnt = count($rules);
+		for($i = 0; $i < $ruleCnt; $i++ ){
+			if( $rules[$i] instanceof Less_Tree_Extend ){
+				$allSelectorsExtendList[] = $rules[$i];
+				$rulesetNode->extendOnEveryPath = true;
 			}
 		}
 
+
+
 		// now find every selector and apply the extends that apply to all extends
 		// and the ones which apply to an individual extend
-		for($i = 0; $i < count($rulesetNode->paths); $i++ ){
+		$paths = $rulesetNode->paths;
+		$paths_len = count($paths);
+		for($i = 0; $i < $paths_len; $i++ ){
 
-			$selectorPath = $rulesetNode->paths[$i];
+			$selectorPath = $paths[$i];
 			$selector = end($selectorPath); //$selectorPath[ count($selectorPath)-1];
 
 
@@ -50,7 +64,8 @@ class Less_extendFinderVisitor extends Less_visitor{
 				$extendList[] = clone $allSelectorsExtend;
 			}
 
-			for($j = 0; $j < count($extendList); $j++ ){
+			$extendList_len = count($extendList);
+			for($j = 0; $j < $extendList_len; $j++ ){
 				$this->foundExtends = true;
 				$extend = $extendList[$j];
 				$extend->findSelfSelectors( $selectorPath );
@@ -66,7 +81,7 @@ class Less_extendFinderVisitor extends Less_visitor{
 	}
 
 	function visitRulesetOut( $rulesetNode ){
-		if( !$rulesetNode->root) {
+		if( !is_object($rulesetNode) || !$rulesetNode->root ){
 			array_pop($this->contexts);
 		}
 	}

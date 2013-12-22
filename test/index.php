@@ -1,12 +1,15 @@
 <?php
 
 define('phpless_start_time',microtime());
+
+error_reporting(E_ALL | E_STRICT); //previous to php 5.4, E_ALL did not include E_STRICT
 ini_set('display_errors',1);
 
-//error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
-//set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
+error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
+set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
 
-error_reporting(E_ALL | E_STRICT);
+set_time_limit(60);
+//error_reporting(E_ALL | E_STRICT);
 
 
 
@@ -35,7 +38,6 @@ class ParserTest{
 
 	function __construct(){
 
-		/*
 		$this->cache_dir = __DIR__.'/_cache';
 
 		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
@@ -43,7 +45,6 @@ class ParserTest{
 		}elseif( !is_writable($this->cache_dir) ){
 			echo '<p>Cache directory not writable</p>';
 		}
-		*/
 
 
 		//get any other possible test folders
@@ -140,10 +141,11 @@ class ParserTest{
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 
-		}catch(\Exception $e){
+		}catch(Exception $e){
 			echo '<h1>Parser Error</h1>';
 			echo '<p>'.$e->getMessage().'</p>';
 		}
+
 
 		$css = file_get_contents($css);
 
@@ -343,6 +345,18 @@ class ParserTest{
 	}
 
 	static function Options(){
+
+		//debugging
+		$request = str_replace( array('XDEBUG_PROFILE','XDEBUG_TRACE'),'',$_SERVER['REQUEST_URI']);
+		echo '<div style="float:right">';
+		echo 'XDEBUG: ';
+		echo '<a href="'.str_replace('&&','&',$request.'&XDEBUG_PROFILE').'">Debug Profile</a>';
+		echo ' - ';
+		echo '<a href="'.str_replace('&&','&',$request.'&XDEBUG_TRACE').'">Debug Trace</a>';
+		echo '</div>';
+
+
+		//options
 		echo '<div id="options">';
 		echo '<b>Options</b>';
 
@@ -447,7 +461,7 @@ function obj($mixed){
 	$output = '';
 
 
-	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index');
+	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index','ruleset_id','type');
 	//$exclude_keys = array();
 
 	$type = gettype($mixed);
@@ -460,6 +474,11 @@ function obj($mixed){
 
 			$objects[] = $mixed;
 			$type = 'object';
+
+			if( property_exists($mixed,'type') ){
+				$type .= ' '.$mixed->type;
+			}
+
 			//$type = get_class($mixed).' object';
 			//$output = $type.'(...)'."\n"; //recursive object references creates an infinite loop
 			$temp = array();

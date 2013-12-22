@@ -4,26 +4,45 @@ class Less_joinSelectorVisitor extends Less_visitor{
 
 	public $contexts = array( array() );
 
-	public $visitRuleDeeper = false;
-	public $visitMixinDefinition = false;
-
-
 	function run( $root ){
-		$this->visit($root);
+		return $this->visitObj($root);
 	}
 
-	function visitRuleset($rulesetNode) {
-		$context = end($this->contexts); //$context = $this->contexts[ count($this->contexts) - 1];
+	function visitRule( $ruleNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitMixinDefinition( $mixinDefinitionNode, &$visitDeeper ){
+		$visitDeeper = false;
+	}
+
+	function visitRuleset( $rulesetNode ){
+
 		$paths = array();
-		//$this->contexts[] = $paths;
+
 		if( !$rulesetNode->root ){
-			$rulesetNode->joinSelectors($paths, $context, $rulesetNode->selectors);
+			$selectors = array();
+
+			if( $rulesetNode->selectors && count($rulesetNode->selectors) ){
+				foreach($rulesetNode->selectors as $selector){
+					if( $selector->getIsOutput() ){
+						$selectors[] = $selector;
+					}
+				}
+			}
+
+			if( !count($selectors) ){
+				$rulesetNode->selectors = $selectors = null;
+				$rulesetNode->rules = null;
+			}else{
+				$context = end($this->contexts); //$context = $this->contexts[ count($this->contexts) - 1];
+				$paths = $rulesetNode->joinSelectors( $context, $selectors);
+			}
+
 			$rulesetNode->paths = $paths;
 		}
 
-		//array_pop($this->contexts);
-		$this->contexts[] = $paths;
-
+		$this->contexts[] = $paths; //different from less.js. Placed after joinSelectors() so that $this->contexts will get correct $paths
 	}
 
 	function visitRulesetOut( $rulesetNode ){
@@ -32,7 +51,10 @@ class Less_joinSelectorVisitor extends Less_visitor{
 
 	function visitMedia($mediaNode) {
 		$context = end($this->contexts); //$context = $this->contexts[ count($this->contexts) - 1];
-		$mediaNode->ruleset->root = ( count($context) === 0 || @$context[0]->multiMedia);
+
+		if( !count($context) || (is_object($context[0]) && @$context[0]->multiMedia) ){
+			$mediaNode->rules[0]->root = true;
+		}
 	}
 
 }
