@@ -41,6 +41,8 @@ class Less_Parser extends Less_Cache{
 
 	public $cache_method = false; //'serialize' or 'php';
 
+	public static $next_id = 0;
+
 
 	/**
 	 * @param Environment|null $env

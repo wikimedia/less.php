@@ -23,8 +23,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 
 	public function SetRulesetIndex(){
-		static $i = 0;
-		$this->ruleset_id = $i++;
+		$this->ruleset_id = Less_Parser::$next_id++;
 		$this->originalRuleset = $this->ruleset_id;
 	}
 
@@ -220,22 +219,22 @@ class Less_Tree_Ruleset extends Less_Tree{
 	public function find( $selector, $self = null, $env = null){
 
 		if( !$self ){
-			$self = $this;
+			$self = $this->ruleset_id;
 		}
 
 		$key = $selector->toCSS($env);
 
 		if( !array_key_exists($key, $this->lookups) ){
-			$this->lookups[$key] = array();;
+			$this->lookups[$key] = array();
 
 
 			foreach($this->rules as $rule){
 
-				if( $rule == $self ){
-					continue;
-				}
-
 				if( ($rule instanceof Less_Tree_Ruleset) || ($rule instanceof Less_Tree_MixinDefinition) ){
+
+					if( $rule->ruleset_id == $self ){
+						continue;
+					}
 
 					foreach( $rule->selectors as $ruleSelector ){
 						$match = $selector->match($ruleSelector);
