@@ -9,7 +9,7 @@
  */
 function loadLessClass($className)
 {
-    $fileName = __DIR__.'/../lib/'.str_replace('\\', DIRECTORY_SEPARATOR, $className) . '.php';
+    $fileName = __DIR__.'/../lib/'.str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
     if (file_exists($fileName)) {
         require_once $fileName;
     }
@@ -19,8 +19,8 @@ function loadLessClass($className)
 spl_autoload_register('loadLessClass');
 
 // Create our environment
-$env = new \Less\Environment;
-$env->setCompress(false);
+$env = new \Less_Environment;
+Less_Environment::$compress = false;
 $color = true;
 $silent = false;
 $verbose = false;
@@ -42,7 +42,7 @@ foreach($argv as $key => $arg) {
         switch ($option) {
             case 'v':
             case 'version':
-                echo "lessc " . \Less\Parser::$version . " (LESS Compiler) [PHP]\n\n";
+                echo "lessc " . \Less_Parser::$version . " (LESS Compiler) [PHP]\n\n";
                 exit();
             case 's':
             case 'silent':
@@ -64,7 +64,7 @@ EOD;
                 exit;
             case 'x':
             case 'compress':
-                $env->setCompress(true);
+                Less_Environment::$compress = true;
                 break;
             case 'w':
             case 'watch':
@@ -119,7 +119,7 @@ if ($watch) {
 
         if ($updated) {
             $lastAction = time();
-            $parser = new \Less\Parser($env);
+            $parser = new \Less_Parser($env);
             foreach ($inputs as $input) {
                 try {
                     $parser->parseFile($input);
@@ -137,7 +137,7 @@ if ($watch) {
     }
 } else {
     // parse the selected files (or stdin if '-' is given)
-    $parser = new \Less\Parser($env);
+    $parser = new \Less_Parser($env);
     foreach($inputs as $input) {
         if ($input == '-') {
             $content = file_get_contents('php://stdin');
