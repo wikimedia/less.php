@@ -1,12 +1,12 @@
 <?php
 
 
-class Less_processExtendsVisitor extends Less_visitor{
+class Less_Visitor_processExtends extends Less_visitor{
 
 	public $allExtendsStack;
 
 	function run( $root ){
-		$extendFinder = new Less_extendFinderVisitor();
+		$extendFinder = new Less_Visitor_extendFinder();
 		$extendFinder->run( $root );
 		if( !$extendFinder->foundExtends) { return $root; }
 

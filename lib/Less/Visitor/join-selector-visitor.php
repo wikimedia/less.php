@@ -1,6 +1,6 @@
 <?php
 
-class Less_joinSelectorVisitor extends Less_visitor{
+class Less_Visitor_joinSelector extends Less_visitor{
 
 	public $contexts = array( array() );
 

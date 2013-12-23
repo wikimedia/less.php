@@ -1,7 +1,7 @@
 <?php
 
 
-class Less_extendFinderVisitor extends Less_visitor{
+class Less_Visitor_extendFinder extends Less_visitor{
 
 	public $contexts = array();
 	public $allExtendsStack;

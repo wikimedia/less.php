@@ -91,16 +91,16 @@ class Less_Parser extends Less_Cache{
 		self::$has_extends = false;
 		$evaldRoot = $root->compile($this->env);
 
-		$joinSelector = new Less_joinSelectorVisitor();
+		$joinSelector = new Less_Visitor_joinSelector();
 		$joinSelector->run($evaldRoot);
 
 
 		if( self::$has_extends ){
-			$extendsVisitor = new Less_processExtendsVisitor();
+			$extendsVisitor = new Less_Visitor_processExtends();
 			$extendsVisitor->run($evaldRoot);
 		}
 
-		$toCSSVisitor = new Less_toCSSVisitor( $this->env );
+		$toCSSVisitor = new Less_Visitor_toCSS( $this->env );
 		$toCSSVisitor->run($evaldRoot);
 
 		$css = $evaldRoot->toCSS($this->env);

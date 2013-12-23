@@ -1,6 +1,6 @@
 <?php
 
-class Less_toCSSVisitor extends Less_visitor_replacing{
+class Less_Visitor_toCSS extends Less_visitor_replacing{
 
 	function __construct($env){
 		$this->_env = $env;
