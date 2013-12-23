@@ -1153,9 +1153,8 @@ class Less_Parser extends Less_Cache{
 	// because the `block` rule will be expecting it, but we still need to make sure
 	// it's there, if ';' was ommitted.
 	//
-	private function parseEnd()
-	{
-		return ($end = $this->MatchChar(';') ) ? $end : $this->PeekChar('}');
+	private function parseEnd(){
+		return $this->MatchChar(';') || $this->PeekChar('}');
 	}
 
 	//
