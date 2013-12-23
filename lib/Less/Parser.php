@@ -133,7 +133,7 @@ class Less_Parser extends Less_Cache{
 	/**
 	 * Parse a Less string from a given file
 	 *
-	 * @throws Less_ParserException
+	 * @throws Less_Exception_Parser
 	 * @param $filename The file to parse
 	 * @param $uri_root The url of the file
 	 * @param bool $returnRoot Indicates whether the return value should be a css string a root node
@@ -142,7 +142,7 @@ class Less_Parser extends Less_Cache{
 	public function parseFile( $filename, $uri_root = '', $returnRoot = false){
 
 		if( !file_exists($filename) ){
-			throw new Less_ParserException(sprintf('File `%s` not found.', $filename));
+			throw new Less_Exception_Parser(sprintf('File `%s` not found.', $filename));
 		}
 
 		$previousFileInfo = $this->env->currentFileInfo;
@@ -201,9 +201,9 @@ class Less_Parser extends Less_Cache{
 	public function SetCacheDir( $dir ){
 
 		if( !is_dir($dir) ){
-			throw new Less_ParserException('Less.php cache directory doesn\'t exist: '.$dir);
+			throw new Less_Exception_Parser('Less.php cache directory doesn\'t exist: '.$dir);
 		}elseif( !is_writable($dir) ){
-			throw new Less_ParserException('Less.php cache directory isn\'t writable: '.$dir);
+			throw new Less_Exception_Parser('Less.php cache directory isn\'t writable: '.$dir);
 		}else{
 			$dir = str_replace('\\','/',$dir);
 			self::$cache_dir = rtrim($dir,'/').'/';
@@ -452,7 +452,7 @@ class Less_Parser extends Less_Cache{
 	public function expect($tok, $msg = NULL) {
 		$result = $this->match( array($tok) );
 		if (!$result) {
-			throw new Less_ParserException( $msg	? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+			throw new Less_Exception_Parser( $msg	? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 		} else {
 			return $result;
 		}
@@ -461,7 +461,7 @@ class Less_Parser extends Less_Cache{
 	public function expectChar($tok, $msg = null ){
 		$result = $this->MatchChar($tok);
 		if( !$result ){
-			throw new Less_ParserException( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+			throw new Less_Exception_Parser( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 		}else{
 			return $result;
 		}
@@ -1013,7 +1013,7 @@ class Less_Parser extends Less_Cache{
 				if( $this->MatchChar(':') ){
 					if( $expressions ){
 						if( $isSemiColonSeperated ){
-							throw new Less_ParserException('Cannot mix ; and , as delimiter types');
+							throw new Less_Exception_Parser('Cannot mix ; and , as delimiter types');
 						}
 						$expressionContainsNamed = true;
 					}
@@ -1049,7 +1049,7 @@ class Less_Parser extends Less_Cache{
 			if( $this->MatchChar(';') || $isSemiColonSeperated ){
 
 				if( $expressionContainsNamed ){
-					throw new Less_ParserException('Cannot mix ; and , as delimiter types');
+					throw new Less_Exception_Parser('Cannot mix ; and , as delimiter types');
 				}
 
 				$isSemiColonSeperated = true;
@@ -1275,7 +1275,7 @@ class Less_Parser extends Less_Cache{
 		if( $elements ){
 			return new Less_Tree_Selector( $elements, $extendList, $condition, $this->pos, $this->env->currentFileInfo);
 		}
-		if( $extendList ) { throw new Less_ParserException('Extend must be used to extend a selector, it cannot be used on its own'); }
+		if( $extendList ) { throw new Less_Exception_Parser('Extend must be used to extend a selector, it cannot be used on its own'); }
 	}
 
 	private function parseTag(){
@@ -1760,7 +1760,7 @@ class Less_Parser extends Less_Cache{
 				if( $b ){
 					$c = new Less_Tree_Condition($op[0], $a, $b, $index, $negate);
 				} else {
-					throw new Less_ParserException('Unexpected expression');
+					throw new Less_Exception_Parser('Unexpected expression');
 				}
 			} else {
 				$c = new Less_Tree_Condition('=', $a, new Less_Tree_Keyword('true'), $index, $negate);

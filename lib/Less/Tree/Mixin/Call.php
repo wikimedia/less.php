@@ -90,8 +90,8 @@ class Less_Tree_MixinCall extends Less_Tree{
 							//	env.isImportant = isImportant;
 							//}
 						} catch (Exception $e) {
-							//throw new Less_CompilerException($e->getMessage(), $e->index, null, $this->currentFileInfo['filename']);
-							throw new Less_CompilerException($e->getMessage(), null, null, $this->currentFileInfo['filename']);
+							//throw new Less_Exception_Compiler($e->getMessage(), $e->index, null, $this->currentFileInfo['filename']);
+							throw new Less_Exception_Compiler($e->getMessage(), null, null, $this->currentFileInfo['filename']);
 						}
 					}
 					$match = true;
@@ -132,12 +132,12 @@ class Less_Tree_MixinCall extends Less_Tree{
 			$message = implode(', ',$message);
 
 
-			throw new Less_CompilerException('No matching definition was found for `'.
+			throw new Less_Exception_Compiler('No matching definition was found for `'.
 				trim($this->selector->toCSS($env)) . '(' .$message.')',
 				$this->index, null, $this->currentFileInfo['filename']);
 
 		}else{
-			throw new Less_CompilerException(trim($this->selector->toCSS($env)) . " is undefined", $this->index);
+			throw new Less_Exception_Compiler(trim($this->selector->toCSS($env)) . " is undefined", $this->index);
 		}
 	}
 }

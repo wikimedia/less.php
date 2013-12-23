@@ -30,11 +30,11 @@ class Less_Tree_Operation extends Less_Tree{
 						$b = $a;
 						$a = $temp;
 					} else {
-						throw new Less_CompilerException("Operation on an invalid type");
+						throw new Less_Exception_Compiler("Operation on an invalid type");
 					}
 				}
 			}elseif( !($a instanceof Less_Tree_Color) ){
-				throw new Less_CompilerException("Operation on an invalid type");
+				throw new Less_Exception_Compiler("Operation on an invalid type");
 			}
 
 			return $a->operate($env,$this->op, $b);

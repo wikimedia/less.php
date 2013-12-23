@@ -68,7 +68,7 @@ class Less_Tree_Call extends Less_Tree{
 				}
 
 			} catch (Exception $e) {
-				throw Less_CompilerException('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
+				throw Less_Exception_Compiler('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
 			}
 
 		}

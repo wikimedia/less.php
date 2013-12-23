@@ -23,7 +23,7 @@ class Less_Tree_Variable extends Less_Tree{
 		}
 
 		if ($this->evaluating) {
-			throw new Less_CompilerException("Recursive variable definition for " . $name, $this->index, null, $this->currentFileInfo['file']);
+			throw new Less_Exception_Compiler("Recursive variable definition for " . $name, $this->index, null, $this->currentFileInfo['file']);
 		}
 
 		$this->evaluating = true;
@@ -36,7 +36,7 @@ class Less_Tree_Variable extends Less_Tree{
 			}
 		}
 
-		throw new Less_CompilerException("variable " . $name . " is undefined", $this->index, null);
+		throw new Less_Exception_Compiler("variable " . $name . " is undefined", $this->index, null);
 	}
 
 }

@@ -88,7 +88,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 					$args_len--;
 					continue;
 				} else {
-					throw new Less_CompilerException("Named argument for " . $this->name .' '.$args[$i]['name'] . ' not found');
+					throw new Less_Exception_Compiler("Named argument for " . $this->name .' '.$args[$i]['name'] . ' not found');
 				}
 			}
 		}
@@ -122,7 +122,7 @@ class Less_Tree_MixinDefinition extends Less_Tree_Ruleset{
 						$val = $param['value']->compile($mixinEnv);
 						$frame->resetCache();
 					} else {
-						throw new Less_CompilerException("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
+						throw new Less_Exception_Compiler("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
 					}
 
 					array_unshift($frame->rules, new Less_Tree_Rule($param['name'], $val));

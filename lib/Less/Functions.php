@@ -30,7 +30,7 @@ class Less_Functions{
 		} else if (is_numeric($n)) {
 			return $n;
 		} else {
-			throw new Less_CompilerException("color functions take numbers as parameters");
+			throw new Less_Exception_Compiler("color functions take numbers as parameters");
 		}
 	}
 
@@ -343,7 +343,7 @@ class Less_Functions{
 
 	public function unit($val, $unit = null ){
 		if( !($val instanceof Less_Tree_Dimension) ){
-			throw new Less_CompilerException('The first argument to unit must be a number' . ($val instanceof Less_Tree_Operation ? '. Have you forgotten parenthesis?' : '.') );
+			throw new Less_Exception_Compiler('The first argument to unit must be a number' . ($val instanceof Less_Tree_Operation ? '. Have you forgotten parenthesis?' : '.') );
 		}
 		return new Less_Tree_Dimension($val->value, $unit ? $unit->toCSS() : "");
 	}
@@ -377,7 +377,7 @@ class Less_Functions{
 			$x = new Less_Tree_Dimension($x);
 			$y = new Less_Tree_Dimension($y);
 		}elseif( !($x instanceof Less_Tree_Dimension) || !($y instanceof Less_Tree_Dimension) ){
-			throw new Less_CompilerException('Arguments must be numbers');
+			throw new Less_Exception_Compiler('Arguments must be numbers');
 		}
 
 		return new Less_Tree_Dimension( pow($x->value, $y->value), $x->unit );
@@ -414,14 +414,14 @@ class Less_Functions{
 		} else if (is_numeric($args[0])) {
 			return call_user_func_array($fn,$args);
 		} else {
-			throw new Less_CompilerException("math functions take numbers as parameters");
+			throw new Less_Exception_Compiler("math functions take numbers as parameters");
 		}
 	}
 
 	function _minmax( $isMin, $args ){
 
 		switch( count($args) ){
-			case 0: throw new Less_CompilerException( 'one or more arguments required');
+			case 0: throw new Less_Exception_Compiler( 'one or more arguments required');
 			case 1: return $args[0];
 		}
 
@@ -490,9 +490,9 @@ class Less_Functions{
 			if( preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/',$colorCandidate) ){
 				return new Less_Tree_Color(substr($colorCandidate, 1));
 			}
-			throw new Less_CompilerException("argument must be a color keyword or 3/6 digit hex e.g. #FFF");
+			throw new Less_Exception_Compiler("argument must be a color keyword or 3/6 digit hex e.g. #FFF");
 		} else {
-			throw new Less_CompilerException("argument must be a string");
+			throw new Less_Exception_Compiler("argument must be a string");
 		}
 	}
 
@@ -718,7 +718,7 @@ class Less_Functions{
 		$arguments = func_get_args();
 
 		if( count($arguments) < 3 ){
-			throw new Less_CompilerException( $throw_message );
+			throw new Less_Exception_Compiler( $throw_message );
 		}
 
 		$stops = array_slice($arguments,1);
@@ -749,7 +749,7 @@ class Less_Functions{
 				$rectangleDimension = 'x="-50" y="-50" width="101" height="101"';
 				break;
 			default:
-				throw new Less_CompilerException( "svg-gradient direction must be 'to bottom', 'to right', 'to bottom right', 'to top right' or 'ellipse at center'" );
+				throw new Less_Exception_Compiler( "svg-gradient direction must be 'to bottom', 'to right', 'to bottom right', 'to top right' or 'ellipse at center'" );
 		}
 
 		$returner = '<?xml version="1.0" ?>' .
@@ -766,7 +766,7 @@ class Less_Functions{
 			}
 
 			if( !($color instanceof Less_Tree_Color) || (!(($i === 0 || $i+1 === count($stops)) && $position === null) && !($position instanceof Less_Tree_Dimension)) ){
-				throw new Less_CompilerException( $throw_message );
+				throw new Less_Exception_Compiler( $throw_message );
 			}
 			if( $position ){
 				$positionValue = $position->toCSS($renderEnv);
@@ -804,7 +804,7 @@ class Less_Functions{
 		$last = array_intersect_key($last,array('function'=>'','class'=>'','line'=>''));
 
 		$message = 'Object of type '.get_class($arg).' passed to darken function. Expecting `Color`. '.$arg->toCSS().'. '.print_r($last,true);
-		throw new Less_CompilerException($message);
+		throw new Less_Exception_Compiler($message);
 
 	}
 
