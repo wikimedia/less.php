@@ -349,7 +349,7 @@ class Less_Parser extends Less_Cache{
 
 
 	private function isWhitespace($offset = 0) {
-		return ctype_space($this->input[ $this->pos + $offset]);
+		return preg_match('/\s/',$this->input[ $this->pos + $offset]);
 	}
 
 	/**
