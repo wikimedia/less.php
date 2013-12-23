@@ -379,6 +379,7 @@ class ParserTest{
 	static function showError($errno, $errmsg, $filename, $linenum, $vars){
 		static $reported = array();
 
+
 		//readable types
 		$errortype = array (
 					E_ERROR				=> 'Fatal Error',
@@ -398,11 +399,15 @@ class ParserTest{
 					E_USER_DEPRECATED	=> 'User Deprecated',
 				 );
 
+
 		//get the backtrace and function where the error was thrown
 		$backtrace = debug_backtrace();
+
 		//remove showError() from backtrace
 		if( strtolower($backtrace[0]['function']) == 'showerror' ){
-			@array_shift($backtrace);
+			$backtrace = array_slice($backtrace,1,5);
+		}else{
+			$backtrace = array_slice($backtrace,0,5);
 		}
 
 		//record one error per function and only record the error once per request
@@ -411,10 +416,17 @@ class ParserTest{
 		}else{
 			$uniq = $filename.$linenum;
 		}
+
 		if( isset($reported[$uniq]) ){
 			return false;
 		}
 		$reported[$uniq] = true;
+
+		//disable showError after 20 errors
+		if( count($reported) >= 1 ){
+			restore_error_handler();
+		}
+
 
 
 		//build message
@@ -430,11 +442,14 @@ class ParserTest{
 		}
 
 
-		//backtrace, don't add entire object to backtrace
-		$backtrace = array_slice($backtrace,0,7);
+		//attempting to entire all data can result in a blank screen
 		foreach($backtrace as $i => $trace){
-			if( !empty($trace['object']) ){
-				$backtrace[$i]['object'] = get_class($trace['object']);
+			foreach($trace as $tk => $tv){
+				if( is_array($tv) ){
+					$backtrace[$i][$tk] = 'array('.count($tv).')';
+				}elseif( is_object($tv) ){
+					$backtrace[$i][$tk] = 'object '.get_class($tv);
+				}
 			}
 		}
 
@@ -442,7 +457,7 @@ class ParserTest{
 		echo '<div style="display:none">';
 		echo pre($backtrace);
 		echo '</div></div>';
-		echo '</p></fieldset>';
+		echo '</fieldset>';
 		return false;
 	}
 }
