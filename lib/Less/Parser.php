@@ -526,12 +526,15 @@ class Less_Parser extends Less_Cache{
 				break;
 			}
 
-			$node = $this->MatchFuncs( array('parseExtendRule', 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
-
-
-			if( is_array($node) ){
+			$node = $this->parseExtend(true);
+			if( $node ){
 				$root = array_merge($root,$node);
-			}elseif( $node ){
+				continue;
+			}
+
+			$node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
+
+			if( $node ){
 				$root[] = $node;
 			}elseif( !$this->MatchReg('/\\G[\s\n;]+/') ){
 				break;
@@ -897,10 +900,6 @@ class Less_Parser extends Less_Cache{
 		}
 
 		return $extendList;
-	}
-
-	function parseExtendRule(){
-		return $this->parseExtend(true);
 	}
 
 
