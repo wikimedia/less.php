@@ -1,7 +1,7 @@
 <?php
 
 /*
-class Less_Visitor_import extends Less_Visitor_Replacing{
+class Less_Visitor_import extends Less_VisitorReplacing{
 
 	public $_visitor;
 	public $_importer;

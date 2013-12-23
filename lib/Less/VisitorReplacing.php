@@ -1,7 +1,7 @@
 <?php
 
 
-class Less_Visitor_Replacing extends Less_Visitor{
+class Less_VisitorReplacing extends Less_Visitor{
 
 	function visitObj( $node ){
 

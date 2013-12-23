@@ -6,6 +6,7 @@
 ./Mime.php
 ./Tree.php
 ./Visitor.php
+./VisitorReplacing.php
 ./Tree
 ./Visitor
 ./Exception
