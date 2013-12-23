@@ -1,7 +1,7 @@
 <?php
 
 
-class Less_Tree_MixinCall extends Less_Tree{
+class Less_Tree_Mixin_Call extends Less_Tree{
 
 	public $selector;
 	public $arguments;
@@ -58,7 +58,7 @@ class Less_Tree_MixinCall extends Less_Tree{
 
 				$isRecursive = false;
 				foreach($env->frames as $recur_frame){
-					if( !($mixin instanceof Less_Tree_MixinDefinition) ){
+					if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
 						if( (isset($recur_frame->originalRuleset) && $mixin->ruleset_id === $recur_frame->originalRuleset)
 							|| ($mixin === $recur_frame) ){
 							$isRecursive = true;
@@ -72,12 +72,12 @@ class Less_Tree_MixinCall extends Less_Tree{
 
 				if ($mixin->matchArgs($args, $env)) {
 
-					//if( !($mixin instanceof Less_Tree_Ruleset || $mixin instanceof Less_Tree_MixinDefinition) || $mixin->matchCondition($args, $env) ){
+					//if( !($mixin instanceof Less_Tree_Ruleset || $mixin instanceof Less_Tree_Mixin_Definition) || $mixin->matchCondition($args, $env) ){
 					if( !Less_Parser::is_method($mixin,'matchCondition') || $mixin->matchCondition($args, $env) ){
 						try{
 
-							if( !($mixin instanceof Less_Tree_MixinDefinition) ){
-								$mixin = new Less_Tree_MixinDefinition('', array(), $mixin->rules, null, false);
+							if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
+								$mixin = new Less_Tree_Mixin_Definition('', array(), $mixin->rules, null, false);
 								$mixin->originalRuleset = $mixins[$m]->originalRuleset;
 							}
 							//if (this.important) {
