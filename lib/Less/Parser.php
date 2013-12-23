@@ -301,12 +301,6 @@ class Less_Parser extends Less_Cache{
 	}
 
 
-	public static function ReleaseMemory(){
-		if( function_exists('gc_collect_cycles') ){
-			gc_collect_cycles();
-		}
-	}
-
 	public function CacheFile( $file_path ){
 
 		if( $file_path && self::$cache_dir ){
