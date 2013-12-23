@@ -1,14 +1,14 @@
 <?php
 
 /*
-class Less_importVisitor extends Less_visitor_replacing{
+class Less_Visitor_import extends Less_Visitor_Replacing{
 
 	public $_visitor;
 	public $_importer;
 	public $importCount;
 
 	function __construct( $importer = null, $evalEnv = null ){
-		$this->_visitor = new Less_visitor($this);
+		$this->_visitor = new Less_Visitor($this);
 		$this->_importer = $importer;
 		if( $evalEnv ){
 			$this->env = $evalEnv;

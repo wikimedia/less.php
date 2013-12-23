@@ -1,7 +1,7 @@
 <?php
 
 
-class Less_Visitor_processExtends extends Less_visitor{
+class Less_Visitor_processExtends extends Less_Visitor{
 
 	public $allExtendsStack;
 
