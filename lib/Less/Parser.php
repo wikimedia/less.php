@@ -58,10 +58,39 @@ class Less_Parser extends Less_Cache{
 			$this->env = new Less_Environment( $env );
 			self::$imports = array();
 			self::$import_dirs = array();
+			$this->SetOptions($env);
 		}
 
 		$this->pos = 0;
 	}
+
+	// options: import_dirs, compress, cache_dir, cache_method, strictUnits
+	public function SetOptions( $options ){
+		foreach($options as $option => $value){
+			$this->SetOption($option,$value);
+		}
+	}
+
+	public function SetOption($option,$value){
+
+		switch($option){
+
+			case 'import_dirs':
+				$this->SetImportDirs($value);
+			break;
+
+			case 'cache_dir':
+				$this->SetCacheDir($value);
+			break;
+
+			case 'cache_method':
+				if( in_array($value, array('php','serialize','var_export')) ){
+					$this->cache_method = $value;
+				}
+			break;
+		}
+	}
+
 
 
 

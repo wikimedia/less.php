@@ -121,9 +121,10 @@ class ParserTest{
 
 
 		$options = array();
-		if( $this->compress ){
-			$options = array( 'compress'=>true );
-		}
+		$options['compress'] 		= $this->compress;
+		$options['cache_dir']		= $this->cache_dir;
+		$options['cache_method']	= 'php';
+
 
 
 		$compiled = '';
@@ -137,7 +138,6 @@ class ParserTest{
 			*/
 
 			$parser = new Less_Parser( $options );
-			//$parser->SetCacheDir( $this->cache_dir );
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
 
