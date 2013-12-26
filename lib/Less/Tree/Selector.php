@@ -9,14 +9,23 @@ class Less_Tree_Selector extends Less_Tree{
 	public $index;
 	public $evaldCondition = false;
 	public $type = 'Selector';
+	public $currentFileInfo = array();
+
 	public $elements_len = 0;
 
-	public function __construct($elements, $extendList=array() , $condition = null, $index=null, $currentFileInfo=array(), $isReferenced=null ){
+	public function __construct($elements = null, $extendList=null , $condition = null, $index=null, $currentFileInfo=null, $isReferenced=null ){
+
+
+
 		$this->elements = $elements;
 		$this->elements_len = count($elements);
-		$this->extendList = $extendList;
+		if( $extendList ){
+			$this->extendList = $extendList;
+		}
 		$this->condition = $condition;
-		$this->currentFileInfo = $currentFileInfo;
+		if( $currentFileInfo ){
+			$this->currentFileInfo = $currentFileInfo;
+		}
 		$this->isReferenced = $isReferenced;
 		if( !$condition ){
 			$this->evaldCondition = true;
