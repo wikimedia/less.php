@@ -58,7 +58,9 @@ class Less_Parser extends Less_Cache{
 			$this->env = new Less_Environment( $env );
 			self::$imports = array();
 			self::$import_dirs = array();
-			$this->SetOptions($env);
+			if( is_array($env) ){
+				$this->SetOptions($env);
+			}
 		}
 
 		$this->pos = 0;
