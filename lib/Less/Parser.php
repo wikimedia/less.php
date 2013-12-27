@@ -120,7 +120,9 @@ class Less_Parser extends Less_Cache{
 		//obj($root);
 
 		self::$has_extends = false;
+
 		$evaldRoot = $root->compile($this->env);
+
 
 		$joinSelector = new Less_Visitor_joinSelector();
 		$joinSelector->run($evaldRoot);
@@ -1247,7 +1249,7 @@ class Less_Parser extends Less_Cache{
 		$e = $this->match( array('/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
 			'#*', '#&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#](?=@)/', 'parseEntitiesVariableCurly') );
 
-		if( !$e ){
+		if( !is_null($e) ){
 			if( $this->MatchChar('(') ){
 				if( ($v = $this->parseSelector()) && $this->MatchChar(')') ){
 					$e = $this->Less_Tree_Paren( $v);
@@ -1255,7 +1257,7 @@ class Less_Parser extends Less_Cache{
 			}
 		}
 
-		if ($e) {
+		if( !is_null($e) ){
 			return $this->Less_Tree_Element( $c, $e, $this->pos, $this->env->currentFileInfo);
 		}
 	}

@@ -14,7 +14,7 @@ class Less_Tree_Element extends Less_Tree{
 			$combinator = new Less_Tree_Combinator($combinator);
 		}
 
-		if( $value ){
+		if( !is_null($value) ){
 			$this->value = $value;
 		}
 

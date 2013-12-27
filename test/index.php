@@ -122,8 +122,8 @@ class ParserTest{
 
 		$options = array();
 		$options['compress'] 		= $this->compress;
-		$options['cache_dir']		= $this->cache_dir;
-		$options['cache_method']	= 'php';
+		//$options['cache_dir']		= $this->cache_dir;
+		//$options['cache_method']	= 'php';
 
 
 
@@ -472,6 +472,10 @@ class ParserTest{
 function obj($mixed){
 	static $objects = array();
 	global $obj_buffer;
+	if( empty($obj_buffer) ){
+		$obj_buffer = "----make sure caching is turned off----\n";
+	}
+
 	static $level = 0;
 	$output = '';
 
