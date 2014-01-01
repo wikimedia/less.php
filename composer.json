@@ -2,8 +2,13 @@
 	"name": "oyejorge/less.php",
 	"description": "PHP port of the Javascript version of LESS http://lesscss.org",
 	"keywords": [ "less", "css", "php", "stylesheet", "less.js", "lesscss" ],
-	"homepage": "https://github.com/oyejorge/less.php",
+	"homepage": "http://lessphp.gpeasy.com",
+	"license": "Apache-2.0",
 	"authors": [
+		{
+			"name": "Josh Schmidt",
+			"homepage": "https://github.com/oyejorge"
+		},
 		{
 			"name": "Matt Agar",
 			"homepage": "https://github.com/agar"
@@ -11,10 +16,6 @@
 		{
 			"name": "Martin Jantošovič",
 			"homepage": "https://github.com/Mordred"
-		},
-		{
-			"name": "Josh Schmidt",
-			"homepage": "https://github.com/oyejorge"
 		}
 	],
 	"require": {
