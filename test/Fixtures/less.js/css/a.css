@@ -1,24 +1,7 @@
-.replace.replace .replace,
-.c.replace + .replace .replace,
-.rep_ace {
-  prop: copy-paste-replace;
+x-0,
+x-1,
+x-2,
+x-3,
+x-4 {
+  p: v;
 }
-/*
-.a > .d,
-.z .y{
-  color: black;
-}
-.f:extend(.a) {}
-.g:extend(.d) {}
-.h:extend(.z) {}
-.i:extend(.y) {}
-.b:extend(.a > .d, .z) {}
-.c.e:extend(.b) {}
-*/
-/*
-.i.j:extend(.g all) {
-  color: white;
-}
-.k:extend(.i all) {}
-.l:extend(.j all) {}
-*/
