@@ -233,10 +233,18 @@ class Less_Parser extends Less_Cache{
 
 	public function SetCacheDir( $dir ){
 
-		if( !is_dir($dir) ){
+		if( !file_exists($dir) ){
+			if( mkdir($dir) ){
+				return true;
+			}
+			throw new Less_Exception_Parser('Less.php cache directory couldn\'t be created: '.$dir);
+
+		}elseif( !is_dir($dir) ){
 			throw new Less_Exception_Parser('Less.php cache directory doesn\'t exist: '.$dir);
+
 		}elseif( !is_writable($dir) ){
 			throw new Less_Exception_Parser('Less.php cache directory isn\'t writable: '.$dir);
+
 		}else{
 			$dir = str_replace('\\','/',$dir);
 			self::$cache_dir = rtrim($dir,'/').'/';
