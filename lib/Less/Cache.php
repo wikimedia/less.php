@@ -96,10 +96,8 @@ class Less_Cache{
 
 	public static function Cache( &$less_files, $parser_options = array() ){
 
-		//prepare the processor
-		if( !class_exists('Less_Parser') ){
-			include_once('Less.php');
-		}
+		//make sure we have all the necessary php files
+		self::IncludeScripts(__DIR__);
 
 
 		$parser = new Less_Parser($parser_options);
@@ -164,6 +162,44 @@ class Less_Cache{
 		}
 
 		$clean = true;
+	}
+
+	/**
+	 * Include the necessary php files
+	 *
+	 */
+	static function IncludeScripts( $dir ){
+
+		$files = scandir($dir);
+
+		usort($files,function($a,$b){
+			return strlen($a)-strlen($b);
+		});
+
+
+		$dirs = array();
+		foreach($files as $file){
+			if( $file == '.' || $file == '..' ){
+				continue;
+			}
+
+			$full_path = $dir.'/'.$file;
+			if( is_dir($full_path) ){
+				$dirs[] = $full_path;
+				continue;
+			}
+
+			if( strpos($file,'.php') !== (strlen($file) - 4) ){
+				continue;
+			}
+
+			require_once($full_path);
+		}
+
+		foreach($dirs as $dir){
+			self::IncludeScripts( $dir );
+		}
+
 	}
 
 }

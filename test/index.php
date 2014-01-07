@@ -15,8 +15,7 @@ set_time_limit(60);
 
 //get parser
 $dir = dirname(__DIR__);
-
-ParserTest::IncludeScripts( $dir.'/lib/Less' );
+require_once $dir.'/lib/Less/Parser.php';
 
 
 //get diff
@@ -249,45 +248,6 @@ class ParserTest{
 		*/
 	}
 
-
-
-	/**
-	 * Include the necessary php files
-	 *
-	 */
-	static function IncludeScripts( $dir ){
-
-		$files = scandir($dir);
-
-		usort($files,function($a,$b){
-			return strlen($a)-strlen($b);
-		});
-
-
-		$dirs = array();
-		foreach($files as $file){
-			if( $file == '.' || $file == '..' ){
-				continue;
-			}
-
-			$full_path = $dir.'/'.$file;
-			if( is_dir($full_path) ){
-				$dirs[] = $full_path;
-				continue;
-			}
-
-			if( strpos($file,'.php') !== (strlen($file) - 4) ){
-				continue;
-			}
-
-			include_once($full_path);
-		}
-
-		foreach($dirs as $dir){
-			self::IncludeScripts( $dir );
-		}
-
-	}
 
 	function Links(){
 
