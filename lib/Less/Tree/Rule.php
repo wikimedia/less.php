@@ -37,7 +37,7 @@ class Less_Tree_Rule extends Less_Tree{
 		}catch( Exception $e ){
 			$e->index = $this->index;
 			$e->filename = $this->currentFileInfo['filename'];
-			throw e;
+			throw $e;
 		}
 		self::OutputAdd( $strs, $this->important . (($this->inline || ($env->lastRule && Less_Environment::$compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
 	}
