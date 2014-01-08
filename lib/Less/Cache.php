@@ -5,7 +5,6 @@ class Less_Cache{
 
 	public static $cache_dir = false;		// directory less.php can use for storing data
 	public static $import_dirs = array();
-	public static $error;
 	private static $use_cache = true;
 
     const cache_version = '1513';
@@ -95,24 +94,19 @@ class Less_Cache{
 
 
 		// combine files
- 		try{
-			foreach($less_files as $file_path => $uri_or_less ){
+		foreach($less_files as $file_path => $uri_or_less ){
 
-				//treat as less markup if there are newline characters
-				if( strpos($uri_or_less,"\n") !== false ){
-					$parser->Parse( $uri_or_less );
-					continue;
-				}
-
-				$parser->ParseFile( $file_path, $uri_or_less );
+			//treat as less markup if there are newline characters
+			if( strpos($uri_or_less,"\n") !== false ){
+				$parser->Parse( $uri_or_less );
+				continue;
 			}
 
-			$compiled = $parser->getCss();
-
-		}catch(Exception $e){
-			self::$error = $e;
-			return false;
+			$parser->ParseFile( $file_path, $uri_or_less );
 		}
+
+		$compiled = $parser->getCss();
+
 
 		$less_files = $parser->allParsedFiles();
 
