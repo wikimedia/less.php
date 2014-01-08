@@ -50,6 +50,21 @@ $css = $parser->getCss();
 ```
 
 
+### Handling Invalid Less
+An exception will be thrown if the compiler encounters invalid less
+
+```php
+<?php
+try{
+	$parser = new Less_Parser();
+	$parser->parseFile( '/var/www/mysite/bootstrap.less', 'http://example.com/mysite/' );
+	$css = $parser->getCss();
+}catch(Exception $e){
+	$error_message = $e->getMessage();
+}
+```
+
+
 ### Parsing Multiple Sources
 php.less can parse multiple sources to generate a single css file
 
