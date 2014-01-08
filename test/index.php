@@ -142,8 +142,7 @@ class ParserTest{
 			$compiled = $parser->getCss();
 
 		}catch(Exception $e){
-			echo '<h1>Parser Error</h1>';
-			echo '<p>'.$e->getMessage().'</p>';
+			$compiled = $e->getMessage();
 		}
 
 
