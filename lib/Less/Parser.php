@@ -1,5 +1,6 @@
 <?php
 
+require_once( dirname(__FILE__).'/Cache.php');
 
 class Less_Parser extends Less_Cache{
 
