@@ -48,7 +48,7 @@ class ParserTest{
 
 
 		//get any other possible test folders
-		$fixtures_dir = dirname(dirname(__FILE__)).'/Fixtures';
+		$fixtures_dir = dirname(__FILE__).'/Fixtures';
 		$temp = scandir($fixtures_dir);
 		foreach($temp as $dir){
 			if( $dir == '.' || $dir == '..' ){
