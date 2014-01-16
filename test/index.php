@@ -14,8 +14,9 @@ set_time_limit(60);
 
 
 //get parser
-$dir = dirname(__DIR__);
-require_once $dir.'/lib/Less/Parser.php';
+$dir = dirname(dirname(__FILE__));
+require_once $dir.'/lib/Less/Autoloader.php';
+Less_Autoloader::register();
 
 
 //get diff
@@ -37,7 +38,7 @@ class ParserTest{
 
 	function __construct(){
 
-		$this->cache_dir = __DIR__.'/_cache';
+		$this->cache_dir = dirname(__FILE__).'/_cache';
 
 		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
 			echo '<p>Invalid cache directory</p>';
@@ -47,7 +48,7 @@ class ParserTest{
 
 
 		//get any other possible test folders
-		$fixtures_dir = rtrim(__DIR__,'/').'/Fixtures';
+		$fixtures_dir = dirname(__FILE__).'/Fixtures';
 		$temp = scandir($fixtures_dir);
 		foreach($temp as $dir){
 			if( $dir == '.' || $dir == '..' ){

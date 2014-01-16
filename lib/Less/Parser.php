@@ -1,10 +1,6 @@
 <?php
 
 
-require_once __DIR__ .'/Cache.php';
-Less_Cache::IncludeScripts( __DIR__ );
-
-
 class Less_Parser extends Less_Cache{
 
 
@@ -255,17 +251,21 @@ class Less_Parser extends Less_Cache{
 	}
 
 	public function SetImportDirs( $dirs ){
+
 		foreach($dirs as $path => $uri_root){
 
 			$path = str_replace('\\','/',$path);
-			$uri_root = str_replace('\\','/',$uri_root);
-
 			if( !empty($path) ){
 				$path = rtrim($path,'/').'/';
 			}
-			if( !empty($uri_root) ){
-				$uri_root = rtrim($uri_root,'/').'/';
+
+			if ( !is_callable($uri_root) ){
+				$uri_root = str_replace('\\','/',$uri_root);
+				if( !empty($uri_root) ){
+					$uri_root = rtrim($uri_root,'/').'/';
+				}
 			}
+
 			self::$import_dirs[$path] = $uri_root;
 		}
 	}

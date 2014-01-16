@@ -9,7 +9,7 @@
  */
 function loadLessClass($className)
 {
-    $fileName = __DIR__.'/../lib/'.str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+    $fileName = dirname(__FILE__).'/../lib/'.str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
     if (file_exists($fileName)) {
         require_once $fileName;
     }
