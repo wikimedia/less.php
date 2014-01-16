@@ -135,11 +135,11 @@ class Less_Environment{
 	 */
 	static function normalizePath($path){
 
-    	$segments = explode('/',$path);
-    	$segments = array_reverse($segments);
+		$segments = explode('/',$path);
+		$segments = array_reverse($segments);
 
-    	$path = array();
-    	$path_len = 0;
+		$path = array();
+		$path_len = 0;
 
 		while( $segments ){
 			$segment = array_pop($segments);
