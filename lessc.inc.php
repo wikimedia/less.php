@@ -1,15 +1,17 @@
 <?php
+/**
+ *
+ * This file provides the part of lessphp API (https://github.com/leafo/lessphp)
+ * to be a drop-in replacement for following products:
+ *  - Drupal 7, by the less module v3.0+ (https://drupal.org/project/less)
+ *  - Symfony 2
+ *
+ */
 
+// Register autoloader for non-composer installations
 if (!class_exists('Less_Parser')) {
-	function _lessc_autoload($className)
-	{
-		$fileName = dirname(__FILE__).'/lib/'.str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-		if (file_exists($fileName)) {
-			require_once $fileName;
-		}
-	}
-
-	spl_autoload_register('_lessc_autoload');
+	require_once dirname(__FILE__).'/lib/Less/Autoloader.php';
+	Less_Autoloader::register();
 }
 
 class lessc
