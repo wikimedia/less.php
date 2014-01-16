@@ -1,10 +1,6 @@
 <?php
 
 
-require_once __DIR__ .'/Cache.php';
-Less_Cache::IncludeScripts( __DIR__ );
-
-
 class Less_Parser extends Less_Cache{
 
 

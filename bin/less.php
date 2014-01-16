@@ -4,10 +4,10 @@
 class less_php_file{
 
 	// Path to the less.php library files
-	private $lessLibraryPath = __DIR__.'/../lib/';
+	private $lessLibraryPath = dirname(__FILE__).'/../lib/';
 
 	// Path to the css cache directory
-	private $cachePath = __DIR__.'/cache/';
+	private $cachePath = dirname(__FILE__).'/cache/';
 
 
 	function __construct($file){
