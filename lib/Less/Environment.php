@@ -72,6 +72,9 @@ class Less_Environment{
 		if( isset($options['strictUnits']) ){
 			$this->strictUnits = (bool)$options['strictUnits'];
 		}
+		if( isset($options['relativeUrls']) ){
+			$this->relativeUrls = (bool)$options['relativeUrls'];
+		}
 
 
 		if( self::$compress ){
