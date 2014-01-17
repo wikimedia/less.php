@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-require_once dirname(__FILE__).'/../lib/Less/Autoloader.php';
+require_once dirname(__FILE__) . '/../lib/Less/Autoloader.php';
 Less_Autoloader::register();
 
 // Create our environment
@@ -13,17 +13,17 @@ $watch = false;
 // Check for arguments
 array_shift($argv);
 if (!count($argv)) {
-    $argv[] = '-h';
+	$argv[] = '-h';
 }
 
 // parse arguments
-foreach($argv as $key => $arg) {
-    if (preg_match('/^--?([a-z][0-9a-z-]*)(?:=([^\s]+))?$/i', $arg, $matches)) {
-        $option = $matches[1];
-        $value = isset($matches[2]) ? $matches[2] : false;
-        unset($argv[$key]);
+foreach ($argv as $key => $arg) {
+	if (preg_match('/^--?([a-z][0-9a-z-]*)(?:=([^\s]+))?$/i', $arg, $matches)) {
+		$option = $matches[1];
+		$value = isset($matches[2]) ? $matches[2] : false;
+		unset($argv[$key]);
 
-        switch ($option) {
+		switch ($option) {
 			case 'h':
 			case 'help':
 				echo <<<EOD
@@ -51,138 +51,138 @@ EOD;
 				exit;
 			case 's':
 			case 'silent':
-                $silent = true;
-                break;
+				$silent = true;
+				break;
 			case 'v':
 			case 'version':
 				echo "lessc " . Less_Parser::version . " (less.php)\n\n";
 				exit;
 			case 'x':
-            case 'compress':
-                Less_Environment::$compress = true;
-                break;
-            case 'include-path':
-                $paths = preg_split('#;|\:#', $value);
+			case 'compress':
+				Less_Environment::$compress = true;
+				break;
+			case 'include-path':
+				$paths = preg_split('#;|\:#', $value);
 				$env->paths = $paths;
-                break;
-            case 'strict-imports':
+				break;
+			case 'strict-imports':
 				$env->strictImports = true;
-                break;
-            case 'sm':
-            case 'strict-math':
+				break;
+			case 'sm':
+			case 'strict-math':
 				$env->strictMath = ($value === 'on');
-                break;
-            case 'su':
-            case 'strict-units':
+				break;
+			case 'su':
+			case 'strict-units':
 				$env->strictUnits = ($value === 'on');
-                break;
-            case 'ru':
-            case 'relative-urls':
+				break;
+			case 'ru':
+			case 'relative-urls':
 				$env->relativeUrls = true;
-                break;
-            case 'rp':
-            case 'rootpath':
+				break;
+			case 'rp':
+			case 'rootpath':
 				$env->rootpath = $value;
-                break;
-            case 'insecure':
+				break;
+			case 'insecure':
 				$env->insecure = true;
-                break;
-            case 'w':
-            case 'watch':
-                $watch = true;
-                break;
-        }
-    }
+				break;
+			case 'w':
+			case 'watch':
+				$watch = true;
+				break;
+		}
+	}
 }
 
 if (count($argv) > 1) {
-    $output = array_pop($argv);
-    $inputs = $argv;
+	$output = array_pop($argv);
+	$inputs = $argv;
 }
 else {
-    $inputs = $argv;
-    $output = false;
+	$inputs = $argv;
+	$output = false;
 }
 
 if (!count($inputs)) {
-    echo ("lessc: no input files\n");
-    exit;
+	echo("lessc: no input files\n");
+	exit;
 }
 
 if ($watch) {
-    if (!$output) {
-        echo ("lessc: you must specify the output file if --watch is given\n");
-        exit;
-    }
+	if (!$output) {
+		echo("lessc: you must specify the output file if --watch is given\n");
+		exit;
+	}
 
-    $lastAction = 0;
+	$lastAction = 0;
 
-    echo ("lessc: watching input files\n");
+	echo("lessc: watching input files\n");
 
-    while(1) {
-        clearstatcache();
+	while (1) {
+		clearstatcache();
 
-        $updated = false;
-        foreach ($inputs as $input) {
-            if ($input == '-') {
-                if (count($inputs) == 1) {
-                    echo ("lessc: during watching files is not possible to watch stdin\n");
-                    exit;
-                }
-				else {
-                    continue;
+		$updated = false;
+		foreach ($inputs as $input) {
+			if ($input == '-') {
+				if (count($inputs) == 1) {
+					echo("lessc: during watching files is not possible to watch stdin\n");
+					exit;
 				}
-            }
+				else {
+					continue;
+				}
+			}
 
-            if (filemtime($input) > $lastAction) {
-                $updated = true;
-                break;
-            }
-        }
+			if (filemtime($input) > $lastAction) {
+				$updated = true;
+				break;
+			}
+		}
 
-        if ($updated) {
-            $lastAction = time();
-            $parser = new Less_Parser($env);
-            foreach ($inputs as $input) {
-                try {
-                    $parser->parseFile($input, $env->rootpath);
-                }
-				catch (\Exception $e) {
-                    echo ("lessc: ".$e->getMessage()." \n");
-                    continue; // Invalid processing
-                }
-            }
+		if ($updated) {
+			$lastAction = time();
+			$parser = new Less_Parser($env);
+			foreach ($inputs as $input) {
+				try {
+					$parser->parseFile($input, $env->rootpath);
+				}
+				catch (Exception $e) {
+					echo("lessc: " . $e->getMessage() . " \n");
+					continue; // Invalid processing
+				}
+			}
 
-            file_put_contents($output, $parser->getCss());
-            echo ("lessc: output file recompilled\n");
-        }
+			file_put_contents($output, $parser->getCss());
+			echo("lessc: output file recompilled\n");
+		}
 
-        sleep(1);
-    }
+		sleep(1);
+	}
 }
 else {
-    $parser = new Less_Parser($env);
-    foreach($inputs as $input) {
-        if ($input == '-') {
-            $content = file_get_contents('php://stdin');
-            $parser->parse($content);
-        }
+	$parser = new Less_Parser($env);
+	foreach ($inputs as $input) {
+		if ($input == '-') {
+			$content = file_get_contents('php://stdin');
+			$parser->parse($content);
+		}
 		else {
-            try {
-                $parser->parseFile($input);
-            }
+			try {
+				$parser->parseFile($input);
+			}
 			catch (Exception $e) {
-                if (!$silent) {
-                    echo ("lessc: ". ((string) $e) ." \n");
-                }
-            }
-        }
-    }
+				if (!$silent) {
+					echo("lessc: " . ((string)$e) . " \n");
+				}
+			}
+		}
+	}
 
-    if ($output) {
-        file_put_contents($output, $parser->getCss());
-    }
+	if ($output) {
+		file_put_contents($output, $parser->getCss());
+	}
 	else {
-        echo $parser->getCss();
-    }
+		echo $parser->getCss();
+	}
 }
