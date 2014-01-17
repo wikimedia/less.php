@@ -8,10 +8,6 @@ class Less_Tree{
 		return $output->toString();
 	}
 
-	public static function OutputAdd( $output, $chunk, $fileInfo = null, $index = null ){
-		$output[] = $chunk;
-	}
-
 
 	public static function outputRuleset($env, $output, $rules ){
 
