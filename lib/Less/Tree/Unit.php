@@ -16,14 +16,14 @@ class Less_Tree_Unit extends Less_Tree{
 	function __clone(){
 	}
 
-	function genCSS( $env, &$strs ){
+	function genCSS( $env, $output ){
 
 		if( $this->numerator ){
-			self::OutputAdd( $strs, $this->numerator[0] );
+			$output->add( $this->numerator[0] );
 		}elseif( $this->denominator ){
-			self::OutputAdd( $strs, $this->denominator[0] );
+			$output->add( $this->denominator[0] );
 		}elseif( (!$env || !$env->strictUnits) && $this->backupUnit ){
-			self::OutputAdd( $strs, $this->backupUnit );
+			$output->add( $this->backupUnit );
 			return ;
 		}
 	}

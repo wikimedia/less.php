@@ -60,12 +60,12 @@ class Less_Tree_Expression extends Less_Tree{
 		return $returnValue;
 	}
 
-	function genCSS( $env, &$strs ){
+	function genCSS( $env, $output ){
 		$val_len = count($this->value);
 		for( $i = 0; $i < $val_len; $i++ ){
-			$this->value[$i]->genCSS( $env, $strs );
+			$this->value[$i]->genCSS( $env, $output );
 			if( $i + 1 < $val_len ){
-				self::OutputAdd( $strs, ' ' );
+				$output->add( ' ' );
 			}
 		}
 	}

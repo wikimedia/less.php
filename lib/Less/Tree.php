@@ -3,17 +3,17 @@
 class Less_Tree{
 
 	public function toCSS($env = null){
-		$strs = array();
-		$this->genCSS($env, $strs );
-		return implode('',$strs);
+		$output = new Less_Output();
+		$this->genCSS($env, $output);
+		return $output->toString();
 	}
 
-	public static function OutputAdd( &$strs, $chunk, $fileInfo = null, $index = null ){
-		$strs[] = $chunk;
+	public static function OutputAdd( $output, $chunk, $fileInfo = null, $index = null ){
+		$output[] = $chunk;
 	}
 
 
-	public static function outputRuleset($env, &$strs, $rules ){
+	public static function outputRuleset($env, $output, $rules ){
 
 		$ruleCnt = count($rules);
 		$env->tabLevel++;
@@ -21,11 +21,12 @@ class Less_Tree{
 
 		// Compressed
 		if( Less_Environment::$compress ){
-			self::OutputAdd( $strs, '{' );
+			$output->add('{');
 			for( $i = 0; $i < $ruleCnt; $i++ ){
-				$rules[$i]->genCSS( $env, $strs );
+				$rules[$i]->genCSS( $env, $output );
 			}
-			self::OutputAdd( $strs, '}' );
+
+			$output->add( '}' );
 			$env->tabLevel--;
 			return;
 		}
@@ -35,13 +36,13 @@ class Less_Tree{
 		$tabSetStr = "\n".str_repeat( '  ' , $env->tabLevel-1 );
 		$tabRuleStr = $tabSetStr.'  ';
 
-		self::OutputAdd( $strs, " {" );
+		$output->add( " {" );
 		for($i = 0; $i < $ruleCnt; $i++ ){
-			self::OutputAdd( $strs, $tabRuleStr );
-			$rules[$i]->genCSS( $env, $strs );
+			$output->add( $tabRuleStr );
+			$rules[$i]->genCSS( $env, $output );
 		}
 		$env->tabLevel--;
-		self::OutputAdd( $strs, $tabSetStr.'}' );
+		$output->add( $tabSetStr.'}' );
 
 	}
 

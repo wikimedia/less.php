@@ -16,13 +16,13 @@ class Less_Tree_Quoted extends Less_Tree{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
-    public function genCSS( $env, &$strs ){
+    public function genCSS( $env, $output ){
 		if( !$this->escaped ){
-			self::OutputAdd( $strs, $this->quote, $this->currentFileInfo, $this->index );
+			$output->add( $this->quote, $this->currentFileInfo, $this->index );
         }
-        self::OutputAdd( $strs, $this->value );
+        $output->add( $this->value );
         if( !$this->escaped ){
-			self::OutputAdd( $strs, $this->quote );
+			$output->add( $this->quote );
         }
     }
 

@@ -22,8 +22,8 @@ class Less_Tree_Attribute extends Less_Tree{
 			is_object($this->value) ? $this->value->compile($env) : $this->value);
 	}
 
-	function genCSS( $env, &$strs ){
-		self::OutputAdd( $strs, $this->toCSS($env) );
+	function genCSS( $env, $output ){
+		$output->add( $this->toCSS($env) );
 	}
 
 	function toCSS($env = null){

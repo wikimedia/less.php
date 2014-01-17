@@ -14,8 +14,8 @@ class Less_Tree_Javascript extends Less_Tree{
 		return $this;
 	}
 
-	function genCSS( $env, &$strs ){
-		self::OutputAdd( $strs, '/* Sorry, can not do JavaScript evaluation in PHP... :( */' );
+	function genCSS( $env, $output ){
+		$output->add( '/* Sorry, can not do JavaScript evaluation in PHP... :( */' );
 	}
 
 	public function toCSS($env = null){

@@ -28,18 +28,18 @@ class Less_Tree_Rule extends Less_Tree{
 		$this->value = $visitor->visitObj( $this->value );
 	}
 
-	function genCSS( $env, &$strs ){
+	function genCSS( $env, $output ){
 
-		self::OutputAdd( $strs, $this->name . Less_Environment::$colon_space, $this->currentFileInfo, $this->index);
+		$output->add( $this->name . Less_Environment::$colon_space, $this->currentFileInfo, $this->index);
 		try{
-			$this->value->genCSS($env, $strs);
+			$this->value->genCSS($env, $output);
 
 		}catch( Exception $e ){
 			$e->index = $this->index;
 			$e->filename = $this->currentFileInfo['filename'];
 			throw $e;
 		}
-		self::OutputAdd( $strs, $this->important . (($this->inline || ($env->lastRule && Less_Environment::$compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
+		$output->add( $this->important . (($this->inline || ($env->lastRule && Less_Environment::$compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
 	}
 
 	public function compile ($env){

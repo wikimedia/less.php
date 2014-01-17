@@ -30,16 +30,16 @@ class Less_Tree_Directive extends Less_Tree{
 		}
 	}
 
-	function genCSS( $env, &$strs ){
+	function genCSS( $env, $output ){
 
-		self::OutputAdd( $strs, $this->name, $this->currentFileInfo, $this->index );
+		$output->add( $this->name, $this->currentFileInfo, $this->index );
 
 		if( $this->rules ){
-			Less_Tree::outputRuleset( $env, $strs, $this->rules);
+			Less_Tree::outputRuleset( $env, $output, $this->rules);
 		}else{
-			self::OutputAdd( $strs, ' ' );
-			$this->value->genCSS( $env, $strs );
-			self::OutputAdd( $strs, ';' );
+			$output->add( ' ' );
+			$this->value->genCSS( $env, $output );
+			$output->add( ';' );
 		}
 	}
 

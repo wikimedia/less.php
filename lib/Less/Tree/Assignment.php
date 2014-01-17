@@ -24,12 +24,12 @@ class Less_Tree_Assignment extends Less_Tree{
 		return $this;
 	}
 
-	public function genCSS( $env, &$strs ){
-		self::OutputAdd( $strs, $this->key . '=' );
+	public function genCSS( $env, $output ){
+		$output->add( $this->key . '=' );
 		if( is_string($this->value) ){
-			self::OutputAdd( $strs, $this->value );
+			$output->add( $this->value );
 		}else{
-			$this->value->genCSS( $env, $strs );
+			$this->value->genCSS( $env, $output );
 		}
 	}
 

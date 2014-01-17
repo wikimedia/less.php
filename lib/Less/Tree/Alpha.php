@@ -20,17 +20,17 @@ class Less_Tree_Alpha extends Less_Tree{
 		return $this;
 	}
 
-	public function genCSS( $env, &$strs ){
+	public function genCSS( $env, $output ){
 
-		self::OutputAdd( $strs, "alpha(opacity=" );
+		$output->add( "alpha(opacity=" );
 
 		if( is_string($this->value) ){
-			self::OutputAdd( $strs, $this->value );
+			$output->add( $this->value );
 		}else{
-			$this->value->genCSS($env, $strs);
+			$this->value->genCSS($env, $output);
 		}
 
-		self::OutputAdd( $strs, ')' );
+		$output->add( ')' );
 	}
 
 	public function toCSS($env = null){

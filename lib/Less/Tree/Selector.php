@@ -100,15 +100,15 @@ class Less_Tree_Selector extends Less_Tree{
 		return $this->createDerived( $elements, $extendList, $evaldCondition );
 	}
 
-	function genCSS( $env, &$strs ){
+	function genCSS( $env, $output ){
 
 		if( !Less_Environment::$firstSelector && $this->elements[0]->combinator->value === "" ){
-			self::OutputAdd( $strs, ' ', $this->currentFileInfo, $this->index );
+			$output->add( ' ', $this->currentFileInfo, $this->index );
 		}
 		if( !$this->_css ){
 			//TODO caching? speed comparison?
 			foreach($this->elements as $element){
-				$element->genCSS( $env, $strs );
+				$element->genCSS( $env, $output );
 			}
 		}
 	}

@@ -24,11 +24,11 @@ class Less_Tree_Media extends Less_Tree{
 		$this->rules = $visitor->visitArray($this->rules);
 	}
 
-	function genCSS( $env, &$strs ){
+	function genCSS( $env, $output ){
 
-		self::OutputAdd( $strs, '@media ', $this->currentFileInfo, $this->index );
-		$this->features->genCSS( $env, $strs );
-		Less_Tree::outputRuleset( $env, $strs, $this->rules);
+		$output->add( '@media ', $this->currentFileInfo, $this->index );
+		$this->features->genCSS( $env, $output );
+		Less_Tree::outputRuleset( $env, $output, $this->rules);
 
 	}
 

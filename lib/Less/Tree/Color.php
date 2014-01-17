@@ -30,8 +30,8 @@ class Less_Tree_Color extends Less_Tree{
 		return (0.2126 * $this->rgb[0] / 255) + (0.7152 * $this->rgb[1] / 255) + (0.0722 * $this->rgb[2] / 255);
 	}
 
-	public function genCSS( $env, &$strs ){
-		self::OutputAdd( $strs, $this->toCSS($env) );
+	public function genCSS( $env, $output ){
+		$output->add( $this->toCSS($env) );
 	}
 
     public function toCSS($env = null, $doNotCompress = false ){

@@ -13,10 +13,10 @@ class Less_Tree_Paren extends Less_Tree{
 		$this->value = $visitor->visitObj($this->value);
 	}
 
-	function genCSS( $env, &$strs ){
-		self::OutputAdd( $strs, '(' );
-		$this->value->genCSS( $env, $strs );
-		self::OutputAdd( $strs, ')' );
+	function genCSS( $env, $output ){
+		$output->add( '(' );
+		$this->value->genCSS( $env, $output );
+		$output->add( ')' );
 	}
 
 	public function compile($env) {

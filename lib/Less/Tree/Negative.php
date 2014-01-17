@@ -14,9 +14,9 @@ class Less_Tree_Negative extends Less_Tree{
 	//	$this->value = $visitor->visit($this->value);
 	//}
 
-	function genCSS( $env, &$strs ){
-		self::OutputAdd( $strs, '-' );
-		$this->value->genCSS( $env, $strs );
+	function genCSS( $env, $output ){
+		$output->add( '-' );
+		$this->value->genCSS( $env, $output );
 	}
 
 	function compile($env) {

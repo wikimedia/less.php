@@ -13,8 +13,8 @@ class Less_Tree_Keyword extends Less_Tree{
 		return $this;
 	}
 
-	public function genCSS( $env, &$strs ){
-		self::OutputAdd( $strs, $this->value );
+	public function genCSS( $env, $output ){
+		$output->add( $this->value );
 	}
 
 	public function compare($other) {

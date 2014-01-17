@@ -43,16 +43,16 @@ class Less_Tree_Operation extends Less_Tree{
 		}
 	}
 
-	function genCSS( $env, &$strs ){
-		$this->operands[0]->genCSS( $env, $strs );
+	function genCSS( $env, $output ){
+		$this->operands[0]->genCSS( $env, $output );
 		if( $this->isSpaced ){
-			self::OutputAdd( $strs, " " );
+			$output->add( " " );
 		}
-		self::OutputAdd( $strs, $this->op );
+		$output->add( $this->op );
 		if( $this->isSpaced ){
-			self::OutputAdd( $strs, ' ' );
+			$output->add( ' ' );
 		}
-		$this->operands[1]->genCSS( $env, $strs );
+		$this->operands[1]->genCSS( $env, $output );
 	}
 
 }

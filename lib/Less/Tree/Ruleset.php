@@ -254,7 +254,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		return $this->lookups[$key];
 	}
 
-	public function genCSS( $env, &$strs ){
+	public function genCSS( $env, $output ){
 		$ruleNodes = array();
 		$rulesetNodes = array();
 		$firstRuleset = true;
@@ -296,15 +296,15 @@ class Less_Tree_Ruleset extends Less_Tree{
 				$path = $this->paths[$i];
 				Less_Environment::$firstSelector = true;
 				foreach($path as $p){
-					$p->genCSS($env, $strs );
+					$p->genCSS($env, $output );
 					Less_Environment::$firstSelector = false;
 				}
 				if( $i + 1 < $paths_len ){
-					self::OutputAdd( $strs, Less_Environment::$compress ? ',' : (",\n" . $tabSetStr) );
+					$output->add( Less_Environment::$compress ? ',' : (",\n" . $tabSetStr) );
 				}
 			}
 
-			self::OutputAdd( $strs, (Less_Environment::$compress ? '{' : " {\n") . $tabRuleStr );
+			$output->add( (Less_Environment::$compress ? '{' : " {\n") . $tabRuleStr );
 		}
 
 		// Compile rules and rulesets
@@ -321,37 +321,37 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 			if( is_object($rule) ){
 				if( method_exists($rule,'genCSS') ){
-					$rule->genCSS( $env, $strs );
+					$rule->genCSS( $env, $output );
 				}elseif( property_exists($rule,'value') && $rule->value ){
-					self::OutputAdd( $strs, (string)$rule->value );
+					$output->add( (string)$rule->value );
 				}
 			}
 
 			if( !$env->lastRule ){
-				self::OutputAdd( $strs, Less_Environment::$compress ? '' : ("\n" . $tabRuleStr) );
+				$output->add( Less_Environment::$compress ? '' : ("\n" . $tabRuleStr) );
 			}else{
 				$env->lastRule = false;
 			}
 		}
 
 		if( !$this->root ){
-			self::OutputAdd( $strs, (Less_Environment::$compress ? '}' : "\n" . $tabSetStr . '}'));
+			$output->add( (Less_Environment::$compress ? '}' : "\n" . $tabSetStr . '}'));
 			$env->tabLevel--;
 		}
 
 		for( $i = 0; $i < $rulesetNodes_len; $i++ ){
 			if( $ruleNodes_len && $firstRuleset ){
-				self::OutputAdd( $strs, (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr) );
+				$output->add( (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr) );
 			}
 			if( !$firstRuleset ){
-				self::OutputAdd( $strs, (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr));
+				$output->add( (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr));
 			}
 			$firstRuleset = false;
-			$rulesetNodes[$i]->genCSS($env, $strs);
+			$rulesetNodes[$i]->genCSS($env, $output);
 		}
 
-		if( !$strs && !Less_Environment::$compress && $this->firstRoot ){
-			self::OutputAdd( $strs, "\n" );
+		if( !$output && !Less_Environment::$compress && $this->firstRoot ){
+			$output->add( "\n" );
 		}
 
 	}
