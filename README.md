@@ -23,7 +23,39 @@ use
 ---
 
 ### Installation
-[Download the latest release](https://github.com/oyejorge/less.php/releases) and upload the php files to your server.
+
+You can install the library by composer or manually.
+
+##### Composer
+
+Step 1. Edit your `composer.json`:
+
+```json
+{
+    "require": {
+        "oyejorge/less.php": "~1.5"
+    }
+}
+```
+
+Step 2. Install it:
+
+```bash
+$ curl -sS https://getcomposer.org/installer | php
+$ php composer.phar install
+```
+
+
+##### Manually
+
+Step 1. [Download the latest release](https://github.com/oyejorge/less.php/releases) and upload the php files to your server.
+
+Step 2. Include the library through autoloader:
+
+```php
+require_once '[path to less.php]/lib/Less/Autoloader.php';
+Less_Autoloader::register();
+```
 
 
 ### Autoloading
@@ -142,7 +174,19 @@ $css = $parser->getCss();
 ```
 
 
+Integration with other projects
+---
+
+### Drupal 7
+
+This library can be used as drop-in replacement of lessphp to work with [Drupal 7 less module](https://drupal.org/project/less).
+
+How to install:
+
+1. [Download the latest release](https://github.com/oyejorge/less.php/releases) and unpack it so that 'lessc.inc.php' is located at 'sites/all/libraries/lessphp/lessc.inc.php'.
+2. Download and install [Drupal 7 less module](https://drupal.org/project/less) as usual.
+3. That's it :)
+
 credits
 ---
 php.less was originally ported to php by [Matt Agar](https://github.com/agar) and then updated by [Martin Jantošovič](https://github.com/Mordred).
-
