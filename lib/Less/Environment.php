@@ -55,8 +55,26 @@ class Less_Environment{
 
 	public $importMultiple = false;
 
-	//public $type = 'Environment';
+	/**
+	 * Source map flag
+	 *
+	 * @var boolean
+	 */
+	public static $sourceMap = false;
 
+	/**
+	 * Array of source map options
+	 *
+	 * @var array
+	 */
+	public $sourceMapOptions = array();
+
+	/**
+	 * Filename to contents of all parsed the files
+	 *
+	 * @var array
+	 */
+	public static $contentsMap = array();
 
 	public static $comma_space;
 	public static $colon_space;
@@ -71,6 +89,9 @@ class Less_Environment{
 		}
 		if( isset($options['strictUnits']) ){
 			$this->strictUnits = (bool)$options['strictUnits'];
+		}
+		if( isset($options['sourceMap']) ){
+			self::$sourceMap = (bool)$options['sourceMap'];
 		}
 
 
@@ -90,14 +111,14 @@ class Less_Environment{
 	public function copyEvalEnv($frames = array() ){
 
 		$evalCopyProperties = array(
-			//'silent',      // whether to swallow errors and warnings
-			//'verbose',     // whether to log more activity
+			//'silent',			// whether to swallow errors and warnings
+			//'verbose',		 // whether to log more activity
 			//'yuicompress', // whether to compress with the outside tool yui compressor
-			//'ieCompat',    // whether to enforce IE compatibility (IE8 data-uri)
-			'strictMath',  // whether math has to be within parenthesis
+			//'ieCompat',		// whether to enforce IE compatibility (IE8 data-uri)
+			'strictMath',	// whether math has to be within parenthesis
 			'strictUnits', // whether units need to evaluate correctly
-			//'cleancss',    // whether to compress with clean-css
-			//'sourceMap',   // whether to output a source map
+			//'cleancss',		// whether to compress with clean-css
+			//'sourceMap',	 // whether to output a source map
 			//'importMultiple'// whether we are currently importing multiple copies
 			);
 
@@ -198,5 +219,28 @@ class Less_Environment{
 
 	public function addFrames(array $frames){
 		$this->frames = array_merge($this->frames, $frames);
+	}
+
+
+	/**
+	 * Returns the contents map
+	 *
+	 * @return array
+	 */
+	public function getContentsMap(){
+		return self::$contentsMap;
+	}
+
+	/**
+	 * Sets file contents to the map
+	 *
+	 * @param string $filePath
+	 * @param string $content
+	 * @return Less_Environment
+	 */
+	public function setFileContent($filePath){
+		if( self::$sourceMap && $filePath ){
+			self::$contentsMap[$filePath] = file_get_contents($filePath);
+		}
 	}
 }

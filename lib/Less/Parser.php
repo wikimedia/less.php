@@ -1,6 +1,5 @@
 <?php
 
-require_once( dirname(__FILE__).'/Cache.php');
 
 class Less_Parser extends Less_Cache{
 
@@ -25,7 +24,7 @@ class Less_Parser extends Less_Cache{
 	/**
 	 *
 	 */
-	const version = '1.5.1';
+	const version = '1.5.1rc3';
 	const less_version = '1.5.1';
 
 	/**
@@ -135,7 +134,15 @@ class Less_Parser extends Less_Cache{
 		$toCSSVisitor = new Less_Visitor_toCSS( $this->env );
 		$toCSSVisitor->run($evaldRoot);
 
-		$css = $evaldRoot->toCSS($this->env);
+
+		if( Less_Environment::$sourceMap ){
+			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), $this->env->sourceMapOptions);
+			// will also save file
+			// FIXME: should happen somewhere else?
+			$css = $generator->generateCSS($this->env);
+		}else{
+			$css = $evaldRoot->toCSS($this->env);
+		}
 
 		if( Less_Environment::$compress ){
 			$css = preg_replace('/(^(\s)+)|((\s)+$)/', '', $css);
@@ -157,6 +164,11 @@ class Less_Parser extends Less_Cache{
 	 * @return Less_Tree_Ruleset|Less_Parser
 	 */
 	public function parse($str){
+
+		if( Less_Environment::$sourceMap ){
+			$this->env->setFileContent($key, $string);
+		}
+
 		$this->input = $str;
 		$this->_parse();
 	}
@@ -182,6 +194,8 @@ class Less_Parser extends Less_Cache{
 
 		$previousImportDirs = self::$import_dirs;
 		self::AddParsedFile($filename);
+
+		$this->env->setFileContent($filename);
 
 		$return = null;
 		if( $returnRoot ){
