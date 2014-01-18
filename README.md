@@ -174,6 +174,25 @@ $css = $parser->getCss();
 ```
 
 
+### Command line
+An additional script has been included to use the compiler from the command line.
+In the simplest invocation, you specify an input file and the compiled css is written to standard out:
+
+```
+$ lessc input.less > output.css
+```
+
+By using the -w flag you can watch a specified input file and have it compile as needed to the output file:
+
+```
+$ lessc -w input.less output.css
+```
+
+Errors from watch mode are written to standard out.
+
+For more help, run `lessc --help`
+
+
 Integration with other projects
 ---
 
