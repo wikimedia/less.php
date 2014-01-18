@@ -93,6 +93,9 @@ class Less_Environment{
 		if( isset($options['sourceMap']) ){
 			self::$sourceMap = (bool)$options['sourceMap'];
 		}
+		if( isset($options['relativeUrls']) ){
+			$this->relativeUrls = (bool)$options['relativeUrls'];
+		}
 
 
 		if( self::$compress ){
@@ -111,14 +114,14 @@ class Less_Environment{
 	public function copyEvalEnv($frames = array() ){
 
 		$evalCopyProperties = array(
-			//'silent',			// whether to swallow errors and warnings
-			//'verbose',		 // whether to log more activity
+			//'silent',      // whether to swallow errors and warnings
+			//'verbose',     // whether to log more activity
 			//'yuicompress', // whether to compress with the outside tool yui compressor
-			//'ieCompat',		// whether to enforce IE compatibility (IE8 data-uri)
-			'strictMath',	// whether math has to be within parenthesis
+			//'ieCompat',    // whether to enforce IE compatibility (IE8 data-uri)
+			'strictMath',  // whether math has to be within parenthesis
 			'strictUnits', // whether units need to evaluate correctly
-			//'cleancss',		// whether to compress with clean-css
-			//'sourceMap',	 // whether to output a source map
+			//'cleancss',    // whether to compress with clean-css
+			//'sourceMap',   // whether to output a source map
 			//'importMultiple'// whether we are currently importing multiple copies
 			);
 
