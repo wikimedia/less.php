@@ -282,6 +282,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 
 		// A list of symbol names used by the 'mappings' entry.
 		$sourceMap['names'] = array();
+
 		// A string with the encoded mapping data.
 		$sourceMap['mappings'] = $mappings;
 

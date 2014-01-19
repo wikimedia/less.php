@@ -165,13 +165,15 @@ class ParserTest{
 
 		if( empty($compiled) && empty($css) ){
 			echo '<b>----empty----</b>';
+			$this->ObjBuffer();
+			$this->LessLink($less);
 			return;
 		}
 
 
 		//sourcemap comparison
 		if( file_exists($sourcemap) ){
-			$this->CompareSourceMap($generated_map, $sourcemap);
+			//$this->CompareSourceMap($generated_map, $sourcemap);
 		}
 
 		// If compress is enabled, add some whitespaces back for comparison
@@ -207,7 +209,6 @@ class ParserTest{
 		}
 
 
-		$pos = strpos($less,'/less.php');
 
 		if( isset($_GET['file']) ){
 			echo '<table><tr><td>';
@@ -217,19 +218,31 @@ class ParserTest{
 			echo '</td></tr></table>';
 
 
-			if( !empty($obj_buffer) ){
-				echo '<h3>Object comparison</h3>';
-				echo '<textarea id="object_comparison">'.htmlspecialchars($obj_buffer,ENT_COMPAT,'UTF-8',false).'</textarea>';
-			}
-
-			echo '<div id="objectdiff"></div>';
-			echo '<div id="diffoutput"></div>';
-
-			$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
+			$this->ObjBuffer();
+			$this->LessLink($less);
 		}
 		//echo '<textarea>'.htmlspecialchars(file_get_contents($less)).'</textara>';
 
     }
+
+    function ObjBuffer(){
+		global $obj_buffer;
+
+
+		if( empty($obj_buffer) ){
+			return;
+		}
+		echo '<h3>Object comparison</h3>';
+		echo '<textarea id="object_comparison">'.htmlspecialchars($obj_buffer,ENT_COMPAT,'UTF-8',false).'</textarea>';
+		echo '<div id="objectdiff"></div>';
+		echo '<div id="diffoutput"></div>';
+
+	}
+
+	function LessLink($less){
+		$pos = strpos($less,'/less.php');
+		$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
+	}
 
 
     function CompareSourceMap($generated_map, $compare_map){
@@ -530,6 +543,8 @@ function obj($mixed){
 			}else{
 				$mixed = 'false';
 			}
+		case 'integer':
+			$type = 'number';
 		default:
 			$output = '('.$type.')'.htmlspecialchars($mixed,ENT_COMPAT,'UTF-8',false).'';
 		break;
@@ -589,6 +604,14 @@ $content = ob_get_clean();
 	<script src="assets/script.js"></script>
 
 	<?php
+
+	echo '<script src="assets/x_moz-sourcemap/test.js"></script>';
+
+
+	/*<script src="assets/x_moz-sourcemap/base64.js"></script>
+	<script src="assets/x_moz-sourcemap/base64-vlq.js"></script>
+	*/
+
 		if( isset($_GET['file']) ){
 			//echo '<script src="assets/less-1.4.2.js"></script>';
 			echo '<script src="assets/less-1.5.1.js"></script>';

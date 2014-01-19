@@ -49,6 +49,7 @@ class Less_Output_Mapped extends Less_Output {
 
 	/**
 	 * Adds a chunk to the stack
+	 * The $index for less.php may be different from less.js since less.php does not chunkify inputs
 	 *
 	 * @param string $chunk
 	 * @param string $fileInfo
@@ -83,17 +84,22 @@ class Less_Output_Mapped extends Less_Output {
 		$columns = end($lines);
 
 		if($fileInfo){
+
 			if(!$mapLines){
 				$this->generator->addMapping(
-						$this->lineNumber + 1, $this->column, // generated
-						count($sourceLines), strlen($sourceColumns), // original
+						$this->lineNumber + 1,					// generated_line
+						$this->column,							// generated_column
+						count($sourceLines),					// original_line
+						strlen($sourceColumns),					// original_column
 						$fileInfo['filename']
 				);
 			}else{
 				for($i = 0, $count = count($lines); $i < $count; $i++){
 					$this->generator->addMapping(
-						$this->lineNumber + $i + 1, $i === 0 ? $this->column : 0, // generated
-						count($sourceLines) + $i, $i === 0 ? strlen($sourceColumns) : 0, // original
+						$this->lineNumber + $i + 1,				// generated_line
+						$i === 0 ? $this->column : 0,			// generated_column
+						count($sourceLines) + $i,				// original_line
+						$i === 0 ? strlen($sourceColumns) : 0, 	// original_column
 						$fileInfo['filename']
 					);
 				}

@@ -48,6 +48,21 @@ $(function(){
 	}
 	showdiff();
 
+	function SideBySideObjects(){
+		var php = $('#object_comparison').hide().val().split('------------------------------------------------------------');
+		var js = obj_buffer.split('------------------------------------------------------------');
+
+		var table = '<table>';
+		for(var i = 0; i < php.length; i++ ){
+			table += '<tr><td>'+php[i]+'</td><td>'+js[i]+'</td></tr>';
+		}
+		table += '</table>';
+
+		$('#objectdiff').html(table);
+	}
+	//SideBySideObjects();
+
+
 });
 
 var object_level = 0;
@@ -55,6 +70,12 @@ var obj_buffer = '';
 var objects = [];
 function obj(mixed){
 	var keys = [], k, i, output = '', type, len;
+
+	if( obj_buffer == '' ){
+		obj_buffer = "----make sure caching is turned off----\n";
+	}
+
+
 
 	var exclude_keys = ['originalRuleset','currentFileInfo','_lookups','index'];
 
