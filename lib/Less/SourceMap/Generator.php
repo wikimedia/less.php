@@ -82,13 +82,8 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		$this->contentsMap = $contentsMap;
 		$this->encoder = $encoder ? $encoder : new Less_SourceMap_Base64VLQ();
 		parent::__construct($options);
-	}
 
-	/**
-	 * Setups the generator
-	 *
-	 */
-	protected function setup(){
+
 		// fix windows paths
 		if($basePath = $this->getOption('base_path')){
 			$basePath = str_replace('\\', '/', $basePath);
@@ -162,7 +157,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	protected function saveMap($file, $content){
 		$dir = dirname($file);
 		// directory does not exist
-		if(!is_dir($dir)){
+		if( !is_dir($dir) ){
 			// FIXME: create the dir automatically?
 			throw new Exception(sprintf('The directory "%s" does not exist. Cannot save the source map.', $dir));
 		}
