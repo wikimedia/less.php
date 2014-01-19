@@ -178,8 +178,8 @@ class Less_Parser extends Less_Cache{
 	 * Parse a Less string from a given file
 	 *
 	 * @throws Less_Exception_Parser
-	 * @param $filename The file to parse
-	 * @param $uri_root The url of the file
+	 * @param string $filename The file to parse
+	 * @param string $uri_root The url of the file
 	 * @param bool $returnRoot Indicates whether the return value should be a css string a root node
 	 * @return Less_Tree_Ruleset|Less_Parser
 	 */
