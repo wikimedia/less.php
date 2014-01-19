@@ -27,7 +27,8 @@ class Less_Tree_Url extends Less_Tree{
 		$val = $this->value->compile($ctx);
 
 		// Add the base path if the URL is relative
-		if($ctx->relativeUrls
+		if( property_exists($ctx,'relativeUrls')
+			&& $ctx->relativeUrls
 			&& $this->currentFileInfo
 			&& is_string($val->value)
 			&& Less_Environment::isPathRelative($val->value)

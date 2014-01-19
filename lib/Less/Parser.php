@@ -64,13 +64,21 @@ class Less_Parser extends Less_Cache{
 		$this->pos = 0;
 	}
 
-	// options: import_dirs, compress, cache_dir, cache_method, strictUnits
+	/**
+	 * Set one or more compiler options
+	 *  options: import_dirs, compress, cache_dir, cache_method, strictUnits
+	 *
+	 */
 	public function SetOptions( $options ){
 		foreach($options as $option => $value){
 			$this->SetOption($option,$value);
 		}
 	}
 
+	/**
+	 * Set one compiler option
+	 *
+	 */
 	public function SetOption($option,$value){
 
 		switch($option){
@@ -135,8 +143,8 @@ class Less_Parser extends Less_Cache{
 		$toCSSVisitor->run($evaldRoot);
 
 
-		if( Less_Environment::$sourceMap ){
-			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), Less_Environment::$sourceMapOptions );
+		if( $this->env->sourceMap ){
+			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), $this->env->sourceMapOptions );
 			// will also save file
 			// FIXME: should happen somewhere else?
 			$css = $generator->generateCSS($this->env);
@@ -165,7 +173,7 @@ class Less_Parser extends Less_Cache{
 	 */
 	public function parse($str){
 
-		if( Less_Environment::$sourceMap ){
+		if( $this->env->sourceMap ){
 			$this->env->setFileContent($key, $string);
 		}
 

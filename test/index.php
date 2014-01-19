@@ -229,11 +229,10 @@ class ParserTest{
 		global $obj_buffer;
 
 
-		if( empty($obj_buffer) ){
-			return;
+		if( !empty($obj_buffer) ){
+			echo '<h3>Object comparison</h3>';
+			echo '<textarea id="object_comparison">'.htmlspecialchars($obj_buffer,ENT_COMPAT,'UTF-8',false).'</textarea>';
 		}
-		echo '<h3>Object comparison</h3>';
-		echo '<textarea id="object_comparison">'.htmlspecialchars($obj_buffer,ENT_COMPAT,'UTF-8',false).'</textarea>';
 		echo '<div id="objectdiff"></div>';
 		echo '<div id="diffoutput"></div>';
 

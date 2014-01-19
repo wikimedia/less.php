@@ -60,14 +60,14 @@ class Less_Environment{
 	 *
 	 * @var boolean
 	 */
-	public static $sourceMap = false;
+	public $sourceMap = false;
 
 	/**
 	 * Array of source map options
 	 *
 	 * @var array
 	 */
-	public static $sourceMapOptions = array();
+	public $sourceMapOptions = array();
 
 	/**
 	 * Filename to contents of all parsed the files
@@ -75,6 +75,8 @@ class Less_Environment{
 	 * @var array
 	 */
 	public static $contentsMap = array();
+
+
 
 	public static $comma_space;
 	public static $colon_space;
@@ -91,13 +93,13 @@ class Less_Environment{
 			$this->strictUnits = (bool)$options['strictUnits'];
 		}
 		if( isset($options['sourceMap']) ){
-			self::$sourceMap = (bool)$options['sourceMap'];
+			$this->sourceMap = (bool)$options['sourceMap'];
 		}
 		if( isset($options['relativeUrls']) ){
 			$this->relativeUrls = (bool)$options['relativeUrls'];
 		}
 		if( isset($options['sourceMapOptions']) ){
-			self::$sourceMapOptions = $options['sourceMapOptions'];
+			$this->sourceMapOptions = $options['sourceMapOptions'];
 		}
 
 		if( self::$compress ){
@@ -107,8 +109,6 @@ class Less_Environment{
 			self::$comma_space = ', ';
 			self::$colon_space = ': ';
 		}
-
-
 	}
 
 
@@ -144,7 +144,7 @@ class Less_Environment{
 	}
 
 	public function isMathOn() {
-		return $this->strictMath ? !!$this->parensStack : true;
+        return $this->strictMath ? ($this->parensStack && count($this->parensStack)) : true;
 	}
 
 	public static function isPathRelative($path){
@@ -244,7 +244,7 @@ class Less_Environment{
 	 * @return Less_Environment
 	 */
 	public function setFileContent($filePath){
-		if( self::$sourceMap && $filePath ){
+		if( $this->sourceMap && $filePath ){
 			self::$contentsMap[$filePath] = file_get_contents($filePath);
 		}
 	}
