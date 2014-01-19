@@ -142,7 +142,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 
 		// inline the map
 		}else{
-			$sourceMapUrl = sprintf('data:application/json,%s', Less_Util::encodeURIComponent($sourceMapContent));
+			$sourceMapUrl = sprintf('data:application/json,%s', Less_Functions::encodeURIComponent($sourceMapContent));
 		}
 
 		if($sourceMapUrl){

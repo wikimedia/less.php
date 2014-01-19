@@ -173,7 +173,7 @@ class ParserTest{
 
 		//sourcemap comparison
 		if( file_exists($sourcemap) ){
-			//$this->CompareSourceMap($generated_map, $sourcemap);
+			$this->CompareSourceMap($generated_map, $sourcemap);
 		}
 
 		// If compress is enabled, add some whitespaces back for comparison
