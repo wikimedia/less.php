@@ -103,14 +103,15 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @return string
 	 */
 	public function generateCSS(Less_Environment $env){
-		$output = new Less_Output();
-		//$output = new Less_Output_Mapped($this->contentsMap, $this);
+		//$output = new Less_Output();
+		$output = new Less_Output_Mapped($this->contentsMap, $this);
 
 		// catch the output
 		$this->root->genCSS($env, $output);
 
 
 		// prepare sources
+		/*
 		foreach($this->contentsMap as $filename => $contents){
 			// match md5 hash in square brackets _[#HASH#]_
 			// see Less_Parser_Core::parseString()
@@ -120,6 +121,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 
 			$this->sources[$this->normalizeFilename($filename)] = $contents;
 		}
+		*/
 
 		$sourceMapUrl = null;
 		if($url = $this->getOption('url')){
@@ -155,18 +157,18 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 *
 	 * @param string $file The absolute path to a file
 	 * @param string $content The content to write
-	 * @throws Less_Exception If the file could not be saved
+	 * @throws Exception If the file could not be saved
 	 */
 	protected function saveMap($file, $content){
 		$dir = dirname($file);
 		// directory does not exist
 		if(!is_dir($dir)){
 			// FIXME: create the dir automatically?
-			throw new Less_Exception(sprintf('The directory "%s" does not exist. Cannot save the source map.', $dir));
+			throw new Exception(sprintf('The directory "%s" does not exist. Cannot save the source map.', $dir));
 		}
 		// FIXME: proper saving, with dir write check!
 		if(file_put_contents($file, $content) === false){
-			throw new Less_Exception(sprintf('Cannot save the source map to "%s"', $file));
+			throw new Exception(sprintf('Cannot save the source map to "%s"', $file));
 		}
 		return true;
 	}
@@ -207,7 +209,11 @@ class Less_SourceMap_Generator extends Less_Configurable {
 			'original_column' => $originalColumn,
 			'source_file' => $sourceFile
 		);
-		return $this;
+
+
+		$norm_file = $this->normalizeFilename($sourceFile);
+
+		$this->sources[$norm_file] = 1;
 	}
 
 	/**
@@ -247,23 +253,39 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @see https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit#
 	 */
 	protected function generateJson(){
-		$sourceMap = array(
-			// File version (always the first entry in the object) and must be a positive integer.
-			'version' => self::VERSION,
-			// An optional name of the generated code that this source map is associated with.
-			'file' => $this->getOption('filename'),
-			// An optional source root, useful for relocating source files on a server or removing repeated values in the 'sources' entry.	This value is prepended to the individual entries in the 'source' field.
-			'sourceRoot' => $this->getOption('sourceRoot'),
-			// A list of original sources used by the 'mappings' entry.
-			'sources' => array_keys($this->sources)
-		);
+
+		$sourceMap = array();
+		$mappings = $this->generateMappings();
+
+		// File version (always the first entry in the object) and must be a positive integer.
+		$sourceMap['version'] = self::VERSION;
+
+
+		// An optional name of the generated code that this source map is associated with.
+		$file = $this->getOption('filename');
+		if( $file ){
+			$sourceMap['file'] = $file;
+		}
+
+
+		// An optional source root, useful for relocating source files on a server or removing repeated values in the 'sources' entry.	This value is prepended to the individual entries in the 'source' field.
+		$root = $this->getOption('sourceRoot');
+		if( $root ){
+			$sourceMap['sourceRoot'] = $root;
+		}
+
+
+		// A list of original sources used by the 'mappings' entry.
+		$sourceMap['sources'] = array_keys($this->sources);
+
+
 
 		// A list of symbol names used by the 'mappings' entry.
 		$sourceMap['names'] = array();
 		// A string with the encoded mapping data.
-		$sourceMap['mappings'] = $this->generateMappings();
+		$sourceMap['mappings'] = $mappings;
 
-		if($this->getOption('source_contents')){
+		if( $this->getOption('source_contents') ){
 			// An optional list of source content, useful when the 'source' can't be hosted.
 			// The contents are listed in the same order as the sources above.
 			// 'null' may be used if some original sources should be retrieved by name.
@@ -271,7 +293,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		}
 
 		// less.js compat fixes
-		if(count($sourceMap['sources']) && !($sourceMap['sourceRoot'])){
+		if( count($sourceMap['sources']) && empty($sourceMap['sourceRoot']) ){
 			unset($sourceMap['sourceRoot']);
 		}
 
@@ -297,7 +319,8 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @return string
 	 */
 	public function generateMappings(){
-		if(!count($this->mappings)){
+
+		if( !count($this->mappings) ){
 			return '';
 		}
 

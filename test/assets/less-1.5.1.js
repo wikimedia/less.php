@@ -495,6 +495,8 @@ less.Parser = function Parser(env) {
                         new(tree.toCSSVisitor)({compress: Boolean(options.compress)})
                             .run(evaldRoot);
 
+                        //console.log(parser.imports);
+
                         if (options.sourceMap) {
                             evaldRoot = new tree.sourceMapOutput(
                                 {
@@ -3756,9 +3758,7 @@ tree.Import.prototype = {
     eval: function (env) {
         var ruleset, features = this.features && this.features.eval(env);
 
-		log('eval import');
         if (this.skip) {
-			log('skip');
 			return [];
 		}
 

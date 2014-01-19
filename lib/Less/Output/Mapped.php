@@ -6,8 +6,7 @@
  * @package Less
  * @subpackage Output
  */
-//class Less_Output_Mapped extends Less_Output {
-class Less_Output_Mapped{
+class Less_Output_Mapped extends Less_Output {
 
 	/**
 	 * The source map generator
@@ -57,20 +56,23 @@ class Less_Output_Mapped{
 	 * @param mixed $mapLines
 	 * @return Less_Output
 	 */
-	public function add($chunk, Less_FileInfo $fileInfo = null, $index = 0, $mapLines = null){
-		// nothing to do
-		if(!$chunk){
-			return $this;
-		}
+	public function add($chunk, $fileInfo = null, $index = 0, $mapLines = null){
+
 
 		$sourceLines = array();
 		$sourceColumns = ' ';
 
 
-		if($fileInfo/* && isset($this->contentsMap[$fileInfo->filename])*/){
-			$inputSource = substr($this->contentsMap[$fileInfo->importedFile->getPath()], 0, $index);
-			$sourceLines = explode("\n", $inputSource);
-			$sourceColumns = end($sourceLines);
+		if( $fileInfo && !empty($fileInfo['filename']) ){
+
+			if( isset($this->contentsMap[$fileInfo['filename']]) ){
+				$inputSource = substr($this->contentsMap[$fileInfo['filename']], 0, $index);
+				$sourceLines = explode("\n", $inputSource);
+				$sourceColumns = end($sourceLines);
+			}else{
+				throw new Exception('Filename '.$fileInfo['filename'].' not in contentsMap');
+			}
+
 		}
 
 		$lines = explode("\n", $chunk);
@@ -81,14 +83,14 @@ class Less_Output_Mapped{
 				$this->generator->addMapping(
 						$this->lineNumber + 1, $this->column, // generated
 						count($sourceLines), strlen($sourceColumns), // original
-						$fileInfo->filename
+						$fileInfo['filename']
 				);
 			}else{
 				for($i = 0, $count = count($lines); $i < $count; $i++){
 					$this->generator->addMapping(
 						$this->lineNumber + $i + 1, $i === 0 ? $this->column : 0, // generated
 						count($sourceLines) + $i, $i === 0 ? strlen($sourceColumns) : 0, // original
-						$fileInfo->filename
+						$fileInfo['filename']
 					);
 				}
 			}
@@ -102,7 +104,7 @@ class Less_Output_Mapped{
 		}
 
 		// add only chunk
-		return parent::add($chunk);
+		parent::add($chunk);
 	}
 
 	/**

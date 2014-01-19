@@ -106,8 +106,9 @@ class ParserTest{
 		$basename = basename($less);
 		$basename = substr($basename,0,-5); //remove .less extension
 
-		$less = $dir.$less;
-		$css = $dir.$css;
+		$less		= $dir.$less;
+		$css		= $dir.$css;
+		$sourcemap	= $dir.'/css/'.$basename.'.map';
 
 		echo '<br/><a href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">File: '.$basename.'</a>';
 
@@ -122,11 +123,22 @@ class ParserTest{
 
 		$options = array();
 		$options['compress'] 		= $this->compress;
-		$options['sourceMap']		= true;
-
 		//$options['cache_dir']		= $this->cache_dir;
 		//$options['cache_method']	= 'php';
 
+
+		//generate the sourcemap
+		if( file_exists($sourcemap) ){
+
+			$generated_map = $this->cache_dir.'/'.$basename.'.map';
+
+			$options['sourceMap']			= true;
+			$options['sourceMapOptions']	= array(
+				'base_path' => $dir,
+				//'filename' => $basename.'.map',
+				'write_to' => $generated_map,
+            );
+		}
 
 
 		$compiled = '';
@@ -156,6 +168,11 @@ class ParserTest{
 			return;
 		}
 
+
+		//sourcemap comparison
+		if( file_exists($sourcemap) ){
+			$this->CompareSourceMap($generated_map, $sourcemap);
+		}
 
 		// If compress is enabled, add some whitespaces back for comparison
 		if( $this->compress ){
@@ -214,13 +231,32 @@ class ParserTest{
 
     }
 
+
+    function CompareSourceMap($generated_map, $compare_map){
+
+		$generated = $this->ComparableSourceMap($generated_map);
+		$compare = $this->ComparableSourceMap($compare_map);
+
+		$this->PHPDiff($generated,$compare,true);
+	}
+
+	function ComparableSourceMap($file){
+		$content = file_get_contents($file);
+		$array = json_decode($content,true);
+		$array['mappings'] = explode(';',$array['mappings']);
+		return pre($array);
+	}
+
+
+
+
 	/**
 	 * Show diff using php (optional)
 	 *
 	 */
-    function PHPDiff($compiled,$css){
+    function PHPDiff($compiled,$css, $force = false){
 
-		if( isset($_COOKIE['phpdiff']) && $_COOKIE['phpdiff'] == 0 ){
+		if( !$force && isset($_COOKIE['phpdiff']) && $_COOKIE['phpdiff'] == 0 ){
 			return;
 		}
 

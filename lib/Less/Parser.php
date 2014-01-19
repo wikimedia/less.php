@@ -136,7 +136,7 @@ class Less_Parser extends Less_Cache{
 
 
 		if( Less_Environment::$sourceMap ){
-			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), $this->env->sourceMapOptions);
+			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), Less_Environment::$sourceMapOptions );
 			// will also save file
 			// FIXME: should happen somewhere else?
 			$css = $generator->generateCSS($this->env);

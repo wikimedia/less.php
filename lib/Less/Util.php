@@ -8,14 +8,6 @@
  */
 class Less_Util {
 
-	/**
-	 * Constructor
-	 *
-	 * @throws LogicException
-	 */
-	public function __construct(){
-		throw new LogicException('The stone which the builders rejected, the same is become the head of the corner: this is the Lord\'s doing, and it is marvellous in our eyes? [Mat 21:42]');
-	}
 
 	/**
 	 * Converts all line endings to Unix format
