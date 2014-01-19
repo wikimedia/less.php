@@ -54,8 +54,8 @@ abstract class Less_Configurable {
 		}
 
 		// combine the passed options with the defaults
-		$defaults = $this->getDefaultOptions();
-		$this->options = array_merge($defaults, $options);
+
+		$this->options = array_merge($this->defaultOptions, $options);
 
 	}
 

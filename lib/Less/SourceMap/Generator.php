@@ -77,10 +77,11 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @param array $options Array of options
 	 * @param Less_SourceMap_Base64VLQ $encoder The encoder
 	 */
-	public function __construct(Less_Tree_Ruleset $root, array $contentsMap, $options = array(), Less_SourceMap_Base64VLQ $encoder = null){
+	public function __construct(Less_Tree_Ruleset $root, array $contentsMap, $options = array()){
 		$this->root = $root;
 		$this->contentsMap = $contentsMap;
-		$this->encoder = $encoder ? $encoder : new Less_SourceMap_Base64VLQ();
+		$this->encoder = new Less_SourceMap_Base64VLQ();
+
 		parent::__construct($options);
 
 
@@ -98,25 +99,11 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @return string
 	 */
 	public function generateCSS(Less_Environment $env){
-		//$output = new Less_Output();
 		$output = new Less_Output_Mapped($this->contentsMap, $this);
 
 		// catch the output
 		$this->root->genCSS($env, $output);
 
-
-		// prepare sources
-		/*
-		foreach($this->contentsMap as $filename => $contents){
-			// match md5 hash in square brackets _[#HASH#]_
-			// see Less_Parser_Core::parseString()
-			if(preg_match('/(\[__[0-9a-f]{32}__\])+$/', $filename)){
-				$filename = substr($filename, 0, -38);
-			}
-
-			$this->sources[$this->normalizeFilename($filename)] = $contents;
-		}
-		*/
 
 		$sourceMapUrl = null;
 		if($url = $this->getOption('url')){
@@ -194,7 +181,6 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @param integer $originalLine The line number in original file
 	 * @param integer $originalColumn The column number in original file
 	 * @param string $sourceFile The original source file
-	 * @return Less_SourceMap_Generator
 	 */
 	public function addMapping($generatedLine, $generatedColumn, $originalLine, $originalColumn, $sourceFile){
 		$this->mappings[] = array(
@@ -211,35 +197,6 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		$this->sources[$norm_file] = 1;
 	}
 
-	/**
-	 * Clear the mappings
-	 *
-	 * @return Less_SourceMap_Generator
-	 */
-	public function clear(){
-		$this->mappings = array();
-		return $this;
-	}
-
-	/**
-	 * Sets the encoder
-	 *
-	 * @param Less_SourceMap_Base64VLQ $encoder
-	 * @return Less_SourceMap_Generator
-	 */
-	public function setEncoder(Less_SourceMap_Base64VLQ $encoder){
-		$this->encoder = $encoder;
-		return $this;
-	}
-
-	/**
-	 * Returns the encoder
-	 *
-	 * @return Less_SourceMap_Base64VLQ
-	 */
-	public function getEncoder(){
-		return $this->encoder;
-	}
 
 	/**
 	 * Generates the JSON source map

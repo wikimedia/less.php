@@ -42,7 +42,7 @@ class Less_Output_Mapped extends Less_Output {
 	 * @param array $contentsMap Array of filename to contents map
 	 * @param Less_SourceMap_Generator $generator
 	 */
-	public function __construct(array $contentsMap, Less_SourceMap_Generator $generator){
+	public function __construct(array $contentsMap, $generator){
 		$this->contentsMap = $contentsMap;
 		$this->generator = $generator;
 	}
@@ -115,26 +115,6 @@ class Less_Output_Mapped extends Less_Output {
 
 		// add only chunk
 		parent::add($chunk);
-	}
-
-	/**
-	 * Returns the generator
-	 *
-	 * @return Less_SourceMap_Generator
-	 */
-	public function getGenerator(){
-		return $this->generator;
-	}
-
-	/**
-	 * Sets the generator
-	 *
-	 * @param Less_SourceMap_Generator $generator
-	 * @return Less_Output_Mapped
-	 */
-	public function setGenerator(Less_SourceMap_Generator $generator){
-		$this->generator = $generator;
-		return $this;
 	}
 
 }
