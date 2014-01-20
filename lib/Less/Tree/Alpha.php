@@ -15,7 +15,9 @@ class Less_Tree_Alpha extends Less_Tree{
 
 	public function compile($env){
 
-		if( !is_string($this->value) ){ return new Less_Tree_Alpha( $this->value->compile($env) ); }
+		if( is_object($this->value) ){
+			$this->value = $this->value->compile($env);
+		}
 
 		return $this;
 	}
