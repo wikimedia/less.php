@@ -31,10 +31,11 @@ class Less_Tree_Element extends Less_Tree{
 	}
 
 	public function compile($env) {
-		if( is_object($this->value) ){
-			$this->value = $this->value->compile($env);
-		}
-		return $this;
+		return new Less_Tree_Element($this->combinator,
+				is_string($this->value) ? $this->value : $this->value->compile($env),
+				$this->index,
+				$this->currentFileInfo
+		);
 	}
 
 	public function genCSS( $env, $output ){

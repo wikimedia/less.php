@@ -1,5 +1,10 @@
-0, 1, 2, 3, 4 {
-    x-& {
-        p: v;
-    }
+
+.has_parents() {
+  & .underParents {
+    color: red;
+  }
+}
+.has_parents();
+.parent {
+  .has_parents();
 }

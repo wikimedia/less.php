@@ -38,9 +38,9 @@ class Less_Tree_Operation extends Less_Tree{
 			}
 
 			return $a->operate($env,$this->op, $b);
-		} else {
-			return new Less_Tree_Operation($this->op, array($a, $b), $this->isSpaced );
 		}
+
+		return new Less_Tree_Operation($this->op, array($a, $b), $this->isSpaced );
 	}
 
 	function genCSS( $env, $output ){

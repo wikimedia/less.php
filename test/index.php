@@ -544,6 +544,10 @@ function obj($mixed){
 			}else{
 				$mixed = 'false';
 			}
+		case 'string':
+			$output = '(string:'.strlen($mixed).')'.htmlspecialchars($mixed,ENT_COMPAT,'UTF-8',false).'';
+		break;
+
 		case 'integer':
 			$type = 'number';
 		default:
