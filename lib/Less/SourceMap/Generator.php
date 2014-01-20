@@ -262,8 +262,11 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		if(empty($this->sources)){
 			return;
 		}
-		// FIXME: we should output only those which were used
-		return array_values($this->sources);
+		$content = array();
+		foreach($this->sources as $sourceFile){
+			$content[] = file_get_contents($sourceFile);
+		}
+		return $content;
 	}
 
 	/**
