@@ -63,13 +63,6 @@ class Less_Environment{
 	public $sourceMap = false;
 
 	/**
-	 * Array of source map options
-	 *
-	 * @var array
-	 */
-	public $sourceMapOptions = array();
-
-	/**
 	 * Filename to contents of all parsed the files
 	 *
 	 * @var array
@@ -97,9 +90,6 @@ class Less_Environment{
 		}
 		if( isset($options['relativeUrls']) ){
 			$this->relativeUrls = (bool)$options['relativeUrls'];
-		}
-		if( isset($options['sourceMapOptions']) ){
-			$this->sourceMapOptions = $options['sourceMapOptions'];
 		}
 
 		if( self::$compress ){

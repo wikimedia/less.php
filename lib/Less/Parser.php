@@ -41,6 +41,8 @@ class Less_Parser extends Less_Cache{
 
 	public static $next_id = 0;
 
+	private $options = array();
+
 
 	/**
 	 * @param Environment|null $env
@@ -54,6 +56,7 @@ class Less_Parser extends Less_Cache{
 			$this->env = $env;
 		}else{
 			$this->env = new Less_Environment( $env );
+			$this->options = $env;
 			self::$imports = array();
 			self::$import_dirs = array();
 			if( is_array($env) ){
@@ -144,7 +147,7 @@ class Less_Parser extends Less_Cache{
 
 
 		if( $this->env->sourceMap ){
-			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), $this->env->sourceMapOptions );
+			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), $this->options );
 			// will also save file
 			// FIXME: should happen somewhere else?
 			$css = $generator->generateCSS($this->env);

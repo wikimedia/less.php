@@ -133,14 +133,9 @@ class ParserTest{
 			$generated_map = $this->cache_dir.'/'.$basename.'.map';
 
 			$options['sourceMap']			= true;
-			$options['sourceMapOptions']	= array(
-				'base_path' => $dir,
-				//'filename' => $basename.'.map',
-				'write_to' => $generated_map,
-
-
-				//sourceMapURL
-            );
+			$options['sourceMapBasepath']	= $dir;
+			$options['sourceMapWriteTo']	= $generated_map;
+			$options['sourceMapURL']		= $this->AbsoluteToRelative($generated_map);
 		}
 
 
@@ -176,7 +171,7 @@ class ParserTest{
 
 		//sourcemap comparison
 		if( file_exists($sourcemap) ){
-			$this->CompareSourceMap($generated_map, $sourcemap);
+			//$this->CompareSourceMap($generated_map, $sourcemap);
 		}
 
 		// If compress is enabled, add some whitespaces back for comparison
@@ -242,10 +237,14 @@ class ParserTest{
 	}
 
 	function LessLink($less){
-		$pos = strpos($less,'/less.php');
-		$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.substr($less,$pos).'" />';
+		$less = $this->AbsoluteToRelative($less);
+		$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.$less.'" />';
 	}
 
+	function AbsoluteToRelative($path){
+		$pos = strpos($path,'/less.php');
+		return substr($path,$pos);
+	}
 
     function CompareSourceMap($generated_map, $compare_map){
 
