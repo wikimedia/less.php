@@ -16,6 +16,17 @@ class Less_Tree_Attribute extends Less_Tree{
 
 	function compile($env){
 
+		/*
+		if( is_object($this->key) ){
+			$this->key = $this->key->compile($env);
+		}
+
+		if( is_object($this->value) ){
+			$this->value = $this->value->compile($env);
+		}
+		return $this;
+		*/
+
 		return new Less_Tree_Attribute(
 			is_object($this->key) ? $this->key->compile($env) : $this->key ,
 			$this->op,
