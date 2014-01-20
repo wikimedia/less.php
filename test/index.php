@@ -93,13 +93,32 @@ class ParserTest{
 
 		}
 
+		$match_list = $diff = array();
 		foreach($pairs as $files){
-			$this->testLessJsCssGeneration( $dir, $files[0], $files[1] );
+			ob_start();
+			$this->testLessJsCssGeneration( $dir, $files[0], $files[1], $matched );
+
+			if( $matched ){
+				$match_list[] = ob_get_clean();
+			}else{
+				$diff[] = ob_get_clean();
+			}
+		}
+
+		if( count($diff) ){
+			echo implode('',$diff);
+		}
+
+		if( count($match_list) ){
+			echo '<h3>Matched</h3>';
+			foreach($match_list as $a){
+				echo $a;
+			}
 		}
 
     }
 
-    public function testLessJsCssGeneration($dir, $less, $css){
+    public function testLessJsCssGeneration($dir, $less, $css, &$matched ){
 		global $obj_buffer;
 
 		$this->files_tested++;
@@ -109,6 +128,7 @@ class ParserTest{
 		$less		= $dir.$less;
 		$css		= $dir.$css;
 		$sourcemap	= $dir.'/css/'.$basename.'.map';
+		$matched	= false;
 
 		echo '<br/><a href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">File: '.$basename.'</a>';
 
@@ -163,14 +183,16 @@ class ParserTest{
 
 		if( empty($compiled) && empty($css) ){
 			echo '<b>----empty----</b>';
-			$this->ObjBuffer();
-			$this->LessLink($less);
+			if( isset($_GET['file']) ){
+				$this->ObjBuffer();
+				$this->LessLink($less);
+			}
 			return;
 		}
 
 
 		//sourcemap comparison
-		if( file_exists($sourcemap) ){
+		if( isset($_GET['file']) && file_exists($sourcemap) ){
 			//$this->CompareSourceMap($generated_map, $sourcemap);
 		}
 
@@ -194,6 +216,7 @@ class ParserTest{
 
 
 		if( $css === $compiled ){
+			$matched = true;
 			$this->matched_count++;
 			echo ' (equals) ';
 
@@ -202,7 +225,8 @@ class ParserTest{
 			}
 
 		}else{
-			echo ' (<b>compiled css did not match</b>)';
+			$line_diff = $this->LineDiff($compiled,$css);
+			echo ' - <b>compiled css did not match. '.$line_diff.' lines</b>';
 			$this->PHPDiff($compiled,$css);
 		}
 
@@ -262,6 +286,13 @@ class ParserTest{
 	}
 
 
+	function LineDiff($compiled,$css){
+		$compiled	= explode("\n",$compiled);
+		$css		= explode("\n",$css);
+
+		$diff = array_diff($compiled,$css);
+		return count($diff);
+	}
 
 
 	/**
