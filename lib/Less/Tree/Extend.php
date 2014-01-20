@@ -43,7 +43,8 @@ class Less_Tree_Extend extends Less_Tree{
 
 	function compile( $env ){
 		Less_Parser::$has_extends = true;
-		return new Less_Tree_Extend( $this->selector->compile($env), $this->option, $this->index);
+		$this->selector = $this->selector->compile($env);
+		return $this;
 	}
 
 	function findSelfSelectors( $selectors ){
