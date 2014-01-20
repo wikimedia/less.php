@@ -23,16 +23,21 @@ class Less_SourceMap_Generator extends Less_Configurable {
 			// on a server or removing repeated values in the 'sources' entry.
 			// This value is prepended to the individual entries in the 'source' field.
 			'sourceRoot' => '',
+
 			// an optional name of the generated code that this source map is associated with.
-			'filename' => null,
+			'sourceMapFilename' => null,
+
 			// url of the map
-			'url' => null,
+			'sourceMapURL' => null,
+
 			// absolute path to a file to write the map to
-			'write_to' => null,
+			'sourceMapWriteTo' => null,
+
 			// output source contents?
-			'source_contents' => false,
+			'outputSourceFiles' => false,
+
 			// base path for filename normalization
-			'base_path' => ''
+			'sourceMapBasepath' => ''
 	);
 
 	/**
@@ -77,18 +82,17 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @param array $options Array of options
 	 * @param Less_SourceMap_Base64VLQ $encoder The encoder
 	 */
-	public function __construct(Less_Tree_Ruleset $root, array $contentsMap, $options = array()){
+	public function __construct(Less_Tree_Ruleset $root, $contentsMap, $options = array()){
 		$this->root = $root;
 		$this->contentsMap = $contentsMap;
 		$this->encoder = new Less_SourceMap_Base64VLQ();
 
-		parent::__construct($options);
+		$this->SetOptions($options);
 
 
 		// fix windows paths
-		if($basePath = $this->getOption('base_path')){
-			$basePath = str_replace('\\', '/', $basePath);
-			$this->setOption('base_path', $basePath);
+		if( isset($this->options['sourceMapBasepath']) ){
+			$this->options['sourceMapBasepath'] = str_replace('\\', '/', $this->options['sourceMapBasepath']);
 		}
 	}
 
@@ -98,28 +102,23 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @param Less_Environment $env
 	 * @return string
 	 */
-	public function generateCSS(Less_Environment $env){
+	public function generateCSS($env){
 		$output = new Less_Output_Mapped($this->contentsMap, $this);
 
 		// catch the output
 		$this->root->genCSS($env, $output);
 
 
-		$sourceMapUrl = null;
-		if($url = $this->getOption('url')){
-			$sourceMapUrl = $url;
-		}elseif($path = $this->getOption('filename')){
-			$sourceMapUrl = $this->normalizeFilename($path);
-			// naming conventions, make it foobar.css.map
-			if(!preg_match('/\.map$/', $sourceMapUrl)){
-				$sourceMapUrl = sprintf('%s.map', $sourceMapUrl);
-			}
+		$sourceMapUrl				= $this->getOption('sourceMapURL');
+		$sourceMapFilename			= $this->getOption('sourceMapFilename');
+		$sourceMapContent			= $this->generateJson();
+
+		if( !$sourceMapUrl && $sourceMapFilename ){
+			$sourceMapUrl = $this->normalizeFilename($sourceMapFilename);
 		}
 
-		$sourceMapContent = $this->generateJson();
 		// write map to a file
-		if($file = $this->getOption('write_to')){
-			// FIXME: should this happen here?
+		if($file = $this->getOption('sourceMapWriteTo')){
 			$this->saveMap($file, $sourceMapContent);
 
 		// inline the map
@@ -163,14 +162,15 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 */
 	protected function normalizeFilename($filename){
 		$filename = str_replace('\\', '/', $filename);
-		if(($basePath = $this->getOption('base_path'))
-				&& ($pos = strpos($filename, $basePath)) !== false){
+		$basePath = $this->getOption('sourceMapBasepath');
+
+		if( $basePath && ($pos = strpos($filename, $basePath)) !== false ){
 			$filename = substr($filename, $pos + strlen($basePath));
 			if(strpos($filename, '\\') === 0 || strpos($filename, '/') === 0){
 				$filename = substr($filename, 1);
 			}
 		}
-		return sprintf('%s%s', $this->getOption('root_path'), $filename);
+		return sprintf('%s%s', $this->getOption('sourceMapRootpath'), $filename);
 	}
 
 	/**
@@ -194,7 +194,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 
 		$norm_file = $this->normalizeFilename($sourceFile);
 
-		$this->sources[$norm_file] = 1;
+		$this->sources[$norm_file] = $sourceFile;
 	}
 
 
@@ -214,7 +214,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 
 
 		// An optional name of the generated code that this source map is associated with.
-		$file = $this->getOption('filename');
+		$file = $this->getOption('sourceMapFilename');
 		if( $file ){
 			$sourceMap['file'] = $file;
 		}
@@ -238,7 +238,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		// A string with the encoded mapping data.
 		$sourceMap['mappings'] = $mappings;
 
-		if( $this->getOption('source_contents') ){
+		if( $this->getOption('outputSourceFiles') ){
 			// An optional list of source content, useful when the 'source' can't be hosted.
 			// The contents are listed in the same order as the sources above.
 			// 'null' may be used if some original sources should be retrieved by name.
@@ -299,8 +299,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 				$lastGeneratedColumn = $m['generated_column'];
 
 				// find the index
-				if($m['source_file'] &&
-						($index = $this->findFileIndex($this->normalizeFilename($m['source_file']))) !== false){
+				if( $m['source_file'] && ($index = $this->findFileIndex($this->normalizeFilename($m['source_file']))) !== false ){
 					$mapEncoded .= $this->encoder->encode($index - $lastOriginalIndex);
 					$lastOriginalIndex = $index;
 

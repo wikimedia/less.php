@@ -137,6 +137,9 @@ class ParserTest{
 				'base_path' => $dir,
 				//'filename' => $basename.'.map',
 				'write_to' => $generated_map,
+
+
+				//sourceMapURL
             );
 		}
 

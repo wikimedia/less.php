@@ -22,16 +22,6 @@ abstract class Less_Configurable {
 	 */
 	protected $defaultOptions = array();
 
-	/**
-	 * Constructor
-	 *
-	 * @param array $options
-	 * @return void
-	 */
-	public function __construct($options = array()){
-		$options += $this->defaultOptions;
-		$this->setOptions($options);
-	}
 
 	/**
 	 * Set options
@@ -44,19 +34,8 @@ abstract class Less_Configurable {
 	 *
 	 */
 	public function setOptions($options){
-		// first convert to array if needed
-		if(!is_array($options)){
-			if(is_object($options) && is_callable(array($options, 'toArray'))){
-				$options = $options->toArray();
-			}else{
-				throw new Exception(sprintf('Options for "%s" must be an array or a object with ->toArray() method'));
-			}
-		}
-
-		// combine the passed options with the defaults
-
-		$this->options = array_merge($this->defaultOptions, $options);
-
+		$options = array_intersect_key($options,$this->defaultOptions);
+		$this->options = array_merge($this->defaultOptions, $this->options, $options);
 	}
 
 
