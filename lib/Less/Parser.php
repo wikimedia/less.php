@@ -1,5 +1,6 @@
 <?php
 
+require_once( dirname(__FILE__).'/Cache.php');
 
 class Less_Parser extends Less_Cache{
 
@@ -24,7 +25,7 @@ class Less_Parser extends Less_Cache{
 	/**
 	 *
 	 */
-	const version = '1.5.1rc3';
+	const version = '1.5.1';
 	const less_version = '1.5.1';
 
 	/**

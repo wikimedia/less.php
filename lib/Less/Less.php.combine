@@ -8,6 +8,9 @@
 ./Output.php
 ./Visitor.php
 ./VisitorReplacing.php
+./Configurable.php
 ./Tree
 ./Visitor
 ./Exception
+./Output
+./SourceMap
