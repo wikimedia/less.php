@@ -2,6 +2,8 @@
 
 class Less_Visitor_toCSS extends Less_VisitorReplacing{
 
+	private $charset;
+
 	function __construct(){
 		parent::__construct();
 	}
