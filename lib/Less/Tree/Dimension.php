@@ -3,6 +3,8 @@
 
 class Less_Tree_Dimension extends Less_Tree{
 
+	public $value;
+	public $unit;
 	public $type = 'Dimension';
 
     public function __construct($value, $unit = false){
