@@ -6,6 +6,8 @@ class Less_Tree_Directive extends Less_Tree{
 	public $value;
 	public $rules;
 	public $index;
+	public $isReferenced;
+	public $currentFileInfo;
 	public $type = 'Directive';
 
 	public function __construct($name, $value = null, $index = null, $currentFileInfo = null ){
