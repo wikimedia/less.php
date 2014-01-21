@@ -642,7 +642,6 @@ class Less_Functions{
 
 		$filePath = ( $filePathNode ? $filePathNode->value : null );
 		$mimetype = $mimetypeNode->value;
-		$useBase64 = false;
 
 		$args = 2;
 		if( !$filePath ){
