@@ -16,7 +16,7 @@ class Less_Tree_Quoted extends Less_Tree{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
-    public function genCSS( $env, $output ){
+    public function genCSS( $output ){
 		if( !$this->escaped ){
 			$output->add( $this->quote, $this->currentFileInfo, $this->index );
         }
@@ -41,7 +41,7 @@ class Less_Tree_Quoted extends Less_Tree{
 			foreach($matches[1] as $i => $match){
 				$v = new Less_Tree_Variable('@' . $match, $this->index, $this->currentFileInfo );
 				$v = $v->compile($env,true);
-				$v = ($v instanceof Less_Tree_Quoted) ? $v->value : $v->toCSS($env);
+				$v = ($v instanceof Less_Tree_Quoted) ? $v->value : $v->toCSS();
 				$value = str_replace($matches[0][$i], $v, $value);
 			}
 		}

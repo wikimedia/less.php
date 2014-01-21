@@ -69,22 +69,22 @@ class Less_Tree_Import extends Less_Tree{
 		}
 	}
 
-	function genCSS( $env, $output ){
+	function genCSS( $output ){
 		if( $this->css ){
 
 			$output->add( '@import ', $this->currentFileInfo, $this->index );
 
-			$this->path->genCSS( $env, $output );
+			$this->path->genCSS( $output );
 			if( $this->features ){
 				$output->add( ' ' );
-				$this->features->genCSS( $env, $output );
+				$this->features->genCSS( $output );
 			}
 			$output->add( ';' );
 		}
 	}
 
-	function toCSS($env = null){
-		$features = $this->features ? ' ' . $this->features->toCSS($env) : '';
+	function toCSS(){
+		$features = $this->features ? ' ' . $this->features->toCSS() : '';
 
 		if ($this->css) {
 			return "@import " . $this->path->toCSS() . $features . ";\n";

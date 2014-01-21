@@ -22,20 +22,20 @@ class Less_Tree_Alpha extends Less_Tree{
 		return $this;
 	}
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 
 		$output->add( "alpha(opacity=" );
 
 		if( is_string($this->value) ){
 			$output->add( $this->value );
 		}else{
-			$this->value->genCSS($env, $output);
+			$this->value->genCSS( $output);
 		}
 
 		$output->add( ')' );
 	}
 
-	public function toCSS($env = null){
+	public function toCSS(){
 		return "alpha(opacity=" . (is_string($this->value) ? $this->value : $this->value->toCSS()) . ")";
 	}
 

@@ -32,11 +32,11 @@ class Less_Tree_Anonymous extends Less_Tree{
 		return $left < $right ? -1 : 1;
 	}
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 		$output->add( $this->value, $this->currentFileInfo, $this->index, $this->mapLines );
 	}
 
-	public function toCSS($env = null){
+	public function toCSS(){
 		return $this->value;
 	}
 

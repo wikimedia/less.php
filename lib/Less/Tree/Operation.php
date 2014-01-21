@@ -43,8 +43,8 @@ class Less_Tree_Operation extends Less_Tree{
 		return new Less_Tree_Operation($this->op, array($a, $b), $this->isSpaced );
 	}
 
-	function genCSS( $env, $output ){
-		$this->operands[0]->genCSS( $env, $output );
+	function genCSS( $output ){
+		$this->operands[0]->genCSS( $output );
 		if( $this->isSpaced ){
 			$output->add( " " );
 		}
@@ -52,7 +52,7 @@ class Less_Tree_Operation extends Less_Tree{
 		if( $this->isSpaced ){
 			$output->add( ' ' );
 		}
-		$this->operands[1]->genCSS( $env, $output );
+		$this->operands[1]->genCSS( $output );
 	}
 
 }

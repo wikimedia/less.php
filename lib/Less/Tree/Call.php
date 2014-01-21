@@ -76,12 +76,12 @@ class Less_Tree_Call extends Less_Tree{
 		return new Less_Tree_Call( $this->name, $args, $this->index, $this->currentFileInfo );
     }
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 
 		$output->add( $this->name . '(', $this->currentFileInfo, $this->index );
 		$args_len = count($this->args);
 		for($i = 0; $i < $args_len; $i++ ){
-			$this->args[$i]->genCSS($env, $output );
+			$this->args[$i]->genCSS( $output );
 			if( $i + 1 < $args_len ){
 				$output->add( ', ' );
 			}
@@ -90,8 +90,8 @@ class Less_Tree_Call extends Less_Tree{
 		$output->add( ')' );
 	}
 
-    public function toCSS($env = null){
-        return $this->compile($env)->toCSS();
+    public function toCSS(){
+        return $this->compile()->toCSS();
     }
 
 }

@@ -13,7 +13,7 @@ class Less_Tree_Keyword extends Less_Tree{
 		return $this;
 	}
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 		$output->add( $this->value );
 	}
 

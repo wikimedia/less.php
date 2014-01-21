@@ -2,42 +2,42 @@
 
 class Less_Tree{
 
-	public function toCSS($env = null){
+	public function toCSS(){
 		$output = new Less_Output();
-		$this->genCSS($env, $output);
+		$this->genCSS($output);
 		return $output->toString();
 	}
 
 
-	public static function outputRuleset($env, $output, $rules ){
+	public static function outputRuleset( $output, $rules ){
 
 		$ruleCnt = count($rules);
-		$env->tabLevel++;
+		Less_Environment::$tabLevel++;
 
 
 		// Compressed
 		if( Less_Environment::$compress ){
 			$output->add('{');
 			for( $i = 0; $i < $ruleCnt; $i++ ){
-				$rules[$i]->genCSS( $env, $output );
+				$rules[$i]->genCSS( $output );
 			}
 
 			$output->add( '}' );
-			$env->tabLevel--;
+			Less_Environment::$tabLevel--;
 			return;
 		}
 
 
 		// Non-compressed
-		$tabSetStr = "\n".str_repeat( '  ' , $env->tabLevel-1 );
+		$tabSetStr = "\n".str_repeat( '  ' , Less_Environment::$tabLevel-1 );
 		$tabRuleStr = $tabSetStr.'  ';
 
 		$output->add( " {" );
 		for($i = 0; $i < $ruleCnt; $i++ ){
 			$output->add( $tabRuleStr );
-			$rules[$i]->genCSS( $env, $output );
+			$rules[$i]->genCSS( $output );
 		}
-		$env->tabLevel--;
+		Less_Environment::$tabLevel--;
 		$output->add( $tabSetStr.'}' );
 
 	}

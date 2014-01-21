@@ -10,18 +10,18 @@ class Less_Tree_Comment extends Less_Tree{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 		//if( $this->debugInfo ){
 			//$output->add( tree.debugInfo($env, $this), $this->currentFileInfo, $this->index);
 		//}
 		$output->add( trim($this->value) );//TODO shouldn't need to trim, we shouldn't grab the \n
 	}
 
-	public function toCSS($env = null){
+	public function toCSS(){
 		return Less_Environment::$compress ? '' : $this->value;
 	}
 
-	public function isSilent( $env ){
+	public function isSilent(){
 		$isReference = ($this->currentFileInfo && isset($this->currentFileInfo['reference']) && (!isset($this->isReferenced) || !$this->isReferenced) );
 		$isCompressed = Less_Environment::$compress && !preg_match('/^\/\*!/', $this->value);
 		return $this->silent || $isReference || $isCompressed;

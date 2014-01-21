@@ -9,7 +9,7 @@ class Less_Tree_UnicodeDescriptor extends Less_Tree{
 		$this->value = $value;
 	}
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 		$output->add( $this->value );
 	}
 

@@ -48,9 +48,9 @@ class Less_Environment{
 
 	public $parensStack = 0;
 
-	public $tabLevel = 0;
+	public static $tabLevel = 0;
 
-	public $lastRule = false;
+	public static $lastRule = false;
 
 
 

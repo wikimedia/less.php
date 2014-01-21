@@ -29,7 +29,7 @@ class Less_Tree_Dimension extends Less_Tree{
         return new Less_Tree_Color(array($this->value, $this->value, $this->value));
     }
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 
 		if( Less_Environment::$strictUnits && !$this->unit->isSingular() ){
 			throw new Less_Exception_Compiler("Multiple units in dimension. Correct the units or use the unit function. Bad unit: ".$this->unit->toString());
@@ -58,7 +58,7 @@ class Less_Tree_Dimension extends Less_Tree{
 		}
 
 		$output->add( $strValue );
-		$this->unit->genCSS($env, $output);
+		$this->unit->genCSS( $output );
 	}
 
     public function __toString(){

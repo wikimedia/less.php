@@ -20,12 +20,12 @@ class Less_Tree_Assignment extends Less_Tree{
 		return new Less_Tree_Assignment( $this->key, $this->value->compile($env));
 	}
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 		$output->add( $this->key . '=' );
-		$this->value->genCSS( $env, $output );
+		$this->value->genCSS( $output );
 	}
 
-	public function toCss($env = null){
+	public function toCss(){
 		return $this->key . '=' . $this->value->toCSS();
 	}
 }

@@ -2,8 +2,7 @@
 
 class Less_Visitor_toCSS extends Less_VisitorReplacing{
 
-	function __construct($env){
-		$this->_env = $env;
+	function __construct(){
 		parent::__construct();
 	}
 
@@ -27,7 +26,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 	}
 
 	function visitComment( $commentNode ){
-		if( $commentNode->isSilent( $this->_env) ){
+		if( $commentNode->isSilent() ){
 			return array();
 		}
 		return $commentNode;
@@ -54,7 +53,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 			if( isset($this->charset) && $this->charset ){
 
 				//if( $directiveNode->debugInfo ){
-				//	$comment = new Less_Tree_Comment('/* ' . str_replace("\n",'',$directiveNode->toCSS($this->_env))." */\n");
+				//	$comment = new Less_Tree_Comment('/* ' . str_replace("\n",'',$directiveNode->toCSS())." */\n");
 				//	$comment->debugInfo = $directiveNode->debugInfo;
 				//	return $this->visit($comment);
 				//}
@@ -164,9 +163,9 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 				}else{
 					$ruleList =& $ruleCache[$rule->name];
 					if( $ruleList instanceof Less_Tree_Rule ){
-						$ruleList = $ruleCache[$rule->name] = array( $ruleCache[$rule->name]->toCSS($this->_env) );
+						$ruleList = $ruleCache[$rule->name] = array( $ruleCache[$rule->name]->toCSS() );
 					}
-					$ruleCSS = $rule->toCSS($this->_env);
+					$ruleCSS = $rule->toCSS();
 					if( array_search($ruleCSS,$ruleList) !== false ){
 						array_splice($rules,$i,1);
 					}else{

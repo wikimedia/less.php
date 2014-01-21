@@ -455,7 +455,7 @@ class Less_Functions{
 		}
 
 		foreach($order as $k => $a){
-			$order[$k] = $a->toCSS( $this->env );
+			$order[$k] = $a->toCSS();
 		}
 
 		$args = implode( Less_Environment::$comma_space, $order);
@@ -725,8 +725,7 @@ class Less_Functions{
 		$gradientType = 'linear';
 		$rectangleDimension = 'x="0" y="0" width="1" height="1"';
 		$useBase64 = true;
-		$renderEnv = new Less_Environment();
-		$directionValue = $direction->toCSS($renderEnv);
+		$directionValue = $direction->toCSS();
 
 
 		switch( $directionValue ){
@@ -769,7 +768,7 @@ class Less_Functions{
 				throw new Less_Exception_Compiler( $throw_message );
 			}
 			if( $position ){
-				$positionValue = $position->toCSS($renderEnv);
+				$positionValue = $position->toCSS();
 			}elseif( $i === 0 ){
 				$positionValue = '0%';
 			}else{

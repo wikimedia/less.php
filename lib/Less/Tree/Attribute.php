@@ -33,16 +33,16 @@ class Less_Tree_Attribute extends Less_Tree{
 			is_object($this->value) ? $this->value->compile($env) : $this->value);
 	}
 
-	function genCSS( $env, $output ){
-		$output->add( $this->toCSS($env) );
+	function genCSS( $output ){
+		$output->add( $this->toCSS() );
 	}
 
-	function toCSS($env = null){
+	function toCSS(){
 		$value = $this->key;
 
 		if( $this->op ){
 			$value .= $this->op;
-			$value .= (is_object($this->value) ? $this->value->toCSS($env) : $this->value);
+			$value .= (is_object($this->value) ? $this->value->toCSS() : $this->value);
 		}
 
 		return '[' . $value . ']';

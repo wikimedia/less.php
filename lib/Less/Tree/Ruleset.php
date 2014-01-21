@@ -218,7 +218,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$self = $this->ruleset_id;
 		}
 
-		$key = $selector->toCSS($env);
+		$key = $selector->toCSS();
 
 		if( !array_key_exists($key, $this->lookups) ){
 			$this->lookups[$key] = array();
@@ -250,19 +250,19 @@ class Less_Tree_Ruleset extends Less_Tree{
 		return $this->lookups[$key];
 	}
 
-	public function genCSS( $env, $output ){
+	public function genCSS( $output ){
 		$ruleNodes = array();
 		$rulesetNodes = array();
 		$firstRuleset = true;
 
 		if( !$this->root ){
-			$env->tabLevel++;
+			Less_Environment::$tabLevel++;
 		}
 
 		$tabRuleStr = $tabSetStr = '';
-		if( !Less_Environment::$compress && $env->tabLevel ){
-			$tabRuleStr = str_repeat( '  ' , $env->tabLevel );
-			$tabSetStr = str_repeat( '  ' , $env->tabLevel-1 );
+		if( !Less_Environment::$compress && Less_Environment::$tabLevel ){
+			$tabRuleStr = str_repeat( '  ' , Less_Environment::$tabLevel );
+			$tabSetStr = str_repeat( '  ' , Less_Environment::$tabLevel-1 );
 		}
 
 		foreach($this->rules as $rule){
@@ -292,7 +292,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 				$path = $this->paths[$i];
 				Less_Environment::$firstSelector = true;
 				foreach($path as $p){
-					$p->genCSS($env, $output );
+					$p->genCSS( $output );
 					Less_Environment::$firstSelector = false;
 				}
 				if( $i + 1 < $paths_len ){
@@ -312,27 +312,27 @@ class Less_Tree_Ruleset extends Less_Tree{
 			// @page{ directive ends up with root elements inside it, a mix of rules and rulesets
 			// In this instance we do not know whether it is the last property
 			if( $i + 1 === $ruleNodes_len && (!$this->root || $rulesetNodes_len === 0 || $this->firstRoot ) ){
-				$env->lastRule = true;
+				Less_Environment::$lastRule = true;
 			}
 
 			if( is_object($rule) ){
 				if( method_exists($rule,'genCSS') ){
-					$rule->genCSS( $env, $output );
+					$rule->genCSS( $output );
 				}elseif( property_exists($rule,'value') && $rule->value ){
 					$output->add( (string)$rule->value );
 				}
 			}
 
-			if( !$env->lastRule ){
+			if( !Less_Environment::$lastRule ){
 				$output->add( Less_Environment::$compress ? '' : ("\n" . $tabRuleStr) );
 			}else{
-				$env->lastRule = false;
+				Less_Environment::$lastRule = false;
 			}
 		}
 
 		if( !$this->root ){
 			$output->add( (Less_Environment::$compress ? '}' : "\n" . $tabSetStr . '}'));
-			$env->tabLevel--;
+			Less_Environment::$tabLevel--;
 		}
 
 		for( $i = 0; $i < $rulesetNodes_len; $i++ ){
@@ -343,7 +343,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 				$output->add( (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr));
 			}
 			$firstRuleset = false;
-			$rulesetNodes[$i]->genCSS($env, $output);
+			$rulesetNodes[$i]->genCSS( $output);
 		}
 
 		if( !$output && !Less_Environment::$compress && $this->firstRoot ){

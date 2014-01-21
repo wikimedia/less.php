@@ -38,21 +38,21 @@ class Less_Tree_Element extends Less_Tree{
 		);
 	}
 
-	public function genCSS( $env, $output ){
-		$output->add( $this->toCSS($env), $this->currentFileInfo, $this->index );
+	public function genCSS( $output ){
+		$output->add( $this->toCSS(), $this->currentFileInfo, $this->index );
 	}
 
-	public function toCSS( $env = null ){
+	public function toCSS(){
 
 		$value = $this->value;
 		if( !is_string($value) ){
-			$value = $value->toCSS($env);
+			$value = $value->toCSS();
 		}
 
 		if( $value === '' && $this->combinator->value[0] === '&' ){
 			return '';
 		}
-		return $this->combinator->toCSS($env) . $value;
+		return $this->combinator->toCSS() . $value;
 	}
 
 }

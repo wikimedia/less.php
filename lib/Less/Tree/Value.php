@@ -25,10 +25,10 @@ class Less_Tree_Value extends Less_Tree{
 		return $ret[0];
 	}
 
-	function genCSS( $env, $output ){
+	function genCSS( $output ){
 		$len = count($this->value);
 		for($i = 0; $i < $len; $i++ ){
-			$this->value[$i]->genCSS( $env, $output);
+			$this->value[$i]->genCSS( $output );
 			if( $i+1 < $len ){
 				$output->add( Less_Environment::$comma_space );
 			}

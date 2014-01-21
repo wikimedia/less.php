@@ -133,11 +133,11 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 
 
 			throw new Less_Exception_Compiler('No matching definition was found for `'.
-				trim($this->selector->toCSS($env)) . '(' .$message.')',
+				trim($this->selector->toCSS()) . '(' .$message.')',
 				$this->index, null, $this->currentFileInfo['filename']);
 
 		}else{
-			throw new Less_Exception_Compiler(trim($this->selector->toCSS($env)) . " is undefined", $this->index);
+			throw new Less_Exception_Compiler(trim($this->selector->toCSS()) . " is undefined", $this->index);
 		}
 	}
 }

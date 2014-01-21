@@ -106,7 +106,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		$output = new Less_Output_Mapped($this->contentsMap, $this);
 
 		// catch the output
-		$this->root->genCSS($env, $output);
+		$this->root->genCSS($output);
 
 
 		$sourceMapUrl				= $this->getOption('sourceMapURL');

@@ -100,7 +100,7 @@ class Less_Tree_Selector extends Less_Tree{
 		return $this->createDerived( $elements, $extendList, $evaldCondition );
 	}
 
-	function genCSS( $env, $output ){
+	function genCSS( $output ){
 
 		if( !Less_Environment::$firstSelector && $this->elements[0]->combinator->value === "" ){
 			$output->add( ' ', $this->currentFileInfo, $this->index );
@@ -108,7 +108,7 @@ class Less_Tree_Selector extends Less_Tree{
 		if( !$this->_css ){
 			//TODO caching? speed comparison?
 			foreach($this->elements as $element){
-				$element->genCSS( $env, $output );
+				$element->genCSS( $output );
 			}
 		}
 	}

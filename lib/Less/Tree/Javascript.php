@@ -14,11 +14,11 @@ class Less_Tree_Javascript extends Less_Tree{
 		return $this;
 	}
 
-	function genCSS( $env, $output ){
+	function genCSS( $output ){
 		$output->add( '/* Sorry, can not do JavaScript evaluation in PHP... :( */' );
 	}
 
-	public function toCSS($env = null){
+	public function toCSS(){
 		return Less_Environment::$compress ? '' : '/* Sorry, can not do JavaScript evaluation in PHP... :( */';
 	}
 }

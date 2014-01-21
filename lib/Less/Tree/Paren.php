@@ -13,9 +13,9 @@ class Less_Tree_Paren extends Less_Tree{
 		$this->value = $visitor->visitObj($this->value);
 	}
 
-	function genCSS( $env, $output ){
+	function genCSS( $output ){
 		$output->add( '(' );
-		$this->value->genCSS( $env, $output );
+		$this->value->genCSS( $output );
 		$output->add( ')' );
 	}
 

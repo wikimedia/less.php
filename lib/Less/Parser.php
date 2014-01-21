@@ -143,7 +143,7 @@ class Less_Parser extends Less_Cache{
 			$extendsVisitor->run($evaldRoot);
 		}
 
-		$toCSSVisitor = new Less_Visitor_toCSS( $this->env );
+		$toCSSVisitor = new Less_Visitor_toCSS();
 		$toCSSVisitor->run($evaldRoot);
 
 
@@ -153,7 +153,7 @@ class Less_Parser extends Less_Cache{
 			// FIXME: should happen somewhere else?
 			$css = $generator->generateCSS($this->env);
 		}else{
-			$css = $evaldRoot->toCSS($this->env);
+			$css = $evaldRoot->toCSS();
 		}
 
 		if( Less_Environment::$compress ){
