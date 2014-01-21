@@ -2,8 +2,9 @@
 
 
 class Less_Tree_Color extends Less_Tree{
-	var $rgb;
-	var $alpha;
+	public $rgb;
+	public $alpha;
+	public $isTransparentKeyword;
 	public $type = 'Color';
 
 	public function __construct($rgb, $a = 1){
