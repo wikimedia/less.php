@@ -59,7 +59,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 			}
 		}
 		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);
-		$rules = array();
 
 		$ruleset->originalRuleset = $this->ruleset_id;
 
