@@ -99,10 +99,9 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	/**
 	 * Generates the CSS
 	 *
-	 * @param Less_Environment $env
 	 * @return string
 	 */
-	public function generateCSS($env){
+	public function generateCSS(){
 		$output = new Less_Output_Mapped($this->contentsMap, $this);
 
 		// catch the output
