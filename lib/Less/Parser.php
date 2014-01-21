@@ -177,9 +177,10 @@ class Less_Parser extends Less_Cache{
 	 */
 	public function parse($str){
 
-		if( $this->env->sourceMap ){
-			$this->env->setFileContent($key, $string);
-		}
+		// TODO: enable setFileContent for string parsing
+		//if( $this->env->sourceMap ){
+		//	$this->env->setFileContent($key, $string);
+		//}
 
 		$this->input = $str;
 		$this->_parse();
