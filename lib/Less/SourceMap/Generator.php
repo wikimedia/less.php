@@ -303,16 +303,19 @@ class Less_SourceMap_Generator extends Less_Configurable {
 				$lastGeneratedColumn = $m['generated_column'];
 
 				// find the index
-				if( $m['source_file'] && ($index = $this->findFileIndex($this->normalizeFilename($m['source_file']))) !== false ){
-					$mapEncoded .= $this->encoder->encode($index - $lastOriginalIndex);
-					$lastOriginalIndex = $index;
+				if( $m['source_file'] ){
+					$index = $this->findFileIndex($this->normalizeFilename($m['source_file']));
+					if( $index !== false ){
+						$mapEncoded .= $this->encoder->encode($index - $lastOriginalIndex);
+						$lastOriginalIndex = $index;
 
-					// lines are stored 0-based in SourceMap spec version 3
-					$mapEncoded .= $this->encoder->encode($m['original_line'] - 1 - $lastOriginalLine);
-					$lastOriginalLine = $m['original_line'] - 1;
+						// lines are stored 0-based in SourceMap spec version 3
+						$mapEncoded .= $this->encoder->encode($m['original_line'] - 1 - $lastOriginalLine);
+						$lastOriginalLine = $m['original_line'] - 1;
 
-					$mapEncoded .= $this->encoder->encode($m['original_column'] - $lastOriginalColumn);
-					$lastOriginalColumn = $m['original_column'];
+						$mapEncoded .= $this->encoder->encode($m['original_column'] - $lastOriginalColumn);
+						$lastOriginalColumn = $m['original_column'];
+					}
 				}
 
 				$lineMapEncoded[] = $mapEncoded;
