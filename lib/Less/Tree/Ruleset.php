@@ -315,13 +315,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 				Less_Environment::$lastRule = true;
 			}
 
-			if( is_object($rule) ){
-				if( method_exists($rule,'genCSS') ){
-					$rule->genCSS( $output );
-				}elseif( property_exists($rule,'value') && $rule->value ){
-					$output->add( (string)$rule->value );
-				}
-			}
+			$rule->genCSS( $output );
 
 			if( !Less_Environment::$lastRule ){
 				$output->add( Less_Environment::$compress ? '' : ("\n" . $tabRuleStr) );
