@@ -34,7 +34,6 @@ class Less_Environment{
 	 */
 	public $debug = false;
 
-
 	/**
 	 * @var array
 	 */
@@ -44,8 +43,6 @@ class Less_Environment{
 	 * @var array
 	 */
 	public $mediaPath = array();
-
-	public $selectors = array();
 
 	public $charset;
 

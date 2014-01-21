@@ -70,9 +70,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 		// push the current ruleset to the frames stack
 		$env->unshiftFrame($ruleset);
 
-		// currrent selectors
-		array_unshift($env->selectors,$this->selectors);
-
 
 		// Evaluate imports
 		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
@@ -131,7 +128,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		// Pop the stack
 		$env->shiftFrame();
-		array_shift($env->selectors);
 
 		if ($mediaBlockCount) {
 			$len = count($env->mediaBlocks);
