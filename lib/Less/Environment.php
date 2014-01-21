@@ -46,7 +46,7 @@ class Less_Environment{
 
 	public $charset;
 
-	public $parensStack = array();
+	public $parensStack = 0;
 
 	public $tabLevel = 0;
 
@@ -101,15 +101,15 @@ class Less_Environment{
 	}
 
 	public function inParenthesis(){
-		$this->parensStack[] = true;
+		$this->parensStack++;
 	}
 
 	public function outOfParenthesis() {
-		array_pop($this->parensStack);
+		$this->parensStack--;
 	}
 
-	public function isMathOn() {
-        return Less_Environment::$strictMath ? ($this->parensStack && count($this->parensStack)) : true;
+	public function isMathOn(){
+		return !Less_Environment::$strictMath || $this->parensStack;
 	}
 
 	public static function isPathRelative($path){
