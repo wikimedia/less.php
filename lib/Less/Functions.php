@@ -281,16 +281,16 @@ class Less_Functions{
 	}
 
 
-	public function contrast( $color, $dark = false, $light = false, $threshold = false) {
+	public function contrast( $color, $dark = null, $light = null, $threshold = null){
 		// filter: contrast(3.2);
 		// should be kept as is, so check for color
 		if( !property_exists($color,'rgb') ){
 			return null;
 		}
-		if( $light === false ){
+		if( !$light ){
 			$light = $this->rgba(255, 255, 255, 1.0);
 		}
-		if( $dark === false ){
+		if( !$dark ){
 			$dark = $this->rgba(0, 0, 0, 1.0);
 		}
 		//Figure out which is actually light and dark!
@@ -299,7 +299,7 @@ class Less_Functions{
 			$light = $dark;
 			$dark = $t;
 		}
-		if( $threshold === false ){
+		if( !$threshold ){
 			$threshold = 0.43;
 		} else {
 			$threshold = Less_Functions::number($threshold);
