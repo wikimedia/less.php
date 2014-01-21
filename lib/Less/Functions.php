@@ -313,7 +313,7 @@ class Less_Functions{
 	}
 
 	public function e ($str){
-		return new Less_Tree_Anonymous($str instanceof Less_Tree_JavaScript ? $str->evaluated : $str);
+		return new Less_Tree_Anonymous($str instanceof Less_Tree_JavaScript ? $str->expression : $str);
 	}
 
 	public function escape ($str){

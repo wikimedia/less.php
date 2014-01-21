@@ -3,6 +3,9 @@
 class Less_Tree_Javascript extends Less_Tree{
 
 	public $type = 'Javascript';
+	public $escaped;
+	public $expression;
+	public $index;
 
 	public function __construct($string, $index, $escaped){
 		$this->escaped = $escaped;
