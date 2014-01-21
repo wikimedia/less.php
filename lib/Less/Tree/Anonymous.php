@@ -4,6 +4,9 @@
 class Less_Tree_Anonymous extends Less_Tree{
 	public $value;
 	public $quote;
+	public $index;
+	public $mapLines;
+	public $currentFileInfo;
 	public $type = 'Anonymous';
 
 	public function __construct($value, $index = null, $currentFileInfo = null, $mapLines = null ){
