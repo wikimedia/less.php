@@ -44,7 +44,6 @@ class Less_Tree_Rule extends Less_Tree{
 
 	public function compile ($env){
 
-		$return = null;
 		$strictMathBypass = false;
 		if( $this->name === "font" && !Less_Environment::$strictMath ){
 			$strictMathBypass = true;
