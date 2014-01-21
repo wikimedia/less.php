@@ -180,6 +180,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 
 	function _mergeRules( &$rules ){
 		$groups = array();
+		$parts;
 
 		$rules_len = count($rules);
 		for( $i = 0; $i < $rules_len; $i++ ){
