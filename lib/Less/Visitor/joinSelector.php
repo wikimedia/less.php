@@ -32,7 +32,7 @@ class Less_Visitor_joinSelector extends Less_Visitor{
 			}
 
 			if( !count($selectors) ){
-				$rulesetNode->selectors = $selectors = null;
+				$rulesetNode->selectors = null;
 				$rulesetNode->rules = null;
 			}else{
 				$context = end($this->contexts); //$context = $this->contexts[ count($this->contexts) - 1];
