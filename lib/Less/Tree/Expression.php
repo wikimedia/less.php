@@ -23,6 +23,7 @@ class Less_Tree_Expression extends Less_Tree{
 			$env->inParenthesis();
 		}
 
+		$returnValue = null;
 		if( $this->value ){
 
 			$count = count($this->value);
