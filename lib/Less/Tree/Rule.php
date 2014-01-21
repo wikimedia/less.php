@@ -46,9 +46,9 @@ class Less_Tree_Rule extends Less_Tree{
 
 		$return = null;
 		$strictMathBypass = false;
-		if( $this->name === "font" && !$env->strictMath ){
+		if( $this->name === "font" && !Less_Environment::$strictMath ){
 			$strictMathBypass = true;
-			$env->strictMath = true;
+			Less_Environment::$strictMath = true;
 		}
 
 		$return = new Less_Tree_Rule($this->name,
@@ -60,7 +60,7 @@ class Less_Tree_Rule extends Less_Tree{
 									$this->inline);
 
 		if( $strictMathBypass ){
-			$env->strictMath = false;
+			Less_Environment::$strictMath = false;
 		}
 
 		return $return;

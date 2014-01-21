@@ -5,17 +5,23 @@
 
 class Less_Environment{
 
-	public $paths = array();			// option - unmodified - paths to search for imports on
-	static $files = array();			// list of files that have been imported, used for import-once
-	public $relativeUrls = true;		// option - whether to adjust URL's to be relative
-	public $rootpath;					// option - rootpath to append to URL's
-	public $strictImports = null;		// option -
-	public $insecure;					// option - whether to allow imports from insecure ssl hosts
-	public static $compress = false;	// option - whether to compress
-	public $processImports;				// option - whether to process imports. if false then imports will not be imported
-	public $javascriptEnabled;			// option - whether JavaScript is enabled. if undefined, defaults to true
-	public $useFileCache;				// browser only - whether to use the per file session cache
-	public $currentFileInfo;			// information about the current file - for error reporting and importing and making urls relative etc.
+	public $paths = array();				// option - unmodified - paths to search for imports on
+	static $files = array();				// list of files that have been imported, used for import-once
+	public $relativeUrls = true;			// option - whether to adjust URL's to be relative
+	public $rootpath;						// option - rootpath to append to URL's
+	public $strictImports = null;			// option -
+	public $insecure;						// option - whether to allow imports from insecure ssl hosts
+	public static $compress = false;		// option - whether to compress
+	public $processImports;					// option - whether to process imports. if false then imports will not be imported
+	public $javascriptEnabled;				// option - whether JavaScript is enabled. if undefined, defaults to true
+	public $useFileCache;					// browser only - whether to use the per file session cache
+	public $currentFileInfo;				// information about the current file - for error reporting and importing and making urls relative etc.
+
+	public static $strictMath = false;		// whether math has to be within parenthesis
+	public static $strictUnits = false;		// whether units need to evaluate correctly
+	public $sourceMap = false;				// whether to output a source map
+	public $importMultiple = false; 		// whether we are currently importing multiple copies
+
 
 	/**
 	 * @var array
@@ -45,22 +51,11 @@ class Less_Environment{
 
 	public $parensStack = array();
 
-	public $strictMath = false;
-
-	public $strictUnits = false;
-
 	public $tabLevel = 0;
 
 	public $lastRule = false;
 
-	public $importMultiple = false;
 
-	/**
-	 * Source map flag
-	 *
-	 * @var boolean
-	 */
-	public $sourceMap = false;
 
 	/**
 	 * Filename to contents of all parsed the files
@@ -83,7 +78,7 @@ class Less_Environment{
 			self::$compress = (bool)$options['compress'];
 		}
 		if( isset($options['strictUnits']) ){
-			$this->strictUnits = (bool)$options['strictUnits'];
+			self:$strictUnits = (bool)$options['strictUnits'];
 		}
 		if( isset($options['sourceMap']) ){
 			$this->sourceMap = (bool)$options['sourceMap'];
@@ -102,25 +97,8 @@ class Less_Environment{
 	}
 
 
-	//may want to just use the __clone()?
 	public function copyEvalEnv($frames = array() ){
-
-		$evalCopyProperties = array(
-			//'silent',      // whether to swallow errors and warnings
-			//'verbose',     // whether to log more activity
-			//'yuicompress', // whether to compress with the outside tool yui compressor
-			//'ieCompat',    // whether to enforce IE compatibility (IE8 data-uri)
-			'strictMath',  // whether math has to be within parenthesis
-			'strictUnits', // whether units need to evaluate correctly
-			//'cleancss',    // whether to compress with clean-css
-			//'sourceMap',   // whether to output a source map
-			//'importMultiple'// whether we are currently importing multiple copies
-			);
-
 		$new_env = new Less_Environment();
-		foreach($evalCopyProperties as $property){
-			$new_env->$property = $this->$property;
-		}
 		$new_env->frames = $frames;
 		return $new_env;
 	}
@@ -134,7 +112,7 @@ class Less_Environment{
 	}
 
 	public function isMathOn() {
-        return $this->strictMath ? ($this->parensStack && count($this->parensStack)) : true;
+        return Less_Environment::$strictMath ? ($this->parensStack && count($this->parensStack)) : true;
 	}
 
 	public static function isPathRelative($path){

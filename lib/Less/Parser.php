@@ -70,7 +70,7 @@ class Less_Parser extends Less_Cache{
 
 	/**
 	 * Set one or more compiler options
-	 *  options: import_dirs, compress, cache_dir, cache_method, strictUnits
+	 *  options: import_dirs, cache_dir, cache_method
 	 *
 	 */
 	public function SetOptions( $options ){
