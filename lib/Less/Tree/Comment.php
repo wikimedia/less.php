@@ -3,7 +3,8 @@
 class Less_Tree_Comment extends Less_Tree{
 
 	public $value;
-	public $siline;
+	public $silent;
+	public $isReferenced;
 	public $currentFileInfo;
 	public $type = 'Comment';
 
