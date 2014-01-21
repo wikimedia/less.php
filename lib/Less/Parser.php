@@ -1053,7 +1053,6 @@ class Less_Parser extends Less_Cache{
 		$argsComma = array();
 		$expressionContainsNamed = null;
 		$name = null;
-		$nameLoop = null;
 		$returner = array('args'=>null, 'variadic'=> false);
 
 		while( true ){
@@ -1181,8 +1180,6 @@ class Less_Parser extends Less_Cache{
 	// the `{...}` block.
 	//
 	private function parseMixinDefinition(){
-		$params = array();
-		$variadic = false;
 		$cond = null;
 
 		$char = $this->input[$this->pos];
@@ -1343,6 +1340,8 @@ class Less_Parser extends Less_Cache{
 		$condition = null;
 		$when = false;
 		$extend = false;
+		$e = null;
+		$c = null;
 
 		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchReg('/\\Gwhen/') )) || ($e = $this->parseElement()) ){
 			if( $when ){
@@ -1376,7 +1375,6 @@ class Less_Parser extends Less_Cache{
 	private function parseAttribute(){
 
 		$val = null;
-		$op = null;
 
 		if( !$this->MatchChar('[') ){
 			return;
@@ -1498,7 +1496,6 @@ class Less_Parser extends Less_Cache{
 	// stored in `import`, which we pass to the Import constructor.
 	//
 	private function parseImport(){
-		$index = $this->pos;
 
 		$this->save();
 
