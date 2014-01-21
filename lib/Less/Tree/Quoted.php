@@ -2,8 +2,9 @@
 
 
 class Less_Tree_Quoted extends Less_Tree{
+	public $escaped;
 	public $value;
-	public $content;
+	public $quote;
 	public $index;
 	public $currentFileInfo;
 	public $type = 'Quoted';
