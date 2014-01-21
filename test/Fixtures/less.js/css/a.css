@@ -1,7 +1,6 @@
-x-0,
-x-1,
-x-2,
-x-3,
-x-4 {
-  p: v;
+@font-face {
+  font-family: font-a;
+}
+@font-face {
+  font-family: font-b;
 }

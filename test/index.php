@@ -287,11 +287,32 @@ class ParserTest{
 
 
 	function LineDiff($compiled,$css){
-		$compiled	= explode("\n",$compiled);
-		$css		= explode("\n",$css);
 
-		$diff = array_diff($compiled,$css);
-		return count($diff);
+		$compiled	= $this->Comparable($compiled);
+		$css		= $this->Comparable($css);
+
+		$same = array_intersect($compiled,$css);
+		$max = max(count($compiled),count($css));
+
+		return $max - count($same);
+	}
+
+	function Comparable($css){
+		$css	= explode("\n",$css);
+
+		$result = array();
+		$used = array();
+		foreach($css as $line){
+			$keys = array_keys($used,$line);
+			if( $keys ){
+				$result[] = $line.' ('.count($keys).')';
+			}else{
+				$result[] = $line;
+			}
+			$used[] = $line;
+		}
+
+		return $result;
 	}
 
 

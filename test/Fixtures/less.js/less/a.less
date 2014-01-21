@@ -1,10 +1,8 @@
+.def-font(@name) {
+    @font-face {
+        font-family: @name
+    }
+}
 
-.has_parents() {
-  & .underParents {
-    color: red;
-  }
-}
-.has_parents();
-.parent {
-  .has_parents();
-}
+.def-font(font-a);
+.def-font(font-b);
