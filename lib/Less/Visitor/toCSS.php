@@ -68,8 +68,13 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 		return $directiveNode;
 	}
 
-	function checkPropertiesInRoot( $rules ){
-		foreach($rules as $ruleNode){
+	function checkPropertiesInRoot( $rulesetNode ){
+
+		if( !$rulesetNode->firstRoot ){
+			return;
+		}
+
+		foreach($rulesetNode->rules as $ruleNode){
 			if( $ruleNode instanceof Less_Tree_Rule && !$ruleNode->variable ){
 				$msg = "properties must be inside selector blocks, they cannot be in the root. Index ".$ruleNode->index.($ruleNode->currentFileInfo ? (' Filename: '.$ruleNode->currentFileInfo['filename']) : null);
 				throw new Less_Exception_Compiler($msg);
@@ -81,9 +86,9 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 
 		$visitDeeper = false;
 		$rulesets = array();
-		if( $rulesetNode->firstRoot ){
-			$this->checkPropertiesInRoot( $rulesetNode->rules );
-		}
+
+		$this->checkPropertiesInRoot( $rulesetNode );
+
 		if( !$rulesetNode->root ){
 
 			$paths = array();
