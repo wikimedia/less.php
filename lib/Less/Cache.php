@@ -16,7 +16,6 @@ class Less_Cache{
 		//check $cache_dir
 		if( empty(self::$cache_dir) ){
 			throw new Exception('cache_dir not set');
-			return false;
 		}
 
 		self::$cache_dir = str_replace('\\','/',self::$cache_dir);
@@ -24,7 +23,6 @@ class Less_Cache{
 
 		if( !is_dir(self::$cache_dir) ){
 			throw new Exception('cache_dir does not exist');
-			return false;
 		}
 
 		// generate name for compiled css file
@@ -36,8 +34,6 @@ class Less_Cache{
 		if( self::$use_cache === true ){
 
 	 		// check cached content
-			$compiled_file = false;
-			$less_cache = false;
 	 		if( file_exists($list_file) ){
 
 

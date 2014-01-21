@@ -1076,7 +1076,6 @@ class Less_Parser extends Less_Cache{
 				$arg = $this->MatchFuncs( array('parseEntitiesVariable','parseEntitiesLiteral','parseEntitiesKeyword') );
 			}
 
-
 			if( !$arg ){
 				break;
 			}
