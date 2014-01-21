@@ -113,9 +113,8 @@ class Less_Tree_Color extends Less_Tree{
 		$l = ($max + $min) / 2;
 		$d = $max - $min;
 
-		if( $max === $min ){
-			$h = $s = 0;
-		} else {
+		$h = $s = 0;
+		if( $max !== $min ){
 			$s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
 
 			switch ($max) {
