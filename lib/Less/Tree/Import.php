@@ -193,7 +193,6 @@ class Less_Tree_Import extends Less_Tree{
 			return array( $contents );
 
 		}elseif( $evald->css ){
-			$temp = $this->compilePath( $env);
 			return new Less_Tree_Import( $this->compilePath( $env), $features, $this->options, $this->index);
 		}
 
