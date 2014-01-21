@@ -26,8 +26,6 @@ class Less_Tree_Condition extends Less_Tree{
 		$a = $this->lvalue->compile($env);
 		$b = $this->rvalue->compile($env);
 
-		$i = $this->index;
-
 		switch( $this->op ){
 			case 'and':
 				$result = $a && $b;
