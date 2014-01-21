@@ -58,7 +58,6 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 		$varargs;
 		$params = $this->params;
 		$val;
-		$name;
 		$isNamedFound;
 
 
@@ -71,13 +70,12 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 			$arg = $args[$i];
 
 			if( $arg && $arg['name'] ){
-				$name = $arg['name'];
 				$isNamedFound = false;
 
 				foreach($params as $j => $param){
-					if( !isset($evaldArguments[$j]) && $name === $params[$j]['name']) {
+					if( !isset($evaldArguments[$j]) && $arg['name'] === $params[$j]['name']) {
 						$evaldArguments[$j] = $arg['value']->compile($env);
-						array_unshift($frame->rules, new Less_Tree_Rule( $name, $arg['value']->compile($env) ) );
+						array_unshift($frame->rules, new Less_Tree_Rule( $arg['name'], $arg['value']->compile($env) ) );
 						$isNamedFound = true;
 						break;
 					}
@@ -104,7 +102,6 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 			}
 
 			if (isset($param['name']) && $param['name']) {
-				$name = $param['name'];
 
 				if( isset($param['variadic']) && $args ){
 					$varargs = array();
