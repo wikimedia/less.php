@@ -397,7 +397,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		$this->allExtendsStack[] = $this->doExtendChaining($newAllExtends, $mediaNode->allExtends);
 	}
 
-	protected function visitMediaOut( $mediaNode ){
+	protected function visitMediaOut(){
 		array_pop( $this->allExtendsStack );
 	}
 
@@ -406,7 +406,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		$this->allExtendsStack[] = $this->doExtendChaining($newAllExtends, $directiveNode->allExtends);
 	}
 
-	protected function visitDirectiveOut( $directiveNode ){
+	protected function visitDirectiveOut(){
 		array_pop($this->allExtendsStack);
 	}
 
