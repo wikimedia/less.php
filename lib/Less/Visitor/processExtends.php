@@ -245,26 +245,34 @@ class Less_Visitor_processExtends extends Less_Visitor{
 
 		$elementValue1 = $elementValue1->value;
 		if( $elementValue1 instanceof Less_Tree_Selector ){
-
-			$elementValue2 = $elementValue2->value;
-			if( !($elementValue2 instanceof Less_Tree_Selector) || $elementValue1->elements_len !== $elementValue2->elements_len ){
-				return false;
-			}
-
-			for( $i = 0; $i < $elementValue1->elements_len; $i++ ){
-				if( $elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value ){
-					if( $i !== 0 || ($elementValue1->elements[$i]->combinator->value || ' ') !== ($elementValue2->elements[$i]->combinator->value || ' ') ){
-						return false;
-					}
-				}
-				if( !$this->isElementValuesEqual($elementValue1->elements[$i]->value, $elementValue2->elements[$i]->value) ){
-					return false;
-				}
-			}
-			return true;
+			return $this->isSelectorValuesEqual( $elementValue1, $elementValue2 );
 		}
 
 		return false;
+	}
+
+
+	private function isSelectorValuesEqual( $elementValue1, $elementValue2 ){
+
+		$elementValue2 = $elementValue2->value;
+		if( !($elementValue2 instanceof Less_Tree_Selector) || $elementValue1->elements_len !== $elementValue2->elements_len ){
+			return false;
+		}
+
+		for( $i = 0; $i < $elementValue1->elements_len; $i++ ){
+
+			if( $elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value ){
+				if( $i !== 0 || ($elementValue1->elements[$i]->combinator->value || ' ') !== ($elementValue2->elements[$i]->combinator->value || ' ') ){
+					return false;
+				}
+			}
+
+			if( !$this->isElementValuesEqual($elementValue1->elements[$i]->value, $elementValue2->elements[$i]->value) ){
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 
