@@ -91,7 +91,7 @@ class Less_Visitor_extendFinder extends Less_Visitor{
 		$this->allExtendsStack[] =& $mediaNode->allExtends;
 	}
 
-	function visitMediaOut( $mediaNode ){
+	function visitMediaOut(){
 		array_pop($this->allExtendsStack);
 	}
 
@@ -100,7 +100,7 @@ class Less_Visitor_extendFinder extends Less_Visitor{
 		$this->allExtendsStack[] =& $directiveNode->allExtends;
 	}
 
-	function visitDirectiveOut( $directiveNode ){
+	function visitDirectiveOut(){
 		array_pop($this->allExtendsStack);
 	}
 }
