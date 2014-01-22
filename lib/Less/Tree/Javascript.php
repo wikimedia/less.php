@@ -13,7 +13,7 @@ class Less_Tree_Javascript extends Less_Tree{
 		$this->index = $index;
 	}
 
-	public function compile($env){
+	public function compile(){
 		return $this;
 	}
 
