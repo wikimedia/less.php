@@ -166,10 +166,12 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		$matches = array();
 
 		// loop through the haystack elements
-		for($haystackSelectorIndex = 0, $haystack_path_len = count($haystackSelectorPath); $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++ ){
+		$haystack_path_len = count($haystackSelectorPath);
+		for($haystackSelectorIndex = 0; $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++ ){
 			$hackstackSelector = $haystackSelectorPath[$haystackSelectorIndex];
 
-			for($hackstackElementIndex = 0, $haystack_elements_len = count($hackstackSelector->elements); $hackstackElementIndex < $haystack_elements_len; $hackstackElementIndex++ ){
+			$haystack_elements_len = count($hackstackSelector->elements);
+			for($hackstackElementIndex = 0; $hackstackElementIndex < $haystack_elements_len; $hackstackElementIndex++ ){
 
 				$haystackElement = $hackstackSelector->elements[$hackstackElementIndex];
 
@@ -201,13 +203,17 @@ class Less_Visitor_processExtends extends Less_Visitor{
 					// if we are still valid and have finished, test whether we have elements after and whether these are allowed
 					if( $potentialMatch ){
 
-						$potentialMatch['finished'] = ($potentialMatch['matched'] === $extend->selector->elements_len );
+						$potentialMatch['finished'] = false;
+						if( $potentialMatch['matched'] === $extend->selector->elements_len ){
+							$potentialMatch['finished'] = true;
 
-						if( $potentialMatch['finished'] &&
-							(!$extend->allowAfter && ($hackstackElementIndex+1 < $haystack_elements_len || $haystackSelectorIndex+1 < $haystack_path_len)) ){
-							$potentialMatch = null;
+							if( !$extend->allowAfter && ($hackstackElementIndex+1 < $haystack_elements_len || $haystackSelectorIndex+1 < $haystack_path_len) ){
+								$potentialMatch = null;
+							}
 						}
+
 					}
+
 					// if null we remove, if not, we are still valid, so either push as a valid match or continue
 					if( $potentialMatch ){
 						if( $potentialMatch['finished'] ){
@@ -218,11 +224,12 @@ class Less_Visitor_processExtends extends Less_Visitor{
 							$potentialMatches_len = 0;
 							$matches[] = $potentialMatch;
 						}
-					} else {
-						array_splice($potentialMatches, $i, 1);
-						$potentialMatches_len--;
-						$i--;
+						continue;
 					}
+
+					array_splice($potentialMatches, $i, 1);
+					$potentialMatches_len--;
+					$i--;
 				}
 			}
 		}
