@@ -16,6 +16,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 	public $paths;
 	public $firstRoot;
 	public $type = 'Ruleset';
+	public $multiMedia;
 
 
 	var $ruleset_id;
