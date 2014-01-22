@@ -19,11 +19,11 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 		return $ruleNode;
 	}
 
-	function visitMixinDefinition( $mixinNode ){
+	function visitMixinDefinition(){
 		return array();
 	}
 
-	function visitExtend( $extendNode ){
+	function visitExtend(){
 		return array();
 	}
 
