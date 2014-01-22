@@ -1002,18 +1002,42 @@ class Less_Parser extends Less_Cache{
 	// selector for now.
 	//
 	private function parseMixinCall(){
-		$elements = array();
-		$index = $this->pos;
-		$important = false;
-		$args = null;
-		$c = null;
 
 		$char = $this->input[$this->pos];
 		if( $char !== '.' && $char !== '#' ){
 			return;
 		}
 
+		$index = $this->pos;
 		$this->save(); // stop us absorbing part of an invalid selector
+
+		$elements = $this->parseMixinCallElements();
+
+		if( $elements ){
+
+			if( $this->MatchChar('(') ){
+				$returned = $this->parseMixinArgs(true);
+				$args = $returned['args'];
+				$this->expectChar(')');
+			}else{
+				$args = array();
+			}
+
+			$important = $this->parseImportant();
+
+
+			if( $this->parseEnd() ){
+				return $this->Less_Tree_Mixin_Call( $elements, $args, $index, $this->env->currentFileInfo, $important);
+			}
+		}
+
+		$this->restore();
+	}
+
+
+	private function parseMixinCallElements(){
+		$elements = array();
+		$c = null;
 
 		while( true ){
 			$e = $this->MatchReg('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/');
@@ -1024,26 +1048,9 @@ class Less_Parser extends Less_Cache{
 			$c = $this->MatchChar('>');
 		}
 
-		if( $this->MatchChar('(') ){
-			$returned = $this->parseMixinArgs(true);
-			$args = $returned['args'];
-			$this->expectChar(')');
-		}
-
-		if( !$args ){
-			$args = array();
-		}
-
-		if( $this->parseImportant() ){
-			$important = true;
-		}
-
-		if( $elements && ($this->MatchChar(';') || $this->PeekChar('}')) ){
-			return $this->Less_Tree_Mixin_Call( $elements, $args, $index, $this->env->currentFileInfo, $important);
-		}
-
-		$this->restore();
+		return $elements;
 	}
+
 
 
 	private function parseMixinArgs( $isCall ){
@@ -1053,7 +1060,7 @@ class Less_Parser extends Less_Cache{
 		$argsComma = array();
 		$expressionContainsNamed = null;
 		$name = null;
-		$returner = array('args'=>null, 'variadic'=> false);
+		$returner = array('args'=>array(), 'variadic'=> false);
 
 		while( true ){
 			if( $isCall ){
