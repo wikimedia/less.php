@@ -78,7 +78,7 @@ class Less_Tree_Color extends Less_Tree{
     // our result, in the form of an integer triplet,
     // we create a new Color node to hold the result.
     //
-    public function operate($env, $op, $other) {
+    public function operate( $op, $other) {
         $result = array();
 
         if (! ($other instanceof Less_Tree_Color)) {
@@ -86,7 +86,7 @@ class Less_Tree_Color extends Less_Tree{
         }
 
         for ($c = 0; $c < 3; $c++) {
-            $result[$c] = Less_Functions::operate($env, $op, $this->rgb[$c], $other->rgb[$c]);
+            $result[$c] = Less_Functions::operate( $op, $this->rgb[$c], $other->rgb[$c]);
         }
         return new Less_Tree_Color($result, $this->alpha + $other->alpha);
     }

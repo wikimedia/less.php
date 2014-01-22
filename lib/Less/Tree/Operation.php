@@ -40,7 +40,7 @@ class Less_Tree_Operation extends Less_Tree{
 				throw new Less_Exception_Compiler("Operation on an invalid type");
 			}
 
-			return $a->operate($env,$this->op, $b);
+			return $a->operate( $this->op, $b);
 		}
 
 		return new Less_Tree_Operation($this->op, array($a, $b), $this->isSpaced );

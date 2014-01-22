@@ -13,7 +13,7 @@ class Less_Functions{
 
 
 	//tree.operate()
-	static public function operate ($env, $op, $a, $b){
+	static public function operate( $op, $a, $b ){
 		switch ($op) {
 			case '+': return $a + $b;
 			case '-': return $a - $b;
