@@ -75,7 +75,7 @@ class Less_Environment{
 			self::$compress = (bool)$options['compress'];
 		}
 		if( isset($options['strictUnits']) ){
-			self:$strictUnits = (bool)$options['strictUnits'];
+			self::$strictUnits = (bool)$options['strictUnits'];
 		}
 		if( isset($options['sourceMap']) ){
 			$this->sourceMap = (bool)$options['sourceMap'];
