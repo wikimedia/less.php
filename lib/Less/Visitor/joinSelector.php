@@ -45,7 +45,7 @@ class Less_Visitor_joinSelector extends Less_Visitor{
 		$this->contexts[] = $paths; //different from less.js. Placed after joinSelectors() so that $this->contexts will get correct $paths
 	}
 
-	function visitRulesetOut( $rulesetNode ){
+	function visitRulesetOut(){
 		array_pop($this->contexts);
 	}
 
