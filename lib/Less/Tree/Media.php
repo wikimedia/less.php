@@ -44,9 +44,8 @@ class Less_Tree_Media extends Less_Tree{
 			$strictMathBypass = true;
 			Less_Environment::$strictMath = true;
 		}
-		try {
-			$media->features = $this->features->compile($env);
-		}catch(Exception $e){}
+
+		$media->features = $this->features->compile($env);
 
 		if( $strictMathBypass ){
 			Less_Environment::$strictMath = false;
