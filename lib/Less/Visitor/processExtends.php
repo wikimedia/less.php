@@ -182,36 +182,18 @@ class Less_Visitor_processExtends extends Less_Visitor{
 				}
 
 				for($i = 0; $i < $potentialMatches_len; $i++ ){
+
 					$potentialMatch = &$potentialMatches[$i];
+					$potentialMatch = $this->PotentialMatch( $potentialMatch, $needleElements, $haystackElement, $hackstackElementIndex );
 
-					// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
-					// then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
-					// what the resulting combinator will be
-					$targetCombinator = $haystackElement->combinator->value;
-					if( $targetCombinator === '' && $hackstackElementIndex === 0 ){
-						$targetCombinator = ' ';
-					}
-
-					// if we don't match, null our match to indicate failure
-					if( !$this->isElementValuesEqual( $needleElements[$potentialMatch['matched'] ]->value, $haystackElement->value) ||
-						($potentialMatch['matched'] > 0 && $needleElements[ $potentialMatch['matched'] ]->combinator->value !== $targetCombinator) ){
-						$potentialMatch = null;
-					} else {
-						$potentialMatch['matched']++;
-					}
 
 					// if we are still valid and have finished, test whether we have elements after and whether these are allowed
-					if( $potentialMatch ){
+					if( $potentialMatch && $potentialMatch['matched'] === $extend->selector->elements_len ){
+						$potentialMatch['finished'] = true;
 
-						$potentialMatch['finished'] = false;
-						if( $potentialMatch['matched'] === $extend->selector->elements_len ){
-							$potentialMatch['finished'] = true;
-
-							if( !$extend->allowAfter && ($hackstackElementIndex+1 < $haystack_elements_len || $haystackSelectorIndex+1 < $haystack_path_len) ){
-								$potentialMatch = null;
-							}
+						if( !$extend->allowAfter && ($hackstackElementIndex+1 < $haystack_elements_len || $haystackSelectorIndex+1 < $haystack_path_len) ){
+							$potentialMatch = null;
 						}
-
 					}
 
 					// if null we remove, if not, we are still valid, so either push as a valid match or continue
@@ -235,6 +217,33 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		}
 		return $matches;
 	}
+
+
+	private function PotentialMatch( $potentialMatch, $needleElements, $haystackElement, $hackstackElementIndex ){
+
+		// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
+		// then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
+		// what the resulting combinator will be
+		$targetCombinator = $haystackElement->combinator->value;
+		if( $targetCombinator === '' && $hackstackElementIndex === 0 ){
+			$targetCombinator = ' ';
+		}
+
+		if( $potentialMatch['matched'] > 0 && $needleElements[ $potentialMatch['matched'] ]->combinator->value !== $targetCombinator ){
+			return null;
+		}
+
+		// if we don't match, null our match to indicate failure
+		if( !$this->isElementValuesEqual( $needleElements[$potentialMatch['matched'] ]->value, $haystackElement->value) ){
+			return null;
+		}
+
+		$potentialMatch['finished'] = false;
+		$potentialMatch['matched']++;
+
+		return $potentialMatch;
+	}
+
 
 	private function isElementValuesEqual( $elementValue1, $elementValue2 ){
 
