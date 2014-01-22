@@ -23,7 +23,7 @@ class Less_Tree_Dimension extends Less_Tree{
 		$this->unit = $visitor->visitObj( $this->unit );
 	}
 
-    public function compile($env = null) {
+    public function compile(){
         return $this;
     }
 
