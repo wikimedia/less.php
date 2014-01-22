@@ -129,29 +129,43 @@ class Less_Visitor_processExtends extends Less_Visitor{
 			return;
 		}
 
-		$allExtends = end($this->allExtendsStack);
+		$allExtends	= end($this->allExtendsStack);
 		$paths_len = count($rulesetNode->paths);
+		$all_extend_len = count($allExtends);
 
 		// look at each selector path in the ruleset, find any extend matches and then copy, find and replace
-		for( $extendIndex = 0, $all_extend_len = count($allExtends); $extendIndex < $all_extend_len; $extendIndex++ ){
+		for( $extendIndex = 0; $extendIndex < $all_extend_len; $extendIndex++ ){
 			for($pathIndex = 0; $pathIndex < $paths_len; $pathIndex++ ){
 
 				$selectorPath = $rulesetNode->paths[$pathIndex];
 
 				// extending extends happens initially, before the main pass
-				if( isset($rulesetNode->extendOnEveryPath) && $rulesetNode->extendOnEveryPath ){ continue; }
-				if( end($selectorPath)->extendList ){ continue; }
-
-				$matches = $this->findMatch($allExtends[$extendIndex], $selectorPath);
-
-				if( $matches ){
-					foreach($allExtends[$extendIndex]->selfSelectors as $selfSelector ){
-						$rulesetNode->paths[] = $this->extendSelector($matches, $selectorPath, $selfSelector);
-					}
+				if( isset($rulesetNode->extendOnEveryPath) && $rulesetNode->extendOnEveryPath ){
+					continue;
 				}
+
+				if( end($selectorPath)->extendList ){
+					continue;
+				}
+
+				$this->ExtendMatch( $rulesetNode, $allExtends[$extendIndex], $selectorPath);
+
 			}
 		}
 	}
+
+
+	private function ExtendMatch( $rulesetNode, $extend, $selectorPath ){
+		$matches = $this->findMatch($extend, $selectorPath);
+
+		if( $matches ){
+			foreach($extend->selfSelectors as $selfSelector ){
+				$rulesetNode->paths[] = $this->extendSelector($matches, $selectorPath, $selfSelector);
+			}
+		}
+	}
+
+
 
 	private function findMatch($extend, $haystackSelectorPath ){
 
