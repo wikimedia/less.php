@@ -804,7 +804,7 @@ class Less_Functions{
 		$last = array_shift($debug);
 		$last = array_intersect_key($last,array('function'=>'','class'=>'','line'=>''));
 
-		$message = 'Object of type '.get_class($arg).' passed to darken function. Expecting `Color`. '.$arg->toCSS().'. '.print_r($last,true);
+		$message = 'Object of type '.get_class($arg).' passed to darken function. Expecting `'.$type.'`. '.$arg->toCSS().'. '.print_r($last,true);
 		throw new Less_Exception_Compiler($message);
 
 	}
