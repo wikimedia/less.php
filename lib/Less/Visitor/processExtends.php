@@ -93,12 +93,15 @@ class Less_Visitor_processExtends extends Less_Visitor{
 			// try to detect circular references to stop a stack overflow.
 			// may no longer be needed.			$this->extendChainCount++;
 			if( $iterationCount > 100) {
-				$selectorOne = "{unable to calculate}";
-				$selectorTwo = "{unable to calculate}";
+
 				try{
 					$selectorOne = $extendsToAdd[0]->selfSelectors[0]->toCSS();
 					$selectorTwo = $extendsToAdd[0]->selector->toCSS();
-				}catch(Exception $e){}
+				}catch(Exception $e){
+					$selectorOne = "{unable to calculate}";
+					$selectorTwo = "{unable to calculate}";
+				}
+
 				throw new Less_Exception_Parser("extend circular reference detected. One of the circular extends is currently:"+$selectorOne+":extend(" + $selectorTwo+")");
 			}
 
