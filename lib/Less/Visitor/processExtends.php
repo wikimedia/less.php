@@ -240,22 +240,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		}
 
 		if( $elementValue1 instanceof Less_Tree_Attribute ){
-
-			if( $elementValue1->op !== $elementValue2->op || $elementValue1->key !== $elementValue2->key ){
-				return false;
-			}
-
-			if( !$elementValue1->value || !$elementValue2->value ){
-				if( $elementValue1->value || $elementValue2->value ) {
-					return false;
-				}
-				return true;
-			}
-
-			$elementValue1 = ($elementValue1->value->value ? $elementValue1->value->value : $elementValue1->value );
-			$elementValue2 = ($elementValue2->value->value ? $elementValue2->value->value : $elementValue2->value );
-
-			return $elementValue1 === $elementValue2;
+			return $this->isAttributeValuesEqual( $elementValue1, $elementValue2 );
 		}
 
 		$elementValue1 = $elementValue1->value;
@@ -280,6 +265,26 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		}
 
 		return false;
+	}
+
+
+	private function isAttributeValuesEqual( $elementValue1, $elementValue2 ){
+
+		if( $elementValue1->op !== $elementValue2->op || $elementValue1->key !== $elementValue2->key ){
+			return false;
+		}
+
+		if( !$elementValue1->value || !$elementValue2->value ){
+			if( $elementValue1->value || $elementValue2->value ) {
+				return false;
+			}
+			return true;
+		}
+
+		$elementValue1 = ($elementValue1->value->value ? $elementValue1->value->value : $elementValue1->value );
+		$elementValue2 = ($elementValue2->value->value ? $elementValue2->value->value : $elementValue2->value );
+
+		return $elementValue1 === $elementValue2;
 	}
 
 
