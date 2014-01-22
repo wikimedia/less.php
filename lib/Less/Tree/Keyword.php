@@ -10,7 +10,7 @@ class Less_Tree_Keyword extends Less_Tree{
 		$this->value = $value;
 	}
 
-	public function compile($env){
+	public function compile(){
 		return $this;
 	}
 
