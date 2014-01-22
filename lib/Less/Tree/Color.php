@@ -23,7 +23,7 @@ class Less_Tree_Color extends Less_Tree{
 		$this->alpha = is_numeric($a) ? $a : 1;
 	}
 
-    public function compile($env = null){
+    public function compile(){
         return $this;
     }
 
