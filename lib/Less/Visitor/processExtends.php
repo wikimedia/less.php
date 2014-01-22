@@ -234,6 +234,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		if( $elementValue1 === $elementValue2 ){
 			return true;
 		}
+
 		if( is_string($elementValue1) || is_string($elementValue2) ) {
 			return false;
 		}
@@ -250,17 +251,21 @@ class Less_Visitor_processExtends extends Less_Visitor{
 				}
 				return true;
 			}
+
 			$elementValue1 = ($elementValue1->value->value ? $elementValue1->value->value : $elementValue1->value );
 			$elementValue2 = ($elementValue2->value->value ? $elementValue2->value->value : $elementValue2->value );
+
 			return $elementValue1 === $elementValue2;
 		}
 
 		$elementValue1 = $elementValue1->value;
 		if( $elementValue1 instanceof Less_Tree_Selector ){
+
 			$elementValue2 = $elementValue2->value;
 			if( !($elementValue2 instanceof Less_Tree_Selector) || $elementValue1->elements_len !== $elementValue2->elements_len ){
 				return false;
 			}
+
 			for( $i = 0; $i < $elementValue1->elements_len; $i++ ){
 				if( $elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value ){
 					if( $i !== 0 || ($elementValue1->elements[$i]->combinator->value || ' ') !== ($elementValue2->elements[$i]->combinator->value || ' ') ){
@@ -276,6 +281,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 
 		return false;
 	}
+
 
 	private function extendSelector($matches, $selectorPath, $replacementSelector){
 
