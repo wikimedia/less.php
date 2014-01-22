@@ -5,7 +5,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 
 	public $allExtendsStack;
 
-	function run( $root ){
+	public function run( $root ){
 		$extendFinder = new Less_Visitor_extendFinder();
 		$extendFinder->run( $root );
 		if( !$extendFinder->foundExtends) { return $root; }
@@ -18,7 +18,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		return $this->visitObj( $root );
 	}
 
-	function doExtendChaining( $extendsList, $extendsListTarget, $iterationCount = 0){
+	private function doExtendChaining( $extendsList, $extendsListTarget, $iterationCount = 0){
 		//
 		// chaining is different from normal extension.. if we extend an extend then we are not just copying, altering and pasting
 		// the selector we would do normally, but we are also adding an extend with the same target selector
@@ -110,19 +110,19 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	}
 
 
-	function visitRule( $ruleNode, &$visitDeeper ){
+	protected function visitRule( $ruleNode, &$visitDeeper ){
 		$visitDeeper = false;
 	}
 
-	function visitMixinDefinition( $mixinDefinitionNode, &$visitDeeper ){
+	protected function visitMixinDefinition( $mixinDefinitionNode, &$visitDeeper ){
 		$visitDeeper = false;
 	}
 
-	function visitSelector( $selectorNode, &$visitDeeper ){
+	protected function visitSelector( $selectorNode, &$visitDeeper ){
 		$visitDeeper = false;
 	}
 
-	function visitRuleset($rulesetNode){
+	protected function visitRuleset($rulesetNode){
 
 
 		if( $rulesetNode->root ){
@@ -153,7 +153,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		}
 	}
 
-	function findMatch($extend, $haystackSelectorPath ){
+	private function findMatch($extend, $haystackSelectorPath ){
 
 		//
 		// look through the haystack selector path to try and find the needle - extend.selector
@@ -229,7 +229,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		return $matches;
 	}
 
-	function isElementValuesEqual( $elementValue1, $elementValue2 ){
+	private function isElementValuesEqual( $elementValue1, $elementValue2 ){
 
 		if( $elementValue1 === $elementValue2 ){
 			return true;
@@ -277,7 +277,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		return false;
 	}
 
-	function extendSelector($matches, $selectorPath, $replacementSelector){
+	private function extendSelector($matches, $selectorPath, $replacementSelector){
 
 		//for a set of matches, replace each match with the replacement selector
 
@@ -340,21 +340,21 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	}
 
 
-	function visitMedia( $mediaNode ){
+	protected function visitMedia( $mediaNode ){
 		$newAllExtends = array_merge( $mediaNode->allExtends, end($this->allExtendsStack) );
 		$this->allExtendsStack[] = $this->doExtendChaining($newAllExtends, $mediaNode->allExtends);
 	}
 
-	function visitMediaOut( $mediaNode ){
+	protected function visitMediaOut( $mediaNode ){
 		array_pop( $this->allExtendsStack );
 	}
 
-	function visitDirective( $directiveNode ){
+	protected function visitDirective( $directiveNode ){
 		$newAllExtends = array_merge( $directiveNode->allExtends, end($this->allExtendsStack) );
 		$this->allExtendsStack[] = $this->doExtendChaining($newAllExtends, $directiveNode->allExtends);
 	}
 
-	function visitDirectiveOut( $directiveNode ){
+	protected function visitDirectiveOut( $directiveNode ){
 		array_pop($this->allExtendsStack);
 	}
 
