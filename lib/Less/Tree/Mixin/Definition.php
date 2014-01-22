@@ -55,10 +55,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.evalParams
 	public function compileParams($env, $mixinEnv, $args = array() , &$evaldArguments = array() ){
 		$frame = new Less_Tree_Ruleset(null, array());
-		$varargs;
 		$params = $this->params;
-		$val;
-		$isNamedFound;
 
 
 		$mixinEnv = clone $mixinEnv;

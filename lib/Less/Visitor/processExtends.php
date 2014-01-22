@@ -137,12 +137,12 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		for( $extendIndex = 0; $extendIndex < $all_extend_len; $extendIndex++ ){
 			for($pathIndex = 0; $pathIndex < $paths_len; $pathIndex++ ){
 
-				$selectorPath = $rulesetNode->paths[$pathIndex];
-
 				// extending extends happens initially, before the main pass
 				if( isset($rulesetNode->extendOnEveryPath) && $rulesetNode->extendOnEveryPath ){
 					continue;
 				}
+
+				$selectorPath = $rulesetNode->paths[$pathIndex];
 
 				if( end($selectorPath)->extendList ){
 					continue;
