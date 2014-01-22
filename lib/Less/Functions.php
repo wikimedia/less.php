@@ -473,11 +473,13 @@ class Less_Functions{
 	}
 
 	public function min(){
-		return $this->_minmax(true, func_get_args() );
+		$args = func_get_args();
+		return $this->_minmax( true, $args );
 	}
 
 	public function max(){
-		return $this->_minmax(false, func_get_args() );
+		$args = func_get_args();
+		return $this->_minmax( false, $args );
 	}
 
 	public function argb($color) {
