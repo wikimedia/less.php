@@ -38,6 +38,7 @@ class ParserTest{
 
 	function __construct(){
 
+
 		$this->cache_dir = dirname(__FILE__).'/_cache';
 
 		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
@@ -128,6 +129,7 @@ class ParserTest{
 		$less		= $dir.$less;
 		$css		= $dir.$css;
 		$sourcemap	= $dir.'/css/'.$basename.'.map';
+
 		$matched	= false;
 
 		echo '<br/><a href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">File: '.$basename.'</a>';
@@ -173,6 +175,8 @@ class ParserTest{
 			$parser = new Less_Parser( $options );
 			$parser->parseFile($less);
 			$compiled = $parser->getCss();
+
+			//$this->SaveExpected($css, $compiled);
 
 		}catch(Exception $e){
 			$compiled = $e->getMessage();
@@ -244,8 +248,36 @@ class ParserTest{
 			$this->LessLink($less);
 		}
 		//echo '<textarea>'.htmlspecialchars(file_get_contents($less)).'</textara>';
+	}
 
-    }
+
+	/**
+	 * Save the results of the compiler
+	 * The contents of these files are used by phpunit tests
+	 *
+	 */
+	function SaveExpected($file_css, $compiled ){
+		$name = basename($file_css);
+		$expected	= $this->TranslateFile($file_css,'expected','css');
+		if( file_put_contents($expected, $compiled) ){
+			msg('Expected results for '.$name.' were saved');
+		}
+	}
+
+
+	/**
+	 * Change a css file name to a less file name
+	 *
+	 * eg: /Fixtures/less.js/css/filename.css -> /Fixtures/less.js/less/filename.less
+	 *
+	 */
+	function TranslateFile( $file_css, $dir = 'less', $type = 'less' ){
+
+		$filename = basename($file_css);
+		$filename = substr($filename,0,-4);
+
+		return dirname( dirname($file_css) ).'/'.$dir.'/'.$filename.'.'.$type;
+	}
 
     function ObjBuffer(){
 		global $obj_buffer;

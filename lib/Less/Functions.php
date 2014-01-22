@@ -423,16 +423,22 @@ class Less_Functions{
 
 	function _minmax( $isMin, $args ){
 
-		switch( count($args) ){
-			case 0: throw new Less_Exception_Compiler( 'one or more arguments required');
-			case 1: return $args[0];
+		$arg_count = count($args);
+
+		if( $arg_count < 1 ){
+			throw new Less_Exception_Compiler( 'one or more arguments required');
+
+		}elseif( $arg_count === 1 ){
+			return $args[0];
+
 		}
+
 
 		$order = array();	// elems only contains original argument values.
 		$values = array();	// key is the unit.toString() for unified tree.Dimension values,
 							// value is the index into the order array.
 
-		for( $i = 0; $i < count($args); $i++ ){
+		for( $i = 0; $i < $arg_count; $i++ ){
 			$current = $args[$i];
 			if( !($current instanceof Less_Tree_Dimension) ){
 				$order[] = $current;
