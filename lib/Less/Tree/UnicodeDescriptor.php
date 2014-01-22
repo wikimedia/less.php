@@ -14,7 +14,7 @@ class Less_Tree_UnicodeDescriptor extends Less_Tree{
 		$output->add( $this->value );
 	}
 
-	public function compile($env){
+	public function compile(){
 		return $this;
 	}
 }
