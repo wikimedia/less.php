@@ -7,7 +7,7 @@ class Less_Tree_Dimension extends Less_Tree{
 	public $unit;
 	public $type = 'Dimension';
 
-    public function __construct($value, $unit = false){
+    public function __construct($value, $unit = null){
         $this->value = floatval($value);
 
 		if( $unit && ($unit instanceof Less_Tree_Unit) ){
