@@ -1744,34 +1744,34 @@ class Less_Parser extends Less_Cache{
      * @return Less_Tree_Operation|null
      */
 	function parseMultiplication(){
+
 		$return = $m = $this->parseOperand();
-		if( $m ){
-			while( true ){
+		while( $return ){
 
-				$isSpaced = $this->isWhitespace( -1 );
+			$isSpaced = $this->isWhitespace( -1 );
 
-				if( $this->PeekReg('/\\G\/[*\/]/') ){
+			if( $this->PeekReg('/\\G\/[*\/]/') ){
+				break;
+			}
+
+			$op = $this->MatchChar('/');
+			if( !$op ){
+				$op = $this->MatchChar('*');
+				if( !$op ){
 					break;
 				}
-
-				$op = $this->MatchChar('/');
-				if( !$op ){
-					$op = $this->MatchChar('*');
-					if( !$op ){
-						break;
-					}
-				}
-
-				$a = $this->parseOperand();
-
-				if(!$a) { break; }
-
-				$m->parensInOp = true;
-				$a->parensInOp = true;
-				$return = $this->Less_Tree_Operation( $op, array( $return, $a ), $isSpaced );
 			}
-			return $return;
+
+			$a = $this->parseOperand();
+
+			if(!$a) { break; }
+
+			$m->parensInOp = true;
+			$a->parensInOp = true;
+			$return = $this->Less_Tree_Operation( $op, array( $return, $a ), $isSpaced );
 		}
+		return $return;
+
 	}
 
 
@@ -1781,34 +1781,35 @@ class Less_Parser extends Less_Cache{
      * @return Less_Tree_Operation|null
      */
 	private function parseAddition (){
-		$operation = false;
-		$m = $this->parseMultiplication();
-		if( $m ){
+
+		$return = $m = $this->parseMultiplication();
+		while( $return ){
+
 			$isSpaced = $this->isWhitespace( -1 );
 
-			while( true ){
-				$op = $this->MatchReg('/\\G[-+]\s+/');
-				if( $op ){
-					$op = $op[0];
-				}elseif( !$isSpaced ){
+			$op = $this->MatchReg('/\\G[-+]\s+/');
+			if( $op ){
+				$op = $op[0];
+			}else{
+				if( !$isSpaced ){
 					$op = $this->match(array('#+','#-'));
 				}
 				if( !$op ){
 					break;
 				}
-
-				$a = $this->parseMultiplication();
-				if( !$a ){
-					break;
-				}
-
-				$m->parensInOp = true;
-				$a->parensInOp = true;
-				$operation = $this->Less_Tree_Operation($op, array($operation ? $operation : $m, $a), $isSpaced);
-				$isSpaced = $this->isWhitespace( -1 );
 			}
-			return $operation ? $operation : $m;
+
+			$a = $this->parseMultiplication();
+			if( !$a ){
+				break;
+			}
+
+			$m->parensInOp = true;
+			$a->parensInOp = true;
+			$return = $this->Less_Tree_Operation($op, array($return, $a), $isSpaced);
 		}
+
+		return $return;
 	}
 
 
@@ -1819,8 +1820,7 @@ class Less_Parser extends Less_Cache{
      */
 	private function parseConditions() {
 		$index = $this->pos;
-		$condition = null;
-		$a = $this->parseCondition();
+		$return = $a = $this->parseCondition();
 		if( $a ){
 			while( $this->PeekReg('/\\G,\s*(not\s*)?\(/') && $this->MatchChar(',') ){
 				$b = $this->parseCondition();
@@ -1828,9 +1828,9 @@ class Less_Parser extends Less_Cache{
 					break;
 				}
 
-				$condition = $this->Less_Tree_Condition('or', $condition ? $condition : $a, $b, $index);
+				$return = $this->Less_Tree_Condition('or', $return, $b, $index);
 			}
-			return $condition ? $condition : $a;
+			return $return;
 		}
 	}
 
