@@ -1630,8 +1630,6 @@ class Less_Parser extends Less_Cache{
 	//
 	private function parseDirective(){
 		$hasBlock = false;
-		$hasIdentifier = false;
-		$hasExpression = false;
 
 		if (! $this->PeekChar('@')) {
 			return;
@@ -1655,47 +1653,26 @@ class Less_Parser extends Less_Cache{
 			$nonVendorSpecificName = "@" . substr($name, $pos + 1);
 		}
 
-		switch($nonVendorSpecificName) {
-			case "@font-face":
-				$hasBlock = true;
-				break;
-			case "@viewport":
-			case "@top-left":
-			case "@top-left-corner":
-			case "@top-center":
-			case "@top-right":
-			case "@top-right-corner":
-			case "@bottom-left":
-			case "@bottom-left-corner":
-			case "@bottom-center":
-			case "@bottom-right":
-			case "@bottom-right-corner":
-			case "@left-top":
-			case "@left-middle":
-			case "@left-bottom":
-			case "@right-top":
-			case "@right-middle":
-			case "@right-bottom":
-				$hasBlock = true;
-				break;
-			case "@host":
-			case "@page":
-			case "@document":
-			case "@supports":
-			case "@keyframes":
-				$hasBlock = true;
-				$hasIdentifier = true;
-				break;
-			case "@namespace":
-				$hasExpression = true;
-				break;
-		}
+		static $has_blocks = array( '@font-face' => true, '@viewport' => true, '@top-left' => true, '@top-left-corner' => true,
+			'@top-center' => true, 	'@top-right' => true, '@top-right-corner' => true, '@bottom-left' => true, '@bottom-left-corner' => true,
+			'@bottom-center' => true, '@bottom-right' => true, '@bottom-right-corner' => true, '@left-top' => true, '@left-middle' => true,
+			'@left-bottom' => true, '@right-top' => true, '@right-middle' => true, '@right-bottom' => true
+			);
 
-		if( $hasIdentifier ){
+		static $has_identifier = array( '@host' => true, '@page' => true, '@document' => true, '@supports' => true, '@keyframes' => true );
+
+		static $has_expression = array( '@namespace' => true);
+
+
+		if( isset($has_identifier[$nonVendorSpecificName]) ){
+			$hasBlock = true;
 			$identifier = $this->MatchReg('/\\G[^{]+/');
 			if( $identifier ){
 				$name .= " " .trim($identifier[0]);
 			}
+
+		}elseif( isset($has_blocks[$nonVendorSpecificName]) ){
+			$hasBlock = true;
 		}
 
 
@@ -1705,7 +1682,8 @@ class Less_Parser extends Less_Cache{
 				return $this->Less_Tree_Directive($name, $rules, $this->pos, $this->env->currentFileInfo);
 			}
 		}else{
-			$value = $hasExpression ? $this->parseExpression() : $this->parseEntity();
+
+			$value = isset($has_expression[$nonVendorSpecificName]) ? $this->parseExpression() : $this->parseEntity();
 			if( $value && $this->MatchChar(';') ){
 				return $this->Less_Tree_Directive($name, $value, $this->pos, $this->env->currentFileInfo);
 			}
