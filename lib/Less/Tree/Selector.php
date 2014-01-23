@@ -15,6 +15,9 @@ class Less_Tree_Selector extends Less_Tree{
 
 	public $elements_len = 0;
 
+	/**
+	 * @param boolean $isReferenced
+	 */
 	public function __construct($elements = null, $extendList=null , $condition = null, $index=null, $currentFileInfo=null, $isReferenced=null ){
 
 

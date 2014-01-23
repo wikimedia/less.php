@@ -78,6 +78,10 @@ class Less_Tree_Color extends Less_Tree{
     // our result, in the form of an integer triplet,
     // we create a new Color node to hold the result.
     //
+
+    /**
+     * @param string $op
+     */
     public function operate( $op, $other) {
         $result = array();
 
@@ -184,6 +188,9 @@ class Less_Tree_Color extends Less_Tree{
     }
 
 
+	/**
+	 * @param string $keyword
+	 */
 	public static function fromKeyword( $keyword ){
 
 		if( Less_Colors::hasOwnProperty($keyword) ){

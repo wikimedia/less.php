@@ -23,6 +23,9 @@ class Less_Tree_Url extends Less_Tree{
 		$output->add( ')' );
 	}
 
+	/**
+	 * @param Less_Functions $ctx
+	 */
 	public function compile($ctx){
 		$val = $this->value->compile($ctx);
 

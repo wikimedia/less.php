@@ -13,6 +13,9 @@ class Less_Tree_Rule extends Less_Tree{
 	public $currentFileInfo;
 	public $type = 'Rule';
 
+	/**
+	 * @param string $important
+	 */
 	public function __construct($name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null,  $inline = false){
 		$this->name = $name;
 		$this->value = ($value instanceof Less_Tree_Value) ? $value : new Less_Tree_Value(array($value));

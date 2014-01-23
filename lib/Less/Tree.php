@@ -11,6 +11,9 @@ class Less_Tree{
 	}
 
 
+	/**
+	 * @param Less_Tree_Ruleset[] $rules
+	 */
 	public static function outputRuleset( $output, $rules ){
 
 		$ruleCnt = count($rules);

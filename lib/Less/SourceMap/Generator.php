@@ -80,7 +80,6 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 *
 	 * @param Less_Tree_Ruleset $root The root node
 	 * @param array $options Array of options
-	 * @param Less_SourceMap_Base64VLQ $encoder The encoder
 	 */
 	public function __construct(Less_Tree_Ruleset $root, $contentsMap, $options = array()){
 		$this->root = $root;

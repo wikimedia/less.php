@@ -70,6 +70,10 @@ class Less_Tree_Dimension extends Less_Tree{
     // In an operation between two Dimensions,
     // we default to the first Dimension's unit,
     // so `1px + 2em` will yield `3px`.
+
+    /**
+     * @param string $op
+     */
     public function operate( $op, $other){
 
 		$value = Less_Functions::operate( $op, $this->value, $other->value);

@@ -17,6 +17,9 @@ class Less_Tree_Extend extends Less_Tree{
 	public $object_id;
 	public $parent_ids = array();
 
+	/**
+	 * @param integer $index
+	 */
 	function __construct($selector, $option, $index){
 		static $i = 0;
 		$this->selector = $selector;

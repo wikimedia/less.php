@@ -78,6 +78,9 @@ class Less_Functions{
 							$a);
 	}
 
+	/**
+	 * @param double $h
+	 */
 	function hsla_hue($h, $m1, $m2){
 		$h = $h < 0 ? $h + 1 : ($h > 1 ? $h - 1 : $h);
 		if	  ($h * 6 < 1) return $m1 + ($m2 - $m1) * $h * 6;
@@ -90,6 +93,9 @@ class Less_Functions{
 		return $this->hsva($h, $s, $v, 1.0);
 	}
 
+	/**
+	 * @param double $a
+	 */
 	public function hsva($h, $s, $v, $a) {
 		$h = ((Less_Functions::number($h) % 360) / 360 ) * 360;
 		$s = Less_Functions::number($s);
@@ -183,6 +189,9 @@ class Less_Functions{
 		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
+	/**
+	 * @param Less_Tree_Dimension $amount
+	 */
 	public function desaturate($color, $amount){
 		$hsl = $color->toHSL();
 
@@ -253,6 +262,10 @@ class Less_Functions{
 	// Copyright (c) 2006-2009 Hampton Catlin, Nathan Weizenbaum, and Chris Eppstein
 	// http://sass-lang.com
 	//
+
+	/**
+	 * @param Less_Tree_Color $color1
+	 */
 	public function mix($color1, $color2, $weight = null){
 		if (!$weight) {
 			$weight = new Less_Tree_Dimension('50', '%');
@@ -421,6 +434,9 @@ class Less_Functions{
 		}
 	}
 
+	/**
+	 * @param boolean $isMin
+	 */
 	function _minmax( $isMin, $args ){
 
 		$arg_count = count($args);
@@ -540,10 +556,16 @@ class Less_Functions{
 		return $this->isunit($n, 'em');
 	}
 
+	/**
+	 * @param string $unit
+	 */
 	public function isunit( $n, $unit ){
 		return ($n instanceof Less_Tree_Dimension) && $n->unit->is( ( property_exists($unit,'value') ? $unit->value : $unit) ) ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
 	}
 
+	/**
+	 * @param string $type
+	 */
 	private function _isa($n, $type) {
 		return is_a($n, $type) ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
 	}
@@ -801,6 +823,9 @@ class Less_Functions{
 	}
 
 
+	/**
+	 * @param string $type
+	 */
 	private static function Expected( $type, $arg ){
 
 		$debug = debug_backtrace();

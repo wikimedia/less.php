@@ -6,6 +6,9 @@ class Less_Tree_Keyword extends Less_Tree{
 	public $value;
 	public $type = 'Keyword';
 
+	/**
+	 * @param string $value
+	 */
 	public function __construct($value=null){
 		$this->value = $value;
 	}
