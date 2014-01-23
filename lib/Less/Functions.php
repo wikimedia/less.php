@@ -13,6 +13,10 @@ class Less_Functions{
 
 
 	//tree.operate()
+
+	/**
+	 * @param string $op
+	 */
 	static public function operate( $op, $a, $b ){
 		switch ($op) {
 			case '+': return $a + $b;

@@ -148,7 +148,7 @@ class Less_SourceMap_Base64VLQ {
 	/**
 	 * Right shift with zero fill.
 	 *
-	 * @param number $a number to shift
+	 * @param integer $a number to shift
 	 * @param integer $b number of bits to shift
 	 * @return integer
 	 */
