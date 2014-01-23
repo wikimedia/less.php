@@ -186,11 +186,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 			)
 		);
 
-		if( !$this->condition->compile($compile_env) ){
-			return false;
-		}
-
-		return true;
+		return (bool)$this->condition->compile($compile_env);
 	}
 
 	public function matchArgs($args, $env = NULL){
