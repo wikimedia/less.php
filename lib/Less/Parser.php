@@ -298,7 +298,7 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
-	private function _parse( $file_path = false ){
+	private function _parse( $file_path = null ){
 		$this->rules = array_merge($this->rules, $this->GetRules( $file_path ));
 	}
 
