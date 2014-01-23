@@ -53,28 +53,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 	public function compile($env){
 
-		$selectors = array();
-		if( $this->selectors ){
-			foreach($this->selectors as $s){
-				$selectors[] = $s->compile($env);
-			}
-		}
-		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);
-
-		$ruleset->originalRuleset = $this->ruleset_id;
-
-		$ruleset->root = $this->root;
-		$ruleset->firstRoot = $this->firstRoot;
-		$ruleset->allowImports = $this->allowImports;
-
-		// push the current ruleset to the frames stack
-		$env->unshiftFrame($ruleset);
-
-
-		// Evaluate imports
-		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
-			$ruleset->evalImports($env);
-		}
+		$ruleset = $this->PrepareRuleset($env);
 
 
 		// Store the frames around mixin definitions,
@@ -92,6 +71,34 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 
 		// Evaluate mixin calls.
+		$this->EvalMixinCalls( $ruleset, $env, $ruleset_len );
+
+
+		for( $i=0; $i<$ruleset_len; $i++ ){
+			if(! ($ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition) ){
+				$ruleset->rules[$i] = $ruleset->rules[$i]->compile($env);
+			}
+		}
+
+
+		// Pop the stack
+		$env->shiftFrame();
+
+		if ($mediaBlockCount) {
+			$len = count($env->mediaBlocks);
+			for($i = $mediaBlockCount; $i < $len; $i++ ){
+				$env->mediaBlocks[$i]->bubbleSelectors($ruleset->selectors);
+			}
+		}
+
+		return $ruleset;
+	}
+
+	/**
+	 * Compile Less_Tree_Mixin_Call objects
+	 *
+	 */
+	private function EvalMixinCalls( $ruleset, $env, &$ruleset_len ){
 		for($i=0; $i < $ruleset_len; $i++){
 			$rule = $ruleset->rules[$i];
 			if( $rule instanceof Less_Tree_Mixin_Call ){
@@ -117,23 +124,35 @@ class Less_Tree_Ruleset extends Less_Tree{
 				$ruleset->resetCache();
 			}
 		}
+	}
 
 
-		for( $i=0; $i<$ruleset_len; $i++ ){
-			if(! ($ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition) ){
-				$ruleset->rules[$i] = $ruleset->rules[$i]->compile($env);
+	/**
+	 * Compile the selectors and create a new ruleset object for the compile() method
+	 *
+	 */
+	private function PrepareRuleset($env){
+		$selectors = array();
+		if( $this->selectors ){
+			foreach($this->selectors as $s){
+				$selectors[] = $s->compile($env);
 			}
 		}
+		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);
+
+		$ruleset->originalRuleset = $this->ruleset_id;
+
+		$ruleset->root = $this->root;
+		$ruleset->firstRoot = $this->firstRoot;
+		$ruleset->allowImports = $this->allowImports;
+
+		// push the current ruleset to the frames stack
+		$env->unshiftFrame($ruleset);
 
 
-		// Pop the stack
-		$env->shiftFrame();
-
-		if ($mediaBlockCount) {
-			$len = count($env->mediaBlocks);
-			for($i = $mediaBlockCount; $i < $len; $i++ ){
-				$env->mediaBlocks[$i]->bubbleSelectors($selectors);
-			}
+		// Evaluate imports
+		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
+			$ruleset->evalImports($env);
 		}
 
 		return $ruleset;
