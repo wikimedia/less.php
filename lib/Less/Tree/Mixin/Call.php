@@ -56,39 +56,22 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 			for( $m = 0; $m < $mixins_len; $m++ ){
 				$mixin = $mixins[$m];
 
-				$isRecursive = false;
-				foreach($env->frames as $recur_frame){
-					if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
-						if( (isset($recur_frame->originalRuleset) && $mixin->ruleset_id === $recur_frame->originalRuleset)
-							|| ($mixin === $recur_frame) ){
-							$isRecursive = true;
-							break;
-						}
-					}
-				}
-				if( $isRecursive ){
+				if( $this->IsRecursive( $env, $mixin ) ){
 					continue;
 				}
 
-				if ($mixin->matchArgs($args, $env)) {
+				if( $mixin->matchArgs($args, $env) ){
 
-					//if( !($mixin instanceof Less_Tree_Ruleset || $mixin instanceof Less_Tree_Mixin_Definition) || $mixin->matchCondition($args, $env) ){
-					if( !Less_Parser::is_method($mixin,'matchCondition') || $mixin->matchCondition($args, $env) ){
+					if( !($mixin instanceof Less_Tree_Ruleset) || $mixin->matchCondition($args, $env) ){
 						try{
 
 							if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
 								$mixin = new Less_Tree_Mixin_Definition('', array(), $mixin->rules, null, false);
 								$mixin->originalRuleset = $mixins[$m]->originalRuleset;
 							}
-							//if (this.important) {
-							//	isImportant = env.isImportant;
-							//	env.isImportant = true;
-							//}
 
 							$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
-							//if (this.important) {
-							//	env.isImportant = isImportant;
-							//}
+
 						} catch (Exception $e) {
 							//throw new Less_Exception_Compiler($e->getMessage(), $e->index, null, $this->currentFileInfo['filename']);
 							throw new Less_Exception_Compiler($e->getMessage(), null, null, $this->currentFileInfo['filename']);
@@ -113,33 +96,62 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 
 
 		if( $isOneFound ){
-
-			$message = array();
-			if( $args ){
-				foreach($args as $a){
-					$argValue = '';
-					if( $a['name'] ){
-						$argValue += $a['name']+':';
-					}
-					if( is_object($a['value']) ){
-						$argValue += $a['value']->toCSS();
-					}else{
-						$argValue += '???';
-					}
-					$message[] = $argValue;
-				}
-			}
-			$message = implode(', ',$message);
-
-
-			throw new Less_Exception_Compiler('No matching definition was found for `'.
-				trim($this->selector->toCSS()) . '(' .$message.')',
+			throw new Less_Exception_Compiler('No matching definition was found for `'.$this->Format( $args ).'`',
 				$this->index, null, $this->currentFileInfo['filename']);
 
 		}else{
 			throw new Less_Exception_Compiler(trim($this->selector->toCSS()) . " is undefined", $this->index);
 		}
 	}
+
+
+	/**
+	 * Format the args for use in exception messages
+	 *
+	 */
+	private function Format($args){
+		$message = array();
+		if( $args ){
+			foreach($args as $a){
+				$argValue = '';
+				if( $a['name'] ){
+					$argValue += $a['name']+':';
+				}
+				if( is_object($a['value']) ){
+					$argValue += $a['value']->toCSS();
+				}else{
+					$argValue += '???';
+				}
+				$message[] = $argValue;
+			}
+		}
+		return implode(', ',$message);
+	}
+
+
+	/**
+	 * Are we in a recursive mixin call?
+	 *
+	 * @return bool
+	 */
+	private function IsRecursive( $env, $mixin ){
+
+		foreach($env->frames as $recur_frame){
+			if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
+
+				if( $mixin === $recur_frame ){
+					return true;
+				}
+
+				if( isset($recur_frame->originalRuleset) && $mixin->ruleset_id === $recur_frame->originalRuleset ){
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 }
 
 
