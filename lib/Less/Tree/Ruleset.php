@@ -250,21 +250,31 @@ class Less_Tree_Ruleset extends Less_Tree{
 		return $this->lookups[$key];
 	}
 
+    /**
+     * Generate CSS by adding it to the output object
+     *
+     * @param Less_Output $output The output
+     * @return void
+     */
 	public function genCSS( $output ){
-		$ruleNodes = array();
-		$rulesetNodes = array();
-		$firstRuleset = true;
 
 		if( !$this->root ){
 			Less_Environment::$tabLevel++;
 		}
 
 		$tabRuleStr = $tabSetStr = '';
-		if( !Less_Environment::$compress && Less_Environment::$tabLevel ){
-			$tabRuleStr = str_repeat( '  ' , Less_Environment::$tabLevel );
-			$tabSetStr = str_repeat( '  ' , Less_Environment::$tabLevel-1 );
+		if( !Less_Environment::$compress ){
+			if( Less_Environment::$tabLevel ){
+				$tabRuleStr = "\n".str_repeat( '  ' , Less_Environment::$tabLevel );
+				$tabSetStr = "\n".str_repeat( '  ' , Less_Environment::$tabLevel-1 );
+			}else{
+				$tabSetStr = $tabRuleStr = "\n";
+			}
 		}
 
+
+		$ruleNodes = array();
+		$rulesetNodes = array();
 		foreach($this->rules as $rule){
 
 			$class = get_class($rule);
@@ -288,7 +298,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 			}
 			*/
 
-			for( $i = 0,$paths_len = count($this->paths); $i < $paths_len; $i++ ){
+			$paths_len = count($this->paths);
+			for( $i = 0; $i < $paths_len; $i++ ){
 				$path = $this->paths[$i];
 				Less_Environment::$firstSelector = true;
 				foreach($path as $p){
@@ -296,11 +307,11 @@ class Less_Tree_Ruleset extends Less_Tree{
 					Less_Environment::$firstSelector = false;
 				}
 				if( $i + 1 < $paths_len ){
-					$output->add( Less_Environment::$compress ? ',' : (",\n" . $tabSetStr) );
+					$output->add( ',' . $tabSetStr );
 				}
 			}
 
-			$output->add( (Less_Environment::$compress ? '{' : " {\n") . $tabRuleStr );
+			$output->add( (Less_Environment::$compress ? '{' : " {") . $tabRuleStr );
 		}
 
 		// Compile rules and rulesets
@@ -318,33 +329,36 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$rule->genCSS( $output );
 
 			if( !Less_Environment::$lastRule ){
-				$output->add( Less_Environment::$compress ? '' : ("\n" . $tabRuleStr) );
+				$output->add( $tabRuleStr );
 			}else{
 				Less_Environment::$lastRule = false;
 			}
 		}
 
 		if( !$this->root ){
-			$output->add( (Less_Environment::$compress ? '}' : "\n" . $tabSetStr . '}'));
+			$output->add( $tabSetStr . '}' );
 			Less_Environment::$tabLevel--;
 		}
 
+		$firstRuleset = true;
+		$space = ($this->root ? $tabRuleStr : $tabSetStr);
 		for( $i = 0; $i < $rulesetNodes_len; $i++ ){
+
 			if( $ruleNodes_len && $firstRuleset ){
-				$output->add( (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr) );
-			}
-			if( !$firstRuleset ){
-				$output->add( (Less_Environment::$compress ? "" : "\n") . ($this->root ? $tabRuleStr : $tabSetStr));
+				$output->add( $space );
+			}elseif( !$firstRuleset ){
+				$output->add( $space );
 			}
 			$firstRuleset = false;
 			$rulesetNodes[$i]->genCSS( $output);
 		}
 
-		if( !$output && !Less_Environment::$compress && $this->firstRoot ){
+		if( !Less_Environment::$compress && $this->firstRoot ){
 			$output->add( "\n" );
 		}
 
 	}
+
 
 	function markReferenced(){
 
