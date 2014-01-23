@@ -278,6 +278,12 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
+
+	/**
+	 * Set a list of directories or callbacks the parser should use for determining import paths
+	 *
+	 * @param string|callback $dirs
+	 */
 	public function SetImportDirs( $dirs ){
 
 		foreach($dirs as $path => $uri_root){
