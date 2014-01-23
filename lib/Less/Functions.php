@@ -792,15 +792,11 @@ class Less_Functions{
 
 
 		if( $useBase64 ){
-			// only works in node, needs interface to what is supported in environment
-			try{
-				$returner = base64_encode($returner);
-			}catch(Exception $e){
-				$useBase64 = false;
-			}
+			$returner = "'data:image/svg+xml;base64,".base64_encode($returner)."'";
+		}else{
+			$returner = "'data:image/svg+xml,".$returner."'";
 		}
 
-		$returner = "'data:image/svg+xml" . ($useBase64 ? ";base64" : "") . "," . $returner . "'";
 		return new Less_Tree_URL( new Less_Tree_Anonymous( $returner ) );
 	}
 
