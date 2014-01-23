@@ -1737,12 +1737,18 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
+
+    /**
+     * Parses multiplication operation
+     *
+     * @return Less_Tree_Operation|null
+     */
 	function parseMultiplication(){
-		$operation = false;
-		$m = $this->parseOperand();
+		$return = $m = $this->parseOperand();
 		if( $m ){
-			$isSpaced = $this->isWhitespace( -1 );
 			while( true ){
+
+				$isSpaced = $this->isWhitespace( -1 );
 
 				if( $this->PeekReg('/\\G\/[*\/]/') ){
 					break;
@@ -1762,13 +1768,18 @@ class Less_Parser extends Less_Cache{
 
 				$m->parensInOp = true;
 				$a->parensInOp = true;
-				$operation = $this->Less_Tree_Operation( $op, array( $operation ? $operation : $m, $a ), $isSpaced );
-				$isSpaced = $this->isWhitespace( -1 );
+				$return = $this->Less_Tree_Operation( $op, array( $return, $a ), $isSpaced );
 			}
-			return ($operation ? $operation : $m);
+			return $return;
 		}
 	}
 
+
+    /**
+     * Parses an addition operation
+     *
+     * @return Less_Tree_Operation|null
+     */
 	private function parseAddition (){
 		$operation = false;
 		$m = $this->parseMultiplication();
@@ -1800,6 +1811,12 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
+
+    /**
+     * Parses the conditions
+     *
+     * @return Less_Tree_Condition|null
+     */
 	private function parseConditions() {
 		$index = $this->pos;
 		$condition = null;
