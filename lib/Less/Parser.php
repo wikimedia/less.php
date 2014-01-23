@@ -1025,7 +1025,6 @@ class Less_Parser extends Less_Cache{
 
 			$important = $this->parseImportant();
 
-
 			if( $this->parseEnd() ){
 				return $this->Less_Tree_Mixin_Call( $elements, $args, $index, $this->env->currentFileInfo, $important);
 			}
@@ -1105,7 +1104,7 @@ class Less_Parser extends Less_Cache{
 			}
 
 
-			if( $val && $val instanceof Less_Tree_Variable ){
+			if( $val instanceof Less_Tree_Variable ){
 
 				if( $this->MatchChar(':') ){
 					if( $expressions ){
@@ -1165,6 +1164,7 @@ class Less_Parser extends Less_Cache{
 		$returner['args'] = ($isSemiColonSeperated ? $argsSemiColon : $argsComma);
 		return $returner;
 	}
+
 
 
 	//

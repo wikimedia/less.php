@@ -1117,17 +1117,20 @@ less.Parser = function Parser(env) {
                         if (elements) { elements.push(elem); } else { elements = [ elem ]; }
                         c = $char('>');
                     }
-                    if ($char('(')) {
-                        args = this.args(true).args;
-                        expectChar(')');
-                    }
 
-                    if (parsers.important()) {
-                        important = true;
-                    }
+                    if (elements) {
+                        if ($char('(')) {
+                            args = this.args(true).args;
+                            expectChar(')');
+                        }
 
-                    if (elements && ($char(';') || peekChar('}'))) {
-                        return new(tree.mixin.Call)(elements, args, index, env.currentFileInfo, important);
+                        if (parsers.important()) {
+                            important = true;
+                        }
+
+                        if (parsers.end()) {
+                            return new(tree.mixin.Call)(elements, args, index, env.currentFileInfo, important);
+                        }
                     }
 
                     restore();
@@ -1962,7 +1965,8 @@ less.Parser = function Parser(env) {
                     // convert @{var}s to tree.Variable(s) and return:
                     skipWhitespace(length);
                     for (var k in name) {
-                        if (name[k].charAt(0) === '@') {
+
+                        if( name[k] && name[k].charAt && name[k].charAt(0) === '@') {
                             name[k] = new tree.Variable('@' + name[k].slice(2, -1),
                                 index[k], env.currentFileInfo);
                         }
@@ -6897,9 +6901,7 @@ var cache = null;
 var fileCache = {};
 
 function log(str, level) {
-    if (less.env == 'development' && typeof(console) !== 'undefined' && less.logLevel >= level) {
-        console.log('less: ' + str);
-    }
+    console.log(str);
 }
 
 function extractId(href) {
@@ -6988,13 +6990,13 @@ function createCSS(styles, sheet, lastModified) {
 
     // Don't update the local store if the file wasn't modified
     if (lastModified && cache) {
-        log('saving ' + href + ' to cache.', logLevel.info);
+        //log('saving ' + href + ' to cache.', logLevel.info);
         try {
             cache.setItem(href, styles);
             cache.setItem(href + ':timestamp', lastModified);
         } catch(e) {
             //TODO - could do with adding more robust error handling
-            log('failed to save', logLevel.errors);
+            //log('failed to save', logLevel.errors);
         }
     }
 }
@@ -7249,7 +7251,7 @@ function getXMLHttpRequest() {
             /*global ActiveXObject */
             return new ActiveXObject("MSXML2.XMLHTTP.3.0");
         } catch (e) {
-            log("browser doesn't support AJAX.", logLevel.errors);
+            //log("browser doesn't support AJAX.", logLevel.errors);
             return null;
         }
     }
@@ -7262,7 +7264,7 @@ function doXHR(url, type, callback, errback) {
     if (typeof(xhr.overrideMimeType) === 'function') {
         xhr.overrideMimeType('text/css');
     }
-    log("XHR: Getting '" + url + "'", logLevel.info);
+    //log("XHR: Getting '" + url + "'", logLevel.info);
     xhr.open('GET', url, async);
     xhr.setRequestHeader('Accept', type || 'text/x-less, text/css; q=0.9, */*; q=0.5');
     xhr.send(null);
@@ -7479,17 +7481,34 @@ less.refresh = function (reload, modifyVars) {
 
     loadStyleSheets(function (e, root, _, sheet, env) {
         if (e) {
+			log(e);
             return error(e, sheet.href);
         }
         if (env.local) {
-            log("loading " + sheet.href + " from cache.", logLevel.info);
+            //log("loading " + sheet.href + " from cache.", logLevel.info);
         } else {
-            log("parsed " + sheet.href + " successfully.", logLevel.info);
-            createCSS(root.toCSS(less), sheet, env.lastModified);
+            //log("parsed " + sheet.href + " successfully.", logLevel.info);
+            //createCSS(root.toCSS(less), sheet, env.lastModified);
+
+
+			// less.php changes
+            var css = root.toCSS(less);
+			function totextarea(){
+				var textarea = document.getElementById('lessjs_textarea');
+				if( textarea ){
+					textarea.value = css;
+					diffUsingJS(0);
+				}else{
+					window.setTimeout(totextarea,300);
+				}
+			}
+			totextarea();
+
+
         }
-        log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
+        //log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
         if (env.remaining === 0) {
-            log("css generated in " + (new Date() - startTime) + 'ms', logLevel.info);
+            //log("css generated in " + (new Date() - startTime) + 'ms', logLevel.info);
         }
         endTime = new Date();
     }, reload, modifyVars);
