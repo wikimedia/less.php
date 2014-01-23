@@ -444,7 +444,7 @@ class Less_Parser extends Less_Cache{
 	 * Parse from a token, regexp or string, and move forward if match
 	 *
 	 * @param string $toks
-	 * @return null|bool|object
+	 * @return array
 	 */
 	private function match($toks){
 
@@ -553,7 +553,7 @@ class Less_Parser extends Less_Cache{
 
 	/**
 	 * @param string $tok
-	 * @param string $msg
+	 * @param string|null $msg
 	 */
 	public function expect($tok, $msg = NULL) {
 		$result = $this->match( array($tok) );
