@@ -46,7 +46,7 @@ class Less_Parser extends Less_Cache{
 
 
 	/**
-	 * @param Environment|null $env
+	 * @param Environment|array|null $env
 	 */
 	public function __construct( $env = null ){
 
