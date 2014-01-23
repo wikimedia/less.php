@@ -209,7 +209,6 @@ class Less_Environment{
 	 * Sets file contents to the map
 	 *
 	 * @param string $filePath
-	 * @param string $content
 	 * @return Less_Environment
 	 */
 	public function setFileContent($filePath){

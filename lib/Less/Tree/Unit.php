@@ -37,6 +37,9 @@ class Less_Tree_Unit extends Less_Tree{
 		return $returnStr;
 	}
 
+	/**
+	 * @param Less_Tree_Unit $other
+	 */
 	function compare($other) {
 		return $this->is( $other->toString() ) ? 0 : -1;
 	}

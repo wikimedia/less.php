@@ -5,6 +5,9 @@ class Less_Visitor_processExtends extends Less_Visitor{
 
 	public $allExtendsStack;
 
+	/**
+	 * @param Less_Tree_Ruleset $root
+	 */
 	public function run( $root ){
 		$extendFinder = new Less_Visitor_extendFinder();
 		$extendFinder->run( $root );
@@ -236,6 +239,9 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	}
 
 
+	/**
+	 * @param integer $hackstackElementIndex
+	 */
 	private function PotentialMatch( $potentialMatch, $needleElements, $haystackElement, $hackstackElementIndex ){
 
 		// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
@@ -285,6 +291,9 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	}
 
 
+	/**
+	 * @param Less_Tree_Selector $elementValue1
+	 */
 	private function isSelectorValuesEqual( $elementValue1, $elementValue2 ){
 
 		$elementValue2 = $elementValue2->value;
@@ -309,6 +318,9 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	}
 
 
+	/**
+	 * @param Less_Tree_Attribute $elementValue1
+	 */
 	private function isAttributeValuesEqual( $elementValue1, $elementValue2 ){
 
 		if( $elementValue1->op !== $elementValue2->op || $elementValue1->key !== $elementValue2->key ){

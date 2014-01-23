@@ -9,6 +9,10 @@ class Less_Tree_Anonymous extends Less_Tree{
 	public $currentFileInfo;
 	public $type = 'Anonymous';
 
+	/**
+	 * @param integer $index
+	 * @param boolean $mapLines
+	 */
 	public function __construct($value, $index = null, $currentFileInfo = null, $mapLines = null ){
 		$this->value = is_object($value) ? $value->value : $value;
 		$this->index = $index;

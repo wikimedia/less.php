@@ -97,6 +97,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 	/**
 	 * Compile Less_Tree_Mixin_Call objects
 	 *
+	 * @param Less_Tree_Ruleset $ruleset
+	 * @param integer $ruleset_len
 	 */
 	private function EvalMixinCalls( $ruleset, $env, &$ruleset_len ){
 		for($i=0; $i < $ruleset_len; $i++){

@@ -172,7 +172,6 @@ class Less_Parser extends Less_Cache{
 	 * Parse a Less string into css
 	 *
 	 * @param string $str The string to convert
-	 * @param bool $returnRoot Indicates whether the return value should be a css string a root node
 	 * @return Less_Tree_Ruleset|Less_Parser
 	 */
 	public function parse($str){
@@ -194,7 +193,7 @@ class Less_Parser extends Less_Cache{
 	 * @param string $filename The file to parse
 	 * @param string $uri_root The url of the file
 	 * @param bool $returnRoot Indicates whether the return value should be a css string a root node
-	 * @return Less_Tree_Ruleset|Less_Parser
+	 * @return Less_Tree_Ruleset|null
 	 */
 	public function parseFile( $filename, $uri_root = '', $returnRoot = false){
 
@@ -227,6 +226,9 @@ class Less_Parser extends Less_Cache{
 	}
 
 
+	/**
+	 * @param string $filename
+	 */
 	public function SetFileInfo( $filename, $uri_root = ''){
 
 		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
@@ -304,6 +306,9 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
+	/**
+	 * @param string $file_path
+	 */
 	private function _parse( $file_path = null ){
 		$this->rules = array_merge($this->rules, $this->GetRules( $file_path ));
 	}
@@ -414,6 +419,9 @@ class Less_Parser extends Less_Cache{
 		return self::$imports;
 	}
 
+	/**
+	 * @param string $file
+	 */
 	static function FileParsed($file){
 		return in_array($file,self::$imports);
 	}
@@ -435,7 +443,7 @@ class Less_Parser extends Less_Cache{
 	/**
 	 * Parse from a token, regexp or string, and move forward if match
 	 *
-	 * @param string $tok
+	 * @param string $toks
 	 * @return null|bool|object
 	 */
 	private function match($toks){
@@ -472,6 +480,11 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
+	/**
+	 * @param string[] $toks
+	 *
+	 * @return string
+	 */
 	private function MatchFuncs($toks){
 
 		foreach($toks as $tok){
@@ -505,20 +518,25 @@ class Less_Parser extends Less_Cache{
 	 * Same as match(), but don't change the state of the parser,
 	 * just return the match.
 	 *
-	 * @param $tok
-	 * @param int $offset
-	 * @return bool
+	 * @param string $tok
+	 * @return integer
 	 */
 	public function PeekReg($tok){
 		return preg_match($tok, $this->input, $match, 0, $this->pos);
 	}
 
+	/**
+	 * @param string $tok
+	 */
 	public function PeekChar($tok){
 		return ($this->input[$this->pos] === $tok );
 		//return ($this->pos < $this->input_len) && ($this->input[$this->pos] === $tok );
 	}
 
 
+	/**
+	 * @param integer $length
+	 */
 	public function skipWhitespace($length){
 
 		$this->pos += $length;
@@ -533,6 +551,10 @@ class Less_Parser extends Less_Cache{
 	}
 
 
+	/**
+	 * @param string $tok
+	 * @param string $msg
+	 */
 	public function expect($tok, $msg = NULL) {
 		$result = $this->match( array($tok) );
 		if (!$result) {
@@ -542,6 +564,9 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
+	/**
+	 * @param string $tok
+	 */
 	public function expectChar($tok, $msg = null ){
 		$result = $this->MatchChar($tok);
 		if( !$result ){
@@ -1058,6 +1083,9 @@ class Less_Parser extends Less_Cache{
 
 
 
+	/**
+	 * @param boolean $isCall
+	 */
 	private function parseMixinArgs( $isCall ){
 		$expressions = array();
 		$argsSemiColon = array();
@@ -1957,6 +1985,7 @@ class Less_Parser extends Less_Cache{
 	/**
 	 * Some versions of php have trouble with method_exists($a,$b) if $a is not an object
 	 *
+	 * @param string $b
 	 */
 	public static function is_method($a,$b){
 		return is_object($a) && method_exists($a,$b);

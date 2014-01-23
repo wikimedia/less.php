@@ -4,6 +4,9 @@ class Less_Visitor_joinSelector extends Less_Visitor{
 
 	public $contexts = array( array() );
 
+	/**
+	 * @param Less_Tree_Ruleset $root
+	 */
 	function run( $root ){
 		return $this->visitObj($root);
 	}

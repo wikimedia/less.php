@@ -83,6 +83,7 @@ class Less_SourceMap_Base64VLQ {
 	 *	 2 becomes 4 (100 binary), -2 becomes 5 (101 binary)
 	 * We generate the value for 32 bit machines, hence -2147483648 becomes 1, not 4294967297,
 	 * even on a 64 bit machine.
+	 * @param string $aValue
 	 */
 	public function toVLQSigned($aValue){
 		return 0xffffffff & ($aValue < 0 ? ((-$aValue) << 1) + 1 : ($aValue << 1) + 0);
@@ -97,6 +98,7 @@ class Less_SourceMap_Base64VLQ {
 	 * Hence
 	 *	 1 becomes -2147483648
 	 * even on a 64 bit machine.
+	 * @param integer $aValue
 	 */
 	public function fromVLQSigned($aValue){
 		return $aValue & 1 ? $this->zeroFill(~$aValue + 2, 1) | (-1 - 0x7fffffff) : $this->zeroFill($aValue, 1);
@@ -128,7 +130,7 @@ class Less_SourceMap_Base64VLQ {
 	 * Return the value decoded from base 64 VLQ.
 	 *
 	 * @param string $encoded The encoded value to decode
-	 * @return string The decoded value
+	 * @return integer The decoded value
 	 */
 	public function decode($encoded){
 		$vlq = 0;
@@ -147,8 +149,8 @@ class Less_SourceMap_Base64VLQ {
 	 * Right shift with zero fill.
 	 *
 	 * @param number $a number to shift
-	 * @param nunber $b number of bits to shift
-	 * @return number
+	 * @param integer $b number of bits to shift
+	 * @return integer
 	 */
 	public function zeroFill($a, $b){
 		return ($a >= 0) ? ($a >> $b) : ($a >> $b) & (PHP_INT_MAX >> ($b - 1));
@@ -157,7 +159,7 @@ class Less_SourceMap_Base64VLQ {
 	/**
 	 * Encode single 6-bit digit as base64.
 	 *
-	 * @param number $number
+	 * @param integer $number
 	 * @return string
 	 * @throws InvalidArgumentException If the number is invalid
 	 */

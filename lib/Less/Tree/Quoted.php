@@ -9,6 +9,9 @@ class Less_Tree_Quoted extends Less_Tree{
 	public $currentFileInfo;
 	public $type = 'Quoted';
 
+	/**
+	 * @param string $str
+	 */
 	public function __construct($str, $content = '', $escaped = false, $index = false, $currentFileInfo = null ){
 		$this->escaped = $escaped;
 		$this->value = $content;

@@ -8,6 +8,9 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 		parent::__construct();
 	}
 
+	/**
+	 * @param Less_Tree_Ruleset $root
+	 */
 	function run( $root ){
 		return $this->visitObj($root);
 	}
