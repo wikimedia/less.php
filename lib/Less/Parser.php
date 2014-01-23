@@ -46,7 +46,7 @@ class Less_Parser extends Less_Cache{
 
 
 	/**
-	 * @param Environment|array|null $env
+	 * @param Less_Environment|array|null $env
 	 */
 	public function __construct( $env = null ){
 
@@ -57,10 +57,10 @@ class Less_Parser extends Less_Cache{
 			$this->env = $env;
 		}else{
 			$this->env = new Less_Environment( $env );
-			$this->options = $env;
 			self::$imports = array();
 			self::$import_dirs = array();
 			if( is_array($env) ){
+				$this->options = $env;
 				$this->SetOptions($env);
 			}
 		}
