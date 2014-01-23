@@ -318,6 +318,7 @@ class Less_Parser extends Less_Cache{
 	 * Return the results of parsePrimary for $file_path
 	 * Use cache and save cached results if possible
 	 *
+	 * @param string|null $file_path
 	 */
 	private function GetRules( $file_path ){
 

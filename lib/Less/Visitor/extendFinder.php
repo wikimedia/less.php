@@ -13,6 +13,9 @@ class Less_Visitor_extendFinder extends Less_Visitor{
 		parent::__construct();
 	}
 
+	/**
+	 * @param Less_Tree_Ruleset $root
+	 */
 	function run($root){
 		$root = $this->visitObj($root);
 		$root->allExtends =& $this->allExtendsStack[0];
