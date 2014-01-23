@@ -2,6 +2,12 @@
 
 require_once( dirname(__FILE__).'/Cache.php');
 
+/**
+ * Class for parsing and compiling less files into css
+ *
+ * @method void Less_Tree_Comment(string $value, bool $silent, int $index = null, array $currentFileInfo = null)
+ *
+ */
 class Less_Parser extends Less_Cache{
 
 
@@ -2015,8 +2021,6 @@ class Less_Parser extends Less_Cache{
 
     /**
      * Create Less_Tree_* objects and optionally generate a cache string
-     *
-     * @method void Less_Tree_Comment(string $value, bool $silent, int $index = null, array $currentFileInfo = null)
      *
      * @return mixed
      */
