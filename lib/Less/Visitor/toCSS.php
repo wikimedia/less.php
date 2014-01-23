@@ -82,81 +82,102 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 		}
 	}
 
+
 	function visitRuleset( $rulesetNode, &$visitDeeper ){
 
 		$visitDeeper = false;
-		$rulesets = array();
 
 		$this->checkPropertiesInRoot( $rulesetNode );
 
-		if( !$rulesetNode->root ){
-
-			$paths = array();
-			foreach($rulesetNode->paths as $p){
-				if( $p[0]->elements[0]->combinator->value === ' ' ){
-					$p[0]->elements[0]->combinator = new Less_Tree_Combinator('');
-				}
-
-				foreach($p as $pi){
-					if( $pi->getIsReferenced() && $pi->getIsOutput() ){
-						$paths[] = $p;
-						break;
-					}
-				}
-			}
-
-			$rulesetNode->paths = $paths;
-
-			// Compile rules and rulesets
-			$nodeRuleCnt = count($rulesetNode->rules);
-			for( $i = 0; $i < $nodeRuleCnt; ){
-				$rule = $rulesetNode->rules[$i];
-
-				if( property_exists($rule,'rules') ){
-					// visit because we are moving them out from being a child
-					$rulesets[] = $this->visitObj($rule);
-					array_splice($rulesetNode->rules,$i,1);
-					$nodeRuleCnt--;
-					continue;
-				}
-				$i++;
-			}
-
-
-			// accept the visitor to remove rules and refactor itself
-			// then we can decide now whether we want it or not
-			if( $nodeRuleCnt > 0 ){
-				$rulesetNode->accept($this);
-
-				if( $rulesetNode->rules ){
-
-					if( count($rulesetNode->rules) >  1 ){
-						$this->_mergeRules( $rulesetNode->rules );
-						$this->_removeDuplicateRules( $rulesetNode->rules );
-					}
-
-					// now decide whether we keep the ruleset
-					if( $rulesetNode->paths ){
-						//array_unshift($rulesets, $rulesetNode);
-						array_splice($rulesets,0,0,array($rulesetNode));
-					}
-				}
-
-			}
-
-		}else{
-			$rulesetNode->accept( $this );
-			if( $rulesetNode->firstRoot || $rulesetNode->rules ){
-				return $rulesetNode;
-				//array_unshift($rulesets, $rulesetNode);
-			}
-			return $rulesets;
+		if( $rulesetNode->root ){
+			return $this->visitRulesetRoot( $rulesetNode );
 		}
+
+		$rulesets = array();
+		$rulesetNode->paths = $this->visitRulesetPaths($rulesetNode);
+
+
+		// Compile rules and rulesets
+		$nodeRuleCnt = count($rulesetNode->rules);
+		for( $i = 0; $i < $nodeRuleCnt; ){
+			$rule = $rulesetNode->rules[$i];
+
+			if( property_exists($rule,'rules') ){
+				// visit because we are moving them out from being a child
+				$rulesets[] = $this->visitObj($rule);
+				array_splice($rulesetNode->rules,$i,1);
+				$nodeRuleCnt--;
+				continue;
+			}
+			$i++;
+		}
+
+
+		// accept the visitor to remove rules and refactor itself
+		// then we can decide now whether we want it or not
+		if( $nodeRuleCnt > 0 ){
+			$rulesetNode->accept($this);
+
+			if( $rulesetNode->rules ){
+
+				if( count($rulesetNode->rules) >  1 ){
+					$this->_mergeRules( $rulesetNode->rules );
+					$this->_removeDuplicateRules( $rulesetNode->rules );
+				}
+
+				// now decide whether we keep the ruleset
+				if( $rulesetNode->paths ){
+					//array_unshift($rulesets, $rulesetNode);
+					array_splice($rulesets,0,0,array($rulesetNode));
+				}
+			}
+
+		}
+
 
 		if( count($rulesets) === 1 ){
 			return $rulesets[0];
 		}
 		return $rulesets;
+	}
+
+
+	/**
+	 * Helper function for visitiRuleset
+	 *
+	 * return array|Less_Tree_Ruleset
+	 */
+	private function visitRulesetRoot( $rulesetNode ){
+		$rulesetNode->accept( $this );
+		if( $rulesetNode->firstRoot || $rulesetNode->rules ){
+			return $rulesetNode;
+		}
+		return array();
+	}
+
+
+	/**
+	 * Helper function for visitRuleset()
+	 *
+	 * @return array
+	 */
+	private function visitRulesetPaths($rulesetNode){
+
+		$paths = array();
+		foreach($rulesetNode->paths as $p){
+			if( $p[0]->elements[0]->combinator->value === ' ' ){
+				$p[0]->elements[0]->combinator = new Less_Tree_Combinator('');
+			}
+
+			foreach($p as $pi){
+				if( $pi->getIsReferenced() && $pi->getIsOutput() ){
+					$paths[] = $p;
+					break;
+				}
+			}
+		}
+
+		return $paths;
 	}
 
 	function _removeDuplicateRules( &$rules ){

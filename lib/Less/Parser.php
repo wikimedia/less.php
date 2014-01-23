@@ -1860,10 +1860,11 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
-	//
-	// An operand is anything that can be part of an operation,
-	// such as a Color, or a Variable
-	//
+	/**
+	 * An operand is anything that can be part of an operation,
+	 * such as a Color, or a Variable
+	 *
+	 */
 	private function parseOperand (){
 
 		$negate = false;
@@ -1886,13 +1887,16 @@ class Less_Parser extends Less_Cache{
 		return $o;
 	}
 
-	//
-	// Expressions either represent mathematical operations,
-	// or white-space delimited Entities.
-	//
-	//	 1px solid black
-	//	 @var * 2
-	//
+
+	/**
+	 * Expressions either represent mathematical operations,
+	 * or white-space delimited Entities.
+	 *
+	 *	 1px solid black
+	 *	 @var * 2
+	 *
+	 * @return Less_Tree_Expression|null
+	 */
 	private function parseExpression (){
 		$entities = array();
 
@@ -1915,6 +1919,13 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
+
+	/**
+	 * Parse a property
+	 * eg: 'min-width', 'orientation', etc
+	 *
+     * @return string
+	 */
 	private function parseProperty (){
 		$name = $this->MatchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*:/');
 		if( $name ){
@@ -1922,12 +1933,20 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
-	private function parseRuleProperty(){
+
+    /**
+     * Parse a rule property
+     * eg: 'color', 'width', 'height', etc
+     *
+     * @return string
+     */
+    private function parseRuleProperty(){
 		$name = $this->MatchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*(\+?)\s*:/');
 		if( $name ){
 			return $name[1] . (isset($name[2]) ? $name[2] : '');
 		}
 	}
+
 
 	/**
 	 * Some versions of php have trouble with method_exists($a,$b) if $a is not an object
@@ -1937,9 +1956,10 @@ class Less_Parser extends Less_Cache{
 		return is_object($a) && method_exists($a,$b);
 	}
 
+
 	/**
-	 *
-	 * Round 1.499999 to 1 instead of 2
+	 * Round numbers similarly to javascript
+	 * eg: 1.499999 to 1 instead of 2
 	 *
 	 */
 	public static function round($i, $precision = 0){
@@ -1956,7 +1976,13 @@ class Less_Parser extends Less_Cache{
 		}
 	}
 
-	public function __call($class,$args){
+
+    /**
+     * Create Less_Tree_* objects and optionally generate a cache string
+     *
+     * @return mixed
+     */
+    public function __call($class,$args){
 
 		//$pre_args = $args;
 		//$args += array(null,null,null,null,null,null,null);
@@ -2012,6 +2038,12 @@ class Less_Parser extends Less_Cache{
 		return $obj;
 	}
 
+
+    /**
+     * Convert an argument to a string for use in the parser cache
+     *
+     * @return string
+     */
 	public static function ArgString($arg){
 
 		$type = gettype($arg);
