@@ -19,6 +19,7 @@ class Less_Tree_Expression extends Less_Tree{
 
 		$inParenthesis = $this->parens && !$this->parensInOp;
 		$doubleParen = false;
+
 		if( $inParenthesis ) {
 			$env->inParenthesis();
 		}

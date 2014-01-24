@@ -6,7 +6,7 @@ require_once( dirname(__FILE__).'/Cache.php');
  * Class for parsing and compiling less files into css
  *
  * @method void Less_Tree_Comment(string $value, bool $silent, int $index = null, array $currentFileInfo = null)
- *
+ * @method void Less_Tree_Quoted(string $str, string $content = null, bool $escaped = false, integer $index = null, array $currentFileInfo = null)
  */
 class Less_Parser extends Less_Cache{
 
