@@ -3,13 +3,21 @@
 
 class FixturesTest extends PHPUnit_Framework_TestCase{
 
-	public $dir_fixtures;
+	public $fixtures_dir;
+	public $cache_dir;
 
 	function setUp(){
+		print_r("\nSet-Up");
 		require_once( dirname(__FILE__) . '/../lib/Less/Autoloader.php' );
 		Less_Autoloader::register();
 
-		$this->dir_fixtures = dirname(__FILE__).'/Fixtures';
+		$this->fixtures_dir = dirname(__FILE__).'/Fixtures';
+		print_r("\n  fixtures_dir: ".$this->fixtures_dir);
+
+		Less_Cache::$cache_dir = $this->CacheDirectory();
+		print_r("\n  cache_dir:    ".Less_Cache::$cache_dir);
+
+		print_r("\n\n");
 	}
 
 
@@ -19,7 +27,9 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 	 */
 	function testLessJs(){
 
-		$css_dir = $this->dir_fixtures.'/less.js/expected';
+		print_r("\nBegin Tests");
+
+		$css_dir = $this->fixtures_dir.'/less.js/expected';
 		$files = scandir($css_dir);
 
 		foreach($files as $file){
@@ -27,15 +37,35 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 				continue;
 			}
 
-			$file_css = $css_dir.'/'.$file;
+			$expected_file = $css_dir.'/'.$file;
 
-			if( is_dir($file_css) ){
+			if( is_dir($expected_file) ){
 				continue;
 			}
 
-			$this->CompareFile( $file_css );
+			$this->CompareFile( $expected_file );
 		}
 
+		print_r("\n\nTests Complete!!");
+	}
+
+
+	/**
+	 * Return the path of the cache directory if it's writable
+	 *
+	 */
+	function CacheDirectory(){
+		$cache_dir = dirname(__FILE__).'/_cache';
+
+		if( !file_exists($cache_dir) && !mkdir($cache_dir) ){
+			return false;
+		}
+
+		if( !is_writable($cache_dir) ){
+			return false;
+		}
+
+		return $cache_dir;
 	}
 
 
@@ -53,19 +83,49 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 		return dirname( dirname($file_css) ).'/'.$dir.'/'.$filename.'.'.$type;
 	}
 
-	function CompareFile( $file_css ){
 
-		$file_less = $this->TranslateFile( $file_css );
+	/**
+	 * Compare the parser results with the expected css
+	 *
+	 */
+	function CompareFile( $expected_file ){
+
+		$less_file = $this->TranslateFile( $expected_file );
+		$expected_css = trim(file_get_contents($expected_file));
+
+
+		// Check with standard parser
+		print_r("\n  ".basename($expected_file));
+		print_r("\n    - Standard Compiler");
 
 		$parser = new Less_Parser();
-		$parser->parseFile($file_less);
+		$parser->parseFile($less_file);
+		$css = $parser->getCss();
+		$css = trim($css);
+		$this->assertEquals( $expected_css, $css );
 
-        $css = $parser->getCss();
-        $css = trim($css);
 
-        $less = trim(file_get_contents($file_css));
+		// Check with cache
+		if( Less_Cache::$cache_dir ){
+			print_r("\n    - Regenerating Cache");
+			$files = array( $less_file => '' );
+			$css_file_name = Less_Cache::Regen( $files );
+			$css = file_get_contents(Less_Cache::$cache_dir.'/'.$css_file_name);
+			$css = trim($css);
+			$this->assertEquals( $expected_css, $css );
 
-        $this->assertEquals( $less, $css );
+
+
+			// Check using the cached data
+			print_r("\n    - Using Cache");
+			$css_file_name = Less_Cache::Get( $files );
+			$css = file_get_contents(Less_Cache::$cache_dir.'/'.$css_file_name);
+			$css = trim($css);
+			$this->assertEquals( $expected_css, $css );
+
+		}
+
+
 	}
 
 

@@ -41,8 +41,8 @@ class Less_Cache{
 				$compiled_name = self::CompiledName($list);
 				$compiled_file = self::$cache_dir.$compiled_name;
 				if( file_exists($compiled_file) ){
-					touch($list_file);
-					touch($compiled_file);
+					@touch($list_file);
+					@touch($compiled_file);
 					return $compiled_name;
 				}
 			}
