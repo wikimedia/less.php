@@ -63,6 +63,9 @@ class Less_Tree_Expression extends Less_Tree{
 		return $returnValue;
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 		$val_len = count($this->value);
 		for( $i = 0; $i < $val_len; $i++ ){

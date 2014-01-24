@@ -105,6 +105,9 @@ class Less_Tree_Selector extends Less_Tree{
 		return $this->createDerived( $elements, $extendList, $evaldCondition );
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 
 		if( !Less_Environment::$firstSelector && $this->elements[0]->combinator->value === "" ){

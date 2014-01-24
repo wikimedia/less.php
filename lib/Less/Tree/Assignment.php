@@ -20,6 +20,9 @@ class Less_Tree_Assignment extends Less_Tree{
 		return new Less_Tree_Assignment( $this->key, $this->value->compile($env));
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	public function genCSS( $output ){
 		$output->add( $this->key . '=' );
 		$this->value->genCSS( $output );

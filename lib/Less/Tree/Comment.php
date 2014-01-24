@@ -14,6 +14,9 @@ class Less_Tree_Comment extends Less_Tree{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	public function genCSS( $output ){
 		//if( $this->debugInfo ){
 			//$output->add( tree.debugInfo($env, $this), $this->currentFileInfo, $this->index);

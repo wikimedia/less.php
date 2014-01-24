@@ -39,6 +39,9 @@ class Less_Tree_Element extends Less_Tree{
 		);
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	public function genCSS( $output ){
 		$output->add( $this->toCSS(), $this->currentFileInfo, $this->index );
 	}

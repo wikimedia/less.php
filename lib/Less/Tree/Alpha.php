@@ -22,6 +22,9 @@ class Less_Tree_Alpha extends Less_Tree{
 		return $this;
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	public function genCSS( $output ){
 
 		$output->add( "alpha(opacity=" );

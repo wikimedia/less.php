@@ -31,6 +31,9 @@ class Less_Tree_Dimension extends Less_Tree{
         return new Less_Tree_Color(array($this->value, $this->value, $this->value));
     }
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	public function genCSS( $output ){
 
 		if( Less_Environment::$strictUnits && !$this->unit->isSingular() ){

@@ -31,6 +31,9 @@ class Less_Tree_Rule extends Less_Tree{
 		$this->value = $visitor->visitObj( $this->value );
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 
 		$output->add( $this->name . Less_Environment::$colon_space, $this->currentFileInfo, $this->index);

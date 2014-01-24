@@ -27,6 +27,9 @@ class Less_Tree_Media extends Less_Tree{
 		$this->rules = $visitor->visitArray($this->rules);
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 
 		$output->add( '@media ', $this->currentFileInfo, $this->index );

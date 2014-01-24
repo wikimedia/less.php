@@ -32,6 +32,9 @@ class Less_Tree_Directive extends Less_Tree{
 		}
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 
 		$output->add( $this->name, $this->currentFileInfo, $this->index );

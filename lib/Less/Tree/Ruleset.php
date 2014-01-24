@@ -272,11 +272,9 @@ class Less_Tree_Ruleset extends Less_Tree{
 		return $this->lookups[$key];
 	}
 
+
     /**
-     * Generate CSS by adding it to the output object
-     *
-     * @param Less_Output $output The output
-     * @return void
+     * @see Less_Tree::genCSS
      */
 	public function genCSS( $output ){
 

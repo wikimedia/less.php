@@ -17,6 +17,9 @@ class Less_Tree_Url extends Less_Tree{
 		$this->value = $visitor->visitObj($this->value);
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 		$output->add( 'url(' );
 		$this->value->genCSS( $output );

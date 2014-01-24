@@ -20,6 +20,9 @@ class Less_Tree_Quoted extends Less_Tree{
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
     public function genCSS( $output ){
 		if( !$this->escaped ){
 			$output->add( $this->quote, $this->currentFileInfo, $this->index );

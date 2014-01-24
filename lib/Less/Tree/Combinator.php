@@ -34,6 +34,9 @@ class Less_Tree_Combinator extends Less_Tree{
 		'|' => '|'
 	);
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 		if( Less_Environment::$compress ){
 			$output->add( self::$_outputMapCompressed[$this->value] );

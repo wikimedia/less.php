@@ -33,6 +33,9 @@ class Less_Tree_Attribute extends Less_Tree{
 			is_object($this->value) ? $this->value->compile($env) : $this->value);
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 		$output->add( $this->toCSS() );
 	}

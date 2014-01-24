@@ -76,6 +76,9 @@ class Less_Tree_Call extends Less_Tree{
 		return new Less_Tree_Call( $this->name, $args, $this->index, $this->currentFileInfo );
     }
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	public function genCSS( $output ){
 
 		$output->add( $this->name . '(', $this->currentFileInfo, $this->index );

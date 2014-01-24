@@ -27,6 +27,9 @@ class Less_Tree_Value extends Less_Tree{
 		return $ret[0];
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 		$len = count($this->value);
 		for($i = 0; $i < $len; $i++ ){

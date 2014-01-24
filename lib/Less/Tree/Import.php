@@ -69,6 +69,9 @@ class Less_Tree_Import extends Less_Tree{
 		}
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 		if( $this->css ){
 

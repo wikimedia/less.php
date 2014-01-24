@@ -17,6 +17,9 @@ class Less_Tree_Unit extends Less_Tree{
 	function __clone(){
 	}
 
+    /**
+     * @see Less_Tree::genCSS
+     */
 	function genCSS( $output ){
 
 		if( $this->numerator ){
