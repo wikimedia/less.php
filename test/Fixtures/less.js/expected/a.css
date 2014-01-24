@@ -1,6 +1,3 @@
-@font-face {
-  font-family: font-a;
-}
-@font-face {
-  font-family: font-b;
+.mixin-arguments {
+  extract: c | b | a;
 }
