@@ -7,14 +7,23 @@ require_once( dirname(__FILE__).'/Cache.php');
  *
  * @method void Less_Tree_Alpha( $val )
  * @method void Less_Tree_Anonymous( $value, $index = null, $currentFileInfo = null, $mapLines = null )
+ * @method void Less_Tree_Assignment( $key, $val)
  * @method void Less_Tree_Attribute( $key, $op, $value)
+ * @method void Less_Tree_Call( $name, $args, $index, $currentFileInfo = null )
+ * @method void Less_Tree_Color( $rgb, $a = 1, $isTransparentKeyword = null )
  * @method void Less_Tree_Combinator( string $value = null )
  * @method void Less_Tree_Comment( string $value, bool $silent, int $index = null, array $currentFileInfo = null)
+ * @method void Less_Tree_Condition( $op, $l, $r, $i = 0, $negate = false)
+ * @method void Less_Tree_Dimension( $value, $unit = null )
  * @method void Less_Tree_Directive( $name, $value = null, $index = null, $currentFileInfo = null )
  * @method void Less_Tree_Element( $combinator, $value, int $index = null, array $currentFileInfo = null)
+ * @method void Less_Tree_Extend( $selector, $option, $index )
  * @method void Less_Tree_Expression($value)
+ * @method void Less_Tree_Import( $path, $features, $options, $index, $currentFileInfo = null )
+ * @method void Less_Tree_Javascript( $string, $index, $escaped )
  * @method void Less_Tree_Keyword($value)
  * @method void Less_Tree_Media($value = array(), $features = array(), $index = null, $currentFileInfo = null )
+ * @method void Less_Tree_Mixin_Call( $elements, $args, $index, $currentFileInfo, $important = false )
  * @method void Less_Tree_Mixin_Definition($name, $params, $rules, $condition, $variadic = false)
  * @method void Less_Tree_Negative($node)
  * @method void Less_Tree_Operation($op, $operands, $isSpaced = false)
@@ -23,7 +32,10 @@ require_once( dirname(__FILE__).'/Cache.php');
  * @method void Less_Tree_Rule( $name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null,  $inline = false)
  * @method void Less_Tree_Ruleset($selectors, $rules, $strictImports = null)
  * @method void Less_Tree_Selector(array $elements,array $extendList=null, $condition=null, integer $index = null, array $currentFileInfo = null)
+ * @method void Less_Tree_UnicodeDescriptor( $value )
+ * @method void Less_Tree_Url( $value, $currentFileInfo = null )
  * @method void Less_Tree_Value($value)
+ * @method void Less_Tree_Variable( $name, $index, $currentFileInfo = null )
  *
  */
 class Less_Parser extends Less_Cache{
@@ -308,7 +320,7 @@ class Less_Parser extends Less_Cache{
 	/**
 	 * Set a list of directories or callbacks the parser should use for determining import paths
 	 *
-	 * @param string|callback $dirs
+	 * @param array $dirs
 	 */
 	public function SetImportDirs( $dirs ){
 
@@ -468,7 +480,7 @@ class Less_Parser extends Less_Cache{
 	/**
 	 * Parse from a token, regexp or string, and move forward if match
 	 *
-	 * @param string $toks
+	 * @param array $toks
 	 * @return array
 	 */
 	private function match($toks){
@@ -1247,7 +1259,7 @@ class Less_Parser extends Less_Cache{
 		$cond = null;
 
 		$char = $this->input[$this->pos];
-		if( ($char !== '.' && $char !== '#') || ($char === '{' && $this->Peek('/\\G[^{]*\}/')) ){
+		if( ($char !== '.' && $char !== '#') || ($char === '{' && $this->PeekReg('/\\G[^{]*\}/')) ){
 			return;
 		}
 
