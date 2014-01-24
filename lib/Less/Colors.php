@@ -154,10 +154,6 @@ class Less_Colors {
 			'yellowgreen'=>'#9acd32'
 		);
 
-	private static function all() {
-		return self::$colors;
-	}
-
 	public static function hasOwnProperty($color) {
 		return isset(self::$colors[$color]);
 	}
