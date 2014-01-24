@@ -31,7 +31,6 @@ class Less_Tree_Variable extends Less_Tree{
 
 		$this->evaluating = true;
 
-
 		foreach($env->frames as $frame){
 			if( $v = $frame->variable($name) ){
 				$this->evaluating = false;

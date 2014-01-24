@@ -7,8 +7,9 @@ class Less_Tree_Expression extends Less_Tree{
 	public $parensInOp = false;
 	public $type = 'Expression';
 
-	public function __construct($value) {
+	public function __construct( $value, $parens = null ){
 		$this->value = $value;
+		$this->parens = $parens;
 	}
 
 	function accept( $visitor ){

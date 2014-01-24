@@ -1786,9 +1786,8 @@ class Less_Parser extends Less_Cache{
 
 		if( $this->MatchChar('(') ){
 			if( $a = $this->parseAddition() ){
-				$e = $this->Less_Tree_Expression( array($a) );
+				$e = $this->Less_Tree_Expression( array($a), true ); //instead of $e->parens = true so the value is cached
 				$this->expectChar(')');
-				$e->parens = true;
 				return $e;
 			}
 		}
