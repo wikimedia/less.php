@@ -5,13 +5,13 @@ require_once( dirname(__FILE__).'/Cache.php');
 /**
  * Class for parsing and compiling less files into css
  *
- * @method void Less_Tree_Alpha($val)
- * @method void Less_Tree_Anonymous($value, $index = null, $currentFileInfo = null, $mapLines = null )
- * @method void Less_Tree_Attribute(key, $op, $value)
- * @method void Less_Tree_Combinator(string $value)
- * @method void Less_Tree_Comment(string $value, bool $silent, int $index = null, array $currentFileInfo = null)
- * @method void Less_Tree_Directive($name, $value = null, $index = null, $currentFileInfo = null )
- * @method void Less_Tree_Element($combinator, string $value, int $index = null, array $currentFileInfo = null)
+ * @method void Less_Tree_Alpha( $val )
+ * @method void Less_Tree_Anonymous( $value, $index = null, $currentFileInfo = null, $mapLines = null )
+ * @method void Less_Tree_Attribute( $key, $op, $value)
+ * @method void Less_Tree_Combinator( string $value = null )
+ * @method void Less_Tree_Comment( string $value, bool $silent, int $index = null, array $currentFileInfo = null)
+ * @method void Less_Tree_Directive( $name, $value = null, $index = null, $currentFileInfo = null )
+ * @method void Less_Tree_Element( $combinator, $value, int $index = null, array $currentFileInfo = null)
  * @method void Less_Tree_Expression($value)
  * @method void Less_Tree_Keyword($value)
  * @method void Less_Tree_Media($value = array(), $features = array(), $index = null, $currentFileInfo = null )
@@ -19,10 +19,10 @@ require_once( dirname(__FILE__).'/Cache.php');
  * @method void Less_Tree_Negative($node)
  * @method void Less_Tree_Operation($op, $operands, $isSpaced = false)
  * @method void Less_Tree_Paren($value)
- * @method void Less_Tree_Quoted(string $str, string $content = null, bool $escaped = false, integer $index = null, array $currentFileInfo = null)
- * @method void Less_Tree_Rule($name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null,  $inline = false)
+ * @method void Less_Tree_Quoted( string $str, string $content = null, bool $escaped = false, integer $index = null, array $currentFileInfo = null)
+ * @method void Less_Tree_Rule( $name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null,  $inline = false)
  * @method void Less_Tree_Ruleset($selectors, $rules, $strictImports = null)
- * @method void Less_Tree_Selector(array $elements,array $extendList, Less_Tree_Condition $condition, integer $index = null, array $currentFileInfo = null)
+ * @method void Less_Tree_Selector(array $elements,array $extendList=null, $condition=null, integer $index = null, array $currentFileInfo = null)
  * @method void Less_Tree_Value($value)
  *
  */
@@ -1786,9 +1786,8 @@ class Less_Parser extends Less_Cache{
 
 		if( $this->MatchChar('(') ){
 			if( $a = $this->parseAddition() ){
-				$e = $this->Less_Tree_Expression( array($a), true ); //instead of $e->parens = true so the value is cached
 				$this->expectChar(')');
-				return $e;
+				return $this->Less_Tree_Expression( array($a), true ); //instead of $e->parens = true so the value is cached
 			}
 		}
 	}
