@@ -132,7 +132,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 			$argIndex++;
 		}
 
-		asort($evaldArguments);
+		ksort($evaldArguments);
 
 		return $frame;
 	}

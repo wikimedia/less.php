@@ -247,7 +247,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 			foreach($this->rules as $rule){
 
-				if( ($rule instanceof Less_Tree_Ruleset) || ($rule instanceof Less_Tree_Mixin_Definition) ){
+				//if( ($rule instanceof Less_Tree_Ruleset) || ($rule instanceof Less_Tree_Mixin_Definition) ){
+				if( $rule instanceof Less_Tree_Ruleset ){
 
 					if( $rule->ruleset_id == $self ){
 						continue;
