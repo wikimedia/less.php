@@ -7,7 +7,15 @@ class Less_Tree_Color extends Less_Tree{
 	public $isTransparentKeyword;
 	public $type = 'Color';
 
-	public function __construct($rgb, $a = 1){
+	public function __construct($rgb, $a = 1, $isTransparentKeyword = null ){
+
+		if( $isTransparentKeyword ){
+			$this->rgb = $rgb;
+			$this->alpha = $a;
+			$this->isTransparentKeyword = true;
+			return;
+		}
+
 		$this->rgb = array();
 		if( is_array($rgb) ){
 			$this->rgb = $rgb;
@@ -199,9 +207,7 @@ class Less_Tree_Color extends Less_Tree{
 		}
 
 		if( $keyword === 'transparent' ){
-			$transparent = new Less_Tree_Color( array(0, 0, 0), 0);
-			$transparent->isTransparentKeyword = true;
-			return $transparent;
+			return new Less_Tree_Color( array(0, 0, 0), 0, true);
 		}
 	}
 

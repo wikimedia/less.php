@@ -771,9 +771,7 @@ class Less_Parser extends Less_Cache{
 		}
 
 		if( $keyword === 'transparent' ){
-			$transparent = $this->Less_Tree_Color( array(0, 0, 0), 0);
-			$transparent->isTransparentKeyword = true;
-			return $transparent;
+			return $this->Less_Tree_Color( array(0, 0, 0), 0, true);
 		}
 	}
 

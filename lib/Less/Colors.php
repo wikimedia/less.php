@@ -4,13 +4,7 @@
 
 class Less_Colors {
 
-	public static $colors;
-
-	private static function all() {
-		if (self::$colors)
-			return self::$colors;
-
-		self::$colors = array(
+	public static $colors = array(
 			'aliceblue'=>'#f0f8ff',
 			'antiquewhite'=>'#faebd7',
 			'aqua'=>'#00ffff',
@@ -159,18 +153,18 @@ class Less_Colors {
 			'yellow'=>'#ffff00',
 			'yellowgreen'=>'#9acd32'
 		);
+
+	private static function all() {
 		return self::$colors;
 	}
 
 	public static function hasOwnProperty($color) {
-		$colors = self::all();
-		return isset($colors[$color]);
+		return isset(self::$colors[$color]);
 	}
 
 
 	public static function color($color) {
-		$colors = self::all();
-		return $colors[$color];
+		return self::$colors[$color];
 	}
 
 }
