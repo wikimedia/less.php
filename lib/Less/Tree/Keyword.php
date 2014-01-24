@@ -9,7 +9,7 @@ class Less_Tree_Keyword extends Less_Tree{
 	/**
 	 * @param string $value
 	 */
-	public function __construct($value=null){
+	public function __construct($value){
 		$this->value = $value;
 	}
 
