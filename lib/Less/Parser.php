@@ -795,17 +795,16 @@ class Less_Parser{
 	//	 "milky way" 'he\'s the one!'
 	//
 	private function parseEntitiesQuoted() {
-		$j = 0;
+		$j = $this->pos;
 		$e = false;
 		$index = $this->pos;
 
-		if ($this->PeekChar('~')) {
+		if( $this->input[$this->pos] === '~' ){
 			$j++;
 			$e = true; // Escaped strings
 		}
 
-		$char = $this->input[$this->pos+$j];
-		if( $char != '"' && $char !== "'" ){
+		if( $this->input[$j] != '"' && $this->input[$j] !== "'" ){
 			return;
 		}
 
@@ -819,6 +818,7 @@ class Less_Parser{
 		}
 		return;
 	}
+
 
 	//
 	// A catch-all word, such as:
