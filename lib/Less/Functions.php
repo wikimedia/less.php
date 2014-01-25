@@ -41,7 +41,7 @@ class Less_Functions{
 		}
 	}
 
-	static public function scaled($n, $size = 256 ){
+	static public function scaled($n, $size = 255 ){
 		if( $n instanceof Less_Tree_Dimension && $n->unit->is('%') ){
 			return (float)$n->value * $size / 100;
 		} else {
