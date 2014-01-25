@@ -140,7 +140,7 @@ class Less_Tree_Import extends Less_Tree{
 		$evald = $this->compileForImport($env);
 
 		//get path & uri
-		$this->PathAndUri( $evald, $full_path, $uri );
+		$this->PathAndUri( $evald, $env, $full_path, $uri );
 
 
 		//import once
@@ -178,13 +178,15 @@ class Less_Tree_Import extends Less_Tree{
 	 *
 	 * @param Less_Tree_Import $evald
 	 */
-	function PathAndUri( $evald, &$full_path, &$uri ){
+	function PathAndUri( $evald, $env, &$full_path, &$uri ){
 		$uri = $full_path = false;
 
 		$evald_path = $evald->getPath();
 
+		$import_dirs = array_merge( array( $this->currentFileInfo['currentDirectory'] => $this->currentFileInfo['uri_root'] ), Less_Parser::$import_dirs );
+
 		if( $evald_path ){
-			foreach(Less_Parser::$import_dirs as $rootpath => $rooturi){
+			foreach( $import_dirs as $rootpath => $rooturi){
 				if( is_callable($rooturi) ){
 					list($path, $uri) = call_user_func($rooturi, $evald_path);
 					if( null !== $path ){
