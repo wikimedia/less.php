@@ -94,6 +94,15 @@ class Less_Tree_Color extends Less_Tree{
      * @param string $op
      */
     public function operate( $op, $other) {
+		$rgb = array();
+		$alpha = $this->alpha * (1 - $other->alpha) + $other->alpha;
+        for ($c = 0; $c < 3; $c++) {
+			$rgb[$c] = Less_Functions::operate( $op, $this->rgb[$c], $other->rgb[$c]);
+		}
+        return new Less_Tree_Color($rgb, $alpha);
+
+
+
         $result = array();
 
         if (! ($other instanceof Less_Tree_Color)) {

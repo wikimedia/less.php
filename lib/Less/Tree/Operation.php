@@ -28,18 +28,15 @@ class Less_Tree_Operation extends Less_Tree{
 
 		if( $env->isMathOn() ){
 
-			if( $a instanceof Less_Tree_Dimension ){
+			if( $a instanceof Less_Tree_Dimension && $b instanceof Less_Tree_Color ){
+				$a = $a->toColor();
 
-				if( $b instanceof Less_Tree_Color ){
-					if ($this->op === '*' || $this->op === '+') {
-						$temp = $b;
-						$b = $a;
-						$a = $temp;
-					} else {
-						throw new Less_Exception_Compiler("Operation on an invalid type");
-					}
-				}
-			}elseif( !($a instanceof Less_Tree_Color) ){
+			}elseif( $b instanceof Less_Tree_Dimension && $a instanceof Less_Tree_Color ){
+				$b = $b->toColor();
+
+			}
+
+			if( !method_exists($a,'operate') ){
 				throw new Less_Exception_Compiler("Operation on an invalid type");
 			}
 
@@ -48,6 +45,7 @@ class Less_Tree_Operation extends Less_Tree{
 
 		return new Less_Tree_Operation($this->op, array($a, $b), $this->isSpaced );
 	}
+
 
     /**
      * @see Less_Tree::genCSS
