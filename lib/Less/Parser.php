@@ -1860,7 +1860,8 @@ class Less_Parser{
 	private function parseSub (){
 
 		if( $this->MatchChar('(') ){
-			if( $a = $this->parseAddition() ){
+			$a = $this->parseAddition();
+			if( $a ){
 				$this->expectChar(')');
 				return $this->Less_Tree_Expression( array($a), true ); //instead of $e->parens = true so the value is cached
 			}
@@ -1876,29 +1877,31 @@ class Less_Parser{
 	function parseMultiplication(){
 
 		$return = $m = $this->parseOperand();
-		while( $return ){
+		if( $return ){
+			while( true ){
 
-			$isSpaced = $this->isWhitespace( -1 );
+				$isSpaced = $this->isWhitespace( -1 );
 
-			if( $this->PeekReg('/\\G\/[*\/]/') ){
-				break;
-			}
-
-			$op = $this->MatchChar('/');
-			if( !$op ){
-				$op = $this->MatchChar('*');
-				if( !$op ){
+				if( $this->PeekReg('/\\G\/[*\/]/') ){
 					break;
 				}
+
+				$op = $this->MatchChar('/');
+				if( !$op ){
+					$op = $this->MatchChar('*');
+					if( !$op ){
+						break;
+					}
+				}
+
+				$a = $this->parseOperand();
+
+				if(!$a) { break; }
+
+				$m->parensInOp = true;
+				$a->parensInOp = true;
+				$return = $this->Less_Tree_Operation( $op, array( $return, $a ), $isSpaced );
 			}
-
-			$a = $this->parseOperand();
-
-			if(!$a) { break; }
-
-			$m->parensInOp = true;
-			$a->parensInOp = true;
-			$return = $this->Less_Tree_Operation( $op, array( $return, $a ), $isSpaced );
 		}
 		return $return;
 
@@ -1913,30 +1916,32 @@ class Less_Parser{
 	private function parseAddition (){
 
 		$return = $m = $this->parseMultiplication();
-		while( $return ){
+		if( $return ){
+			while( true ){
 
-			$isSpaced = $this->isWhitespace( -1 );
+				$isSpaced = $this->isWhitespace( -1 );
 
-			$op = $this->MatchReg('/\\G[-+]\s+/');
-			if( $op ){
-				$op = $op[0];
-			}else{
-				if( !$isSpaced ){
-					$op = $this->match(array('#+','#-'));
+				$op = $this->MatchReg('/\\G[-+]\s+/');
+				if( $op ){
+					$op = $op[0];
+				}else{
+					if( !$isSpaced ){
+						$op = $this->match(array('#+','#-'));
+					}
+					if( !$op ){
+						break;
+					}
 				}
-				if( !$op ){
+
+				$a = $this->parseMultiplication();
+				if( !$a ){
 					break;
 				}
-			}
 
-			$a = $this->parseMultiplication();
-			if( !$a ){
-				break;
+				$m->parensInOp = true;
+				$a->parensInOp = true;
+				$return = $this->Less_Tree_Operation($op, array($return, $a), $isSpaced);
 			}
-
-			$m->parensInOp = true;
-			$a->parensInOp = true;
-			$return = $this->Less_Tree_Operation($op, array($return, $a), $isSpaced);
 		}
 
 		return $return;
@@ -1952,7 +1957,10 @@ class Less_Parser{
 		$index = $this->pos;
 		$return = $a = $this->parseCondition();
 		if( $a ){
-			while( $this->PeekReg('/\\G,\s*(not\s*)?\(/') && $this->MatchChar(',') ){
+			while( true ){
+				if( !$this->PeekReg('/\\G,\s*(not\s*)?\(/') ||  !$this->MatchChar(',') ){
+					break;
+				}
 				$b = $this->parseCondition();
 				if( !$b ){
 					break;

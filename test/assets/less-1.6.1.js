@@ -5426,9 +5426,16 @@ tree.Selector.prototype = {
             len = elements.length,
             oelements, olen, i;
 
+
         oelements = other.elements.map( function(v) {
             return v.combinator.value + (v.value.value || v.value);
-        }).join("").match(/[,&#\.\w-]([\w-]|(\\.))*/g);
+        }).join("");
+
+        //obj(oelements);
+
+        oelements = oelements.match(/[,&#\.\w-]([\w-]|(\\.))*/g);
+
+        //obj(oelements);
         // ^ regexp could be more simple but see test/less/css-escapes.less:17, doh!
 
         if (!oelements) {
@@ -5449,6 +5456,8 @@ tree.Selector.prototype = {
                 }
             }
         }
+
+
         return olen; // return number of matched elements
     },
     eval: function (env) {

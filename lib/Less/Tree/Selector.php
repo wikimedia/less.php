@@ -53,37 +53,36 @@ class Less_Tree_Selector extends Less_Tree{
 	}
 
 	public function match($other) {
-		global $debug;
 
-		if( !$other ){
+		$css = $other->toCSS();
+		if( !preg_match_all('#[,&\#\.\w-](?:[\w-]|(?:\\\\.))*#', $css, $matches) ){
 			return 0;
 		}
 
-		$offset = 0;
-		$olen = $other->elements_len;
-		if( $olen ){
-			if( $other->elements[0]->value === "&" ){
-				$offset = 1;
-			}
-			$olen -= $offset;
-		}
-
-		if( $olen === 0 ){
+		$oelements = $matches[0];
+		if( !$oelements ){
 			return 0;
 		}
 
-		if( $this->elements_len < $olen ){
+		if( $oelements[0] === '&' ){
+			array_shift($oelements);
+		}
+
+		$olen = count($oelements);
+		$len = count($this->elements);
+		if( $olen === 0 || $len < $olen) {
 			return 0;
 		}
 
-		for ($i = 0; $i < $olen; $i ++) {
-			if ($this->elements[$i]->value !== $other->elements[$i + $offset]->value) {
+		for( $i = 0; $i < $olen; $i++ ){
+			if( $this->elements[$i]->value !== $oelements[$i]) {
 				return 0;
 			}
 		}
 
-		return $olen; // return number of matched selectors
+		return $olen; // return number of matched elements
 	}
+
 
 	public function compile($env) {
 

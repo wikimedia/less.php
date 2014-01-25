@@ -139,6 +139,9 @@ function obj(mixed){
 			break;
 			case 'function':
 			break;
+			case 'string':
+				output = '(string:' +mixed.length+')'+mixed+'';
+			break;
 			default:
 				output = '('+type+')'+mixed;
 			break;

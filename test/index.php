@@ -571,7 +571,7 @@ function obj($mixed){
 	$output = '';
 
 
-	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports');
+	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','cache_string','elements_len');
 	//$exclude_keys = array();
 
 	$type = gettype($mixed);
@@ -616,18 +616,22 @@ function obj($mixed){
 			}
 			$output .= str_repeat('    ',$level).')';
 		break;
-		case 'boolean':
-			if( $mixed ){
-				$mixed = 'true';
-			}else{
-				$mixed = 'false';
-			}
 		case 'string':
 			$output = '(string:'.strlen($mixed).')'.htmlspecialchars($mixed,ENT_COMPAT,'UTF-8',false).'';
 		break;
 
 		case 'integer':
 			$type = 'number';
+			$output = '(number)'.$mixed;
+		break;
+
+
+		case 'boolean':
+			if( $mixed ){
+				$mixed = 'true';
+			}else{
+				$mixed = 'false';
+			}
 		default:
 			$output = '('.$type.')'.htmlspecialchars($mixed,ENT_COMPAT,'UTF-8',false).'';
 		break;
@@ -697,8 +701,8 @@ $content = ob_get_clean();
 
 		if( isset($_GET['file']) ){
 			//echo '<script src="assets/less-1.4.2.js"></script>';
-			echo '<script src="assets/less-1.5.1.js"></script>';
-			//echo '<script src="assets/less-1.6.1.js"></script>';
+			//echo '<script src="assets/less-1.5.1.js"></script>';
+			echo '<script src="assets/less-1.6.1.js"></script>';
 		}
 	?>
 </head>
