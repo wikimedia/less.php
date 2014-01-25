@@ -38,47 +38,46 @@ require_once( dirname(__FILE__).'/Cache.php');
  * @method void Less_Tree_Variable()
  *
  */
-class Less_Parser extends Less_Cache{
+class Less_Parser{
 
 
-	private $input;		// LeSS input string
+	/**
+	 * Default parser options
+	 */
+	public static $default_options = array(
+		'compress'				=> false,
+		'import_dirs'			=> array(),
+		'import_callback'		=> null,
+		'cache_dir'				=> null,
+		'cache_method'			=> 'php', 			//false, 'serialize', 'php', 'var_export';
+
+		'sourceMap'				=> false,
+		'sourceMapBasepath'		=> null,
+		'sourceMapWriteTo'		=> null,
+		'sourceMapURL'			=> null,
+	);
+
+	public static $options = array();
+
+
+	private $input;		// Less input string
 	private $input_len;	// input string length
 	private $pos;		// current index in `input`
 	private $memo;		// temporarily holds `i`, when backtracking
 
 
 	/**
-	 * @var string
-	 */
-	private $path;
-
-	/**
-	 * @var string
-	 */
-	private $filename;
-
-
-	/**
-	 *
-	 */
-	const version = '1.5.1.1';
-	const less_version = '1.5.1';
-
-	/**
 	 * @var Less_Environment
 	 */
 	private $env;
+
 	private $rules = array();
 
 	private static $imports = array();
 
 	public static $has_extends = false;
 
-	public $cache_method = 'php'; //false, 'serialize', 'php', 'var_export';
-
 	public static $next_id = 0;
-
-	private $options = array();
 
 
 	/**
@@ -94,9 +93,8 @@ class Less_Parser extends Less_Cache{
 		}else{
 			$this->env = new Less_Environment( $env );
 			self::$imports = array();
-			self::$import_dirs = array();
+			$this->SetOptions(Less_Parser::$default_options);
 			if( is_array($env) ){
-				$this->options = $env;
 				$this->SetOptions($env);
 			}
 		}
@@ -125,18 +123,16 @@ class Less_Parser extends Less_Cache{
 
 			case 'import_dirs':
 				$this->SetImportDirs($value);
-			break;
+			return;
 
 			case 'cache_dir':
-				$this->SetCacheDir($value);
-			break;
-
-			case 'cache_method':
-				if( in_array($value, array('php','serialize','var_export')) ){
-					$this->cache_method = $value;
+				if( is_string($value) ){
+					Less_Cache::SetCacheDir($value);
 				}
-			break;
+			return;
 		}
+
+		Less_Parser::$options[$option] = $value;
 	}
 
 
@@ -184,7 +180,7 @@ class Less_Parser extends Less_Cache{
 
 
 		if( $this->env->sourceMap ){
-			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), $this->options );
+			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), Less_Parser::$options );
 			// will also save file
 			// FIXME: should happen somewhere else?
 			$css = $generator->generateCSS();
@@ -265,10 +261,8 @@ class Less_Parser extends Less_Cache{
 	 */
 	public function SetFileInfo( $filename, $uri_root = ''){
 
-		$this->path = pathinfo($filename, PATHINFO_DIRNAME);
-		$this->filename = Less_Environment::normalizePath($filename);
-
-		$dirname = preg_replace('/[^\/\\\\]*$/','',$this->filename);
+		$filename = Less_Environment::normalizePath($filename);
+		$dirname = preg_replace('/[^\/\\\\]*$/','',$filename);
 
 		$currentFileInfo = array();
 		$currentFileInfo['currentDirectory'] = $dirname;
@@ -291,6 +285,10 @@ class Less_Parser extends Less_Cache{
 		$this->env->currentFileInfo = $currentFileInfo;
 	}
 
+	/**
+	 * @deprecated 1.5.1.2
+	 *
+	 */
 	public function SetCacheDir( $dir ){
 
 		if( !file_exists($dir) ){
@@ -307,7 +305,7 @@ class Less_Parser extends Less_Cache{
 
 		}else{
 			$dir = str_replace('\\','/',$dir);
-			self::$cache_dir = rtrim($dir,'/').'/';
+			Less_Cache::$cache_dir = rtrim($dir,'/').'/';
 			return true;
 		}
 	}
@@ -319,6 +317,7 @@ class Less_Parser extends Less_Cache{
 	 * @param array $dirs
 	 */
 	public function SetImportDirs( $dirs ){
+		Less_Parser::$options['import_dirs'] = array();
 
 		foreach($dirs as $path => $uri_root){
 
@@ -334,7 +333,7 @@ class Less_Parser extends Less_Cache{
 				}
 			}
 
-			self::$import_dirs[$path] = $uri_root;
+			Less_Parser::$options['import_dirs'][$path] = $uri_root;
 		}
 	}
 
@@ -356,11 +355,11 @@ class Less_Parser extends Less_Cache{
 
 		$cache_file = false;
 		if( $file_path ){
-			if( $this->cache_method ){
+			if( Less_Parser::$options['cache_method'] ){
 				$cache_file = $this->CacheFile( $file_path );
 
 				if( $cache_file && file_exists($cache_file) ){
-					switch($this->cache_method){
+					switch(Less_Parser::$options['cache_method']){
 
 						// Using serialize
 						// Faster but uses more memory
@@ -398,9 +397,9 @@ class Less_Parser extends Less_Cache{
 
 
 		//save the cache
-		if( $cache_file && $this->cache_method ){
+		if( $cache_file ){
 
-			switch($this->cache_method){
+			switch(Less_Parser::$options['cache_method']){
 				case 'serialize':
 					file_put_contents( $cache_file, serialize($rules) );
 				break;
@@ -415,10 +414,7 @@ class Less_Parser extends Less_Cache{
 				break;
 			}
 
-			if( self::$clean_cache ){
-				self::CleanCache();
-			}
-
+			Less_Cache::CleanCache();
 		}
 
 		return $rules;
@@ -427,7 +423,7 @@ class Less_Parser extends Less_Cache{
 
 	public function CacheFile( $file_path ){
 
-		if( $file_path && self::$cache_dir ){
+		if( $file_path && Less_Cache::$cache_dir ){
 
 			$env = get_object_vars($this->env);
 			unset($env['frames']);
@@ -437,9 +433,9 @@ class Less_Parser extends Less_Cache{
 			$parts[] = filesize( $file_path );
 			$parts[] = filemtime( $file_path );
 			$parts[] = $env;
-			$parts[] = self::cache_version;
-			$parts[] = $this->cache_method;
-			return self::$cache_dir.'lessphp_'.base_convert( sha1(json_encode($parts) ), 16, 36).'.lesscache';
+			$parts[] = Less_Version::cache_version;
+			$parts[] = Less_Parser::$options['cache_method'];
+			return Less_Cache::$cache_dir.'lessphp_'.base_convert( sha1(json_encode($parts) ), 16, 36).'.lesscache';
 		}
 	}
 
@@ -2089,7 +2085,7 @@ class Less_Parser extends Less_Cache{
 
 
 		//caching
-		if( self::$cache_dir ){
+		if( Less_Cache::$cache_dir ){
 			$obj->cache_string = ' new '.$class.'(';
 			$comma = '';
 			foreach($args as $arg){

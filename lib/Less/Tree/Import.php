@@ -140,8 +140,20 @@ class Less_Tree_Import extends Less_Tree{
 		$evald = $this->compileForImport($env);
 
 		//get path & uri
-		$this->PathAndUri( $evald, $env, $full_path, $uri );
+		$path_and_uri = null;
+		if( is_callable(Less_Parser::$options['import_callback']) ){
+			$path_and_uri = call_user_func(Less_Parser::$options['import_callback'],$evald);
+		}
 
+		if( !$path_and_uri ){
+			$path_and_uri = $evald->PathAndUri();
+		}
+
+		if( $path_and_uri ){
+			list($full_path, $uri) = $path_and_uri;
+		}else{
+			$full_path = $uri = $this->getPath();
+		}
 
 		//import once
 		if( $evald->skip( $full_path, $env) ){
@@ -178,36 +190,32 @@ class Less_Tree_Import extends Less_Tree{
 	 *
 	 * @param Less_Tree_Import $evald
 	 */
-	function PathAndUri( $evald, $env, &$full_path, &$uri ){
-		$uri = $full_path = false;
+	function PathAndUri(){
 
-		$evald_path = $evald->getPath();
-
-		$import_dirs = array_merge( array( $this->currentFileInfo['currentDirectory'] => $this->currentFileInfo['uri_root'] ), Less_Parser::$import_dirs );
+		$evald_path = $this->getPath();
 
 		if( $evald_path ){
+
+			$uri = $full_path = false;
+			$import_dirs = array_merge( array( $this->currentFileInfo['currentDirectory'] => $this->currentFileInfo['uri_root'] ), Less_Parser::$options['import_dirs'] );
+
 			foreach( $import_dirs as $rootpath => $rooturi){
 				if( is_callable($rooturi) ){
 					list($path, $uri) = call_user_func($rooturi, $evald_path);
-					if( null !== $path ){
+					if( is_string($path) ){
 						$full_path = $path;
-						break;
+						return array( $full_path, $uri );
 					}
 				}else{
 					$path = $rootpath.$evald_path;
 					if( file_exists($path) ){
 						$full_path = Less_Environment::normalizePath($path);
 						$uri = Less_Environment::normalizePath(dirname($rooturi.$evald_path));
-						break;
+						return array( $full_path, $uri );
 					}
 				}
 			}
 		}
-
-		if( !$full_path ){
-			$full_path = $uri = $evald_path;
-		}
-
 	}
 
 

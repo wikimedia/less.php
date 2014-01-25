@@ -160,21 +160,32 @@ class ParserTest{
 			$options['sourceMapURL']		= $this->AbsoluteToRelative($generated_map);
 		}
 
+		//example, but not very functional import callback
+		/*
+		$options['import_callback'] = 'callback';
+		if( !function_exists('callback') ){
+			function callback($evald){
+				$evaldPath = $evald->getPath();
+				msg('evaldpath: '.$evaldPath);
+			}
+		}
+		*/
+
 
 		$compiled = '';
 		try{
 
 			/**
 			 * Less_Cache Testing
+			 */
 			Less_Cache::$cache_dir = $this->cache_dir;
 			//$cached_css_file = Less_Cache::Regen( array($less=>'') );
 			$cached_css_file = Less_Cache::Get( array($less=>'') );
 			$compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
-			 */
 
-			$parser = new Less_Parser( $options );
-			$parser->parseFile($less);
-			$compiled = $parser->getCss();
+			//$parser = new Less_Parser( $options );
+			//$parser->parseFile($less);
+			//$compiled = $parser->getCss();
 
 			//$this->SaveExpected($css, $compiled);
 
