@@ -56,6 +56,7 @@ class Less_Tree_Rule extends Less_Tree{
 			Less_Environment::$strictMath = true;
 		}
 
+		// missing try ... catch
 		$return = new Less_Tree_Rule($this->name,
 									$this->value->compile($env),
 									$this->important,

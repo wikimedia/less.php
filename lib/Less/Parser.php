@@ -264,6 +264,8 @@ class Less_Parser{
 
 		$this->input = $str;
 		$this->_parse();
+
+		return $this;
 	}
 
 
@@ -274,7 +276,7 @@ class Less_Parser{
 	 * @param string $filename The file to parse
 	 * @param string $uri_root The url of the file
 	 * @param bool $returnRoot Indicates whether the return value should be a css string a root node
-	 * @return Less_Tree_Ruleset|null
+	 * @return Less_Tree_Ruleset|Less_Parser
 	 */
 	public function parseFile( $filename, $uri_root = '', $returnRoot = false){
 
@@ -295,6 +297,7 @@ class Less_Parser{
 			$return = new Less_Tree_Ruleset(array(), $rules );
 		}else{
 			$this->_parse( $filename );
+			$return = $this;
 		}
 
 		if( $previousFileInfo ){
@@ -306,37 +309,18 @@ class Less_Parser{
 
 
 	/**
-	 * @param string $filename
+	 * Allows a user to set variables values
+	 * @param array $vars
+	 * @return Less_Parser
 	 */
-	public function SetFileInfo( $filename, $uri_root = ''){
+	public function ModifyVars( $vars ){
 
-		$filename = Less_Environment::normalizePath($filename);
-		$dirname = preg_replace('/[^\/\\\\]*$/','',$filename);
+		$this->input = $this->serializeVars( $vars );
+		$this->_parse();
 
-		$currentFileInfo = array();
-		$currentFileInfo['currentDirectory'] = $dirname;
-		$currentFileInfo['filename'] = $filename;
-		$currentFileInfo['rootpath'] = $dirname;
-		if( isset($this->env->currentFileInfo) ){
-			$currentFileInfo['entryPath'] = $this->env->currentFileInfo['entryPath'];
-		}else{
-			$currentFileInfo['entryPath'] = $dirname;
-		}
-
-		if( empty($uri_root) ){
-			$currentFileInfo['uri_root'] = $uri_root;
-		}else{
-			$currentFileInfo['uri_root'] = rtrim($uri_root,'/').'/';
-		}
-
-
-		//inherit reference
-		if( isset($this->env->currentFileInfo['reference']) && $this->env->currentFileInfo['reference'] ){
-			$currentFileInfo['reference'] = true;
-		}
-
-		$this->env->currentFileInfo = $currentFileInfo;
+		return $this;
 	}
+
 
 	/**
 	 * @deprecated 1.5.1.2
@@ -395,6 +379,40 @@ class Less_Parser{
 	 */
 	private function _parse( $file_path = null ){
 		$this->rules = array_merge($this->rules, $this->GetRules( $file_path ));
+	}
+
+
+	/**
+	 * @param string $filename
+	 */
+	private function SetFileInfo( $filename, $uri_root = ''){
+
+		$filename = Less_Environment::normalizePath($filename);
+		$dirname = preg_replace('/[^\/\\\\]*$/','',$filename);
+
+		$currentFileInfo = array();
+		$currentFileInfo['currentDirectory'] = $dirname;
+		$currentFileInfo['filename'] = $filename;
+		$currentFileInfo['rootpath'] = $dirname;
+		if( isset($this->env->currentFileInfo) ){
+			$currentFileInfo['entryPath'] = $this->env->currentFileInfo['entryPath'];
+		}else{
+			$currentFileInfo['entryPath'] = $dirname;
+		}
+
+		if( empty($uri_root) ){
+			$currentFileInfo['uri_root'] = $uri_root;
+		}else{
+			$currentFileInfo['uri_root'] = rtrim($uri_root,'/').'/';
+		}
+
+
+		//inherit reference
+		if( isset($this->env->currentFileInfo['reference']) && $this->env->currentFileInfo['reference'] ){
+			$currentFileInfo['reference'] = true;
+		}
+
+		$this->env->currentFileInfo = $currentFileInfo;
 	}
 
 
@@ -1850,11 +1868,11 @@ class Less_Parser{
 	}
 
 
-    /**
-     * Parses multiplication operation
-     *
-     * @return Less_Tree_Operation|null
-     */
+	/**
+	 * Parses multiplication operation
+	 *
+	 * @return Less_Tree_Operation|null
+	 */
 	function parseMultiplication(){
 
 		$return = $m = $this->parseOperand();
@@ -1887,11 +1905,11 @@ class Less_Parser{
 	}
 
 
-    /**
-     * Parses an addition operation
-     *
-     * @return Less_Tree_Operation|null
-     */
+	/**
+	 * Parses an addition operation
+	 *
+	 * @return Less_Tree_Operation|null
+	 */
 	private function parseAddition (){
 
 		$return = $m = $this->parseMultiplication();
@@ -1925,11 +1943,11 @@ class Less_Parser{
 	}
 
 
-    /**
-     * Parses the conditions
-     *
-     * @return Less_Tree_Condition|null
-     */
+	/**
+	 * Parses the conditions
+	 *
+	 * @return Less_Tree_Condition|null
+	 */
 	private function parseConditions() {
 		$index = $this->pos;
 		$return = $a = $this->parseCondition();
@@ -2036,7 +2054,7 @@ class Less_Parser{
 	 * Parse a property
 	 * eg: 'min-width', 'orientation', etc
 	 *
-     * @return string
+	 * @return string
 	 */
 	private function parseProperty (){
 		$name = $this->MatchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*:/');
@@ -2046,17 +2064,27 @@ class Less_Parser{
 	}
 
 
-    /**
-     * Parse a rule property
-     * eg: 'color', 'width', 'height', etc
-     *
-     * @return string
-     */
-    private function parseRuleProperty(){
+	/**
+	 * Parse a rule property
+	 * eg: 'color', 'width', 'height', etc
+	 *
+	 * @return string
+	 */
+	private function parseRuleProperty(){
 		$name = $this->MatchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*(\+?)\s*:/');
 		if( $name ){
 			return $name[1] . (isset($name[2]) ? $name[2] : '');
 		}
+	}
+
+	public function serializeVars( $vars ){
+		$s = '';
+
+		foreach($vars as $name => $value){
+			$s += (($name[0] === '@') ? '' : '@') . $name .': '. $value . ((substr($value,-1) === ';') ? '' : ';');
+		}
+
+		return $s;
 	}
 
 
@@ -2090,12 +2118,12 @@ class Less_Parser{
 	}
 
 
-    /**
-     * Create Less_Tree_* objects and optionally generate a cache string
-     *
-     * @return mixed
-     */
-    public function __call($class,$args){
+	/**
+	 * Create Less_Tree_* objects and optionally generate a cache string
+	 *
+	 * @return mixed
+	 */
+	public function __call($class,$args){
 
 		//$pre_args = $args;
 		//$args += array(null,null,null,null,null,null,null);
@@ -2152,11 +2180,11 @@ class Less_Parser{
 	}
 
 
-    /**
-     * Convert an argument to a string for use in the parser cache
-     *
-     * @return string
-     */
+	/**
+	 * Convert an argument to a string for use in the parser cache
+	 *
+	 * @return string
+	 */
 	public static function ArgString($arg){
 
 		$type = gettype($arg);
