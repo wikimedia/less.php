@@ -268,7 +268,11 @@ class Less_Parser{
 		$currentFileInfo['currentDirectory'] = $dirname;
 		$currentFileInfo['filename'] = $filename;
 		$currentFileInfo['rootpath'] = $dirname;
-		$currentFileInfo['entryPath'] = $dirname;
+		if( isset($this->env->currentFileInfo) ){
+			$currentFileInfo['entryPath'] = $this->env->currentFileInfo['entryPath'];
+		}else{
+			$currentFileInfo['entryPath'] = $dirname;
+		}
 
 		if( empty($uri_root) ){
 			$currentFileInfo['uri_root'] = $uri_root;

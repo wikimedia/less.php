@@ -196,7 +196,6 @@ class Less_Tree_Import extends Less_Tree{
 
 		if( $evald_path ){
 
-			$uri = $full_path = false;
 			$import_dirs = array_merge( array( $this->currentFileInfo['currentDirectory'] => $this->currentFileInfo['uri_root'] ), Less_Parser::$options['import_dirs'] );
 
 			foreach( $import_dirs as $rootpath => $rooturi){
