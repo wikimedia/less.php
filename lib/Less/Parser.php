@@ -55,6 +55,8 @@ class Less_Parser{
 		'sourceMapBasepath'		=> null,
 		'sourceMapWriteTo'		=> null,
 		'sourceMapURL'			=> null,
+
+		'plugins'				=> array(),
 	);
 
 	public static $options = array();
@@ -91,9 +93,16 @@ class Less_Parser{
 		if( $env instanceof Less_Environment ){
 			$this->env = $env;
 		}else{
-			$this->env = new Less_Environment( $env );
+
+			//reset
+			self::$imports = array();
+			self::$has_extends = false;
 			self::$imports = array();
 			$this->SetOptions(Less_Parser::$default_options);
+
+
+			//set new options
+			$this->env = new Less_Environment( $env );
 			if( is_array($env) ){
 				$this->SetOptions($env);
 			}
@@ -156,28 +165,12 @@ class Less_Parser{
 		$root->firstRoot = true;
 
 
-		//$importVisitor = new Less_importVisitor();
-		//$importVisitor->run($root);
-
-		//obj($root);
+		$this->PreVisitors($root);
 
 		self::$has_extends = false;
-
 		$evaldRoot = $root->compile($this->env);
 
-
-		$joinSelector = new Less_Visitor_joinSelector();
-		$joinSelector->run($evaldRoot);
-
-
-		if( self::$has_extends ){
-			$extendsVisitor = new Less_Visitor_processExtends();
-			$extendsVisitor->run($evaldRoot);
-		}
-
-		$toCSSVisitor = new Less_Visitor_toCSS();
-		$toCSSVisitor->run($evaldRoot);
-
+		$this->PostVisitors($evaldRoot);
 
 		if( $this->env->sourceMap ){
 			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), Less_Parser::$options );
@@ -197,6 +190,62 @@ class Less_Parser{
 		setlocale(LC_NUMERIC, $locale);
 
 		return $css;
+	}
+
+	/**
+	 * Run pre-compile visitors
+	 *
+	 */
+	private function PreVisitors($root){
+
+		$preEvalVisitors = array();
+		for($i = 0; $i < count($preEvalVisitors); $i++ ){
+			$preEvalVisitors[$i]->run($root);
+		}
+
+		if( Less_Parser::$options['plugins'] ){
+			foreach(Less_Parser::$options['plugins'] as $plugin){
+				if( property_exists($plugin,'isPreEvalVisitor') && $plugin->isPreEvalVisitor ){
+					$plugin->run($root);
+				}
+			}
+		}
+	}
+
+
+	/**
+	 * Run post-compile visitors
+	 *
+	 */
+	private function PostVisitors($evaldRoot){
+
+		$visitors = array();
+		$visitors[] = new Less_Visitor_joinSelector();
+		if( self::$has_extends ){
+			$visitors[] = new Less_Visitor_processExtends();
+		}
+		$visitors[] = new Less_Visitor_toCSS();
+
+
+		if( Less_Parser::$options['plugins'] ){
+			foreach(Less_Parser::$options['plugins'] as $plugin){
+				if( property_exists($plugin,'isPreEvalVisitor') && $plugin->isPreEvalVisitor ){
+					continue;
+				}
+
+				if( property_exists($plugin,'isPreVisitor') && $plugin->isPreVisitor ){
+					array_unshift( $visitors, $plugin);
+				}else{
+					$visitors[] = $plugin;
+				}
+			}
+		}
+
+
+		for($i = 0; $i < count($visitors); $i++ ){
+			$visitors[$i]->run($evaldRoot);
+		}
+
 	}
 
 
