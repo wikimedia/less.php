@@ -12,8 +12,6 @@ class Less_Functions{
 	}
 
 
-	//tree.operate()
-
 	/**
 	 * @param string $op
 	 */
@@ -322,7 +320,7 @@ class Less_Functions{
 			$threshold = Less_Functions::number($threshold);
 		}
 
-		if( ($color->luma() * $color->alpha) < $threshold ){
+		if( $color->luma() < $threshold ){
 			return $light;
 		} else {
 			return $dark;
