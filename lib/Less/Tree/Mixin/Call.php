@@ -32,7 +32,6 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 	/**
 	 * less.js: tree.mixin.Call.prototype()
 	 *
-	 */
 	public function compile($env){
 
 		$rules = array();
@@ -103,7 +102,131 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 			throw new Less_Exception_Compiler(trim($this->selector->toCSS()) . " is undefined", $this->index);
 		}
 	}
+	 */
 
+
+	public function compile($env){
+
+
+		$rules = array();
+		$match = false;
+		$isOneFound = false;
+		$defaultFunc = new Less_Tree_DefaultFunc();
+		$candidates = array();
+
+		$args = array();
+		foreach($this->arguments as $a){
+			$args[] = array('name'=> $a['name'], 'value' => $a['value']->compile($env) );
+		}
+
+		foreach($env->frames as $frame){
+			$mixins = $frame->find($this->selector, null, $env);
+
+			if( !$mixins ){
+				continue;
+			}
+
+			$isOneFound = true;
+
+			// To make `default()` function independent of definition order we have two "subpasses" here.
+			// At first we evaluate each guard *twice* (with `default() == true` and `default() == false`),
+			// and build candidate list with corresponding flags. Then, when we know all possible matches,
+			// we make a final decision.
+
+			$mixins_len = count($mixins);
+			for( $m = 0; $m < $mixins_len; $m++ ){
+				$mixin = $mixins[$m];
+
+				if( $this->IsRecursive( $env, $mixin ) ){
+					continue;
+				}
+
+				if( $mixin->matchArgs($args, $env) ){
+
+					$candidate = array('mixin' => $mixin);
+
+					if( $mixin instanceof Less_Tree_Ruleset ){
+
+						for( $f = 0; $f < 2; $f++ ){
+							$defaultFunc->value($f);
+							$conditionResult[$f] = $mixin->matchCondition( $args, $env);
+						}
+						if( $conditionResult[0] || $conditionResult[1] ){
+							if( $conditionResult[0] != $conditionResult[1] ){
+								if( $defaultUsed ){
+									// todo: ideally, it would make sense to also print the candidate
+									// mixin definitions that cause the conflict (current one and the
+									// mixin that set defaultUsed flag). But is there any easy method
+									// to get their filename/line/index info here?
+									throw Exception( 'Ambiguous use of `default()` found when matching for `'. $this->format($args) + '`' );
+								}
+
+								$defaultUsed						= true;
+								$candidate['matchIfDefault']		= true;
+								$candidate['matchIfDefaultValue']	= $conditionResult[1];
+							}
+
+							$candidates[] = $candidate;
+						}
+					}else{
+						$candidates[] = $candidate;
+					}
+
+					$match = true;
+				}
+			}
+
+			$defaultFunc->reset();
+
+			$candidates_length = count($candidates);
+			$length_1 = ($candidates_length == 1);
+
+			for( $m = 0; $m < $candidates_length; $m++){
+				$candidate = $candidates[$m];
+				if( !isset($candidate['matchIfDefault']) || (isset($candidate['matchIfDefaultValue']) && ($candidate['matchIfDefaultValue'] == $length_1)) ){
+					try{
+						$mixin = $candidate['mixin'];
+						if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
+							$mixin = new Less_Tree_Mixin_Definition('', array(), $mixin->rules, null, false);
+							$mixin->originalRuleset = $mixins[$m]->originalRuleset;
+						}
+
+						//if (this.important) {
+						//	isImportant = env.isImportant;
+						//	env.isImportant = true;
+						//}
+						$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
+						//if (this.important) {
+						//	env.isImportant = isImportant;
+						//}
+					} catch (Exception $e) {
+						//throw new Less_Exception_Compiler($e->getMessage(), $e->index, null, $this->currentFileInfo['filename']);
+						throw new Less_Exception_Compiler($e->getMessage(), null, null, $this->currentFileInfo['filename']);
+					}
+				}
+			}
+
+			if( $match ){
+				if( !$this->currentFileInfo || !isset($this->currentFileInfo['reference']) || !$this->currentFileInfo['reference'] ){
+					foreach($rules as $rule){
+						if( Less_Parser::is_method($rule,'markReferenced') ){
+							$rule->markReferenced();
+						}
+					}
+				}
+				return $rules;
+			}
+		}
+
+		if( $isOneFound ){
+			throw new Less_Exception_Compiler('No matching definition was found for `'.$this->Format( $args ).'`',
+				$this->index, null, $this->currentFileInfo['filename']);
+
+		}else{
+			throw new Less_Exception_Compiler(trim($this->selector->toCSS()) . " is undefined", $this->index);
+		}
+
+	}
 
 	/**
 	 * Format the args for use in exception messages
