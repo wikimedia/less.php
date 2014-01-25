@@ -53,7 +53,7 @@ class Less_Tree_Element extends Less_Tree{
 			$value = $value->toCSS();
 		}
 
-		if( $value === '' && $this->combinator->value[0] === '&' ){
+		if( $value === '' && $this->combinator->value && $this->combinator->value[0] === '&' ){
 			return '';
 		}
 		return $this->combinator->toCSS() . $value;
