@@ -56,9 +56,12 @@ class Less_Tree_Call extends Less_Tree{
 			case 'svg-gradient':
 			$name = 'svggradient';
 			break;
+
+			case 'default':
+			return new Less_Tree_Anonymous('default?');
 		}
 
-
+		//echo '<h4>'.$name.'</h4>';
 		if( method_exists('Less_Functions',$name) ){ // 1.
 			try {
 				$func = new Less_Functions($env, $this->currentFileInfo);

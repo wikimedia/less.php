@@ -2117,7 +2117,7 @@ class Less_Parser{
 
 			foreach($name as $k => $name_k ){
 				if( $name[$k] && is_string($name[$k]) && $name[$k][0] === '@' ){
-					$name[$k] = new Less_Tree_Variable('@' . substr($name[$k],2,-1), $index[$k], $this->env['currentFileInfo'] );
+					$name[$k] = new Less_Tree_Variable('@' . substr($name[$k],2,-1), $index[$k], $this->env->currentFileInfo );
 				}
 			}
 
