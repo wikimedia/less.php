@@ -24,8 +24,8 @@ class Less_Functions{
 		}
 	}
 
-	static public function clamp($val){
-		return min(1, max(0, $val));
+	static public function clamp($val, $max = 1){
+		return min( max($val, 0), $max);
 	}
 
 	static public function number($n){
