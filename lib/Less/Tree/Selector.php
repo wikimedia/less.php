@@ -15,6 +15,8 @@ class Less_Tree_Selector extends Less_Tree{
 
 	public $elements_len = 0;
 
+	public $_oelements;
+
 	/**
 	 * @param boolean $isReferenced
 	 */
@@ -46,33 +48,23 @@ class Less_Tree_Selector extends Less_Tree{
 	}
 
 	function createDerived( $elements, $extendList = null, $evaldCondition = null ){
-		$evaldCondition = $evaldCondition != null ? $evaldCondition : $this->evaldCondition;
 		$newSelector = new Less_Tree_Selector( $elements, ($extendList ? $extendList : $this->extendList), $this->condition, $this->index, $this->currentFileInfo, $this->isReferenced);
-		$newSelector->evaldCondition = $evaldCondition;
+		$newSelector->evaldCondition = $evaldCondition ? $evaldCondition : $this->evaldCondition;
 		return $newSelector;
 	}
 
 	// Performance issues with 1.6.1
 	// Compiling bootstrap almost doubled: from 4.5 seconds to 7.8 seconds
-	public function match($other) {
+	public function match( $other ){
 
-		$css = $other->toCSS();
-		if( !preg_match_all('#[,&\#\.\w-](?:[\w-]|(?:\\\\.))*#', $css, $matches) ){
-			return 0;
-		}
-
-		$oelements = $matches[0];
+		$oelements = $other->GetElements();
 		if( !$oelements ){
 			return 0;
 		}
 
-		if( $oelements[0] === '&' ){
-			array_shift($oelements);
-		}
-
 		$olen = count($oelements);
 		$len = count($this->elements);
-		if( $olen === 0 || $len < $olen) {
+		if( $len < $olen) {
 			return 0;
 		}
 
@@ -83,6 +75,38 @@ class Less_Tree_Selector extends Less_Tree{
 		}
 
 		return $olen; // return number of matched elements
+	}
+
+
+	public function GetElements(){
+
+		if( !isset($this->_oelements) ){
+			$this->_oelements = array();
+			$css = '';
+			foreach($this->elements as $v){
+				$css .= $v->combinator->value;
+				if( !is_object($v->value) ){
+					$css .= $v->value;
+					continue;
+				}
+
+				if( !property_exists($v->value,'value') || is_object($v->value->value) ){
+					$css = '';
+					break;
+				}
+				$css .= $v->value->value;
+			}
+
+			if( preg_match_all('/[,&#\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches) ){
+				$this->_oelements = $matches[0];
+
+				if( $this->_oelements[0] === '&' ){
+					array_shift($this->_oelements);
+				}
+			}
+		}
+
+		return $this->_oelements;
 	}
 
 
@@ -110,26 +134,10 @@ class Less_Tree_Selector extends Less_Tree{
      * @see Less_Tree::genCSS
      */
 	function genCSS( $output ){
-		//for bootstrap, $_css is only used ~838 times, vs 4,500 for non-cached values
-		if( !$this->_css ){
-			foreach($this->elements as $element){
-				$element->genCSS( $output );
-			}
-		}else{
-			$output->add( $this->_css );
+		foreach($this->elements as $element){
+			$element->genCSS( $output );
 		}
 	}
-
-	// Using $this->_css brings performance back to 5.6 seconds, but breaks bootstrap
-	public function toCSS(){
-		if( !$this->_css ){
-			$output = new Less_Output();
-			$this->genCSS($output);
-			$this->_css = $output->toString();
-		}
-		return $this->_css;
-	}
-
 
 	function markReferenced(){
 		$this->isReferenced = true;
