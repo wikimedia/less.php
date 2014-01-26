@@ -58,7 +58,7 @@ class Less_Tree_Call extends Less_Tree{
 			break;
 
 			case 'default':
-			return new Less_Tree_Anonymous('default?');
+			return Less_Tree_DefaultFunc::compile();
 		}
 
 		//echo '<h4>'.$name.'</h4>';

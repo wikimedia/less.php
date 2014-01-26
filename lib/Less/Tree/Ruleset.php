@@ -136,9 +136,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 	private function PrepareRuleset($env){
 
 		$selectors = array();
-		$defaultFunc = new Less_Tree_DefaultFunc();
 		if( $this->selectors ){
-			$defaultFunc->error("it is currently only allowed in parametric mixin guards,");
+			Less_Tree_DefaultFunc::error("it is currently only allowed in parametric mixin guards,");
 
 			$selectors = array();
 			if( $this->selectors ){
@@ -147,7 +146,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 				}
 			}
 
-			$defaultFunc->reset();
+			Less_Tree_DefaultFunc::reset();
 		}
 
 		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);

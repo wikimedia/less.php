@@ -2,27 +2,27 @@
 
 class Less_Tree_DefaultFunc{
 
-	var $error_;
-	var $value_;
+	static $error_;
+	static $value_;
 
-	function compile(){
-		if( $this->error_ ){
-			throw Exception($this->error_);
+	static function compile(){
+		if( self::$error_ ){
+			throw Exception(self::$error_);
 		}
-		if( $this->value_ != null ){
-			return $this->value_ ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
+		if( self::$value_ != null ){
+			return self::$value_ ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
 		}
 	}
 
-	function value( $v ){
-		$this->value_ = $v;
+	static function value( $v ){
+		self::$value_ = $v;
 	}
 
-	function error( $e ){
-		$this->error_ = $e;
+	static function error( $e ){
+		self::$error_ = $e;
 	}
 
-	function reset(){
-		$this->value_ = $this->error_ = null;
+	static function reset(){
+		self::$value_ = self::$error_ = null;
 	}
 }

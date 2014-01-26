@@ -111,7 +111,6 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 		$rules = array();
 		$match = false;
 		$isOneFound = false;
-		$defaultFunc = new Less_Tree_DefaultFunc();
 		$candidates = array();
 
 		$args = array();
@@ -148,7 +147,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 					if( $mixin instanceof Less_Tree_Ruleset ){
 
 						for( $f = 0; $f < 2; $f++ ){
-							$defaultFunc->value($f);
+							Less_Tree_DefaultFunc::value($f);
 							$conditionResult[$f] = $mixin->matchCondition( $args, $env);
 						}
 						if( $conditionResult[0] || $conditionResult[1] ){
@@ -176,7 +175,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 				}
 			}
 
-			$defaultFunc->reset();
+			Less_Tree_DefaultFunc::reset();
 
 			$candidates_length = count($candidates);
 			$length_1 = ($candidates_length == 1);
