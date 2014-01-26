@@ -16,7 +16,7 @@ if (!class_exists('Less_Parser')) {
 
 class lessc
 {
-	static public $VERSION = Less_Parser::less_version;
+	static public $VERSION = Less_Version::less_version;
 
 	public $importDir = '';
 	protected $allParsedFiles = array();
