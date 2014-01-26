@@ -133,7 +133,12 @@ class Less_Tree_Selector extends Less_Tree{
     /**
      * @see Less_Tree::genCSS
      */
-	function genCSS( $output ){
+	function genCSS( $output, $firstSelector = false ){
+
+		if( !$firstSelector && $this->elements[0]->combinator->value === "" ){
+			$output->add(' ', $this->currentFileInfo, $this->index);
+		}
+
 		foreach($this->elements as $element){
 			$element->genCSS( $output );
 		}

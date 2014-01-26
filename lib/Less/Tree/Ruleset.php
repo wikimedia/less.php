@@ -333,12 +333,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 				$firstSelector = true;
 
 				foreach($path as $p){
-
-					if( !$firstSelector && $p->elements[0]->combinator->value === "" ){
-						$output->add(' '); //, $this->currentFileInfo, $this->index
-					}
-
-					$p->genCSS( $output );
+					$p->genCSS( $output, $firstSelector );
 					$firstSelector = false;
 				}
 
