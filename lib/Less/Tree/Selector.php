@@ -52,6 +52,8 @@ class Less_Tree_Selector extends Less_Tree{
 		return $newSelector;
 	}
 
+	// Performance issues with 1.6.1
+	// Compiling bootstrap almost doubled: from 4.5 seconds to 7.8 seconds
 	public function match($other) {
 
 		$css = $other->toCSS();
@@ -108,17 +110,26 @@ class Less_Tree_Selector extends Less_Tree{
      * @see Less_Tree::genCSS
      */
 	function genCSS( $output ){
-
-		if( !Less_Environment::$firstSelector && $this->elements[0]->combinator->value === "" ){
-			$output->add( ' ', $this->currentFileInfo, $this->index );
-		}
+		//for bootstrap, $_css is only used ~838 times, vs 4,500 for non-cached values
 		if( !$this->_css ){
-			//TODO caching? speed comparison?
 			foreach($this->elements as $element){
 				$element->genCSS( $output );
 			}
+		}else{
+			$output->add( $this->_css );
 		}
 	}
+
+	// Using $this->_css brings performance back to 5.6 seconds, but breaks bootstrap
+	public function toCSS(){
+		if( !$this->_css ){
+			$output = new Less_Output();
+			$this->genCSS($output);
+			$this->_css = $output->toString();
+		}
+		return $this->_css;
+	}
+
 
 	function markReferenced(){
 		$this->isReferenced = true;

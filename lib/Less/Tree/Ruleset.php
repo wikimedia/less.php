@@ -330,11 +330,18 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$paths_len = count($this->paths);
 			for( $i = 0; $i < $paths_len; $i++ ){
 				$path = $this->paths[$i];
-				Less_Environment::$firstSelector = true;
+				$firstSelector = true;
+
 				foreach($path as $p){
+
+					if( !$firstSelector && $p->elements[0]->combinator->value === "" ){
+						$output->add(' '); //, $this->currentFileInfo, $this->index
+					}
+
 					$p->genCSS( $output );
-					Less_Environment::$firstSelector = false;
+					$firstSelector = false;
 				}
+
 				if( $i + 1 < $paths_len ){
 					$output->add( ',' . $tabSetStr );
 				}

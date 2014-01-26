@@ -81,7 +81,6 @@ class Less_Parser{
 
 	public static $next_id = 0;
 
-
 	/**
 	 * @param Less_Environment|array|null $env
 	 */
@@ -1090,13 +1089,16 @@ class Less_Parser{
 
 		if( !$this->MatchReg( $isRule ? '/\\G&:extend\(/' : '/\\G:extend\(/' ) ){ return; }
 
+		$first_element = true;
+
 		do{
 			$option = null;
 			$elements = array();
 			while( true ){
 				$option = $this->MatchReg('/\\G(all)(?=\s*(\)|,))/');
 				if( $option ){ break; }
-				$e = $this->parseElement();
+				$e = $this->parseElement($first_element);
+				$first_element = false;
 				if( !$e ){ break; }
 				$elements[] = $e;
 			}
@@ -1417,8 +1419,8 @@ class Less_Parser{
 	// they are made out of a `Combinator` (see combinator rule),
 	// and an element name, such as a tag a class, or `*`.
 	//
-	private function parseElement(){
-		$c = $this->parseCombinator();
+	private function parseElement($first_element){
+		$c = $this->parseCombinator($first_element);
 		$index = $this->pos;
 
 		$e = $this->match( array('/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
@@ -1445,7 +1447,7 @@ class Less_Parser{
 	// as it's an empty space. We have to check the previous character
 	// in the input, to see if it's a ` ` character.
 	//
-	private function parseCombinator(){
+	private function parseCombinator($first_element){
 		$c = $this->input[$this->pos];
 		if ($c === '>' || $c === '+' || $c === '~' || $c === '|' || $c === '^' ){
 
@@ -1458,6 +1460,8 @@ class Less_Parser{
 			$this->skipWhitespace(0);
 
 			return $this->Less_Tree_Combinator( $c);
+		}elseif( $first_element ){
+			return $this->Less_Tree_Combinator('',true);
 		}elseif( $this->pos > 0 && $this->isWhitespace(-1) ){
 			return $this->Less_Tree_Combinator(' ');
 		} else {
@@ -1491,7 +1495,9 @@ class Less_Parser{
 		$c = null;
 		$index = $this->pos;
 
-		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchReg('/\\Gwhen/') )) || ($e = $this->parseElement()) ){
+		$first_element = true;
+
+		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchReg('/\\Gwhen/') )) || ($e = $this->parseElement($first_element)) ){
 			if( $when ){
 				$condition = $this->expect('parseConditions', 'expected condition');
 			}elseif( $condition ){
@@ -1505,6 +1511,7 @@ class Less_Parser{
 				$c = $this->input[ $this->pos ];
 				$elements[] = $e;
 				$e = null;
+				$first_element = false;
 			}
 
 			if( $c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')') { break; }
