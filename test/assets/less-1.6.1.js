@@ -9,8 +9,7 @@
 
  /** * @license Apache v2
  */
-
-
+var z = 0;
 
 (function (window, undefined) {//
 // Stub out `require` in the browser
@@ -5084,6 +5083,8 @@ tree.Ruleset.prototype = {
         var rules = [], match,
             key = selector.toCSS();
 
+		obj('find '+key);
+
         if (key in this._lookups) { return this._lookups[key]; }
 
         this.rulesets().forEach(function (rule) {
@@ -5425,41 +5426,58 @@ tree.Selector.prototype = {
     match: function (other) {
         var elements = this.elements,
             len = elements.length,
-            oelements, olen, i;
+            olen, i;
 
+        other.CacheElements();
 
-        oelements = other.elements.map( function(v) {
-            return v.combinator.value + (v.value.value || v.value);
-        }).join("");
-
-        //obj(oelements);
-
-        oelements = oelements.match(/[,&#\.\w-]([\w-]|(\\.))*/g);
-
-        //obj(oelements);
-        // ^ regexp could be more simple but see test/less/css-escapes.less:17, doh!
-
-        if (!oelements) {
-            return 0;
-        }
-
-        if (oelements[0] === "&") {
-            oelements.shift();
-        }
-
-        olen = oelements.length;
+        olen = other._elements.length;
         if (olen === 0 || len < olen) {
             return 0;
         } else {
             for (i = 0; i < olen; i++) {
-                if (elements[i].value !== oelements[i]) {
+                if (elements[i].value !== other._elements[i]) {
                     return 0;
                 }
             }
         }
 
-
         return olen; // return number of matched elements
+    },
+    CacheElements: function(){
+        var css = '', len, v;
+
+        if( !this._elements ){
+
+            len = this.elements.length;
+            for(i = 0; i < len; i++){
+
+                v = this.elements[i];
+                css += v.combinator.value;
+
+                if( !v.value.value ){
+                    css += v.value;
+                    continue;
+                }
+
+                if( typeof v.value.value !== "string" ){
+                    css = '';
+                    break;
+                }
+                css += v.value.value;
+            }
+
+            this._elements = css.match(/[,&#\.\w-]([\w-]|(\\.))*/g);
+
+            if (this._elements) {
+                if (this._elements[0] === "&") {
+                    this._elements.shift();
+                }
+
+            }else{
+                this._elements = [];
+            }
+
+        }
     },
     eval: function (env) {
         var evaldCondition = this.condition && this.condition.eval(env),
@@ -7491,7 +7509,7 @@ less.refresh = function (reload, modifyVars) {
 
     loadStyleSheets(function (e, root, _, sheet, env) {
         if (e) {
-			log(e);
+            log(e);
             return error(e, sheet.href);
         }
         if (env.local) {
@@ -7501,22 +7519,22 @@ less.refresh = function (reload, modifyVars) {
             //createCSS(root.toCSS(less), sheet, env.lastModified);
 
 
-			// less.php changes
+            // less.php changes
             var css = root.toCSS(less);
-			function totextarea(){
-				var textarea = document.getElementById('lessjs_textarea');
-				if( textarea ){
-					textarea.value = css;
-					diffUsingJS(0);
-				}else{
-					window.setTimeout(totextarea,300);
-				}
-			}
-			totextarea();
+            function totextarea(){
+                var textarea = document.getElementById('lessjs_textarea');
+                if( textarea ){
+                    textarea.value = css;
+                    diffUsingJS(0);
+                }else{
+                    window.setTimeout(totextarea,300);
+                }
+            }
+            totextarea();
 
 
         }
-        //log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
+        log("css for " + sheet.href + " generated in " + (new Date() - endTime) + 'ms', logLevel.info);
         if (env.remaining === 0) {
             //log("css generated in " + (new Date() - startTime) + 'ms', logLevel.info);
         }

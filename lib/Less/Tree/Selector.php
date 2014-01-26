@@ -22,8 +22,6 @@ class Less_Tree_Selector extends Less_Tree{
 	 */
 	public function __construct($elements = null, $extendList=null , $condition = null, $index=null, $currentFileInfo=null, $isReferenced=null ){
 
-
-
 		$this->elements = $elements;
 		$this->elements_len = count($elements);
 		if( $extendList ){
@@ -56,20 +54,21 @@ class Less_Tree_Selector extends Less_Tree{
 	// Performance issues with 1.6.1
 	// Compiling bootstrap almost doubled: from 4.5 seconds to 7.8 seconds
 	public function match( $other ){
+		static $z = 0;
 
-		$oelements = $other->GetElements();
-		if( !$oelements ){
+		$other->CacheElements();
+		if( !$other->_oelements ){
 			return 0;
 		}
 
-		$olen = count($oelements);
+		$olen = count($other->_oelements);
 		$len = count($this->elements);
 		if( $len < $olen) {
 			return 0;
 		}
 
 		for( $i = 0; $i < $olen; $i++ ){
-			if( $this->elements[$i]->value !== $oelements[$i]) {
+			if( $this->elements[$i]->value !== $other->_oelements[$i]) {
 				return 0;
 			}
 		}
@@ -78,9 +77,10 @@ class Less_Tree_Selector extends Less_Tree{
 	}
 
 
-	public function GetElements(){
+	public function CacheElements(){
 
 		if( !isset($this->_oelements) ){
+
 			$this->_oelements = array();
 			$css = '';
 			foreach($this->elements as $v){
@@ -90,7 +90,7 @@ class Less_Tree_Selector extends Less_Tree{
 					continue;
 				}
 
-				if( !property_exists($v->value,'value') || is_object($v->value->value) ){
+				if( !property_exists($v->value,'value') || !is_string($v->value->value) ){
 					$css = '';
 					break;
 				}
@@ -105,8 +105,6 @@ class Less_Tree_Selector extends Less_Tree{
 				}
 			}
 		}
-
-		return $this->_oelements;
 	}
 
 
