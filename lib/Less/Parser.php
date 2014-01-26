@@ -11,7 +11,6 @@ require_once( dirname(__FILE__).'/Cache.php');
  * @method void Less_Tree_Attribute()
  * @method void Less_Tree_Call()
  * @method void Less_Tree_Color()
- * @method void Less_Tree_Combinator()
  * @method void Less_Tree_Comment()
  * @method void Less_Tree_Condition()
  * @method void Less_Tree_Dimension()

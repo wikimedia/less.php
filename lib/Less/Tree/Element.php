@@ -66,7 +66,7 @@ class Less_Tree_Element extends Less_Tree{
 			return '';
 		}
 
-		return Less_Tree_Combinator::$_outputMap[$this->combinator] . $value;
+		return Less_Tree_Element::$_outputMap[$this->combinator] . $value;
 	}
 
 }
