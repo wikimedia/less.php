@@ -671,7 +671,7 @@ class Less_Functions{
 
 		if( $buf ){
 			$buf = $useBase64 ? base64_encode($buf) : rawurlencode($buf);
-			$filePath = "'data:" . $mimetype . ',' . $buf . "'";
+			$filePath = '"data:' . $mimetype . ',' . $buf . '"';
 		}
 
 		return new Less_Tree_Url( new Less_Tree_Anonymous($filePath) );
