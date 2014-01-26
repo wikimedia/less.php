@@ -1447,9 +1447,15 @@ class Less_Parser{
 	//
 	private function parseCombinator(){
 		$c = $this->input[$this->pos];
-		if ($c === '>' || $c === '+' || $c === '~' || $c === '|') {
+		if ($c === '>' || $c === '+' || $c === '~' || $c === '|' || $c === '^' ){
 
-			$this->skipWhitespace(1);
+			$this->pos++;
+			if( $this->input[$this->pos] === '^' ){
+				$c = '^^';
+				$this->pos++;
+			}
+
+			$this->skipWhitespace(0);
 
 			return $this->Less_Tree_Combinator( $c);
 		}elseif( $this->pos > 0 && $this->isWhitespace(-1) ){

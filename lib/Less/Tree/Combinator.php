@@ -21,7 +21,9 @@ class Less_Tree_Combinator extends Less_Tree{
 		'+' => ' + ',
 		'~' => ' ~ ',
 		'>' => ' > ',
-		'|' => '|'
+		'|' => '|',
+        '^' => ' ^ ',
+        '^^' => ' ^^ '
 	);
 
 	static $_outputMapCompressed = array(
@@ -31,7 +33,9 @@ class Less_Tree_Combinator extends Less_Tree{
 		'+' => '+',
 		'~' => '~',
 		'>' => '>',
-		'|' => '|'
+		'|' => '|',
+        '^' => '^',
+        '^^' => '^^'
 	);
 
     /**
