@@ -21,7 +21,7 @@ class Less_Tree_Anonymous extends Less_Tree{
 	}
 
 	public function compile(){
-		return $this;
+		return new Less_Tree_Anonymous($this->value, $this->index, $this->currentFileInfo, $this->mapLines);
 	}
 
 	function compare($x){
