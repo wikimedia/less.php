@@ -70,9 +70,11 @@ class Less_Environment{
 	/**
 	 * @param array|null $options
 	 */
-	public function __construct( $options = null ){
-		$this->frames = array();
+	public function __construct(){}
 
+
+	//todo: shouldn't really need multiple setoption() functions
+	public function SetOptions($options){
 
 		if( isset($options['compress']) ){
 			self::$compress = (bool)$options['compress'];
@@ -88,11 +90,38 @@ class Less_Environment{
 		}
 
 		if( self::$compress ){
+
 			self::$comma_space = ',';
 			self::$colon_space = ':';
+
+			Less_Tree_Element::$_outputMap = array(
+				''  => '',
+				' ' => ' ',
+				':' => ' :',
+				'+' => '+',
+				'~' => '~',
+				'>' => '>',
+				'|' => '|',
+		        '^' => '^',
+		        '^^' => '^^'
+			);
+
 		}else{
 			self::$comma_space = ', ';
 			self::$colon_space = ': ';
+
+			Less_Tree_Element::$_outputMap = array(
+				''  => '',
+				' ' => ' ',
+				':' => ' :',
+				'+' => ' + ',
+				'~' => ' ~ ',
+				'>' => ' > ',
+				'|' => '|',
+		        '^' => ' ^ ',
+		        '^^' => ' ^^ '
+			);
+
 		}
 	}
 

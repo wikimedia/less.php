@@ -102,6 +102,7 @@ class Less_Parser{
 
 			//set new options
 			$this->env = new Less_Environment( $env );
+			$this->env->SetOptions($env);
 			if( is_array($env) ){
 				$this->SetOptions($env);
 			}
@@ -1456,11 +1457,11 @@ class Less_Parser{
 
 			$this->skipWhitespace(0);
 
-			return $this->Less_Tree_Combinator( $c);
+			return $c;
 		}elseif( $this->pos > 0 && $this->isWhitespace(-1) ){
-			return $this->Less_Tree_Combinator(' ');
+			return ' ';
 		} else {
-			return $this->Less_Tree_Combinator();
+			return null;
 		}
 	}
 

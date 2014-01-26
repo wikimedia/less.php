@@ -10,10 +10,20 @@ class Less_Tree_Element extends Less_Tree{
 	public $currentFileInfo;
 	public $type = 'Element';
 
+	static $_outputMap = array(
+		''  => '',
+		' ' => ' ',
+		':' => ' :',
+		'+' => ' + ',
+		'~' => ' ~ ',
+		'>' => ' > ',
+		'|' => '|',
+        '^' => ' ^ ',
+        '^^' => ' ^^ '
+	);
+
+
 	public function __construct($combinator, $value, $index = null, $currentFileInfo = null ){
-		if( ! ($combinator instanceof Less_Tree_Combinator)) {
-			$combinator = new Less_Tree_Combinator($combinator);
-		}
 
 		if( !is_null($value) ){
 			$this->value = $value;
@@ -25,7 +35,6 @@ class Less_Tree_Element extends Less_Tree{
 	}
 
 	function accept( $visitor ){
-		$this->combinator = $visitor->visitObj( $this->combinator );
 		if( is_object($this->value) ){ //object or string
 			$this->value = $visitor->visitObj( $this->value );
 		}
@@ -53,10 +62,11 @@ class Less_Tree_Element extends Less_Tree{
 			$value = $value->toCSS();
 		}
 
-		if( $value === '' && $this->combinator->value && $this->combinator->value[0] === '&' ){
+		if( $value === '' && $this->combinator && $this->combinator === '&' ){
 			return '';
 		}
-		return $this->combinator->toCSS() . $value;
+
+		return Less_Tree_Combinator::$_outputMap[$this->combinator] . $value;
 	}
 
 }

@@ -84,7 +84,7 @@ class Less_Tree_Selector extends Less_Tree{
 			$this->_oelements = array();
 			$css = '';
 			foreach($this->elements as $v){
-				$css .= $v->combinator->value;
+				$css .= $v->combinator;
 				if( !is_object($v->value) ){
 					$css .= $v->value;
 					continue;
@@ -135,7 +135,7 @@ class Less_Tree_Selector extends Less_Tree{
      */
 	function genCSS( $output, $firstSelector = false ){
 
-		if( !$firstSelector && $this->elements[0]->combinator->value === "" ){
+		if( !$firstSelector && $this->elements[0]->combinator === "" ){
 			$output->add(' ', $this->currentFileInfo, $this->index);
 		}
 

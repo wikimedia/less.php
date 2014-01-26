@@ -168,8 +168,8 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 
 		$paths = array();
 		foreach($rulesetNode->paths as $p){
-			if( $p[0]->elements[0]->combinator->value === ' ' ){
-				$p[0]->elements[0]->combinator = new Less_Tree_Combinator('');
+			if( $p[0]->elements[0]->combinator === ' ' ){
+				$p[0]->elements[0]->combinator = '';
 			}
 
 			foreach($p as $pi){

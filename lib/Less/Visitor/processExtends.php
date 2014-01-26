@@ -247,12 +247,12 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
 		// then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
 		// what the resulting combinator will be
-		$targetCombinator = $haystackElement->combinator->value;
+		$targetCombinator = $haystackElement->combinator;
 		if( $targetCombinator === '' && $hackstackElementIndex === 0 ){
 			$targetCombinator = ' ';
 		}
 
-		if( $potentialMatch['matched'] > 0 && $needleElements[ $potentialMatch['matched'] ]->combinator->value !== $targetCombinator ){
+		if( $potentialMatch['matched'] > 0 && $needleElements[ $potentialMatch['matched'] ]->combinator !== $targetCombinator ){
 			return null;
 		}
 
@@ -303,8 +303,8 @@ class Less_Visitor_processExtends extends Less_Visitor{
 
 		for( $i = 0; $i < $elementValue1->elements_len; $i++ ){
 
-			if( $elementValue1->elements[$i]->combinator->value !== $elementValue2->elements[$i]->combinator->value ){
-				if( $i !== 0 || ($elementValue1->elements[$i]->combinator->value || ' ') !== ($elementValue2->elements[$i]->combinator->value || ' ') ){
+			if( $elementValue1->elements[$i]->combinator !== $elementValue2->elements[$i]->combinator ){
+				if( $i !== 0 || ($elementValue1->elements[$i]->combinator || ' ') !== ($elementValue2->elements[$i]->combinator || ' ') ){
 					return false;
 				}
 			}
