@@ -4,12 +4,10 @@
 class Less_Tree_Combinator extends Less_Tree{
 
 	public $value;
-	public $firstCombinator;
 	public $type = 'Combinator';
 
-	public function __construct($value = null, $firstCombinator = false){
+	public function __construct($value = null){
 		$this->value = $value;
-		$this->firstCombinator = $firstCombinator;
 	}
 
 	static $_outputMap = array(

@@ -356,10 +356,6 @@ class Less_Visitor_processExtends extends Less_Visitor{
 			$match = $matches[$matchIndex];
 			$selector = $selectorPath[ $match['pathIndex'] ];
 
-			if( $match['initialCombinator']->firstCombinator && $match['initialCombinator']->value === '' ){
-				$match['initialCombinator']->value = ' ';
-			}
-
 			$firstElement = new Less_Tree_Element(
 				$match['initialCombinator'],
 				$replacementSelector->elements[0]->value,
