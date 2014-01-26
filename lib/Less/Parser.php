@@ -1567,11 +1567,16 @@ class Less_Parser{
 			}
 			$selectors[] = $s;
 			$this->parseComments();
+
+			if( $s->condition && count($selectors) > 1 ){
+				throw new Less_Exception_Parser('Guards are only currently allowed on a single selector.');
+			}
+
 			if( !$this->MatchChar(',') ){
 				break;
 			}
 			if( $s->condition ){
-				//error("Guards are only currently allowed on a single selector.");
+				throw new Less_Exception_Parser('Guards are only currently allowed on a single selector.');
 			}
 			$this->parseComments();
 		}
