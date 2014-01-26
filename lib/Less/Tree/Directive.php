@@ -19,6 +19,7 @@ class Less_Tree_Directive extends Less_Tree{
 		} else {
 			$this->value = $value;
 		}
+		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 	}
 

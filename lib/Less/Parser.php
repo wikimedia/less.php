@@ -1168,11 +1168,12 @@ class Less_Parser{
 		$c = null;
 
 		while( true ){
+			$elemIndex = $this->pos;
 			$e = $this->MatchReg('/\\G[#.](?:[\w-]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/');
 			if( !$e ){
 				break;
 			}
-			$elements[] = $this->Less_Tree_Element($c, $e[0], $this->pos, $this->env->currentFileInfo);
+			$elements[] = $this->Less_Tree_Element($c, $e[0], $elemIndex, $this->env->currentFileInfo);
 			$c = $this->MatchChar('>');
 		}
 
@@ -1418,6 +1419,7 @@ class Less_Parser{
 	//
 	private function parseElement(){
 		$c = $this->parseCombinator();
+		$index = $this->pos;
 
 		$e = $this->match( array('/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
 			'#*', '#&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#](?=@)/', 'parseEntitiesVariableCurly') );
@@ -1431,7 +1433,7 @@ class Less_Parser{
 		}
 
 		if( !is_null($e) ){
-			return $this->Less_Tree_Element( $c, $e, $this->pos, $this->env->currentFileInfo);
+			return $this->Less_Tree_Element( $c, $e, $index, $this->env->currentFileInfo);
 		}
 	}
 
@@ -1481,6 +1483,7 @@ class Less_Parser{
 		$extend = false;
 		$e = null;
 		$c = null;
+		$index = $this->pos;
 
 		while( ($isLess && ($extend = $this->parseExtend())) || ($isLess && ($when = $this->MatchReg('/\\Gwhen/') )) || ($e = $this->parseElement()) ){
 			if( $when ){
@@ -1502,7 +1505,7 @@ class Less_Parser{
 		}
 
 		if( $elements ){
-			return $this->Less_Tree_Selector( $elements, $extendList, $condition, $this->pos, $this->env->currentFileInfo);
+			return $this->Less_Tree_Selector( $elements, $extendList, $condition, $index, $this->env->currentFileInfo);
 		}
 		if( $extendList ) { throw new Less_Exception_Parser('Extend must be used to extend a selector, it cannot be used on its own'); }
 	}
@@ -1764,10 +1767,11 @@ class Less_Parser{
 	private function parseDirective(){
 		$hasBlock = false;
 
-		if (! $this->PeekChar('@')) {
+		if( !$this->PeekChar('@') ){
 			return;
 		}
 
+		$index = $this->pos;
 		$value = $this->MatchFuncs(array('parseImport','parseMedia'));
 		if( $value ){
 			return $value;
@@ -1812,13 +1816,13 @@ class Less_Parser{
 		if( $hasBlock ){
 
 			if ($rules = $this->parseBlock()) {
-				return $this->Less_Tree_Directive($name, $rules, $this->pos, $this->env->currentFileInfo);
+				return $this->Less_Tree_Directive($name, $rules, $index, $this->env->currentFileInfo);
 			}
 		}else{
 
 			$value = isset($has_expression[$nonVendorSpecificName]) ? $this->parseExpression() : $this->parseEntity();
 			if( $value && $this->MatchChar(';') ){
-				return $this->Less_Tree_Directive($name, $value, $this->pos, $this->env->currentFileInfo);
+				return $this->Less_Tree_Directive($name, $value, $index, $this->env->currentFileInfo);
 			}
 		}
 
