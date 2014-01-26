@@ -1592,7 +1592,7 @@ class Less_Parser{
 
 			// prefer to try to parse first if its a variable or we are compressing
 			// but always fallback on the other one
-			if( !$tryAnonymous && $name[0] === '@' ){
+			if( !$tryAnonymous && is_string($name) && $name[0] === '@' ){
 				$value = $this->MatchFuncs( array('parseValue','parseAnonymousValue'));
 			}else{
 				$value = $this->MatchFuncs( array('parseAnonymousValue','parseValue'));
@@ -1600,9 +1600,10 @@ class Less_Parser{
 
 			$important = $this->parseImportant();
 
-			if( substr($name,-1) === '+' ){
-				$merge = true;
-				$name = substr($name, 0, -1 );
+			// a name returned by this.ruleProperty() is always an array of the form:
+			// ["", "string-1", ..., "string-n", ""] or ["", "string-1", ..., "string-n", "+"]
+			if( is_array($name) ){
+				$merge = (array_pop($name) === '+');
 			}
 
 			if( $value && $this->parseEnd() ){
@@ -2078,10 +2079,45 @@ class Less_Parser{
 	 *
 	 * @return string
 	 */
-	private function parseRuleProperty(){
+	private function parseRulePropertyold(){
 		$name = $this->MatchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*(\+?)\s*:/');
 		if( $name ){
 			return $name[1] . (isset($name[2]) ? $name[2] : '');
+		}
+	}
+
+	private function parseRuleProperty(){
+		$offset = $this->pos;
+		$name = array();
+		$index = array();
+		$length = 0;
+
+		$this->rulePropertyMatch('/\\G(\*?)/', $offset, $length, $index, $name );
+		while( $this->rulePropertyMatch('/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $offset, $length, $index, $name )); // !
+
+		if( (count($name) > 1) && $this->rulePropertyMatch('/\\G\s*(\+?)\s*:/', $offset, $length, $index, $name) ){
+			// at last, we have the complete match now. move forward,
+			// convert @{var}s to tree.Variable(s) and return:
+			$this->skipWhitespace($length);
+
+			foreach($name as $k => $name_k ){
+				if( $name[$k] && is_string($name[$k]) && $name[$k][0] === '@' ){
+					$name[$k] = new Less_Tree_Variable('@' . substr($name[$k],2,-1), $index[$k], $this->env['currentFileInfo'] );
+				}
+			}
+
+			return $name;
+		}
+	}
+
+	private function rulePropertyMatch( $re, &$offset, &$length,  &$index, &$name ){
+		preg_match($re, $this->input, $a, 0, $offset);
+		if( $a ){
+			$index[] = $this->pos + $length;
+			$length += strlen($a[0]);
+			$offset += strlen($a[0]);
+			$name[] = $a[1];
+			return true;
 		}
 	}
 

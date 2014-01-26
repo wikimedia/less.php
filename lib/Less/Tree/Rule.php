@@ -24,7 +24,7 @@ class Less_Tree_Rule extends Less_Tree{
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 		$this->inline = $inline;
-		$this->variable = ($name[0] === '@');
+		$this->variable = ( is_string($name) && $name[0] === '@');
 	}
 
 	function accept($visitor) {
@@ -51,13 +51,28 @@ class Less_Tree_Rule extends Less_Tree{
 	public function compile ($env){
 
 		$strictMathBypass = false;
-		if( $this->name === "font" && !Less_Environment::$strictMath ){
+
+		$name = '';
+		if( is_array($this->name) ){
+
+			foreach($this->name as $v){
+				if( is_object($v) ){
+					$name .= $v->compile($env)->value;
+				}else{
+					$name .= $v;
+				}
+			}
+		}else{
+			$name = $this->name;
+		}
+
+		if( $name === "font" && !Less_Environment::$strictMath ){
 			$strictMathBypass = true;
 			Less_Environment::$strictMath = true;
 		}
 
 		// missing try ... catch
-		$return = new Less_Tree_Rule($this->name,
+		$return = new Less_Tree_Rule($name,
 									$this->value->compile($env),
 									$this->important,
 									$this->merge,

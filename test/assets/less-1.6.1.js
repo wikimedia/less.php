@@ -1960,6 +1960,7 @@ less.Parser = function Parser(env) {
 
                 match(/^(\*?)/);
                 while (match(/^((?:[\w-]+)|(?:@\{[\w-]+\}))/)); // !
+
                 if ((name.length > 1) && match(/^\s*(\+?)\s*:/)) {
                     // at last, we have the complete match now. move forward,
                     // convert @{var}s to tree.Variable(s) and return:
