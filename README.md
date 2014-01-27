@@ -1,28 +1,31 @@
-[Less.php](http://lessphp.gpeasy.com)
+
+[Less.php](http://lessphp.gpeasy.com) [![Build Status](https://travis-ci.org/oyejorge/less.php.png?branch=master)](https://travis-ci.org/oyejorge/less.php)
 ========
 
-The **dynamic** stylesheet language.
+This is a PHP port of the official LESS processor <http://lesscss.org>.
 
-<http://lesscss.org>
+* [About](#about)
+* [Installation](#installation)
+* [Basic Use](#basic-use)
+* [Source Maps](#source-maps)
+* [Command Line](#command-line)
+* [Integration with other projects](#integration-with-other-projects)
+* [Credits](#credits)
+
+
 
 About
------
-
-This is a PHP port of the official LESS processor <http://lesscss.org> and should produce the same results as LESS 1.4.2.
-
-Most of the code structure remains the same, which should allow for fairly easy updates in the future.
-Namespaces, anonymous functions and shorthand ternary operators - `?:` have been removed to make this package compatible with php 5.2+.
+---
+The code structure of less.php mirrors that of the official processor which helps us ensure compatibility and allowed for easy maintenance.
 
 There are still a few unsupported LESS features:
 
 - Evaluation of JavaScript expressions within back-ticks (for obvious reasons).
-- Definition of custom functions - will be added to the `Less_Environment` class.
+- Definition of custom functions.
 
 
-Use
+Installation
 ---
-
-### Installation
 
 You can install the library by composer or manually.
 
@@ -65,6 +68,9 @@ Use the Autoloader if you're not using composer or one of the [prepackaged relea
 require_once 'lib/Less/Autoloader.php';
 Less_Autoloader::register();
 ```
+
+Basic Use
+---
 
 ### Parsing Strings
 
@@ -173,25 +179,6 @@ $parser->parseFile( '/var/www/mysite/bootstrap.less', '/mysite/' );
 $css = $parser->getCss();
 ```
 
-### Command line
-An additional script has been included to use the compiler from the command line.
-In the simplest invocation, you specify an input file and the compiled css is written to standard out:
-
-```
-$ lessc input.less > output.css
-```
-
-By using the -w flag you can watch a specified input file and have it compile as needed to the output file:
-
-```
-$ lessc -w input.less output.css
-```
-
-Errors from watch mode are written to standard out.
-
-For more help, run `lessc --help`
-
-
 Source Maps
 ---
 Less.php supports v3 sourcemaps
@@ -219,6 +206,25 @@ $parser->parseFile( '/var/www/mysite/bootstrap.less', '/mysite/' );
 $css = $parser->getCss();
 ```
 
+
+Command line
+---
+An additional script has been included to use the compiler from the command line.
+In the simplest invocation, you specify an input file and the compiled css is written to standard out:
+
+```
+$ lessc input.less > output.css
+```
+
+By using the -w flag you can watch a specified input file and have it compile as needed to the output file:
+
+```
+$ lessc -w input.less output.css
+```
+
+Errors from watch mode are written to standard out.
+
+For more help, run `lessc --help`
 
 
 Integration with other projects
