@@ -171,7 +171,7 @@ class Less_Parser{
 
 		$this->PostVisitors($evaldRoot);
 
-		if( $this->env->sourceMap ){
+		if( Less_Environment::$sourceMap ){
 			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), Less_Parser::$options );
 			// will also save file
 			// FIXME: should happen somewhere else?
@@ -257,7 +257,7 @@ class Less_Parser{
 	public function parse($str){
 
 		// TODO: enable setFileContent for string parsing
-		//if( $this->env->sourceMap ){
+		//if( Less_Environment::$sourceMap ){
 		//	$this->env->setFileContent($key, $string);
 		//}
 
@@ -1582,7 +1582,7 @@ class Less_Parser{
 
 
 		if( $selectors && (is_array($rules = $this->parseBlock())) ){
-			return $this->Less_Tree_Ruleset( $selectors, $rules, $this->env->strictImports);
+			return $this->Less_Tree_Ruleset( $selectors, $rules ); //Less_Environment::$strictImports
 		} else {
 			// Backtrack
 			$this->pos = $start;

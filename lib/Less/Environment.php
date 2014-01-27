@@ -8,18 +8,18 @@ class Less_Environment{
 	public $paths = array();				// option - unmodified - paths to search for imports on
 	public static $files = array();			// list of files that have been imported, used for import-once
 	public static $relativeUrls = true;		// option - whether to adjust URL's to be relative
-	public $rootpath;						// option - rootpath to append to URL's
-	public $strictImports = null;			// option -
-	public $insecure;						// option - whether to allow imports from insecure ssl hosts
+	//public $rootpath;						// option - rootpath to append to URL's
+	//public static $strictImports = null;	// option -
+	//public $insecure;						// option - whether to allow imports from insecure ssl hosts
 	public static $compress = false;		// option - whether to compress
-	public $processImports;					// option - whether to process imports. if false then imports will not be imported
-	public $javascriptEnabled;				// option - whether JavaScript is enabled. if undefined, defaults to true
-	public $useFileCache;					// browser only - whether to use the per file session cache
+	//public $processImports;				// option - whether to process imports. if false then imports will not be imported
+	//public $javascriptEnabled;			// option - whether JavaScript is enabled. if undefined, defaults to true
+	//public $useFileCache;					// browser only - whether to use the per file session cache
 	public $currentFileInfo;				// information about the current file - for error reporting and importing and making urls relative etc.
 
 	public static $strictMath = false;		// whether math has to be within parenthesis
 	public static $strictUnits = false;		// whether units need to evaluate correctly
-	public $sourceMap = false;				// whether to output a source map
+	public static $sourceMap = false;		// whether to output a source map
 	public $importMultiple = false; 		// whether we are currently importing multiple copies
 
 
@@ -83,7 +83,7 @@ class Less_Environment{
 			self::$strictUnits = (bool)$options['strictUnits'];
 		}
 		if( isset($options['sourceMap']) ){
-			$this->sourceMap = (bool)$options['sourceMap'];
+			self::$sourceMap = (bool)$options['sourceMap'];
 		}
 		if( isset($options['relativeUrls']) ){
 			self::$relativeUrls = (bool)$options['relativeUrls'];
@@ -233,7 +233,7 @@ class Less_Environment{
 	 * @return Less_Environment
 	 */
 	public function setFileContent($filePath){
-		if( $this->sourceMap && $filePath ){
+		if( self::$sourceMap && $filePath ){
 			self::$contentsMap[$filePath] = file_get_contents($filePath);
 		}
 	}
