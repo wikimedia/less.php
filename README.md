@@ -16,9 +16,9 @@ This is a PHP port of the official LESS processor <http://lesscss.org>. [![Build
 
 About
 ---
-The code structure of less.php mirrors that of the official processor which helps us ensure compatibility and allowed for easy maintenance.
+The code structure of less.php mirrors that of the official processor which helps us ensure compatibility and allows for easy maintenance.
 
-There are still a few unsupported LESS features:
+Please note, there are a few unsupported LESS features:
 
 - Evaluation of JavaScript expressions within back-ticks (for obvious reasons).
 - Definition of custom functions.
