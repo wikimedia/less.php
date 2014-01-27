@@ -1,12 +1,12 @@
-
-[Less.php](http://lessphp.gpeasy.com) [![Build Status](https://travis-ci.org/oyejorge/less.php.png?branch=master)](https://travis-ci.org/oyejorge/less.php)
+[Less.php](http://lessphp.gpeasy.com)
 ========
 
-This is a PHP port of the official LESS processor <http://lesscss.org>.
+This is a PHP port of the official LESS processor <http://lesscss.org>. [![Build Status](https://travis-ci.org/oyejorge/less.php.png?branch=master)](https://travis-ci.org/oyejorge/less.php)
 
 * [About](#about)
 * [Installation](#installation)
 * [Basic Use](#basic-use)
+* [Caching](#caching)
 * [Source Maps](#source-maps)
 * [Command Line](#command-line)
 * [Integration with other projects](#integration-with-other-projects)
@@ -118,20 +118,6 @@ $parser->parse( '@color: #4D926F; #header { color: @color; } h2 { color: @color;
 $css = $parser->getCss();
 ```
 
-
-### Caching CSS
-Use the Less_Cache class to save and reuse the results of compiled less files.
-This method we check the modified time of each less file (including imported files) and regenerate when changes are found.
-Note: When changes are found, this method will return a different file name for the new cached content.
-
-```php
-$to_cache = array( '/var/www/mysite/bootstrap.less' => '/mysite/' );
-Less_Cache::$cache_dir = '/var/www/writable_folder';
-$css_file_name = Less_Cache::Get( $to_cache );
-$compiled = file_get_contents( '/var/www/writable_folder/'.$css_file_name );
-```
-
-
 ### Getting Info About The Parsed Files
 less.php can tell you which .less files were imported and parsed.
 
@@ -167,6 +153,23 @@ $css = $parser->getCss();
 ```
 
 
+Caching
+---
+Compiling less code into css is a time consuming process, caching your results is highly recommended.
+
+
+### Caching CSS
+Use the Less_Cache class to save and reuse the results of compiled less files.
+This method will check the modified time and size of each less file (including imported files) and regenerate a new css file when changes are found.
+Note: When changes are found, this method will return a different file name for the new cached content.
+
+```php
+$to_cache = array( '/var/www/mysite/bootstrap.less' => '/mysite/' );
+Less_Cache::$cache_dir = '/var/www/writable_folder';
+$css_file_name = Less_Cache::Get( $to_cache );
+$compiled = file_get_contents( '/var/www/writable_folder/'.$css_file_name );
+```
+
 ### Parser Caching
 less.php will save serialized parser data for each .less file if a writable folder is passed to the SetCacheDir() method.
 Note: This feature only caches intermediate parsing results to improve the performance of repeated css generation.
@@ -178,6 +181,7 @@ $parser->SetCacheDir( '/var/www/writable_folder' );
 $parser->parseFile( '/var/www/mysite/bootstrap.less', '/mysite/' );
 $css = $parser->getCss();
 ```
+
 
 Source Maps
 ---
