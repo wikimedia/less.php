@@ -617,9 +617,9 @@ class Less_Functions{
 		if( Less_Environment::isPathRelative($filePath) ){
 
 			if( Less_Environment::$relativeUrls ){
-				$temp = $this->env->currentFileInfo['currentDirectory'];
+				$temp = $this->currentFileInfo['currentDirectory'];
 			} else {
-				$temp = $this->env->currentFileInfo['entryPath'];
+				$temp = $this->currentFileInfo['entryPath'];
 			}
 
 			if( !empty($temp) ){

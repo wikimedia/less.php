@@ -38,8 +38,6 @@ class Less_Environment{
 	 */
 	public $mediaPath = array();
 
-	public $charset;
-
 	public static $parensStack = 0;
 
 	public static $tabLevel = 0;
