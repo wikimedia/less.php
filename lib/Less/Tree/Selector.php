@@ -56,7 +56,9 @@ class Less_Tree_Selector extends Less_Tree{
 	// Compiling bootstrap almost doubled: from 4.5 seconds to 7.8 seconds
 	public function match( $other ){
 
-		$other->CacheElements();
+		if( is_null($other->_oelements) ){
+			$other->CacheElements();
+		}
 		if( !$other->_oelements || ($this->elements_len < $other->_oelements_len) ){
 			return 0;
 		}
@@ -73,33 +75,30 @@ class Less_Tree_Selector extends Less_Tree{
 
 	public function CacheElements(){
 
-		if( !isset($this->_oelements) ){
-
-			$this->_oelements = array();
-			$css = '';
-			foreach($this->elements as $v){
-				$css .= $v->combinator;
-				if( !is_object($v->value) ){
-					$css .= $v->value;
-					continue;
-				}
-
-				if( !property_exists($v->value,'value') || !is_string($v->value->value) ){
-					$css = '';
-					break;
-				}
-				$css .= $v->value->value;
+		$this->_oelements = array();
+		$css = '';
+		foreach($this->elements as $v){
+			$css .= $v->combinator;
+			if( !is_object($v->value) ){
+				$css .= $v->value;
+				continue;
 			}
 
-			if( preg_match_all('/[,&#\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches) ){
-				$this->_oelements = $matches[0];
-
-				if( $this->_oelements[0] === '&' ){
-					array_shift($this->_oelements);
-				}
-
-				$this->_oelements_len = count($this->_oelements);
+			if( !property_exists($v->value,'value') || !is_string($v->value->value) ){
+				$css = '';
+				break;
 			}
+			$css .= $v->value->value;
+		}
+
+		if( preg_match_all('/[,&#\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches) ){
+			$this->_oelements = $matches[0];
+
+			if( $this->_oelements[0] === '&' ){
+				array_shift($this->_oelements);
+			}
+
+			$this->_oelements_len = count($this->_oelements);
 		}
 	}
 
