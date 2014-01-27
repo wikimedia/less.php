@@ -3,7 +3,25 @@
 	font-weight: bold;
 }
 
+.maxin{
+	font-weight: normal;
+	}
+
 body{
 	.mixin;
 	}
 
+#content{
+	.maxin;
+	}
+
+
+#theme {
+  > .mixin {
+    background-color: grey;
+  }
+}
+
+body{
+	#theme > .mixin;
+	}

@@ -54,7 +54,6 @@ class Less_Tree_Selector extends Less_Tree{
 	// Performance issues with 1.6.1
 	// Compiling bootstrap almost doubled: from 4.5 seconds to 7.8 seconds
 	public function match( $other ){
-		static $z = 0;
 
 		$other->CacheElements();
 		if( !$other->_oelements ){
@@ -62,8 +61,7 @@ class Less_Tree_Selector extends Less_Tree{
 		}
 
 		$olen = count($other->_oelements);
-		$len = count($this->elements);
-		if( $len < $olen) {
+		if( $this->elements_len < $olen ){
 			return 0;
 		}
 
