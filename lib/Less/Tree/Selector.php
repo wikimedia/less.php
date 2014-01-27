@@ -21,13 +21,11 @@ class Less_Tree_Selector extends Less_Tree{
 	/**
 	 * @param boolean $isReferenced
 	 */
-	public function __construct($elements = null, $extendList=null , $condition = null, $index=null, $currentFileInfo=null, $isReferenced=null ){
+	public function __construct( $elements, $extendList = array() , $condition = null, $index=null, $currentFileInfo=null, $isReferenced=null ){
 
 		$this->elements = $elements;
 		$this->elements_len = count($elements);
-		if( $extendList ){
-			$this->extendList = $extendList;
-		}
+		$this->extendList = $extendList;
 		$this->condition = $condition;
 		if( $currentFileInfo ){
 			$this->currentFileInfo = $currentFileInfo;

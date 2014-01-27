@@ -22,7 +22,7 @@ class Less_Tree_Expression extends Less_Tree{
 		$doubleParen = false;
 
 		if( $inParenthesis ) {
-			$env->inParenthesis();
+			Less_Environment::$parensStack++;
 		}
 
 		$returnValue = null;
@@ -55,7 +55,7 @@ class Less_Tree_Expression extends Less_Tree{
 			$returnValue = $this;
 		}
 		if( $inParenthesis ){
-			$env->outOfParenthesis();
+			Less_Environment::$parensStack--;
 		}
 		if( $this->parens && $this->parensInOp && !$env->isMathOn() && !$doubleParen ){
 			$returnValue = new Less_Tree_Paren($returnValue);
