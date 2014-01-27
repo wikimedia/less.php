@@ -16,6 +16,7 @@ class Less_Tree_Selector extends Less_Tree{
 	public $elements_len = 0;
 
 	public $_oelements;
+	public $_oelements_len;
 
 	/**
 	 * @param boolean $isReferenced
@@ -56,22 +57,17 @@ class Less_Tree_Selector extends Less_Tree{
 	public function match( $other ){
 
 		$other->CacheElements();
-		if( !$other->_oelements ){
+		if( !$other->_oelements || ($this->elements_len < $other->_oelements_len) ){
 			return 0;
 		}
 
-		$olen = count($other->_oelements);
-		if( $this->elements_len < $olen ){
-			return 0;
-		}
-
-		for( $i = 0; $i < $olen; $i++ ){
+		for( $i = 0; $i < $other->_oelements_len; $i++ ){
 			if( $this->elements[$i]->value !== $other->_oelements[$i]) {
 				return 0;
 			}
 		}
 
-		return $olen; // return number of matched elements
+		return $other->_oelements_len; // return number of matched elements
 	}
 
 
@@ -101,6 +97,8 @@ class Less_Tree_Selector extends Less_Tree{
 				if( $this->_oelements[0] === '&' ){
 					array_shift($this->_oelements);
 				}
+
+				$this->_oelements_len = count($this->_oelements);
 			}
 		}
 	}

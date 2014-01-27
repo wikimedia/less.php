@@ -1,27 +1,11 @@
 
-.mixin{
-	font-weight: bold;
-}
+@var: one;
 
-.maxin{
-	font-weight: normal;
+.mixin-@{var}{
+	width:10;
 	}
 
-body{
-	.mixin;
+.test{
+	.mixin-one;
 	}
 
-#content{
-	.maxin;
-	}
-
-
-#theme {
-  > .mixin {
-    background-color: grey;
-  }
-}
-
-body{
-	#theme > .mixin;
-	}
