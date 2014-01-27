@@ -1,5 +1,6 @@
 
 ./Parser.php
+./Version.php
 ./Colors.php
 ./Environment.php
 ./Functions.php
