@@ -6,8 +6,8 @@
 class Less_Environment{
 
 	public $paths = array();				// option - unmodified - paths to search for imports on
-	static $files = array();				// list of files that have been imported, used for import-once
-	public $relativeUrls = true;			// option - whether to adjust URL's to be relative
+	public static $files = array();			// list of files that have been imported, used for import-once
+	public static $relativeUrls = true;		// option - whether to adjust URL's to be relative
 	public $rootpath;						// option - rootpath to append to URL's
 	public $strictImports = null;			// option -
 	public $insecure;						// option - whether to allow imports from insecure ssl hosts
@@ -86,7 +86,7 @@ class Less_Environment{
 			$this->sourceMap = (bool)$options['sourceMap'];
 		}
 		if( isset($options['relativeUrls']) ){
-			$this->relativeUrls = (bool)$options['relativeUrls'];
+			self::$relativeUrls = (bool)$options['relativeUrls'];
 		}
 
 		if( self::$compress ){

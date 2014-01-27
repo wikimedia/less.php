@@ -616,7 +616,7 @@ class Less_Functions{
 		$filePath = str_replace('\\','/',$filePath);
 		if( Less_Environment::isPathRelative($filePath) ){
 
-			if( $this->env->relativeUrls ){
+			if( Less_Environment::$relativeUrls ){
 				$temp = $this->env->currentFileInfo['currentDirectory'];
 			} else {
 				$temp = $this->env->currentFileInfo['entryPath'];
