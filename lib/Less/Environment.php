@@ -5,7 +5,7 @@
 
 class Less_Environment{
 
-	public $paths = array();				// option - unmodified - paths to search for imports on
+	//public $paths = array();				// option - unmodified - paths to search for imports on
 	public static $files = array();			// list of files that have been imported, used for import-once
 	public static $relativeUrls = true;		// option - whether to adjust URL's to be relative
 	//public $rootpath;						// option - rootpath to append to URL's
@@ -27,12 +27,6 @@ class Less_Environment{
 	 * @var array
 	 */
 	public $frames = array();
-
-
-	/**
-	 * @var bool
-	 */
-	public $debug = false;
 
 	/**
 	 * @var array
@@ -184,21 +178,6 @@ class Less_Environment{
 		return implode('/',$path);
 	}
 
-
-	/**
-	 * @return bool
-	 */
-	public function getDebug(){
-		return $this->debug;
-	}
-
-	/**
-	 * @param $debug
-	 * @return void
-	 */
-	public function setDebug($debug){
-		$this->debug = $debug;
-	}
 
 	public function unshiftFrame($frame){
 		array_unshift($this->frames, $frame);
