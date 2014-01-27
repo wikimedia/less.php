@@ -57,7 +57,7 @@ class Less_Tree_Expression extends Less_Tree{
 		if( $inParenthesis ){
 			Less_Environment::$parensStack--;
 		}
-		if( $this->parens && $this->parensInOp && !$env->isMathOn() && !$doubleParen ){
+		if( $this->parens && $this->parensInOp && !Less_Environment::isMathOn() && !$doubleParen ){
 			$returnValue = new Less_Tree_Paren($returnValue);
 		}
 		return $returnValue;

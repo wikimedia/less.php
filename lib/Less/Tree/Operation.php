@@ -26,7 +26,7 @@ class Less_Tree_Operation extends Less_Tree{
 		$b = $this->operands[1]->compile($env);
 
 
-		if( $env->isMathOn() ){
+		if( Less_Environment::isMathOn() ){
 
 			if( $a instanceof Less_Tree_Dimension && $b instanceof Less_Tree_Color ){
 				$a = $a->toColor();

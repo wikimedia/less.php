@@ -133,7 +133,7 @@ class Less_Environment{
 	}
 
 
-	public function isMathOn(){
+	public static function isMathOn(){
 		return !Less_Environment::$strictMath || Less_Environment::$parensStack;
 	}
 
