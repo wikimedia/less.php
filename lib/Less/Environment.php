@@ -57,6 +57,7 @@ class Less_Environment{
 
 	public static $comma_space;
 	public static $colon_space;
+	public static $mixin_stack = 0;
 
 
 	/**

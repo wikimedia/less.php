@@ -461,6 +461,9 @@ class Less_Parser{
 
 		$rules = $this->parsePrimary();
 
+		if( $this->pos < $this->input_len ){
+			throw new Less_Exception_Parser('Unexpected input at position '.$this->pos);
+		}
 
 		// free up a little memory
 		unset($this->input, $this->pos);

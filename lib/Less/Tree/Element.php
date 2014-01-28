@@ -42,7 +42,16 @@ class Less_Tree_Element extends Less_Tree{
 	}
 
 	public function compile($env){
-		return new Less_Tree_Element($this->combinator, ($this->value_is_object ? $this->value->compile($env) : $this->value), $this->index, $this->currentFileInfo );
+
+		if( Less_Environment::$mixin_stack ){
+			return new Less_Tree_Element($this->combinator, ($this->value_is_object ? $this->value->compile($env) : $this->value), $this->index, $this->currentFileInfo );
+		}
+
+		if( $this->value_is_object ){
+			$this->value = $this->value->compile($env);
+		}
+
+		return $this;
 	}
 
     /**

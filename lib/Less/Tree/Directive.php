@@ -61,7 +61,6 @@ class Less_Tree_Directive extends Less_Tree{
 		return $evaldDirective;
 	}
 
-	// TODO: Not sure if this is right...
 	public function variable($name){
 		return $this->rules[0]->variable($name);
 	}

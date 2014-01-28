@@ -50,8 +50,6 @@ class Less_Tree_Rule extends Less_Tree{
 
 	public function compile ($env){
 
-		$strictMathBypass = false;
-
 		$name = '';
 		if( is_array($this->name) ){
 
@@ -66,23 +64,21 @@ class Less_Tree_Rule extends Less_Tree{
 			$name = $this->name;
 		}
 
+		$strictMathBypass = Less_Environment::$strictMath;
 		if( $name === "font" && !Less_Environment::$strictMath ){
-			$strictMathBypass = true;
 			Less_Environment::$strictMath = true;
 		}
 
 		// missing try ... catch
-		$return = new Less_Tree_Rule($name,
-									$this->value->compile($env),
-									$this->important,
-									$this->merge,
-									$this->index,
-									$this->currentFileInfo,
-									$this->inline);
-
-		if( $strictMathBypass ){
-			Less_Environment::$strictMath = false;
+		if( Less_Environment::$mixin_stack ){
+			$return = new Less_Tree_Rule($name, $this->value->compile($env), $this->important, $this->merge, $this->index, $this->currentFileInfo, $this->inline);
+		}else{
+			$this->name = $name;
+			$this->value = $this->value->compile($env);
+			$return = $this;
 		}
+
+		Less_Environment::$strictMath = $strictMathBypass;
 
 		return $return;
 	}
