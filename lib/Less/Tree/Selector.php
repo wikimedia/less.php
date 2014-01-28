@@ -113,8 +113,9 @@ class Less_Tree_Selector extends Less_Tree{
 		$this->_oelements = array();
 		$css = '';
 		foreach($this->elements as $v){
+
 			$css .= $v->combinator;
-			if( !is_object($v->value) ){
+			if( !$v->value_is_object ){
 				$css .= $v->value;
 				continue;
 			}

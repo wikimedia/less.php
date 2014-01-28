@@ -10,6 +10,7 @@ class Less_Tree{
 		return $output->toString();
 	}
 
+
     /**
      * Generate CSS by adding it to the output object
      *
