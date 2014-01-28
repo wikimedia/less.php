@@ -65,6 +65,7 @@ class Less_Parser{
 	private $input_len;	// input string length
 	private $pos;		// current index in `input`
 	private $memo;		// temporarily holds `i`, when backtracking
+	private $farthest;
 
 
 	/**
@@ -107,7 +108,7 @@ class Less_Parser{
 			}
 		}
 
-		$this->pos = 0;
+		$this->pos = $this->farthest = 0;
 	}
 
 	/**
@@ -453,7 +454,7 @@ class Less_Parser{
 			$this->input = file_get_contents( $file_path );
 		}
 
-		$this->pos = 0;
+		$this->pos = $this->farthest = 0;
 
 		// Remove potential UTF Byte Order Mark
 		$this->input = preg_replace('/\\G\xEF\xBB\xBF/', '', $this->input);
@@ -462,7 +463,7 @@ class Less_Parser{
 		$rules = $this->parsePrimary();
 
 		if( $this->pos < $this->input_len ){
-			throw new Less_Exception_Parser('Unexpected input at position '.$this->pos);
+			$this->Error('Unexpected input');
 		}
 
 		// free up a little memory
@@ -533,7 +534,8 @@ class Less_Parser{
 		$this->memo = $this->pos;
 	}
 
-	private function restore() {
+	private function restore(){
+		$this->farthest = $this->pos;
 		$this->pos = $this->memo;
 	}
 
@@ -2268,6 +2270,12 @@ class Less_Parser{
 		}
 
 	}
+
+
+	public function Error($msg){
+		throw new Less_Exception_Parser($msg, null, $this->farthest, $this->env->currentFileInfo);
+	}
+
 }
 
 
