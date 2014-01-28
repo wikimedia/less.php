@@ -92,18 +92,15 @@ class Less_Tree_Selector extends Less_Tree{
 			$other->CacheElements();
 		}
 		if( !$other->_oelements || ($this->elements_len < $other->_oelements_len) ){
-			$other->_oelements = null;
 			return 0;
 		}
 
 		for( $i = 0; $i < $other->_oelements_len; $i++ ){
 			if( $this->elements[$i]->value !== $other->_oelements[$i]) {
-				$other->_oelements = null;
 				return 0;
 			}
 		}
 
-		$other->_oelements = null;
 		return $other->_oelements_len; // return number of matched elements
 	}
 
@@ -112,6 +109,7 @@ class Less_Tree_Selector extends Less_Tree{
 
 		$this->_oelements = array();
 		$css = '';
+
 		foreach($this->elements as $v){
 
 			$css .= $v->combinator;
@@ -121,20 +119,19 @@ class Less_Tree_Selector extends Less_Tree{
 			}
 
 			if( !property_exists($v->value,'value') || !is_string($v->value->value) ){
-				$css = '';
-				break;
+				return;
 			}
 			$css .= $v->value->value;
 		}
 
-		if( preg_match_all('/[,&#\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches) ){
+		$this->_oelements_len = preg_match_all('/[,&#\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches);
+		if( $this->_oelements_len ){
 			$this->_oelements = $matches[0];
 
 			if( $this->_oelements[0] === '&' ){
 				array_shift($this->_oelements);
+				$this->_oelements_len--;
 			}
-
-			$this->_oelements_len = count($this->_oelements);
 		}
 	}
 
