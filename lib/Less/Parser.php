@@ -746,7 +746,7 @@ class Less_Parser{
 			}
 
 			//$node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseNameValue', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
-			$node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
+			$node = $this->MatchFuncs( array( 'parseMixinDefinition',  'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
 
 			if( $node ){
 				$root[] = $node;
@@ -1363,7 +1363,7 @@ class Less_Parser{
 
 			$ruleset = $this->parseBlock();
 
-			if( $ruleset ){
+			if( is_array($ruleset) ){
 				return $this->Less_Tree_Mixin_Definition( $name, $params, $ruleset, $cond, $variadic);
 			}
 
@@ -1560,7 +1560,7 @@ class Less_Parser{
 	private function parseBlock(){
 		if( $this->MatchChar('{') ){
 			$content = $this->parsePrimary();
-			if( $content && $this->MatchChar('}') ){
+			if( $this->MatchChar('}') ){
 				return $content;
 			}
 		}
@@ -1597,7 +1597,7 @@ class Less_Parser{
 
 		if( $selectors ){
 			$rules = $this->parseBlock();
-			if( $rules ){
+			if( is_array($rules) ){
 				return $this->Less_Tree_Ruleset( $selectors, $rules ); //Less_Environment::$strictImports
 			}
 		}
@@ -1804,7 +1804,7 @@ class Less_Parser{
 			$features = $this->parseMediaFeatures();
 			$rules = $this->parseBlock();
 
-			if( $rules ){
+			if( is_array($rules) ){
 				return $this->Less_Tree_Media( $rules, $features, $this->pos, $this->env->currentFileInfo);
 			}
 		}
@@ -1866,7 +1866,7 @@ class Less_Parser{
 
 		if( $hasBlock ){
 			$rules = $this->parseBlock();
-			if( $rules ){
+			if( is_array($rules) ){
 				return $this->Less_Tree_Directive($name, $rules, $index, $this->env->currentFileInfo);
 			}
 		}else{
