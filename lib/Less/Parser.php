@@ -2102,13 +2102,6 @@ class Less_Parser{
 	 *
 	 * @return string
 	 */
-	private function parseRulePropertyold(){
-		$name = $this->MatchReg('/\\G(\*?-?[_a-zA-Z0-9-]+)\s*(\+?)\s*:/');
-		if( $name ){
-			return $name[1] . (isset($name[2]) ? $name[2] : '');
-		}
-	}
-
 	private function parseRuleProperty(){
 		$offset = $this->pos;
 		$name = array();
