@@ -264,21 +264,27 @@ class Less_Parser{
 		$filename = Less_Environment::normalizePath($filename);
 		$dirname = preg_replace('/[^\/\\\\]*$/','',$filename);
 
-		$currentFileInfo = array();
-		$currentFileInfo['currentDirectory'] = $dirname;
-		$currentFileInfo['filename'] = $filename;
-		$currentFileInfo['rootpath'] = $dirname;
-		if( isset($this->env->currentFileInfo) ){
-			$currentFileInfo['entryPath'] = $this->env->currentFileInfo['entryPath'];
-		}else{
-			$currentFileInfo['entryPath'] = $dirname;
+		if( !empty($uri_root) ){
+			$uri_root = rtrim($uri_root,'/').'/';
 		}
 
-		if( empty($uri_root) ){
-			$currentFileInfo['uri_root'] = $uri_root;
+		$currentFileInfo = array();
+
+		//entry info
+		if( isset($this->env->currentFileInfo) ){
+			$currentFileInfo['entryPath'] = $this->env->currentFileInfo['entryPath'];
+			$currentFileInfo['entryUri'] = $this->env->currentFileInfo['entryUri'];
+			$currentFileInfo['rootpath'] = $this->env->currentFileInfo['rootpath'];
+
 		}else{
-			$currentFileInfo['uri_root'] = rtrim($uri_root,'/').'/';
+			$currentFileInfo['entryPath'] = $dirname;
+			$currentFileInfo['entryUri'] = $uri_root;
+			$currentFileInfo['rootpath'] = $dirname;
 		}
+
+		$currentFileInfo['currentDirectory'] = $dirname;
+		$currentFileInfo['filename'] = $filename;
+		$currentFileInfo['uri_root'] = $uri_root;
 
 
 		//inherit reference

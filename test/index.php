@@ -145,6 +145,7 @@ class ParserTest{
 
 		$options = array();
 		$options['compress'] 		= $this->compress;
+		//$options['relativeUrls']	= true;
 		//$options['cache_dir']		= $this->cache_dir;
 		//$options['cache_method']	= 'php';
 
