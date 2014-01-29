@@ -322,6 +322,46 @@ class Less_Parser{
 
 
 	/**
+	 * @param string $filename
+	 */
+	public function SetFileInfo( $filename, $uri_root = ''){
+
+		$filename = Less_Environment::normalizePath($filename);
+		$dirname = preg_replace('/[^\/\\\\]*$/','',$filename);
+
+		if( !empty($uri_root) ){
+			$uri_root = rtrim($uri_root,'/').'/';
+		}
+
+		$currentFileInfo = array();
+
+		//entry info
+		if( isset($this->env->currentFileInfo) ){
+			$currentFileInfo['entryPath'] = $this->env->currentFileInfo['entryPath'];
+			$currentFileInfo['entryUri'] = $this->env->currentFileInfo['entryUri'];
+			$currentFileInfo['rootpath'] = $this->env->currentFileInfo['rootpath'];
+
+		}else{
+			$currentFileInfo['entryPath'] = $dirname;
+			$currentFileInfo['entryUri'] = $uri_root;
+			$currentFileInfo['rootpath'] = $dirname;
+		}
+
+		$currentFileInfo['currentDirectory'] = $dirname;
+		$currentFileInfo['filename'] = $filename;
+		$currentFileInfo['uri_root'] = $uri_root;
+
+
+		//inherit reference
+		if( isset($this->env->currentFileInfo['reference']) && $this->env->currentFileInfo['reference'] ){
+			$currentFileInfo['reference'] = true;
+		}
+
+		$this->env->currentFileInfo = $currentFileInfo;
+	}
+
+
+	/**
 	 * @deprecated 1.5.1.2
 	 *
 	 */
@@ -378,40 +418,6 @@ class Less_Parser{
 	 */
 	private function _parse( $file_path = null ){
 		$this->rules = array_merge($this->rules, $this->GetRules( $file_path ));
-	}
-
-
-	/**
-	 * @param string $filename
-	 */
-	private function SetFileInfo( $filename, $uri_root = ''){
-
-		$filename = Less_Environment::normalizePath($filename);
-		$dirname = preg_replace('/[^\/\\\\]*$/','',$filename);
-
-		$currentFileInfo = array();
-		$currentFileInfo['currentDirectory'] = $dirname;
-		$currentFileInfo['filename'] = $filename;
-		$currentFileInfo['rootpath'] = $dirname;
-		if( isset($this->env->currentFileInfo) ){
-			$currentFileInfo['entryPath'] = $this->env->currentFileInfo['entryPath'];
-		}else{
-			$currentFileInfo['entryPath'] = $dirname;
-		}
-
-		if( empty($uri_root) ){
-			$currentFileInfo['uri_root'] = $uri_root;
-		}else{
-			$currentFileInfo['uri_root'] = rtrim($uri_root,'/').'/';
-		}
-
-
-		//inherit reference
-		if( isset($this->env->currentFileInfo['reference']) && $this->env->currentFileInfo['reference'] ){
-			$currentFileInfo['reference'] = true;
-		}
-
-		$this->env->currentFileInfo = $currentFileInfo;
 	}
 
 

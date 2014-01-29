@@ -6916,6 +6916,8 @@ less.env = less.env || (location.hostname == '127.0.0.1' ||
                         isFileProtocol                   ? 'development'
                                                          : 'production');
 
+less.env = 'development'; //for less.php
+
 var logLevel = {
     info: 2,
     errors: 1,
