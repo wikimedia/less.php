@@ -670,6 +670,13 @@ function msg($arg){
 	echo Pre($arg);
 }
 
+function func_trace($len = 1){
+	$debug = debug_backtrace();
+	for($i = 0; $i < $len; $i++ ){
+		msg($debug[$i]['file'].' @'.$debug[$i]['line']);
+	}
+}
+
 
 
 ob_start();

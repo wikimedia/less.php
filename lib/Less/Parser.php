@@ -745,7 +745,7 @@ class Less_Parser{
 				continue;
 			}
 
-			$node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
+			$node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseNameValue', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
 
 			if( $node ){
 				$root[] = $node;
@@ -1362,11 +1362,11 @@ class Less_Parser{
 
 			$ruleset = $this->parseBlock();
 
-			if( is_array($ruleset) ){
+			if( $ruleset ){
 				return $this->Less_Tree_Mixin_Definition( $name, $params, $ruleset, $cond, $variadic);
-			} else {
-				$this->restore();
 			}
+
+			$this->restore();
 		}
 	}
 
@@ -1557,8 +1557,11 @@ class Less_Parser{
 	// It's a wrapper around the `primary` rule, with added `{}`.
 	//
 	private function parseBlock(){
-		if ($this->MatchChar('{') && (is_array($content = $this->parsePrimary())) && $this->MatchChar('}')) {
-			return $content;
+		if( $this->MatchChar('{') ){
+			$content = $this->parsePrimary();
+			if( $content && $this->MatchChar('}') ){
+				return $content;
+			}
 		}
 	}
 
@@ -1591,16 +1594,42 @@ class Less_Parser{
 		}
 
 
-		if( $selectors && (is_array($rules = $this->parseBlock())) ){
-			return $this->Less_Tree_Ruleset( $selectors, $rules ); //Less_Environment::$strictImports
-		} else {
-			// Backtrack
-			$this->pos = $start;
+		if( $selectors ){
+			$rules = $this->parseBlock();
+			if( $rules ){
+				return $this->Less_Tree_Ruleset( $selectors, $rules ); //Less_Environment::$strictImports
+			}
 		}
+
+		// Backtrack
+		$this->pos = $start;
+	}
+
+	/**
+	 * Custom less.php parse function for finding simple name-value css pairs
+	 * ex: width:100px;
+	 *
+	 */
+	private function parseNameValue(){
+
+		$index = $this->pos;
+		$this->save();
+
+		//$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[a-zA-Z0-9\-]+(?:\'")?)\s*([;}])/');
+		$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[a-zA-Z0-9\-% \.,!]+(?:\'")?)\s*([;}])/');
+		if( $match ){
+			if( $match[3] == '}' ){
+				$this->pos = $index + strlen($match[0])-1;
+			}
+			return new Less_Tree_NameValue( $match[1], $match[2], $index, $this->env->currentFileInfo);
+		}
+
+		$this->restore();
 	}
 
 
 	private function parseRule( $tryAnonymous = null ){
+
 		$merge = false;
 		$start = $this->pos;
 		$this->save();
@@ -1770,10 +1799,11 @@ class Less_Parser{
 	}
 
 	private function parseMedia() {
-		if ($this->MatchReg('/\\G@media/')) {
+		if( $this->MatchReg('/\\G@media/') ){
 			$features = $this->parseMediaFeatures();
+			$rules = $this->parseBlock();
 
-			if ($rules = $this->parseBlock()) {
+			if( $rules ){
 				return $this->Less_Tree_Media( $rules, $features, $this->pos, $this->env->currentFileInfo);
 			}
 		}
@@ -1834,8 +1864,8 @@ class Less_Parser{
 
 
 		if( $hasBlock ){
-
-			if ($rules = $this->parseBlock()) {
+			$rules = $this->parseBlock();
+			if( $rules ){
 				return $this->Less_Tree_Directive($name, $rules, $index, $this->env->currentFileInfo);
 			}
 		}else{
