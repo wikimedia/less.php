@@ -64,6 +64,7 @@ class Less_Parser{
 	private $input_len;	// input string length
 	private $pos;		// current index in `input`
 	private $memo;		// temporarily holds `i`, when backtracking
+	private $farthest;
 
 
 	/**
@@ -99,7 +100,7 @@ class Less_Parser{
 			}
 		}
 
-		$this->pos = 0;
+		$this->pos = $this->farthest = 0;
 	}
 
 	/**
@@ -230,7 +231,7 @@ class Less_Parser{
 	public function parseFile( $filename, $uri_root = '', $returnRoot = false){
 
 		if( !file_exists($filename) ){
-			throw new Less_Exception_Parser(sprintf('File `%s` not found.', $filename));
+			$this->Error(sprintf('File `%s` not found.', $filename));
 		}
 
 		$previousFileInfo = $this->env->currentFileInfo;
@@ -393,7 +394,7 @@ class Less_Parser{
 			$this->input = file_get_contents( $file_path );
 		}
 
-		$this->pos = 0;
+		$this->pos = $this->farthest = 0;
 
 		// Remove potential UTF Byte Order Mark
 		$this->input = preg_replace('/\\G\xEF\xBB\xBF/', '', $this->input);
@@ -401,6 +402,9 @@ class Less_Parser{
 
 		$rules = $this->parsePrimary();
 
+		if( $this->pos < $this->input_len ){
+			$this->Error('Unexpected input');
+		}
 
 		// free up a little memory
 		unset($this->input, $this->pos);
@@ -471,6 +475,7 @@ class Less_Parser{
 	}
 
 	private function restore() {
+		$this->farthest = $this->pos;
 		$this->pos = $this->memo;
 	}
 
@@ -597,7 +602,7 @@ class Less_Parser{
 	public function expect($tok, $msg = NULL) {
 		$result = $this->match( array($tok) );
 		if (!$result) {
-			throw new Less_Exception_Parser( $msg	? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+			$this->Error( $msg	? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 		} else {
 			return $result;
 		}
@@ -609,7 +614,7 @@ class Less_Parser{
 	public function expectChar($tok, $msg = null ){
 		$result = $this->MatchChar($tok);
 		if( !$result ){
-			throw new Less_Exception_Parser( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+			$this->Error( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 		}else{
 			return $result;
 		}
@@ -1180,7 +1185,7 @@ class Less_Parser{
 				if( $this->MatchChar(':') ){
 					if( $expressions ){
 						if( $isSemiColonSeperated ){
-							throw new Less_Exception_Parser('Cannot mix ; and , as delimiter types');
+							$this->Error('Cannot mix ; and , as delimiter types');
 						}
 						$expressionContainsNamed = true;
 					}
@@ -1216,7 +1221,7 @@ class Less_Parser{
 			if( $this->MatchChar(';') || $isSemiColonSeperated ){
 
 				if( $expressionContainsNamed ){
-					throw new Less_Exception_Parser('Cannot mix ; and , as delimiter types');
+					$this->Error('Cannot mix ; and , as delimiter types');
 				}
 
 				$isSemiColonSeperated = true;
@@ -1443,7 +1448,7 @@ class Less_Parser{
 		if( $elements ){
 			return $this->Less_Tree_Selector( $elements, $extendList, $condition, $this->pos, $this->env->currentFileInfo);
 		}
-		if( $extendList ) { throw new Less_Exception_Parser('Extend must be used to extend a selector, it cannot be used on its own'); }
+		if( $extendList ) { $this->Error('Extend must be used to extend a selector, it cannot be used on its own'); }
 	}
 
 	private function parseTag(){
@@ -1919,7 +1924,7 @@ class Less_Parser{
 				if( $b ){
 					$c = $this->Less_Tree_Condition($op[0], $a, $b, $index, $negate);
 				} else {
-					throw new Less_Exception_Parser('Unexpected expression');
+					$this->Error('Unexpected expression');
 				}
 			} else {
 				$c = $this->Less_Tree_Condition('=', $a, $this->Less_Tree_Keyword('true'), $index, $negate);
@@ -2135,6 +2140,10 @@ class Less_Parser{
 			return var_export($arg,true);
 		}
 
+	}
+
+	public function Error($msg){
+		throw new Less_Exception_Parser($msg, null, $this->farthest, $this->env->currentFileInfo);
 	}
 }
 

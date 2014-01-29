@@ -161,11 +161,11 @@ class Less_SourceMap_Base64VLQ {
 	 *
 	 * @param integer $number
 	 * @return string
-	 * @throws InvalidArgumentException If the number is invalid
+	 * @throws Exception If the number is invalid
 	 */
 	public function base64Encode($number){
 		if($number < 0 || $number > 63){
-			throw new InvalidArgumentException(sprintf('Invalid number "%s" given. Must be between 0 and 63.', $number));
+			throw new Exception(sprintf('Invalid number "%s" given. Must be between 0 and 63.', $number));
 		}
 		return $this->intToCharMap[$number];
 	}
@@ -175,11 +175,11 @@ class Less_SourceMap_Base64VLQ {
 	 *
 	 * @param string $char
 	 * @return number
-	 * @throws InvalidArgumentException If the number is invalid
+	 * @throws Exception If the number is invalid
 	 */
 	public function base64Decode($char){
 		if(!array_key_exists($char, $this->charToIntMap)){
-			throw new InvalidArgumentException(sprintf('Invalid base 64 digit "%s" given.', $char));
+			throw new Exception(sprintf('Invalid base 64 digit "%s" given.', $char));
 		}
 		return $this->charToIntMap[$char];
 	}

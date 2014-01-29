@@ -29,7 +29,6 @@ abstract class Less_Configurable {
 	 * If $options is an object it will be converted into an array by called
 	 * it's toArray method.
 	 *
-	 * @throws InvalidArgumentException
 	 * @param array|object $options
 	 *
 	 */
