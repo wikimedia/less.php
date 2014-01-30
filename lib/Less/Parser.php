@@ -1616,9 +1616,11 @@ class Less_Parser{
 		$index = $this->pos;
 		$this->save();
 
+
 		//$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[a-zA-Z0-9\-% \.,!]+?(?:\'")?)\s*([;}])/');
-		$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[#a-zA-Z0-9\-%\.,]+(?:\'")?) *(! *important)?\s*([;}])/');
+		$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*([\'"]?[#a-zA-Z0-9\-%\.,]+?[\'"]?) *(! *important)?\s*([;}])/');
 		if( $match ){
+
 			if( $match[4] == '}' ){
 				$this->pos = $index + strlen($match[0])-1;
 			}
@@ -1629,11 +1631,16 @@ class Less_Parser{
 			//	return $this->Less_Tree_Rule( $match[1], $color, $match[3], null, $index, $this->env->currentFileInfo);
 			//}
 
+			//if( $match[2][0] == '@' ){
+			//	$match[2] = new Less_Tree_Variable($match[2], $index, $this->env->currentFileInfo );
+			//	return $this->Less_Tree_Rule( $match[1], $match[2], $match[3], null, $index, $this->env->currentFileInfo);
+			//}
+
 			if( $match[3] ){
 				$match[2] .= ' !important';
 			}
 
-			return new Less_Tree_NameValue( $match[1], $match[2], $match[3], $index, $this->env->currentFileInfo);
+			return new Less_Tree_NameValue( $match[1], $match[2], $index, $this->env->currentFileInfo);
 		}
 
 		$this->restore();
