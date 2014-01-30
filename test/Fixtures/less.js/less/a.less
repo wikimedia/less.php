@@ -1,11 +1,13 @@
 
-@var: one;
 
-.mixin-@{var}{
+.mixin{
 	width:10;
+	height:20;
+	color:red !important;
+	background:#000;
 	}
 
 .test{
-	.mixin-one;
+	.mixin;
+	color:blue;
 	}
-

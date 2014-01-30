@@ -745,8 +745,8 @@ class Less_Parser{
 				continue;
 			}
 
-			//$node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseNameValue', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
-			$node = $this->MatchFuncs( array( 'parseMixinDefinition',  'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
+			//$node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
+			$node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseNameValue', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
 
 			if( $node ){
 				$root[] = $node;
@@ -1616,13 +1616,24 @@ class Less_Parser{
 		$index = $this->pos;
 		$this->save();
 
-		//$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[a-zA-Z0-9\-]+(?:\'")?)\s*([;}])/');
-		$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[a-zA-Z0-9\-% \.,!]+(?:\'")?)\s*([;}])/');
+		//$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[a-zA-Z0-9\-% \.,!]+?(?:\'")?)\s*([;}])/');
+		$match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[#a-zA-Z0-9\-%\.,]+(?:\'")?) *(! *important)?\s*([;}])/');
 		if( $match ){
-			if( $match[3] == '}' ){
+			if( $match[4] == '}' ){
 				$this->pos = $index + strlen($match[0])-1;
 			}
-			return new Less_Tree_NameValue( $match[1], $match[2], $index, $this->env->currentFileInfo);
+
+			// less.js doesn't handle color keywords consistently
+			//$color = $this->fromKeyword($match[2]);
+			//if( $color ){
+			//	return $this->Less_Tree_Rule( $match[1], $color, $match[3], null, $index, $this->env->currentFileInfo);
+			//}
+
+			if( $match[3] ){
+				$match[2] .= ' !important';
+			}
+
+			return new Less_Tree_NameValue( $match[1], $match[2], $match[3], $index, $this->env->currentFileInfo);
 		}
 
 		$this->restore();
@@ -1694,22 +1705,19 @@ class Less_Parser{
 
 		$dir = $this->MatchReg('/\\G@import?\s+/');
 
-		$options = array();
 		if( $dir ){
 			$options = $this->parseImportOptions();
-			if( !$options ){
-				$options = array();
-			}
-		}
+			$path = $this->MatchFuncs( array('parseEntitiesQuoted','parseEntitiesUrl'));
 
-		if( $dir && ($path = $this->MatchFuncs( array('parseEntitiesQuoted','parseEntitiesUrl'))) ){
-			$features = $this->parseMediaFeatures();
-			if( $this->MatchChar(';') ){
-				if( $features ){
-					$features = $this->Less_Tree_Value( $features);
+			if( $path ){
+				$features = $this->parseMediaFeatures();
+				if( $this->MatchChar(';') ){
+					if( $features ){
+						$features = $this->Less_Tree_Value( $features);
+					}
+
+					return $this->Less_Tree_Import( $path, $features, $options, $this->pos, $this->env->currentFileInfo );
 				}
-
-				return $this->Less_Tree_Import( $path, $features, $options, $this->pos, $this->env->currentFileInfo );
 			}
 		}
 
@@ -1721,7 +1729,9 @@ class Less_Parser{
 		$options = array();
 
 		// list of options, surrounded by parens
-		if( !$this->MatchChar('(') ){ return null; }
+		if( !$this->MatchChar('(') ){
+			return $options;
+		}
 		do{
 			$optionName = $this->parseImportOption();
 			if( $optionName ){

@@ -18,6 +18,8 @@ class Less_Tree_NameValue extends Less_Tree{
 	public function __construct($name, $value = null, $index = null, $currentFileInfo = null ){
 		$this->name = $name;
 		$this->value = $value;
+		$this->index = $index;
+		$this->currentFileInfo = $currentFileInfo;
 	}
 
 	function genCSS( $output ){
