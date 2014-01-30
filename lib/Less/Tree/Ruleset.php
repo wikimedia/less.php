@@ -106,10 +106,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 		for($i=0; $i < $ruleset_len; $i++){
 			$rule = $ruleset->rules[$i];
 			if( $rule instanceof Less_Tree_Mixin_Call ){
-				$rules = $rule->compile($env);
+				$rule = $rule->compile($env);
 
 				$temp = array();
-				foreach($rules as $r){
+				foreach($rule as $r){
 					if( ($r instanceof Less_Tree_Rule) && $r->variable ){
 						// do not pollute the scope if the variable is
 						// already there. consider returning false here

@@ -19,10 +19,12 @@ class Less_Tree_Variable extends Less_Tree{
     }
 
 	public function compile($env) {
-		$name = $this->name;
-		if (strpos($name, '@@') === 0) {
-			$v = new Less_Tree_Variable(substr($name, 1), $this->index + 1);
+
+		if( $this->name[1] === '@' ){
+			$v = new Less_Tree_Variable(substr($this->name, 1), $this->index + 1);
 			$name = '@' . $v->compile($env)->value;
+		}else{
+			$name = $this->name;
 		}
 
 		if ($this->evaluating) {
