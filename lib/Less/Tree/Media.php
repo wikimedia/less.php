@@ -81,11 +81,7 @@ class Less_Tree_Media extends Less_Tree{
 
 	public function markReferenced(){
 		$this->isReferenced = true;
-		foreach($this->rules[0]->rules as $rule){
-			if( Less_Parser::is_method($rule,'markReferenced') ){
-				$rule->markReferenced();
-			}
-		}
+		Less_Tree::ReferencedArray($this->rules[0]->rules);
 	}
 
 	// evaltop

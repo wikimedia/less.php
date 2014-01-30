@@ -131,11 +131,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 
 			if( $match ){
 				if( !$this->currentFileInfo || !isset($this->currentFileInfo['reference']) || !$this->currentFileInfo['reference'] ){
-					foreach($rules as $rule){
-						if( Less_Parser::is_method($rule,'markReferenced') ){
-							$rule->markReferenced();
-						}
-					}
+					Less_Tree::ReferencedArray($rules);
 				}
 				return $rules;
 			}

@@ -58,6 +58,16 @@ class Less_Tree{
 
 	public function accept($visitor){}
 
+
+	public static function ReferencedArray($rules){
+		foreach($rules as $rule){
+			if( method_exists($rule, 'markReferenced') ){
+				$rule->markReferenced();
+			}
+		}
+	}
+
+
 	/**
 	 * Requires php 5.3+
 	 */
