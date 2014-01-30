@@ -195,10 +195,8 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 				}else{
 					$ruleList =& $ruleCache[$rule->name];
 
-					if( $ruleList instanceof Less_Tree_Rule ){
+					if( $ruleList instanceof Less_Tree_Rule || $ruleList instanceof Less_Tree_NameValue ){
 						$ruleList = $ruleCache[$rule->name] = array( $ruleCache[$rule->name]->toCSS() );
-					}elseif( $ruleList instanceof Less_Tree_NameValue ){
-						$ruleList = $ruleCache[$rule->name] = array( $ruleCache[$rule->name]->value );
 					}
 
 					$ruleCSS = $rule->toCSS();

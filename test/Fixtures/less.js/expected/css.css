@@ -81,8 +81,8 @@ p + h1 {
 }
 #important {
   color: red !important;
-  width: 100%!important;
-  height: 20px ! important;
+  width: 100% !important;
+  height: 20px !important;
 }
 @font-face {
   font-family: font-a;

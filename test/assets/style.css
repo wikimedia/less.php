@@ -11,23 +11,21 @@ pre{
 	overflow:visible !important;
 	}
 
-#heading *,
-#contents *{min-width:0;width:auto;}
-
-#heading{background:#2C3E50;color:#fff;padding:0 20px;height:70px;margin:0;}
-#heading *{color:#fff;text-decoration:none;}
-#heading h1{font-size:20px;line-height:70px;height:70px;margin:0;padding:0;}
+#heading{background:#1A252F;color:#fff;padding:0;height:70px;margin:0;}
+#heading h1{font-size:20px;line-height:70px;height:70px;margin:0;padding:0;color:#fff; float:left; width:200px;padding:0 10px 0 30px;}
+#heading a{color:#fff;text-decoration:none;}
 #heading a:hover{color:#18BC9C;}
 
-#links{float:right;margin:0;}
-#links li, #links a{display:inline-block;list-style:none;padding:0;height:70px;line-height:70px;}
-#links a{text-decoration:none;padding:0 20px;}
+#links{float:left; margin:0; width:200px; background:#1A252F; padding:0; min-height:3000px;}
+#links li, #links a{display:block;list-style:none;padding:0;height:30px;line-height:30px;}
+#links a{text-decoration:none;padding:0 30px;color:#fff;}
 
-#links .active a{background:#1A252F;}
+#links .active a,
+#links a:hover{background:#2C3E50;}
 #links a:hover{color:#18BC9C;text-decoration:none;}
 
 
-#options{padding:5px 20px;vertical-align:top;}
+#options{padding:5px 0;vertical-align:top;}
 #options label{display:inline-block;margin:5px 0 5px 30px;position:relative;white-space:nowrap;overflow:hidden;vertical-align:middle;z-index:1;cursor:pointer;}
 #options input{position:absolute;left:-20px;}
 #options input + span{display:inline-block;border:1px solid #ccc;border-radius:3px;z-index:0;padding:2px 9px;text-align: center;}
@@ -47,9 +45,29 @@ pre{
 }
 
 
-#summary{background:#1A252F;padding:10px 20px;color:#fff;}
+#summary{padding:10px 20px;color:#fff;}
 
-#contents{padding:20px;}
+#contents{}
+
+#results *{min-width:0;width:auto;}
+
+#results{
+	padding:20px;
+	margin-left:220px;
+	}
+#results .row{
+	padding:5px 0;
+	}
+#results .row_heading{
+	border-bottom:1px solid #ccc;
+	font-weight:normal !important;
+	}
+#results .row > a,
+#results .row > b{
+	display:inline-block;
+	width:250px;
+	white-space:nowrap;
+	}
 
 .diff{
 	font-size:11px;
