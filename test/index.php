@@ -30,7 +30,7 @@ class ParserTest{
 	//options
 	var $compress = false;
 	var $dir;
-	var $test_dirs = array('less.js','bootstrap3','bootstrap-2.0.2');
+	var $test_dirs = array('lessjs','bootstrap3','bootstrap-2.0.2');
 	var $cache_dir;
 	var $head;
 	var $files_tested = 0;
@@ -112,8 +112,8 @@ class ParserTest{
 
 			echo '<div class="row row_heading">';
 			echo '<b class="filename">File</b>';
-			echo '<b>CSS Difference</b>';
-			echo '<b>Expected Difference</b>';
+			echo '<b>Less.js CSS</b>';
+			echo '<b>Expected Less.php CSS</b>';
 			echo '</div>';
 
 			echo implode('',$diff);
@@ -143,10 +143,10 @@ class ParserTest{
 		echo '<a class="filename" href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">File: '.$basename.'</a>';
 
 		if( !file_exists($file_less) ){
-			echo '<p>LESS file missing: '.$file_less.'</p>';
+			echo '<b>LESS file missing: '.$file_less.'</b>';
 			return false;
 		}elseif( !file_exists($file_css) ){
-			echo '<p>CSS file missing: '.$file_css.'</p>';
+			echo '<b>CSS file missing: '.$file_css.'</b>';
 			return false;
 		}
 
@@ -246,7 +246,7 @@ class ParserTest{
 
 		}else{
 			$line_diff = $this->LineDiff($compiled,$css);
-			echo ' <b>'.$line_diff.' lines mismatched (css)</b>';
+			echo ' <b>'.$line_diff.' lines mismatched</b>';
 
 
 			//check agains expected less.php results
@@ -257,7 +257,7 @@ class ParserTest{
 					echo '<span>Expected Matched</span>';
 				}else{
 					$line_diff = $this->LineDiff($compiled,$expected);
-					echo ' <b>'.$line_diff.' lines mismatched (expected)</b>';
+					echo ' <b>'.$line_diff.' lines mismatched</b>';
 				}
 
 			}else{
@@ -294,6 +294,13 @@ class ParserTest{
 	function SaveExpected($file_css, $compiled ){
 		$name = basename($file_css);
 		$expected	= $this->TranslateFile($file_css,'expected','css');
+
+		$dir = dirname($expected);
+		if( !is_dir($dir) ){
+			msg('Expected directory does not exist: '.$dir);
+			return;
+		}
+
 		if( file_put_contents($expected, $compiled) ){
 			msg('Expected results for '.$name.' were saved');
 		}
