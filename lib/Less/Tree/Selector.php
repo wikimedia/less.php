@@ -138,39 +138,22 @@ class Less_Tree_Selector extends Less_Tree{
 
 	public function compile($env) {
 
-		if( Less_Environment::$mixin_stack ){
-
-			$elements = array();
-			foreach($this->elements as $el){
-				$elements[] = $el->compile($env);
-			}
-
-			$extendList = array();
-			foreach($this->extendList as $el){
-				$extendList[] = $el->compile($el);
-			}
-
-			$evaldCondition = false;
-			if( $this->condition ){
-				$evaldCondition = $this->condition->compile($env);
-			}
-
-			return $this->createDerived( $elements, $extendList, $evaldCondition );
+		$elements = array();
+		foreach($this->elements as $el){
+			$elements[] = $el->compile($env);
 		}
 
-		foreach($this->elements as $i => $el){
-			$this->elements[$i] = $el->compile($env);
+		$extendList = array();
+		foreach($this->extendList as $el){
+			$extendList[] = $el->compile($el);
 		}
 
-		foreach($this->extendList as $i => $el){
-			$this->extendList[$i] = $el->compile($el);
-		}
-
+		$evaldCondition = false;
 		if( $this->condition ){
-			$this->evaldCondition = $this->condition->compile($env);
+			$evaldCondition = $this->condition->compile($env);
 		}
 
-		return $this;
+		return $this->createDerived( $elements, $extendList, $evaldCondition );
 	}
 
 
