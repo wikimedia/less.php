@@ -59,9 +59,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 		// Store the frames around mixin definitions,
 		// so they can be evaluated like closures when the time comes.
 		$ruleset_len = count($ruleset->rules);
+		$mixin_definitions = array();
 		for( $i = 0; $i < $ruleset_len; $i++ ){
 			if( $ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition ){
-				$ruleset->rules[$i]->frames = array_slice($env->frames,0);
+				$ruleset->rules[$i]->frames = $env->frames;
 			}
 		}
 
@@ -72,6 +73,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		// Evaluate mixin calls.
 		$this->EvalMixinCalls( $ruleset, $env, $ruleset_len );
+
 
 
 		for( $i=0; $i<$ruleset_len; $i++ ){
@@ -139,11 +141,8 @@ class Less_Tree_Ruleset extends Less_Tree{
 		if( $this->selectors ){
 			Less_Tree_DefaultFunc::error("it is currently only allowed in parametric mixin guards,");
 
-			$selectors = array();
-			if( $this->selectors ){
-				foreach($this->selectors as $s){
-					$selectors[] = $s->compile($env);
-				}
+			foreach($this->selectors as $s){
+				$selectors[] = $s->compile($env);
 			}
 
 			Less_Tree_DefaultFunc::reset();
