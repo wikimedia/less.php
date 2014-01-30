@@ -1468,10 +1468,10 @@ class Less_Parser{
 			$this->skipWhitespace(0);
 
 			return $c;
-		}elseif( $this->pos > 0 && $this->isWhitespace(-1) ){
+		}
+
+		if( $this->pos > 0 && $this->isWhitespace(-1) ){
 			return ' ';
-		} else {
-			return null;
 		}
 	}
 
