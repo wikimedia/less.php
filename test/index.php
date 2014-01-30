@@ -671,9 +671,15 @@ function msg($arg){
 }
 
 function func_trace($len = 1){
+	static $traces = array();
 	$debug = debug_backtrace();
+	array_shift($debug);
 	for($i = 0; $i < $len; $i++ ){
-		msg($debug[$i]['file'].' @'.$debug[$i]['line']);
+		$trace = $debug[$i]['file'].' @'.$debug[$i]['line'];
+		if( !in_array($trace, $traces) ){
+			msg($trace);
+			$traces[] = $trace;
+		}
 	}
 }
 
