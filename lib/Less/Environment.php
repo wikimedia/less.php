@@ -60,12 +60,6 @@ class Less_Environment{
 	public static $mixin_stack = 0;
 
 
-	/**
-	 * @param array|null $options
-	 */
-	public function __construct(){}
-
-
 	//todo: shouldn't really need multiple setoption() functions
 	public function SetOptions($options){
 
