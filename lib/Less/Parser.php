@@ -1640,7 +1640,7 @@ class Less_Parser{
 				$match[2] .= ' !important';
 			}
 
-			return new Less_Tree_NameValue( $match[1], $match[2], $index, $this->env->currentFileInfo);
+			return $this->Less_Tree_NameValue( $match[1], $match[2], $index, $this->env->currentFileInfo);
 		}
 
 		$this->restore();
@@ -2167,7 +2167,7 @@ class Less_Parser{
 
 			foreach($name as $k => $name_k ){
 				if( $name[$k] && is_string($name[$k]) && $name[$k][0] === '@' ){
-					$name[$k] = new Less_Tree_Variable('@' . substr($name[$k],2,-1), $index[$k], $this->env->currentFileInfo );
+					$name[$k] = $this->Less_Tree_Variable('@' . substr($name[$k],2,-1), $index[$k], $this->env->currentFileInfo );
 				}
 			}
 
@@ -2283,6 +2283,12 @@ class Less_Parser{
 				$comma = ', ';
 			}
 			$obj->cache_string .= ')';
+
+
+			if( strpos($obj->cache_string,'=> ,') !== false ){
+				msg($args);
+				die('found');
+			}
 		}
 
 		return $obj;

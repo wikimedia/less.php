@@ -22,14 +22,14 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 
 
 	/**
-	 * Test the contents of the files in /test/Fixtures/less.js/expected
+	 * Test the contents of the files in /test/Fixtures/lessjs/expected
 	 *
 	 */
 	function testLessJs(){
 
 		print_r("\nBegin Tests");
 
-		$css_dir = $this->fixtures_dir.'/less.js/expected';
+		$css_dir = $this->fixtures_dir.'/lessjs/expected';
 		$files = scandir($css_dir);
 
 		foreach($files as $file){
@@ -72,7 +72,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 	/**
 	 * Change a css file name to a less file name
 	 *
-	 * eg: /Fixtures/less.js/css/filename.css -> /Fixtures/less.js/less/filename.less
+	 * eg: /Fixtures/lessjs/css/filename.css -> /Fixtures/lessjs/less/filename.less
 	 *
 	 */
 	function TranslateFile( $file_css, $dir = 'less', $type = 'less' ){
