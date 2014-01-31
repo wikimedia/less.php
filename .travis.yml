@@ -4,3 +4,7 @@ php:
   - "5.4"
   - "5.3"
   - "5.2"
+branches:
+  only:
+    - master
+    - 1.6
