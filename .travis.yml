@@ -7,3 +7,4 @@ php:
 branches:
   only:
     - master
+    - 1.6
