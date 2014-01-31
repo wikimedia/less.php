@@ -36,6 +36,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 		$isOneFound = false;
 		$candidates = array();
 		$defaultUsed = false;
+		$conditionResult = array();
 
 		$args = array();
 		foreach($this->arguments as $a){

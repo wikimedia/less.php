@@ -12,7 +12,7 @@ class Less_Tree_Element extends Less_Tree{
 
 	public $value_is_object = false;
 
-	static $_outputMap = array(
+	public static $_outputMap = array(
 		''  => '',
 		' ' => ' ',
 		':' => ' :',

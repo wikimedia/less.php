@@ -290,7 +290,6 @@ class Less_Parser{
 
 		$this->env->setFileContent($filename);
 
-		$return = null;
 		if( $returnRoot ){
 			$rules = $this->GetRules( $filename );
 			$return = new Less_Tree_Ruleset(array(), $rules );
