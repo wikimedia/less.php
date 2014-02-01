@@ -18,6 +18,8 @@ $dir = dirname(dirname(__FILE__));
 require_once $dir.'/lib/Less/Autoloader.php';
 Less_Autoloader::register();
 
+//require_once $dir.'/test/dist/Cache.php';
+
 
 //get diff
 require( $dir. '/test/php-diff/lib/Diff.php');
@@ -194,23 +196,8 @@ class ParserTest{
 			 */
 
 
-			$string = '.class1 {
-  color: green;
-}
-
-.class2 {
-  color: black
-  .subclass { color: red }
-}
-
-.class3 {
-  color: red
-}';
-
-
 			$parser = new Less_Parser( $options );
-			//$parser->parseFile( $file_less, $file_uri );
-			$parser->parse( $string );
+			$parser->parseFile( $file_less, $file_uri );
 			$compiled = $parser->getCss();
 
 			//$this->SaveExpected($file_css, $compiled);
