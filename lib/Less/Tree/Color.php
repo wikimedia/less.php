@@ -47,7 +47,7 @@ class Less_Tree_Color extends Less_Tree{
 	}
 
 	public function toCSS( $doNotCompress = false ){
-		$compress = Less_Environment::$compress && !$doNotCompress;
+		$compress = Less_Parser::$options['compress'] && !$doNotCompress;
 
 
 		//

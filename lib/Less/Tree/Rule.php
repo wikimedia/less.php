@@ -45,7 +45,7 @@ class Less_Tree_Rule extends Less_Tree{
 			$e->filename = $this->currentFileInfo['filename'];
 			throw $e;
 		}
-		$output->add( $this->important . (($this->inline || (Less_Environment::$lastRule && Less_Environment::$compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
+		$output->add( $this->important . (($this->inline || (Less_Environment::$lastRule && Less_Parser::$options['compress'])) ? "" : ";"), $this->currentFileInfo, $this->index);
 	}
 
 	public function compile ($env){

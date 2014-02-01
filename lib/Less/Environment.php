@@ -11,7 +11,6 @@ class Less_Environment{
 	//public $rootpath;						// option - rootpath to append to URL's
 	//public static $strictImports = null;	// option -
 	//public $insecure;						// option - whether to allow imports from insecure ssl hosts
-	public static $compress = false;		// option - whether to compress
 	//public $processImports;				// option - whether to process imports. if false then imports will not be imported
 	//public $javascriptEnabled;			// option - whether JavaScript is enabled. if undefined, defaults to true
 	//public $useFileCache;					// browser only - whether to use the per file session cache
@@ -55,12 +54,6 @@ class Less_Environment{
 	//todo: shouldn't really need multiple setoption() functions
 	public function SetOptions($options){
 
-		if( isset($options['compress']) ){
-			self::$compress = (bool)$options['compress'];
-		}else{
-			self::$compress = false;
-		}
-
 		if( isset($options['strictUnits']) ){
 			self::$strictUnits = (bool)$options['strictUnits'];
 		}else{
@@ -75,7 +68,7 @@ class Less_Environment{
 		}
 
 
-		if( self::$compress ){
+		if( Less_Parser::$options['compress'] ){
 
 			Less_Environment::$_outputMap = array(
 				','	=> ',',

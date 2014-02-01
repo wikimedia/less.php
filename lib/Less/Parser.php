@@ -44,7 +44,7 @@ class Less_Parser{
 	 * Default parser options
 	 */
 	public static $default_options = array(
-		'compress'				=> false,
+		'compress'				=> false,			// option - whether to compress
 		'import_dirs'			=> array(),
 		'import_callback'		=> null,
 		'cache_dir'				=> null,
@@ -189,7 +189,7 @@ class Less_Parser{
 			$css = $evaldRoot->toCSS();
 		}
 
-		if( Less_Environment::$compress ){
+		if( Less_Parser::$options['compress'] ){
 			$css = preg_replace('/(^(\s)+)|((\s)+$)/', '', $css);
 		}
 

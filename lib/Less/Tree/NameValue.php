@@ -28,7 +28,7 @@ class Less_Tree_NameValue extends Less_Tree{
 			$this->name
 			. Less_Environment::$_outputMap[': ']
 			. $this->value
-			. (((Less_Environment::$lastRule && Less_Environment::$compress)) ? "" : ";")
+			. (((Less_Environment::$lastRule && Less_Parser::$options['compress'])) ? "" : ";")
 			, $this->currentFileInfo, $this->index);
 	}
 

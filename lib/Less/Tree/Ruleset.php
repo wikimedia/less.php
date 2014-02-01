@@ -288,7 +288,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 
 		$tabRuleStr = $tabSetStr = '';
-		if( !Less_Environment::$compress ){
+		if( !Less_Parser::$options['compress'] ){
 			if( Less_Environment::$tabLevel ){
 				$tabRuleStr = "\n".str_repeat( '  ' , Less_Environment::$tabLevel );
 				$tabSetStr = "\n".str_repeat( '  ' , Less_Environment::$tabLevel-1 );
@@ -338,7 +338,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 				}
 			}
 
-			$output->add( (Less_Environment::$compress ? '{' : " {") . $tabRuleStr );
+			$output->add( (Less_Parser::$options['compress'] ? '{' : " {") . $tabRuleStr );
 		}
 
 		// Compile rules and rulesets
@@ -380,7 +380,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$rulesetNodes[$i]->genCSS( $output);
 		}
 
-		if( !Less_Environment::$compress && $this->firstRoot ){
+		if( !Less_Parser::$options['compress'] && $this->firstRoot ){
 			$output->add( "\n" );
 		}
 
