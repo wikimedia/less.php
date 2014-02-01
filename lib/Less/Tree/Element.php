@@ -12,19 +12,6 @@ class Less_Tree_Element extends Less_Tree{
 
 	public $value_is_object = false;
 
-	public static $_outputMap = array(
-		''  => '',
-		' ' => ' ',
-		':' => ' :',
-		'+' => ' + ',
-		'~' => ' ~ ',
-		'>' => ' > ',
-		'|' => '|',
-        '^' => ' ^ ',
-        '^^' => ' ^^ '
-	);
-
-
 	public function __construct($combinator, $value, $index = null, $currentFileInfo = null ){
 
 		$this->value = $value;
@@ -74,7 +61,7 @@ class Less_Tree_Element extends Less_Tree{
 			return '';
 		}
 
-		return Less_Tree_Element::$_outputMap[$this->combinator] . $value;
+		return Less_Environment::$_outputMap[$this->combinator] . $value;
 	}
 
 }

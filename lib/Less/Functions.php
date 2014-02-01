@@ -488,7 +488,7 @@ class Less_Functions{
 			$order[$k] = $a->toCSS();
 		}
 
-		$args = implode( Less_Environment::$comma_space, $order);
+		$args = implode( Less_Environment::$_outputMap[','], $order);
 
 		return new Less_Tree_Anonymous( ($isMin ? 'min' : 'max') . '(' . $args . ')');
 	}

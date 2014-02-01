@@ -36,7 +36,7 @@ class Less_Tree_Rule extends Less_Tree{
      */
 	function genCSS( $output ){
 
-		$output->add( $this->name . Less_Environment::$colon_space, $this->currentFileInfo, $this->index);
+		$output->add( $this->name . Less_Environment::$_outputMap[': '], $this->currentFileInfo, $this->index);
 		try{
 			$this->value->genCSS( $output);
 

@@ -55,8 +55,7 @@ class Less_Environment{
 
 
 
-	public static $comma_space;
-	public static $colon_space;
+	public static $_outputMap;
 	public static $mixin_stack = 0;
 
 
@@ -78,10 +77,9 @@ class Less_Environment{
 
 		if( self::$compress ){
 
-			self::$comma_space = ',';
-			self::$colon_space = ':';
-
-			Less_Tree_Element::$_outputMap = array(
+			Less_Environment::$_outputMap = array(
+				','	=> ',',
+				': ' => ':',
 				''  => '',
 				' ' => ' ',
 				':' => ' :',
@@ -94,10 +92,10 @@ class Less_Environment{
 			);
 
 		}else{
-			self::$comma_space = ', ';
-			self::$colon_space = ': ';
 
-			Less_Tree_Element::$_outputMap = array(
+			Less_Environment::$_outputMap = array(
+				','	=> ', ',
+				': ' => ': ',
 				''  => '',
 				' ' => ' ',
 				':' => ' :',
