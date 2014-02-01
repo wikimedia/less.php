@@ -46,6 +46,11 @@ class Less_Environment{
 
 	public function Init(){
 
+		self::$parensStack = 0;
+		self::$tabLevel = 0;
+		self::$lastRule = false;
+		self::$mixin_stack = 0;
+
 		if( Less_Parser::$options['compress'] ){
 
 			Less_Environment::$_outputMap = array(
