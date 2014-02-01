@@ -799,7 +799,7 @@ class Less_Functions{
 		for( $i = 0; $i < 3; $i++ ){
 			$cb = $color1->rgb[$i] / 255;
 			$cs = $color2->rgb[$i] / 255;
-			$cr = $mode( $cb, $cs );
+			$cr = call_user_func( $mode, $cb, $cs );
 			if( $ar ){
 				$cr = ($as * $cs + $ab * ($cb - $as * ($cb + $cs - $cr))) / $ar;
 			}
