@@ -104,7 +104,7 @@ class Less_Exception_Chunk extends Less_Exception_Parser{
 					$matched = 0;
 					$currentChunkStartIndex = $this->parserCurrentIndex;
 					for ($this->parserCurrentIndex = $this->parserCurrentIndex + 1; $this->parserCurrentIndex < $this->input_len; $this->parserCurrentIndex++) {
-						$cc2 = input.charCodeAt($this->parserCurrentIndex);
+						$cc2 = $this->CharCode($this->parserCurrentIndex);
 						if ($cc2 > 96) { continue; }
 						if ($cc2 == $cc) { $matched = 1; break; }
 						if ($cc2 == 92) {        // \
