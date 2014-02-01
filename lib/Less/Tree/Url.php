@@ -6,11 +6,13 @@ class Less_Tree_Url extends Less_Tree{
 	public $attrs;
 	public $value;
 	public $currentFileInfo;
+	public $isEvald;
 	public $type = 'Url';
 
-	public function __construct($value, $currentFileInfo = null){
+	public function __construct($value, $currentFileInfo = null, $isEvald = null){
 		$this->value = $value;
 		$this->currentFileInfo = $currentFileInfo;
+		$this->isEvald = $isEvald;
 	}
 
 	function accept( $visitor ){
@@ -32,23 +34,24 @@ class Less_Tree_Url extends Less_Tree{
 	public function compile($ctx){
 		$val = $this->value->compile($ctx);
 
-		// Add the base path if the URL is relative
-		if( property_exists($ctx,'relativeUrls')
-			&& $ctx->relativeUrls
-			&& $this->currentFileInfo
-			&& is_string($val->value)
-			&& Less_Environment::isPathRelative($val->value)
-		){
-			$rootpath = $this->currentFileInfo['uri_root'];
-			if ( !$val->quote ){
-				$rootpath = preg_replace('/[\(\)\'"\s]/', '\\$1', $rootpath );
+		if( !$this->isEvald ){
+			// Add the base path if the URL is relative
+			if( Less_Parser::$options['relativeUrls']
+				&& $this->currentFileInfo
+				&& is_string($val->value)
+				&& Less_Environment::isPathRelative($val->value)
+			){
+				$rootpath = $this->currentFileInfo['uri_root'];
+				if ( !$val->quote ){
+					$rootpath = preg_replace('/[\(\)\'"\s]/', '\\$1', $rootpath );
+				}
+				$val->value = $rootpath . $val->value;
 			}
-			$val->value = $rootpath . $val->value;
+
+			$val->value = Less_Environment::normalizePath( $val->value);
 		}
 
-		$val->value = Less_Environment::normalizePath( $val->value);
-
-		return new Less_Tree_URL($val, null);
+		return new Less_Tree_URL($val, $this->currentFileInfo, true);
 	}
 
 }

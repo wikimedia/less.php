@@ -5,21 +5,16 @@
 
 class Less_Environment{
 
-	public $paths = array();				// option - unmodified - paths to search for imports on
-	static $files = array();				// list of files that have been imported, used for import-once
-	public $relativeUrls = true;			// option - whether to adjust URL's to be relative
-	public $rootpath;						// option - rootpath to append to URL's
-	public $strictImports = null;			// option -
-	public $insecure;						// option - whether to allow imports from insecure ssl hosts
-	public static $compress = false;		// option - whether to compress
-	public $processImports;					// option - whether to process imports. if false then imports will not be imported
-	public $javascriptEnabled;				// option - whether JavaScript is enabled. if undefined, defaults to true
-	public $useFileCache;					// browser only - whether to use the per file session cache
+	//public $paths = array();				// option - unmodified - paths to search for imports on
+	//public static $files = array();		// list of files that have been imported, used for import-once
+	//public $rootpath;						// option - rootpath to append to URL's
+	//public static $strictImports = null;	// option -
+	//public $insecure;						// option - whether to allow imports from insecure ssl hosts
+	//public $processImports;				// option - whether to process imports. if false then imports will not be imported
+	//public $javascriptEnabled;			// option - whether JavaScript is enabled. if undefined, defaults to true
+	//public $useFileCache;					// browser only - whether to use the per file session cache
 	public $currentFileInfo;				// information about the current file - for error reporting and importing and making urls relative etc.
 
-	public static $strictMath = false;		// whether math has to be within parenthesis
-	public static $strictUnits = false;		// whether units need to evaluate correctly
-	public $sourceMap = false;				// whether to output a source map
 	public $importMultiple = false; 		// whether we are currently importing multiple copies
 
 
@@ -27,12 +22,6 @@ class Less_Environment{
 	 * @var array
 	 */
 	public $frames = array();
-
-
-	/**
-	 * @var bool
-	 */
-	public $debug = false;
 
 	/**
 	 * @var array
@@ -44,56 +33,56 @@ class Less_Environment{
 	 */
 	public $mediaPath = array();
 
-	public $charset;
-
-	public $parensStack = 0;
+	public static $parensStack = 0;
 
 	public static $tabLevel = 0;
 
 	public static $lastRule = false;
 
+	public static $_outputMap;
+
+	public static $mixin_stack = 0;
 
 
-	/**
-	 * Filename to contents of all parsed the files
-	 *
-	 * @var array
-	 */
-	public static $contentsMap = array();
+	public function Init(){
 
+		self::$parensStack = 0;
+		self::$tabLevel = 0;
+		self::$lastRule = false;
+		self::$mixin_stack = 0;
 
+		if( Less_Parser::$options['compress'] ){
 
-	public static $comma_space;
-	public static $colon_space;
-	public static $firstSelector;
+			Less_Environment::$_outputMap = array(
+				','	=> ',',
+				': ' => ':',
+				''  => '',
+				' ' => ' ',
+				':' => ' :',
+				'+' => '+',
+				'~' => '~',
+				'>' => '>',
+				'|' => '|',
+		        '^' => '^',
+		        '^^' => '^^'
+			);
 
-
-	/**
-	 * @param array|null $options
-	 */
-	public function __construct( $options = null ){
-		$this->frames = array();
-
-
-		if( isset($options['compress']) ){
-			self::$compress = (bool)$options['compress'];
-		}
-		if( isset($options['strictUnits']) ){
-			self::$strictUnits = (bool)$options['strictUnits'];
-		}
-		if( isset($options['sourceMap']) ){
-			$this->sourceMap = (bool)$options['sourceMap'];
-		}
-		if( isset($options['relativeUrls']) ){
-			$this->relativeUrls = (bool)$options['relativeUrls'];
-		}
-
-		if( self::$compress ){
-			self::$comma_space = ',';
-			self::$colon_space = ':';
 		}else{
-			self::$comma_space = ', ';
-			self::$colon_space = ': ';
+
+			Less_Environment::$_outputMap = array(
+				','	=> ', ',
+				': ' => ': ',
+				''  => '',
+				' ' => ' ',
+				':' => ' :',
+				'+' => ' + ',
+				'~' => ' ~ ',
+				'>' => ' > ',
+				'|' => '|',
+		        '^' => ' ^ ',
+		        '^^' => ' ^^ '
+			);
+
 		}
 	}
 
@@ -104,16 +93,9 @@ class Less_Environment{
 		return $new_env;
 	}
 
-	public function inParenthesis(){
-		$this->parensStack++;
-	}
 
-	public function outOfParenthesis() {
-		$this->parensStack--;
-	}
-
-	public function isMathOn(){
-		return !Less_Environment::$strictMath || $this->parensStack;
+	public static function isMathOn(){
+		return !Less_Parser::$options['strictMath'] || Less_Environment::$parensStack;
 	}
 
 	public static function isPathRelative($path){
@@ -164,21 +146,6 @@ class Less_Environment{
 	}
 
 
-	/**
-	 * @return bool
-	 */
-	public function getDebug(){
-		return $this->debug;
-	}
-
-	/**
-	 * @param $debug
-	 * @return void
-	 */
-	public function setDebug($debug){
-		$this->debug = $debug;
-	}
-
 	public function unshiftFrame($frame){
 		array_unshift($this->frames, $frame);
 	}
@@ -195,25 +162,4 @@ class Less_Environment{
 		$this->frames = array_merge($this->frames, $frames);
 	}
 
-
-	/**
-	 * Returns the contents map
-	 *
-	 * @return array
-	 */
-	public function getContentsMap(){
-		return self::$contentsMap;
-	}
-
-	/**
-	 * Sets file contents to the map
-	 *
-	 * @param string $filePath
-	 * @return Less_Environment
-	 */
-	public function setFileContent($filePath){
-		if( $this->sourceMap && $filePath ){
-			self::$contentsMap[$filePath] = file_get_contents($filePath);
-		}
-	}
 }

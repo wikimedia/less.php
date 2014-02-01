@@ -61,7 +61,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		$ruleset_len = count($ruleset->rules);
 		for( $i = 0; $i < $ruleset_len; $i++ ){
 			if( $ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition ){
-				$ruleset->rules[$i]->frames = array_slice($env->frames,0);
+				$ruleset->rules[$i]->frames = $env->frames;
 			}
 		}
 
@@ -72,6 +72,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		// Evaluate mixin calls.
 		$this->EvalMixinCalls( $ruleset, $env, $ruleset_len );
+
 
 
 		for( $i=0; $i<$ruleset_len; $i++ ){
@@ -104,10 +105,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 		for($i=0; $i < $ruleset_len; $i++){
 			$rule = $ruleset->rules[$i];
 			if( $rule instanceof Less_Tree_Mixin_Call ){
-				$rules = $rule->compile($env);
+				$rule = $rule->compile($env);
 
 				$temp = array();
-				foreach($rules as $r){
+				foreach($rule as $r){
 					if( ($r instanceof Less_Tree_Rule) && $r->variable ){
 						// do not pollute the scope if the variable is
 						// already there. consider returning false here
@@ -134,12 +135,18 @@ class Less_Tree_Ruleset extends Less_Tree{
 	 *
 	 */
 	private function PrepareRuleset($env){
+
 		$selectors = array();
 		if( $this->selectors ){
+			Less_Tree_DefaultFunc::error("it is currently only allowed in parametric mixin guards,");
+
 			foreach($this->selectors as $s){
 				$selectors[] = $s->compile($env);
 			}
+
+			Less_Tree_DefaultFunc::reset();
 		}
+
 		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);
 
 		$ruleset->originalRuleset = $this->ruleset_id;
@@ -153,7 +160,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 
 		// Evaluate imports
-		if ($ruleset->root || $ruleset->allowImports || !$ruleset->strictImports) {
+		if( $ruleset->root || $ruleset->allowImports ){ //|| !$ruleset->strictImports
 			$ruleset->evalImports($env);
 		}
 
@@ -215,22 +222,20 @@ class Less_Tree_Ruleset extends Less_Tree{
 	}
 
 	public function variables(){
-
-		if( !$this->_variables ){
-			$this->_variables = array();
-			foreach( $this->rules as $r){
-				if ($r instanceof Less_Tree_Rule && $r->variable === true) {
-					$this->_variables[$r->name] = $r;
-				}
+		$this->_variables = array();
+		foreach( $this->rules as $r){
+			if ($r instanceof Less_Tree_Rule && $r->variable === true) {
+				$this->_variables[$r->name] = $r;
 			}
 		}
-
-		return $this->_variables;
 	}
 
 	public function variable($name){
-		$vars = $this->variables();
-		return isset($vars[$name]) ? $vars[$name] : null;
+
+		if( is_null($this->_variables) ){
+			$this->variables();
+		}
+		return isset($this->_variables[$name]) ? $this->_variables[$name] : null;
 	}
 
 	public function find( $selector, $self = null, $env = null){
@@ -283,7 +288,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 
 		$tabRuleStr = $tabSetStr = '';
-		if( !Less_Environment::$compress ){
+		if( !Less_Parser::$options['compress'] ){
 			if( Less_Environment::$tabLevel ){
 				$tabRuleStr = "\n".str_repeat( '  ' , Less_Environment::$tabLevel );
 				$tabSetStr = "\n".str_repeat( '  ' , Less_Environment::$tabLevel-1 );
@@ -321,17 +326,19 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$paths_len = count($this->paths);
 			for( $i = 0; $i < $paths_len; $i++ ){
 				$path = $this->paths[$i];
-				Less_Environment::$firstSelector = true;
+				$firstSelector = true;
+
 				foreach($path as $p){
-					$p->genCSS( $output );
-					Less_Environment::$firstSelector = false;
+					$p->genCSS( $output, $firstSelector );
+					$firstSelector = false;
 				}
+
 				if( $i + 1 < $paths_len ){
 					$output->add( ',' . $tabSetStr );
 				}
 			}
 
-			$output->add( (Less_Environment::$compress ? '{' : " {") . $tabRuleStr );
+			$output->add( (Less_Parser::$options['compress'] ? '{' : " {") . $tabRuleStr );
 		}
 
 		// Compile rules and rulesets
@@ -373,7 +380,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 			$rulesetNodes[$i]->genCSS( $output);
 		}
 
-		if( !Less_Environment::$compress && $this->firstRoot ){
+		if( !Less_Parser::$options['compress'] && $this->firstRoot ){
 			$output->add( "\n" );
 		}
 

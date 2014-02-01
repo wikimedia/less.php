@@ -19,6 +19,7 @@ class Less_Tree_Directive extends Less_Tree{
 		} else {
 			$this->value = $value;
 		}
+		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
@@ -60,7 +61,6 @@ class Less_Tree_Directive extends Less_Tree{
 		return $evaldDirective;
 	}
 
-	// TODO: Not sure if this is right...
 	public function variable($name){
 		return $this->rules[0]->variable($name);
 	}
@@ -74,12 +74,7 @@ class Less_Tree_Directive extends Less_Tree{
 	public function markReferenced(){
 		$this->isReferenced = true;
 		if( $this->rules ){
-			$rules = $this->rules[0]->rules;
-			for( $i = 0; $i < count($rules); $i++ ){
-				if( Less_Parser::is_method( $rules[$i], 'markReferenced') ){
-					$rules[$i]->markReferenced();
-				}
-			}
+			Less_Tree::ReferencedArray($this->rules[0]->rules);
 		}
 	}
 

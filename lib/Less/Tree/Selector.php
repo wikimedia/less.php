@@ -15,18 +15,17 @@ class Less_Tree_Selector extends Less_Tree{
 
 	public $elements_len = 0;
 
+	public $_oelements;
+	public $_oelements_len;
+
 	/**
 	 * @param boolean $isReferenced
 	 */
-	public function __construct($elements = null, $extendList=null , $condition = null, $index=null, $currentFileInfo=null, $isReferenced=null ){
-
-
+	public function __construct( $elements, $extendList = array() , $condition = null, $index=null, $currentFileInfo=null, $isReferenced=null ){
 
 		$this->elements = $elements;
 		$this->elements_len = count($elements);
-		if( $extendList ){
-			$this->extendList = $extendList;
-		}
+		$this->extendList = $extendList;
 		$this->condition = $condition;
 		if( $currentFileInfo ){
 			$this->currentFileInfo = $currentFileInfo;
@@ -46,44 +45,96 @@ class Less_Tree_Selector extends Less_Tree{
 	}
 
 	function createDerived( $elements, $extendList = null, $evaldCondition = null ){
-		$evaldCondition = $evaldCondition != null ? $evaldCondition : $this->evaldCondition;
 		$newSelector = new Less_Tree_Selector( $elements, ($extendList ? $extendList : $this->extendList), $this->condition, $this->index, $this->currentFileInfo, $this->isReferenced);
-		$newSelector->evaldCondition = $evaldCondition;
+		$newSelector->evaldCondition = $evaldCondition ? $evaldCondition : $this->evaldCondition;
 		return $newSelector;
 	}
 
-	public function match($other) {
-		global $debug;
+	/*
+	public function match_old( $other ){
+		$elements = $this->elements;
+		$len = count($elements();
 
-		if( !$other ){
+		foreach(
+
+		$oelements = $other->elements.map( function(v) {
+			return v.combinator.value + (v.value.value || v.value);
+		}).join("").match('#[,&\#\.\w-]([\w-]|(\\.))*#');
+		// ^ regexp could be more simple but see test/less/css-escapes.less:17, doh!
+
+		if (!oelements) {
 			return 0;
 		}
 
-		$offset = 0;
-		$olen = $other->elements_len;
-		if( $olen ){
-			if( $other->elements[0]->value === "&" ){
-				$offset = 1;
+		if (oelements[0] === "&") {
+			oelements.shift();
+		}
+
+		olen = oelements.length;
+		if (olen === 0 || len < olen) {
+			return 0;
+		} else {
+			for (i = 0; i < olen; i++) {
+				if (elements[i].value !== oelements[i]) {
+					return 0;
+				}
 			}
-			$olen -= $offset;
 		}
+		return olen; // return number of matched elements
+	}
+	*/
 
-		if( $olen === 0 ){
+	// Performance issues with 1.6.1
+	// Compiling bootstrap almost doubled: from 4.5 seconds to 7.8 seconds
+	public function match( $other ){
+
+		if( is_null($other->_oelements) ){
+			$other->CacheElements();
+		}
+		if( !$other->_oelements || ($this->elements_len < $other->_oelements_len) ){
 			return 0;
 		}
 
-		if( $this->elements_len < $olen ){
-			return 0;
-		}
-
-		for ($i = 0; $i < $olen; $i ++) {
-			if ($this->elements[$i]->value !== $other->elements[$i + $offset]->value) {
+		for( $i = 0; $i < $other->_oelements_len; $i++ ){
+			if( $this->elements[$i]->value !== $other->_oelements[$i]) {
 				return 0;
 			}
 		}
 
-		return $olen; // return number of matched selectors
+		return $other->_oelements_len; // return number of matched elements
 	}
+
+
+	public function CacheElements(){
+
+		$this->_oelements = array();
+		$css = '';
+
+		foreach($this->elements as $v){
+
+			$css .= $v->combinator;
+			if( !$v->value_is_object ){
+				$css .= $v->value;
+				continue;
+			}
+
+			if( !property_exists($v->value,'value') || !is_string($v->value->value) ){
+				return;
+			}
+			$css .= $v->value->value;
+		}
+
+		$this->_oelements_len = preg_match_all('/[,&#\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches);
+		if( $this->_oelements_len ){
+			$this->_oelements = $matches[0];
+
+			if( $this->_oelements[0] === '&' ){
+				array_shift($this->_oelements);
+				$this->_oelements_len--;
+			}
+		}
+	}
+
 
 	public function compile($env) {
 
@@ -105,19 +156,18 @@ class Less_Tree_Selector extends Less_Tree{
 		return $this->createDerived( $elements, $extendList, $evaldCondition );
 	}
 
-    /**
-     * @see Less_Tree::genCSS
-     */
-	function genCSS( $output ){
 
-		if( !Less_Environment::$firstSelector && $this->elements[0]->combinator->value === "" ){
-			$output->add( ' ', $this->currentFileInfo, $this->index );
+	/**
+	 * @see Less_Tree::genCSS
+	 */
+	function genCSS( $output, $firstSelector = false ){
+
+		if( !$firstSelector && $this->elements[0]->combinator === "" ){
+			$output->add(' ', $this->currentFileInfo, $this->index);
 		}
-		if( !$this->_css ){
-			//TODO caching? speed comparison?
-			foreach($this->elements as $element){
-				$element->genCSS( $output );
-			}
+
+		foreach($this->elements as $element){
+			$element->genCSS( $output );
 		}
 	}
 

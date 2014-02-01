@@ -25,12 +25,12 @@ class Less_Tree_Comment extends Less_Tree{
 	}
 
 	public function toCSS(){
-		return Less_Environment::$compress ? '' : $this->value;
+		return Less_Parser::$options['compress'] ? '' : $this->value;
 	}
 
 	public function isSilent(){
 		$isReference = ($this->currentFileInfo && isset($this->currentFileInfo['reference']) && (!isset($this->isReferenced) || !$this->isReferenced) );
-		$isCompressed = Less_Environment::$compress && !preg_match('/^\/\*!/', $this->value);
+		$isCompressed = Less_Parser::$options['compress'] && !preg_match('/^\/\*!/', $this->value);
 		return $this->silent || $isReference || $isCompressed;
 	}
 

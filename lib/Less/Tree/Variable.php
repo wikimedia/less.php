@@ -19,14 +19,16 @@ class Less_Tree_Variable extends Less_Tree{
     }
 
 	public function compile($env) {
-		$name = $this->name;
-		if (strpos($name, '@@') === 0) {
-			$v = new Less_Tree_Variable(substr($name, 1), $this->index + 1);
+
+		if( $this->name[1] === '@' ){
+			$v = new Less_Tree_Variable(substr($this->name, 1), $this->index + 1);
 			$name = '@' . $v->compile($env)->value;
+		}else{
+			$name = $this->name;
 		}
 
 		if ($this->evaluating) {
-			throw new Less_Exception_Compiler("Recursive variable definition for " . $name, null, $this->index, $this->currentFileInfo['filename']);
+			throw new Less_Exception_Compiler("Recursive variable definition for " . $name, null, $this->index, $this->currentFileInfo);
 		}
 
 		$this->evaluating = true;
@@ -38,7 +40,7 @@ class Less_Tree_Variable extends Less_Tree{
 			}
 		}
 
-		throw new Less_Exception_Compiler("variable " . $name . " is undefined", null, $this->index);
+		throw new Less_Exception_Compiler("variable " . $name . " is undefined", null, $this->index );
 	}
 
 }

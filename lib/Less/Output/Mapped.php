@@ -68,14 +68,16 @@ class Less_Output_Mapped extends Less_Output {
 		$sourceColumns = ' ';
 
 
-		if( $fileInfo && !empty($fileInfo['filename']) ){
+		if( $fileInfo ){
 
-			if( isset($this->contentsMap[$fileInfo['filename']]) ){
-				$inputSource = substr($this->contentsMap[$fileInfo['filename']], 0, $index);
+			$url = $fileInfo['currentUri'];
+
+			if( isset($this->contentsMap[$url]) ){
+				$inputSource = substr($this->contentsMap[$url], 0, $index);
 				$sourceLines = explode("\n", $inputSource);
 				$sourceColumns = end($sourceLines);
 			}else{
-				throw new Exception('Filename '.$fileInfo['filename'].' not in contentsMap');
+				throw new Exception('Filename '.$url.' not in contentsMap');
 			}
 
 		}
@@ -91,7 +93,7 @@ class Less_Output_Mapped extends Less_Output {
 						$this->column,							// generated_column
 						count($sourceLines),					// original_line
 						strlen($sourceColumns),					// original_column
-						$fileInfo['filename']
+						$fileInfo['currentUri']
 				);
 			}else{
 				for($i = 0, $count = count($lines); $i < $count; $i++){
@@ -100,7 +102,7 @@ class Less_Output_Mapped extends Less_Output {
 						$i === 0 ? $this->column : 0,			// generated_column
 						count($sourceLines) + $i,				// original_line
 						$i === 0 ? strlen($sourceColumns) : 0, 	// original_column
-						$fileInfo['filename']
+						$fileInfo['currentUri']
 					);
 				}
 			}

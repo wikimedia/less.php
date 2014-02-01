@@ -36,7 +36,7 @@ class Less_Tree_Dimension extends Less_Tree{
      */
 	public function genCSS( $output ){
 
-		if( Less_Environment::$strictUnits && !$this->unit->isSingular() ){
+		if( Less_Parser::$options['strictUnits'] && !$this->unit->isSingular() ){
 			throw new Less_Exception_Compiler("Multiple units in dimension. Correct the units or use the unit function. Bad unit: ".$this->unit->toString());
 		}
 
@@ -49,7 +49,7 @@ class Less_Tree_Dimension extends Less_Tree{
 			$strValue = preg_replace('/\.?0+$/','', $strValue);
 		}
 
-		if( Less_Environment::$compress ){
+		if( Less_Parser::$options['compress'] ){
 			// Zero values doesn't need a unit
 			if( $value === 0 && $this->unit->isLength() ){
 				$output->add( $strValue );
@@ -92,7 +92,7 @@ class Less_Tree_Dimension extends Less_Tree{
 			}else{
 				$other = $other->convertTo( $this->unit->usedUnits());
 
-				if( Less_Environment::$strictUnits && $other->unit->toString() !== $unit->toCSS() ){
+				if( Less_Parser::$options['strictUnits'] && $other->unit->toString() !== $unit->toCSS() ){
 					throw new Less_Exception_Compiler("Incompatible units. Change the units or use the unit function. Bad units: '".$unit->toString() . "' and ".$other->unit->toString()+"'.");
 				}
 
@@ -160,8 +160,7 @@ class Less_Tree_Dimension extends Less_Tree{
 			$group = Less_Tree_UnitConversions::${$groupName};
 
 			//numerator
-			$len = count($unit->numerator);
-			for($i=0; $i < $len; $i++ ){
+			foreach($unit->numerator as $i => $atomicUnit){
 				$atomicUnit = $unit->numerator[$i];
 				if( !isset($group[$atomicUnit]) ){
 					continue;
@@ -173,8 +172,7 @@ class Less_Tree_Dimension extends Less_Tree{
 			}
 
 			//denominator
-			$len = count($unit->denominator);
-			for($i=0; $i < $len; $i++ ){
+			foreach($unit->denominator as $i => $atomicUnit){
 				$atomicUnit = $unit->denominator[$i];
 				if( !isset($group[$atomicUnit]) ){
 					continue;

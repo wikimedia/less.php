@@ -24,7 +24,7 @@ class Less_Tree_Rule extends Less_Tree{
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 		$this->inline = $inline;
-		$this->variable = ($name[0] === '@');
+		$this->variable = ( is_string($name) && $name[0] === '@');
 	}
 
 	function accept($visitor) {
@@ -36,7 +36,7 @@ class Less_Tree_Rule extends Less_Tree{
      */
 	function genCSS( $output ){
 
-		$output->add( $this->name . Less_Environment::$colon_space, $this->currentFileInfo, $this->index);
+		$output->add( $this->name . Less_Environment::$_outputMap[': '], $this->currentFileInfo, $this->index);
 		try{
 			$this->value->genCSS( $output);
 
@@ -45,28 +45,40 @@ class Less_Tree_Rule extends Less_Tree{
 			$e->filename = $this->currentFileInfo['filename'];
 			throw $e;
 		}
-		$output->add( $this->important . (($this->inline || (Less_Environment::$lastRule && Less_Environment::$compress)) ? "" : ";"), $this->currentFileInfo, $this->index);
+		$output->add( $this->important . (($this->inline || (Less_Environment::$lastRule && Less_Parser::$options['compress'])) ? "" : ";"), $this->currentFileInfo, $this->index);
 	}
 
 	public function compile ($env){
 
-		$strictMathBypass = false;
-		if( $this->name === "font" && !Less_Environment::$strictMath ){
-			$strictMathBypass = true;
-			Less_Environment::$strictMath = true;
+		$name = '';
+		if( is_array($this->name) ){
+
+			foreach($this->name as $v){
+				if( is_object($v) ){
+					$name .= $v->compile($env)->value;
+				}else{
+					$name .= $v;
+				}
+			}
+		}else{
+			$name = $this->name;
 		}
 
-		$return = new Less_Tree_Rule($this->name,
-									$this->value->compile($env),
-									$this->important,
-									$this->merge,
-									$this->index,
-									$this->currentFileInfo,
-									$this->inline);
-
-		if( $strictMathBypass ){
-			Less_Environment::$strictMath = false;
+		$strictMathBypass = Less_Parser::$options['strictMath'];
+		if( $name === "font" && !Less_Parser::$options['strictMath'] ){
+			Less_Parser::$options['strictMath'] = true;
 		}
+
+		// missing try ... catch
+		if( Less_Environment::$mixin_stack ){
+			$return = new Less_Tree_Rule($name, $this->value->compile($env), $this->important, $this->merge, $this->index, $this->currentFileInfo, $this->inline);
+		}else{
+			$this->name = $name;
+			$this->value = $this->value->compile($env);
+			$return = $this;
+		}
+
+		Less_Parser::$options['strictMath'] = $strictMathBypass;
 
 		return $return;
 	}
