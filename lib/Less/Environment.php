@@ -17,7 +17,6 @@ class Less_Environment{
 	public $currentFileInfo;				// information about the current file - for error reporting and importing and making urls relative etc.
 
 	public static $strictMath = false;		// whether math has to be within parenthesis
-	public static $strictUnits = false;		// whether units need to evaluate correctly
 	public $importMultiple = false; 		// whether we are currently importing multiple copies
 
 
@@ -53,13 +52,6 @@ class Less_Environment{
 
 	//todo: shouldn't really need multiple setoption() functions
 	public function SetOptions($options){
-
-		if( isset($options['strictUnits']) ){
-			self::$strictUnits = (bool)$options['strictUnits'];
-		}else{
-			self::$strictUnits = false;
-		}
-
 
 		if( isset($options['relativeUrls']) ){
 			self::$relativeUrls = (bool)$options['relativeUrls'];
