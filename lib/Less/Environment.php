@@ -44,8 +44,7 @@ class Less_Environment{
 	public static $mixin_stack = 0;
 
 
-	//todo: shouldn't really need multiple setoption() functions
-	public function SetOptions($options){
+	public function Init(){
 
 		if( Less_Parser::$options['compress'] ){
 
