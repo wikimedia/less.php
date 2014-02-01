@@ -17,7 +17,7 @@ class Less_Exception_Parser extends Exception{
 	 */
 	protected $index;
 
-	protected $content;
+	protected $input;
 
 	protected $details = array();
 
@@ -47,10 +47,10 @@ class Less_Exception_Parser extends Exception{
 	}
 
 
-	protected function getContent(){
+	protected function getInput(){
 
-		if( !$this->content && $this->currentFile && $this->currentFile['filename'] ){
-			$this->content = file_get_contents( $this->currentFile['filename'] );
+		if( !$this->input && $this->currentFile && $this->currentFile['filename'] ){
+			$this->input = file_get_contents( $this->currentFile['filename'] );
 		}
 	}
 
@@ -68,8 +68,8 @@ class Less_Exception_Parser extends Exception{
 		}
 
 		if( $this->index !== null ){
-			$this->getContent();
-			if( $this->content ){
+			$this->getInput();
+			if( $this->input ){
 				$line = self::getLineNumber();
 				$this->message .= ' on line '.$line.', column '.self::getColumn();
 
@@ -92,7 +92,7 @@ class Less_Exception_Parser extends Exception{
 	 * @return integer
 	 */
 	public function getLineNumber(){
-		return substr_count($this->content, "\n", 0, $this->index) + 1;
+		return substr_count($this->input, "\n", 0, $this->index) + 1;
 	}
 
 
@@ -103,7 +103,7 @@ class Less_Exception_Parser extends Exception{
 	 */
 	public function getColumn(){
 
-		$part = substr($this->content, 0, $this->index);
+		$part = substr($this->input, 0, $this->index);
 		$pos = strrpos($part,"\n");
 		return $this->index - $pos;
 	}

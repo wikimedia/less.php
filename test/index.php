@@ -193,8 +193,24 @@ class ParserTest{
 			$compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
 			 */
 
+
+			$string = '.class1 {
+  color: green;
+}
+
+.class2 {
+  color: black
+  .subclass { color: red }
+}
+
+.class3 {
+  color: red
+}';
+
+
 			$parser = new Less_Parser( $options );
-			$parser->parseFile( $file_less, $file_uri );
+			//$parser->parseFile( $file_less, $file_uri );
+			$parser->parse( $string );
 			$compiled = $parser->getCss();
 
 			//$this->SaveExpected($file_css, $compiled);
