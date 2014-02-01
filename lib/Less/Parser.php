@@ -81,6 +81,14 @@ class Less_Parser{
 	public static $next_id = 0;
 
 	/**
+	 * Filename to contents of all parsed the files
+	 *
+	 * @var array
+	 */
+	public static $contentsMap = array();
+
+
+	/**
 	 * @param Less_Environment|array|null $env
 	 */
 	public function __construct( $env = null ){
@@ -96,6 +104,7 @@ class Less_Parser{
 			self::$imports = array();
 			self::$has_extends = false;
 			self::$imports = array();
+			self::$contentsMap = array();
 			$this->SetOptions(Less_Parser::$default_options);
 
 
@@ -172,7 +181,7 @@ class Less_Parser{
 		$this->PostVisitors($evaldRoot);
 
 		if( Less_Parser::$options['sourceMap'] ){
-			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), Less_Parser::$options );
+			$generator = new Less_SourceMap_Generator($evaldRoot, Less_Parser::$contentsMap, Less_Parser::$options );
 			// will also save file
 			// FIXME: should happen somewhere else?
 			$css = $generator->generateCSS();
@@ -256,11 +265,6 @@ class Less_Parser{
 	 */
 	public function parse($str){
 
-		// TODO: enable setFileContent for string parsing
-		//if( Less_Environment::$sourceMap ){
-		//	$this->env->setFileContent($key, $string);
-		//}
-
 		$this->input = $str;
 		$this->_parse();
 
@@ -287,8 +291,6 @@ class Less_Parser{
 		$this->SetFileInfo($filename, $uri_root);
 
 		self::AddParsedFile($filename);
-
-		$this->env->setFileContent($filename);
 
 		if( $returnRoot ){
 			$rules = $this->GetRules( $filename );
@@ -347,6 +349,7 @@ class Less_Parser{
 		}
 
 		$currentFileInfo['currentDirectory'] = $dirname;
+		$currentFileInfo['currentUri'] = $uri_root.basename($filename);
 		$currentFileInfo['filename'] = $filename;
 		$currentFileInfo['uri_root'] = $uri_root;
 
@@ -463,6 +466,8 @@ class Less_Parser{
 		// Remove potential UTF Byte Order Mark
 		$this->input = preg_replace('/\\G\xEF\xBB\xBF/', '', $this->input);
 		$this->input_len = strlen($this->input);
+
+		$this->setFileContent();
 
 		$rules = $this->parsePrimary();
 
@@ -2328,6 +2333,20 @@ class Less_Parser{
 		throw new Less_Exception_Parser($msg, null, $this->farthest, $this->env->currentFileInfo);
 	}
 
+
+
+	/**
+	 * Sets file contents to the map
+	 *
+	 * @param string $filePath
+	 */
+	public function setFileContent(){
+
+		if( Less_Parser::$options['sourceMap'] && $this->env->currentFileInfo ){
+			$uri = $this->env->currentFileInfo['currentUri'];
+			Less_Parser::$contentsMap[$uri] = $this->input;
+		}
+	}
 }
 
 

@@ -45,12 +45,6 @@ class Less_Environment{
 
 
 
-	/**
-	 * Filename to contents of all parsed the files
-	 *
-	 * @var array
-	 */
-	public static $contentsMap = array();
 
 
 
@@ -192,25 +186,4 @@ class Less_Environment{
 		$this->frames = array_merge($this->frames, $frames);
 	}
 
-
-	/**
-	 * Returns the contents map
-	 *
-	 * @return array
-	 */
-	public function getContentsMap(){
-		return self::$contentsMap;
-	}
-
-	/**
-	 * Sets file contents to the map
-	 *
-	 * @param string $filePath
-	 * @return Less_Environment
-	 */
-	public function setFileContent($filePath){
-		if( Less_Parser::$options['sourceMap'] && $filePath ){
-			self::$contentsMap[$filePath] = file_get_contents($filePath);
-		}
-	}
 }

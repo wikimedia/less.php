@@ -136,6 +136,7 @@ class ParserTest{
 		$basename		= basename($less);
 		$basename 		= substr($basename,0,-5); //remove .less extension
 		$file_less		= $dir.$less;
+		$file_uri		= $this->AbsoluteToRelative( dirname($file_less) );
 		$file_css		= $dir.$css;
 		$file_expected	= $this->TranslateFile($file_css,'expected','css');
 		$file_sourcemap	= $dir.'/css/'.$basename.'.map';
@@ -193,7 +194,7 @@ class ParserTest{
 			 */
 
 			$parser = new Less_Parser( $options );
-			$parser->parseFile($file_less);
+			$parser->parseFile( $file_less, $file_uri );
 			$compiled = $parser->getCss();
 
 			//$this->SaveExpected($file_css, $compiled);

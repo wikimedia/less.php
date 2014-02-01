@@ -1,17 +1,17 @@
-@import "css/background.css";
-@import "import/import-test-d.css";
-@import "file.css";
+@import "/less.php/test/Fixtures/lessjs/less/css/background.css";
+@import "/less.php/test/Fixtures/lessjs/less/import/import-test-d.css";
+@import "/less.php/test/Fixtures/lessjs/less/file.css";
 @font-face {
   src: url("/fonts/garamond-pro.ttf");
-  src: local(Futura-Medium), url(fonts.svg#MyGeometricModern) format("svg");
+  src: local(Futura-Medium), url(/less.php/test/Fixtures/lessjs/less/fonts.svg#MyGeometricModern) format("svg");
 }
 #shorthands {
   background: url("http://www.lesscss.org/spec.html") no-repeat 0 4px;
-  background: url("img.jpg") center / 100px;
-  background: #ffffff url(image.png) center / 1px 100px repeat-x scroll content-box padding-box;
+  background: url("/less.php/test/Fixtures/lessjs/less/img.jpg") center / 100px;
+  background: #ffffff url(/less.php/test/Fixtures/lessjs/less/image.png) center / 1px 100px repeat-x scroll content-box padding-box;
 }
 #misc {
-  background-image: url(images/image.jpg);
+  background-image: url(/less.php/test/Fixtures/lessjs/less/images/image.jpg);
 }
 #data-uri {
   background: url(data:image/png;charset=utf-8;base64,
@@ -26,30 +26,30 @@
   background: transparent url('data:image/svg+xml, <svg version="1.1"><g></g></svg>');
 }
 .comma-delimited {
-  background: url(bg.jpg) no-repeat, url(bg.png) repeat-x top left, url(bg);
+  background: url(/less.php/test/Fixtures/lessjs/less/bg.jpg) no-repeat, url(/less.php/test/Fixtures/lessjs/less/bg.png) repeat-x top left, url(/less.php/test/Fixtures/lessjs/less/bg);
 }
 .values {
-  url: url('Trebuchet');
+  url: url('/less.php/test/Fixtures/lessjs/less/Trebuchet');
 }
 #logo {
   width: 100px;
   height: 100px;
-  background: url('import/assets/logo.png');
+  background: url('/less.php/test/Fixtures/lessjs/less/import/assets/logo.png');
 }
 @font-face {
   font-family: xecret;
-  src: url('import/assets/xecret.ttf');
+  src: url('/less.php/test/Fixtures/lessjs/less/import/assets/xecret.ttf');
 }
 #secret {
   font-family: xecret, sans-serif;
 }
 #imported-relative-path {
-  background-image: url(../data/image.jpg);
-  border-image: url('../data/image.jpg');
+  background-image: url(/less.php/test/Fixtures/lessjs/data/image.jpg);
+  border-image: url('/less.php/test/Fixtures/lessjs/data/image.jpg');
 }
 #relative-url-import {
-  background-image: url(../data/image.jpg);
-  border-image: url('../data/image.jpg');
+  background-image: url(/less.php/test/Fixtures/lessjs/data/image.jpg);
+  border-image: url('/less.php/test/Fixtures/lessjs/data/image.jpg');
 }
 #data-uri {
   uri: url("data:image/jpeg;base64,bm90IGFjdHVhbGx5IGEganBlZyBmaWxlCg==");
@@ -62,7 +62,7 @@
   uri-2: url("data:text/html,%3Ch1%3EThis%20page%20is%20100%25%20Awesome.%3C%2Fh1%3E%0A");
 }
 #data-uri-toobig {
-  uri: url('../data/data-uri-fail.png');
+  uri: url('/less.php/test/Fixtures/lessjs/data/data-uri-fail.png');
 }
 #svg-functions {
   background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxIDEiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzAwMDAwMCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjwvbGluZWFyR3JhZGllbnQ+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkaWVudCkiIC8+PC9zdmc+');
