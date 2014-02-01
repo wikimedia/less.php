@@ -7,7 +7,6 @@ class Less_Environment{
 
 	//public $paths = array();				// option - unmodified - paths to search for imports on
 	//public static $files = array();		// list of files that have been imported, used for import-once
-	public static $relativeUrls = true;		// option - whether to adjust URL's to be relative
 	//public $rootpath;						// option - rootpath to append to URL's
 	//public static $strictImports = null;	// option -
 	//public $insecure;						// option - whether to allow imports from insecure ssl hosts
@@ -40,24 +39,13 @@ class Less_Environment{
 
 	public static $lastRule = false;
 
-
-
-
-
-
 	public static $_outputMap;
+
 	public static $mixin_stack = 0;
 
 
 	//todo: shouldn't really need multiple setoption() functions
 	public function SetOptions($options){
-
-		if( isset($options['relativeUrls']) ){
-			self::$relativeUrls = (bool)$options['relativeUrls'];
-		}else{
-			self::$relativeUrls = true;
-		}
-
 
 		if( Less_Parser::$options['compress'] ){
 

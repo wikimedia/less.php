@@ -36,7 +36,7 @@ class Less_Tree_Url extends Less_Tree{
 
 		if( !$this->isEvald ){
 			// Add the base path if the URL is relative
-			if( Less_Environment::$relativeUrls
+			if( Less_Parser::$options['relativeUrls']
 				&& $this->currentFileInfo
 				&& is_string($val->value)
 				&& Less_Environment::isPathRelative($val->value)
