@@ -280,7 +280,7 @@ class Less_Parser{
 	public function parseFile( $filename, $uri_root = '', $returnRoot = false){
 
 		if( !file_exists($filename) ){
-			throw new Less_Exception_Parser(sprintf('File `%s` not found.', $filename));
+			$this->Error(sprintf('File `%s` not found.', $filename));
 		}
 
 		$previousFileInfo = $this->env->currentFileInfo;
@@ -467,7 +467,7 @@ class Less_Parser{
 		$rules = $this->parsePrimary();
 
 		if( $this->pos < $this->input_len ){
-			$this->Error('Unexpected input');
+			throw new Less_Exception_Chunk($this->input, null, $this->farthest, $this->env->currentFileInfo);
 		}
 
 		// free up a little memory
@@ -666,7 +666,7 @@ class Less_Parser{
 	public function expect($tok, $msg = NULL) {
 		$result = $this->match( array($tok) );
 		if (!$result) {
-			throw new Less_Exception_Parser( $msg	? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+			$this->Error( $msg	? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 		} else {
 			return $result;
 		}
@@ -678,7 +678,7 @@ class Less_Parser{
 	public function expectChar($tok, $msg = null ){
 		$result = $this->MatchChar($tok);
 		if( !$result ){
-			throw new Less_Exception_Parser( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+			$this->Error( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 		}else{
 			return $result;
 		}
@@ -1251,7 +1251,7 @@ class Less_Parser{
 				if( $this->MatchChar(':') ){
 					if( $expressions ){
 						if( $isSemiColonSeperated ){
-							throw new Less_Exception_Parser('Cannot mix ; and , as delimiter types');
+							$this->Error('Cannot mix ; and , as delimiter types');
 						}
 						$expressionContainsNamed = true;
 					}
@@ -1287,7 +1287,7 @@ class Less_Parser{
 			if( $this->MatchChar(';') || $isSemiColonSeperated ){
 
 				if( $expressionContainsNamed ){
-					throw new Less_Exception_Parser('Cannot mix ; and , as delimiter types');
+					$this->Error('Cannot mix ; and , as delimiter types');
 				}
 
 				$isSemiColonSeperated = true;
@@ -1522,7 +1522,9 @@ class Less_Parser{
 		if( $elements ){
 			return $this->Less_Tree_Selector( $elements, $extendList, $condition, $index, $this->env->currentFileInfo);
 		}
-		if( $extendList ) { throw new Less_Exception_Parser('Extend must be used to extend a selector, it cannot be used on its own'); }
+		if( $extendList ) {
+			$this->Error('Extend must be used to extend a selector, it cannot be used on its own');
+		}
 	}
 
 	private function parseTag(){
@@ -1581,14 +1583,14 @@ class Less_Parser{
 			$this->parseComments();
 
 			if( $s->condition && count($selectors) > 1 ){
-				throw new Less_Exception_Parser('Guards are only currently allowed on a single selector.');
+				$this->Error('Guards are only currently allowed on a single selector.');
 			}
 
 			if( !$this->MatchChar(',') ){
 				break;
 			}
 			if( $s->condition ){
-				throw new Less_Exception_Parser('Guards are only currently allowed on a single selector.');
+				$this->Error('Guards are only currently allowed on a single selector.');
 			}
 			$this->parseComments();
 		}
@@ -2060,7 +2062,7 @@ class Less_Parser{
 				if( $b ){
 					$c = $this->Less_Tree_Condition($op[0], $a, $b, $index, $negate);
 				} else {
-					throw new Less_Exception_Parser('Unexpected expression');
+					$this->Error('Unexpected expression');
 				}
 			} else {
 				$c = $this->Less_Tree_Condition('=', $a, $this->Less_Tree_Keyword('true'), $index, $negate);

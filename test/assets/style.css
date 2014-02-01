@@ -1,5 +1,5 @@
 html,body{padding:0;margin:0;}
-body{line-height:150%;font-size:13px;}
+body{line-height:150%;font-size:13px;background:#1A252F;}
 a{color:#18BC9C;}
 
 fieldset{display:inline-block;border:0 none;font-size:13px;padding:2px;margin:5px 30px 5px 0;line-height:110%;width:auto;}
@@ -11,12 +11,13 @@ pre{
 	overflow:visible !important;
 	}
 
-#heading{background:#1A252F;color:#fff;padding:0;height:70px;margin:0;}
+
+#heading{color:#fff;padding:0;height:70px;margin:0;}
 #heading h1{font-size:20px;line-height:70px;height:70px;margin:0;padding:0;color:#fff; float:left; width:200px;padding:0 10px 0 30px;}
 #heading a{color:#fff;text-decoration:none;}
 #heading a:hover{color:#18BC9C;}
 
-#links{float:left; margin:0; width:180px; background:#1A252F; padding:0; min-height:3000px;}
+#links{float:left; margin:0; width:180px; padding:0;}
 #links li, #links a{display:block;list-style:none;padding:0;height:30px;line-height:30px;}
 #links a{text-decoration:none;padding:0 30px;color:#fff;}
 
@@ -49,12 +50,23 @@ pre{
 
 #contents{}
 
-#results *{min-width:0;width:auto;}
 
 #results{
-	padding:20px;
-	margin-left:190px;
+	padding:20px 30px;
+	margin-left:180px;
+	background:#fff;
+	min-height:1200px;
 	}
+
+#results *{min-width:0;width:auto;}
+
+#results table{
+	width:100%;
+	}
+#results textarea{
+	width:100%;
+	}
+
 #results .row{
 	padding:5px 0;
 	}

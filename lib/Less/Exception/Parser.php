@@ -8,18 +8,18 @@ class Less_Exception_Parser extends Exception{
 	 *
 	 * @var Less_ImportedFile
 	 */
-	private $currentFile;
+	protected $currentFile;
 
 	/**
 	 * The current parser index
 	 *
 	 * @var integer
 	 */
-	private $index;
+	protected $index;
 
-	private $content;
+	protected $content;
 
-	private $details = array();
+	protected $details = array();
 
 
 	/**
@@ -43,55 +43,17 @@ class Less_Exception_Parser extends Exception{
 		$this->currentFile = $currentFile;
 		$this->index = $index;
 
-		$this->message = $this->genMessage();
+		$this->genMessage();
 	}
 
 
+	protected function getContent(){
 
-	/**
-	 * Returns current line from the file
-	 *
-	 * @return integer|false If the index is not present
-	 */
-	private function getDetails(){
-
-		if( $this->currentFile && $this->currentFile['filename'] ){
-			$this->details['filename'] = $this->currentFile['filename'];
-		}
-
-		if( $this->index !== null ){
-
-			if( $this->currentFile && $this->currentFile['filename'] ){
-
-				$this->content = file_get_contents( $this->currentFile['filename'] );
-
-				$this->details['line'] = self::getLineNumber();
-				$this->details['column'] = self::getColumn();
-				$this->details['index'] = $this->index;
-
-
-				$this->details['snippet_start'] = max(0,($this->index - 10));
-
-				$snippet = substr($this->content, $this->details['snippet_start'], 20);
-				$this->details['snippet'] = preg_replace('/\s/',' ', $snippet);
-			}else{
-				$this->details['index'] = $this->index;
-			}
-		}
-
-		$previous = null;
-		// PHP 5.3
-		if (method_exists($this, 'getPrevious')) {
-			$previous = $this->getPrevious();
-		} // PHP 5.2
-		elseif (isset($this->previous)) {
-			$previous = $this->previous;
-		}
-
-		if ($previous) {
-			$this->details['previous'] = sprintf(", caused by %s, %s\n%s", get_class($previous), $previous->getMessage(), $previous->getTraceAsString());
+		if( !$this->content && $this->currentFile && $this->currentFile['filename'] ){
+			$this->content = file_get_contents( $this->currentFile['filename'] );
 		}
 	}
+
 
 
 	/**
@@ -100,16 +62,28 @@ class Less_Exception_Parser extends Exception{
 	 * @return string
 	 */
 	public function genMessage(){
-		$string = $this->message;
 
-		$this->getDetails();
-
-		//format details
-		foreach($this->details as $k => $v){
-			$string .= "\n    ".str_pad($k.':',15). $v;
+		if( $this->currentFile && $this->currentFile['filename'] ){
+			$this->message .= ' in '.basename($this->currentFile['filename']);
 		}
 
-		return $string;
+		if( $this->index !== null ){
+			$this->getContent();
+			if( $this->content ){
+				$line = self::getLineNumber();
+				$this->message .= ' on line '.$line.', column '.self::getColumn();
+
+				$lines = explode("\n",$this->input);
+
+				$count = count($lines);
+				$start_line = max(0, $line-3);
+				$last_line = min($count, $start_line+6);
+				for( $i = $start_line; $i < $last_line; $i++ ){
+					$this->message .= "\n".($i+1).') '.$lines[$i];
+				}
+			}
+		}
+
 	}
 
 	/**

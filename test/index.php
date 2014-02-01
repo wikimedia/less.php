@@ -340,8 +340,10 @@ class ParserTest{
 	}
 
 	function AbsoluteToRelative($path){
-		$pos = strpos($path,'/less.php');
-		return substr($path,$pos);
+		if( strpos($path,$_SERVER['DOCUMENT_ROOT']) === 0 ){
+			$path = substr($path,strlen($_SERVER['DOCUMENT_ROOT']));
+		}
+		return $path;
 	}
 
     function CompareSourceMap($generated_map, $compare_map){
@@ -755,7 +757,7 @@ $content = ob_get_clean();
 <?php
 
 echo '<div id="heading">';
-echo '<h1><a href="?">Less.php Testing</a></h1>';
+echo '<h1><a href="?">Less.php '.Less_Version::version.'</a></h1>';
 echo $test_obj->Summary();
 echo '</div>';
 
