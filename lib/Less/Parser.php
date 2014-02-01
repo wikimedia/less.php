@@ -46,6 +46,7 @@ class Less_Parser{
 	public static $default_options = array(
 		'compress'				=> false,			// option - whether to compress
 		'strictUnits'			=> false,			// whether units need to evaluate correctly
+		'strictMath'			=> false,			// whether math has to be within parenthesis
 
 		'import_dirs'			=> array(),
 		'import_callback'		=> null,

@@ -16,7 +16,6 @@ class Less_Environment{
 	//public $useFileCache;					// browser only - whether to use the per file session cache
 	public $currentFileInfo;				// information about the current file - for error reporting and importing and making urls relative etc.
 
-	public static $strictMath = false;		// whether math has to be within parenthesis
 	public $importMultiple = false; 		// whether we are currently importing multiple copies
 
 
@@ -104,7 +103,7 @@ class Less_Environment{
 
 
 	public static function isMathOn(){
-		return !Less_Environment::$strictMath || Less_Environment::$parensStack;
+		return !Less_Parser::$options['strictMath'] || Less_Environment::$parensStack;
 	}
 
 	public static function isPathRelative($path){

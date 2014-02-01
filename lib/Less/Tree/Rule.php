@@ -64,9 +64,9 @@ class Less_Tree_Rule extends Less_Tree{
 			$name = $this->name;
 		}
 
-		$strictMathBypass = Less_Environment::$strictMath;
-		if( $name === "font" && !Less_Environment::$strictMath ){
-			Less_Environment::$strictMath = true;
+		$strictMathBypass = Less_Parser::$options['strictMath'];
+		if( $name === "font" && !Less_Parser::$options['strictMath'] ){
+			Less_Parser::$options['strictMath'] = true;
 		}
 
 		// missing try ... catch
@@ -78,7 +78,7 @@ class Less_Tree_Rule extends Less_Tree{
 			$return = $this;
 		}
 
-		Less_Environment::$strictMath = $strictMathBypass;
+		Less_Parser::$options['strictMath'] = $strictMathBypass;
 
 		return $return;
 	}
