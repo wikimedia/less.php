@@ -197,7 +197,7 @@ class ParserTest{
 
 
 			$parser = new Less_Parser( $options );
-			$parser->parseFile( $file_less, $file_uri );
+			$parser->parseFile( $file_less ); //$file_uri
 			$compiled = $parser->getCss();
 
 			//$this->SaveExpected($file_css, $compiled);
