@@ -199,7 +199,7 @@ class Less_Tree_Color extends Less_Tree{
 
 		$ret = '#';
 		foreach($v as $c){
-			$c = Less_Functions::clamp( round($c), 255);
+			$c = Less_Functions::clamp( Less_Parser::round($c), 255);
 			if( $c < 16 ){
 				$ret .= '0';
 			}

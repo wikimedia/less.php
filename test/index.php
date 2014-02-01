@@ -30,7 +30,7 @@ class ParserTest{
 	//options
 	var $compress = false;
 	var $dir;
-	var $test_dirs = array('lessjs','bootstrap3','bootstrap-2.0.2');
+	var $test_dirs = array('lessjs','bootstrap3');
 	var $cache_dir;
 	var $head;
 	var $files_tested = 0;
