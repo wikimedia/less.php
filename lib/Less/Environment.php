@@ -6,7 +6,7 @@
 class Less_Environment{
 
 	//public $paths = array();				// option - unmodified - paths to search for imports on
-	public static $files = array();			// list of files that have been imported, used for import-once
+	//public static $files = array();		// list of files that have been imported, used for import-once
 	public static $relativeUrls = true;		// option - whether to adjust URL's to be relative
 	//public $rootpath;						// option - rootpath to append to URL's
 	//public static $strictImports = null;	// option -
@@ -19,7 +19,6 @@ class Less_Environment{
 
 	public static $strictMath = false;		// whether math has to be within parenthesis
 	public static $strictUnits = false;		// whether units need to evaluate correctly
-	public static $sourceMap = false;		// whether to output a source map
 	public $importMultiple = false; 		// whether we are currently importing multiple copies
 
 
@@ -64,16 +63,23 @@ class Less_Environment{
 
 		if( isset($options['compress']) ){
 			self::$compress = (bool)$options['compress'];
+		}else{
+			self::$compress = false;
 		}
+
 		if( isset($options['strictUnits']) ){
 			self::$strictUnits = (bool)$options['strictUnits'];
+		}else{
+			self::$strictUnits = false;
 		}
-		if( isset($options['sourceMap']) ){
-			self::$sourceMap = (bool)$options['sourceMap'];
-		}
+
+
 		if( isset($options['relativeUrls']) ){
 			self::$relativeUrls = (bool)$options['relativeUrls'];
+		}else{
+			self::$relativeUrls = true;
 		}
+
 
 		if( self::$compress ){
 
@@ -203,7 +209,7 @@ class Less_Environment{
 	 * @return Less_Environment
 	 */
 	public function setFileContent($filePath){
-		if( self::$sourceMap && $filePath ){
+		if( Less_Parser::$options['sourceMap'] && $filePath ){
 			self::$contentsMap[$filePath] = file_get_contents($filePath);
 		}
 	}

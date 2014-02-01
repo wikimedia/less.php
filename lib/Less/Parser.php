@@ -50,7 +50,7 @@ class Less_Parser{
 		'cache_dir'				=> null,
 		'cache_method'			=> 'php', 			//false, 'serialize', 'php', 'var_export';
 
-		'sourceMap'				=> false,
+		'sourceMap'				=> false,			// whether to output a source map
 		'sourceMapBasepath'		=> null,
 		'sourceMapWriteTo'		=> null,
 		'sourceMapURL'			=> null,
@@ -171,7 +171,7 @@ class Less_Parser{
 
 		$this->PostVisitors($evaldRoot);
 
-		if( Less_Environment::$sourceMap ){
+		if( Less_Parser::$options['sourceMap'] ){
 			$generator = new Less_SourceMap_Generator($evaldRoot, $this->env->getContentsMap(), Less_Parser::$options );
 			// will also save file
 			// FIXME: should happen somewhere else?
