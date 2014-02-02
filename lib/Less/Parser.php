@@ -793,7 +793,7 @@ class Less_Parser{
 	private function parseComments(){
 		$comments = array();
 
-		while( true ){
+		while( $this->pos < $this->input_len ){
 			$comment = $this->parseComment();
 			if( !$comment ){
 				break;
