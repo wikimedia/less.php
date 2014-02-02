@@ -92,7 +92,10 @@ class Less_Exception_Parser extends Exception{
 	 * @return integer
 	 */
 	public function getLineNumber(){
-		return substr_count($this->input, "\n", 0, $this->index) + 1;
+		if( $this->index ){
+			return substr_count($this->input, "\n", 0, $this->index) + 1;
+		}
+		return 1;
 	}
 
 
