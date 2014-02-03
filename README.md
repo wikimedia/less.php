@@ -265,6 +265,16 @@ Use the built-in compiler to:
 
 The compiler can also be download as [plugin](http://wordpress.org/plugins/wp-less-to-css/)
 
+#### WordPress
+
+This simple plugin will simply make the library available to other plugins and themes and can be used as a dependency using the [TGM Library](http://tgmpluginactivation.com/)
+
+How to install:
+
+1. Install the plugin from your WordPress Dashboard: http://wordpress.org/plugins/lessphp/
+2. That's it :)
+
+
 
 
 
