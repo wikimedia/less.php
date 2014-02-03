@@ -244,6 +244,26 @@ How to install:
 2. Download and install [Drupal 7 less module](https://drupal.org/project/less) as usual.
 3. That's it :)
 
+#### JBST WordPress theme
+
+JBST has a built-in LESS compiler based on lessphp. Customize your WordPress theme with LESS.
+
+How to use / install:
+
+1. [Download the latest release](https://github.com/bassjobsen/jamedo-bootstrap-start-theme) copy the files to your {wordpress/}wp-content/themes folder and activate it.
+2. Find the compiler under Appearance > LESS Compiler in your WordPress dashboard
+3. Enter your LESS code in the text area and press (re)compile
+
+Use the built-in compiler to: 
+- set any [Bootstrap](http://getbootstrap.com/customize/) variable or use Bootstrap's mixins:
+	-`@navbar-default-color: blue;`
+        - create a custom button: `.btn-custom {
+  .button-variant(white; red; blue);
+}`
+- set any built-in LESS variable: for example `@footer_bg_color: black;` sets the background color of the footer to black
+- use built-in mixins: - add a custom font: `.include-custom-font(@family: arial, @path: @custom-font-dir, @weight: normal, @style: normal);`
+
+The compiler can also be download as [plugin](http://wordpress.org/plugins/wp-less-to-css/)
 
 
 
