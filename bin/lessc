@@ -5,8 +5,8 @@ require_once dirname(__FILE__) . '/../lib/Less/Autoloader.php';
 Less_Autoloader::register();
 
 // Create our environment
-$env = new Less_Environment();
-Less_Environment::$compress = false;
+$env = array('compress' => false);
+
 $silent = false;
 $watch = false;
 
