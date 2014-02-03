@@ -4,7 +4,7 @@
 
 class Less_Tree_Element extends Less_Tree{
 
-	public $combinator;
+	public $combinator = '';
 	public $value = '';
 	public $index;
 	public $currentFileInfo;
@@ -17,7 +17,10 @@ class Less_Tree_Element extends Less_Tree{
 		$this->value = $value;
 		$this->value_is_object = is_object($value);
 
-		$this->combinator = $combinator;
+		if( $combinator ){
+			$this->combinator = $combinator;
+		}
+
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 	}
@@ -60,6 +63,7 @@ class Less_Tree_Element extends Less_Tree{
 		if( $value === '' && $this->combinator && $this->combinator === '&' ){
 			return '';
 		}
+
 
 		return Less_Environment::$_outputMap[$this->combinator] . $value;
 	}

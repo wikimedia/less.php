@@ -160,7 +160,7 @@ class Less_Tree_Selector extends Less_Tree{
 	/**
 	 * @see Less_Tree::genCSS
 	 */
-	function genCSS( $output, $firstSelector = false ){
+	function genCSS( $output, $firstSelector = true ){
 
 		if( !$firstSelector && $this->elements[0]->combinator === "" ){
 			$output->add(' ', $this->currentFileInfo, $this->index);

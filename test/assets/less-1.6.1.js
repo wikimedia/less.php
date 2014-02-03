@@ -5521,7 +5521,15 @@ tree.Selector.prototype = {
     },
     genCSS: function (env, output) {
         var i, element;
+
+        if( !env || !env.firstSelector ){
+			obj('not first selector >>'+this.elements[0].combinator.value+'<<');
+		}else{
+			obj('first selector');
+		}
+
         if ((!env || !env.firstSelector) && this.elements[0].combinator.value === "") {
+			obj('add space');
             output.add(' ', this.currentFileInfo, this.index);
         }
         if (!this._css) {
