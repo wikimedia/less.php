@@ -139,6 +139,16 @@ $parser->parseFile( '/var/www/mysite/bootstrap.less', '/mysite/' );
 $css = $parser->getCss();
 ```
 
+#### Setting Variables
+You can use the ModifyVars() method to customize your css if you have variables stored in php associative arrays
+
+```php
+$parser = new Less_Parser();
+$parser->parseFile( '/var/www/mysite/bootstrap.less', '/mysite/' );
+$parser->ModifyVars( array('font-size-base'=>'16px') );
+$css = $parser->getCss();
+```
+
 
 #### Import Directories
 By default, less.php will look for @imports in the directory of the file passed to parsefile().
