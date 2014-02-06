@@ -97,30 +97,37 @@ class Less_Parser{
 	 */
 	public function __construct( $env = null ){
 
-
 		// Top parser on an import tree must be sure there is one "env"
 		// which will then be passed around by reference.
 		if( $env instanceof Less_Environment ){
 			$this->env = $env;
 		}else{
-
-			//reset
-			self::$imports = array();
-			self::$has_extends = false;
-			self::$imports = array();
-			self::$contentsMap = array();
 			$this->SetOptions(Less_Parser::$default_options);
-
-
-			//set new options
-			$this->env = new Less_Environment( $env );
-			$this->env->Init();
-			if( is_array($env) ){
-				$this->SetOptions($env);
-			}
+			$this->Reset( $env );
 		}
 
-		$this->pos = $this->farthest = 0;
+	}
+
+
+	/**
+	 * Reset the parser state completely
+	 *
+	 */
+	public function Reset( $options = null ){
+		$this->rules = array();
+		self::$imports = array();
+		self::$has_extends = false;
+		self::$imports = array();
+		self::$contentsMap = array();
+
+		$this->env = new Less_Environment($options);
+		$this->env->Init();
+
+		//set new options
+		if( is_array($options) ){
+			$this->SetOptions(Less_Parser::$default_options);
+			$this->SetOptions($options);
+		}
 	}
 
 	/**
