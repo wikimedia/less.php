@@ -250,7 +250,7 @@ This library can be used as drop-in replacement of lessphp to work with [Drupal 
 
 How to install:
 
-1. [Download the latest release](https://github.com/oyejorge/less.php/releases) and unpack it so that 'lessc.inc.php' is located at 'sites/all/libraries/lessphp/lessc.inc.php'.
+1. [Download the source code for the latest release](https://github.com/oyejorge/less.php/releases) and unpack it so that 'lessc.inc.php' is located at 'sites/all/libraries/lessphp/lessc.inc.php'.
 2. Download and install [Drupal 7 less module](https://drupal.org/project/less) as usual.
 3. That's it :)
 
