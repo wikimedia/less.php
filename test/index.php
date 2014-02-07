@@ -88,7 +88,12 @@ class ParserTest{
 
 			$list = scandir($dir.'/css');
 			foreach($list as $file){
-				if( strpos($file,'.css') === false ){
+
+				if( $file === '.' || $file === '..' ){
+					continue;
+				}
+				$type = preg_replace('/.*\.([a-z]+)/','\1',$file);
+				if( $type !== 'css' ){
 					continue;
 				}
 				$pairs[] = array('/less/'.str_replace('.css','.less',$file), '/css/'.$file  );
