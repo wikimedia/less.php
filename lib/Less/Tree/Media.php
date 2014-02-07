@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Media
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Media extends Less_Tree{
 
 	public $features;

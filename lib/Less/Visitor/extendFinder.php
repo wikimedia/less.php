@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Extend Finder Visitor
+ *
+ * @package Less
+ * @subpackage visitor
+ */
 class Less_Visitor_extendFinder extends Less_Visitor{
 
 	public $contexts = array();

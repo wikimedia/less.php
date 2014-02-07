@@ -6,6 +6,9 @@
  *
  * In bootstrap, there are about 600-1,000 simple name-value pairs (depending on how forgiving the match is) -vs- 6,020 dynamic rules (Less_Tree_Rule)
  * Using the name-value object can speed up bootstrap compilation slightly, but it breaks color keyword interpretation: color:red -> color:#FF0000;
+ *
+ * @package Less
+ * @subpackage tree
  */
 class Less_Tree_NameValue extends Less_Tree{
 

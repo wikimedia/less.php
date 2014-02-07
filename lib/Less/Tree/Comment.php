@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Comment
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Comment extends Less_Tree{
 
 	public $value;

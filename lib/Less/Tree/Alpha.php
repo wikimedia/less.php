@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Alpha
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Alpha extends Less_Tree{
 	public $value;
 	public $type = 'Alpha';

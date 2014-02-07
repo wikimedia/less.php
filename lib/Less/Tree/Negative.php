@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Negative
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Negative extends Less_Tree{
 
 	public $value;

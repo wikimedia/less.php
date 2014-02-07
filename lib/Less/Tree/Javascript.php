@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Javascript
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Javascript extends Less_Tree{
 
 	public $type = 'Javascript';

@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Extend
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Extend extends Less_Tree{
 
 	public $selector;

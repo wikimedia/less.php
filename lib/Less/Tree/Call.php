@@ -1,10 +1,12 @@
 <?php
 
 
-//
-// A function call node.
-//
-
+/**
+ * Call
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Call extends Less_Tree{
     public $value;
 

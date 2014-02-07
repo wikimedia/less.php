@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Parser Exception
+ *
+ * @package Less
+ * @subpackage exception
+ */
 class Less_Exception_Parser extends Exception{
 
 	/**

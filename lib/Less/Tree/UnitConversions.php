@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * UnitConversions
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_UnitConversions{
 
 	public static $groups = array('length','duration','angle');

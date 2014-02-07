@@ -1,7 +1,11 @@
 <?php
 
-//less.js : lib/less/tree/element.js
-
+/**
+ * Element
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Element extends Less_Tree{
 
 	public $combinator = '';

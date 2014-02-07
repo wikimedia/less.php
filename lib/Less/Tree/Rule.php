@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Rule
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Rule extends Less_Tree{
 
 	public $name;

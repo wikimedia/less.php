@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Quoted
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Quoted extends Less_Tree{
 	public $escaped;
 	public $value;

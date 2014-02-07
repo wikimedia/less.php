@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Keyword
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Keyword extends Less_Tree{
 
 	public $value;

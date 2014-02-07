@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Condition
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Condition extends Less_Tree{
 
 	public $op;

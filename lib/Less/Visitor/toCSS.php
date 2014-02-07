@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * toCSS Visitor
+ *
+ * @package Less
+ * @subpackage visitor
+ */
 class Less_Visitor_toCSS extends Less_VisitorReplacing{
 
 	private $charset;

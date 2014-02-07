@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Color
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Color extends Less_Tree{
 	public $rgb;
 	public $alpha;

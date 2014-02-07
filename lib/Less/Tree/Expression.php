@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Expression
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Expression extends Less_Tree{
 
 	public $value = array();

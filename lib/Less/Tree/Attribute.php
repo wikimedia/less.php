@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Attribute
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_Attribute extends Less_Tree{
 
 	public $key;

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * DefaultFunc
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_DefaultFunc{
 
 	static $error_;
