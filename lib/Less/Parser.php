@@ -298,6 +298,14 @@ class Less_Parser{
 			$this->Error(sprintf('File `%s` not found.', $filename));
 		}
 
+
+		// fix uri_root?
+		// Instead of The mixture of file path for the first argument and directory path for the second argument has bee
+		if( !$returnRoot && !empty($uri_root) && basename($uri_root) == basename($filename) ){
+			$uri_root = dirname($uri_root);
+		}
+
+
 		$previousFileInfo = $this->env->currentFileInfo;
 		$this->SetFileInfo($filename, $uri_root);
 
