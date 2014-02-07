@@ -1,6 +1,12 @@
 <?php
 
-
+/**
+ * Builtin functions
+ *
+ * @package Less
+ * @subpackage function
+ * @see http://lesscss.org/functions/
+ */
 class Less_Functions{
 
 	public $env;

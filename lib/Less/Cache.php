@@ -2,6 +2,13 @@
 
 require_once( dirname(__FILE__).'/Version.php');
 
+/**
+ * Utility for handling the generation and caching of css files
+ *
+ * @package Less
+ * @subpackage cache
+ *
+ */
 class Less_Cache{
 
 	public static $cache_dir = false;		// directory less.php can use for storing data

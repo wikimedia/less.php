@@ -1,8 +1,12 @@
 <?php
 
-//less.js : lib/less/functions.js
 
-
+/**
+ * Environment
+ *
+ * @package Less
+ * @subpackage environment
+ */
 class Less_Environment{
 
 	//public $paths = array();				// option - unmodified - paths to search for imports on

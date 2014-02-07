@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Release numbers
+ *
+ * @package Less
+ * @subpackage version
+ */
 class Less_Version{
 
 	const version = '1.6.1';			// The current build number of less.php

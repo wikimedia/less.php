@@ -5,6 +5,9 @@ require_once( dirname(__FILE__).'/Cache.php');
 /**
  * Class for parsing and compiling less files into css
  *
+ * @package Less
+ * @subpackage parser
+ *
  * @method void Less_Tree_Alpha()
  * @method void Less_Tree_Anonymous()
  * @method void Less_Tree_Assignment()

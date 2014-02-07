@@ -1,7 +1,11 @@
 <?php
 
-//less.js : lib/less/colors.js
-
+/**
+ * Utility for css colors
+ *
+ * @package Less
+ * @subpackage color
+ */
 class Less_Colors {
 
 	public static $colors = array(

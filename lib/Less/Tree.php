@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Tree
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree{
 
 	public $cache_string;

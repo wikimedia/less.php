@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Parser output
+ *
+ * @package Less
+ * @subpackage output
+ */
 class Less_Output{
 
 	/**

@@ -1,7 +1,11 @@
 <?php
 
-//less.js : lib/less/functions.js
-
+/**
+ * Mime lookup
+ *
+ * @package Less
+ * @subpackage node
+ */
 class Less_Mime{
 
 	// this map is intentionally incomplete
