@@ -55,39 +55,6 @@ class Less_Tree_Selector extends Less_Tree{
 		return $newSelector;
 	}
 
-	/*
-	public function match_old( $other ){
-		$elements = $this->elements;
-		$len = count($elements();
-
-		foreach(
-
-		$oelements = $other->elements.map( function(v) {
-			return v.combinator.value + (v.value.value || v.value);
-		}).join("").match('#[,&\#\.\w-]([\w-]|(\\.))*#');
-		// ^ regexp could be more simple but see test/less/css-escapes.less:17, doh!
-
-		if (!oelements) {
-			return 0;
-		}
-
-		if (oelements[0] === "&") {
-			oelements.shift();
-		}
-
-		olen = oelements.length;
-		if (olen === 0 || len < olen) {
-			return 0;
-		} else {
-			for (i = 0; i < olen; i++) {
-				if (elements[i].value !== oelements[i]) {
-					return 0;
-				}
-			}
-		}
-		return olen; // return number of matched elements
-	}
-	*/
 
 	// Performance issues with 1.6.1
 	// Compiling bootstrap almost doubled: from 4.5 seconds to 7.8 seconds
