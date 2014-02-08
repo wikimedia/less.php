@@ -16,7 +16,9 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	public function run( $root ){
 		$extendFinder = new Less_Visitor_extendFinder();
 		$extendFinder->run( $root );
-		if( !$extendFinder->foundExtends) { return $root; }
+		if( !$extendFinder->foundExtends){
+			return $root;
+		}
 
 		$root->allExtends = $this->doExtendChaining( $root->allExtends, $root->allExtends);
 
@@ -180,6 +182,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 
 	private function findMatch($extend, $haystackSelectorPath ){
 
+
 		//
 		// look through the haystack selector path to try and find the needle - extend.selector
 		// returns an array of selector matches that can then be replaced
@@ -189,9 +192,32 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		$potentialMatches_len = 0;
 		$potentialMatch = null;
 		$matches = array();
+		$haystack_path_len = count($haystackSelectorPath);
+
+
+		// Performance tune:
+		// Before going through all the nested loops, lets check to see if a match is possible
+		// Reduces Bootstrap 3.1 compile time from ~6.5s to ~5.6s
+		$returning = false;
+		if( $extend->selector->cacheable ){
+			$has_matches = false;
+			$oelements = array();
+			for($haystackSelectorIndex = 0; $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++ ){
+				$hackstackSelector = $haystackSelectorPath[$haystackSelectorIndex];
+				if( array_intersect($extend->selector->_oelements,$hackstackSelector->_oelements) ){
+					$has_matches = true;
+					break;
+				}
+			}
+			if( !$has_matches ){
+				$returning = true;
+				return $matches;
+			}
+		}
+
+
 
 		// loop through the haystack elements
-		$haystack_path_len = count($haystackSelectorPath);
 		for($haystackSelectorIndex = 0; $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++ ){
 			$hackstackSelector = $haystackSelectorPath[$haystackSelectorIndex];
 
@@ -240,6 +266,13 @@ class Less_Visitor_processExtends extends Less_Visitor{
 				}
 			}
 		}
+
+		if( $matches && $returning ){
+			msg('<hr/>');
+			msg($extend->selector->_oelements);
+			msg($oelements);
+		}
+
 		return $matches;
 	}
 
@@ -249,16 +282,20 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	 */
 	private function PotentialMatch( $potentialMatch, $needleElements, $haystackElement, $hackstackElementIndex ){
 
-		// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
-		// then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
-		// what the resulting combinator will be
-		$targetCombinator = $haystackElement->combinator;
-		if( $targetCombinator === '' && $hackstackElementIndex === 0 ){
-			$targetCombinator = ' ';
-		}
 
-		if( $potentialMatch['matched'] > 0 && $needleElements[ $potentialMatch['matched'] ]->combinator !== $targetCombinator ){
-			return null;
+		if( $potentialMatch['matched'] > 0 ){
+
+			// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
+			// then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
+			// what the resulting combinator will be
+			$targetCombinator = $haystackElement->combinator;
+			if( $targetCombinator === '' && $hackstackElementIndex === 0 ){
+				$targetCombinator = ' ';
+			}
+
+			if( $needleElements[ $potentialMatch['matched'] ]->combinator !== $targetCombinator ){
+				return null;
+			}
 		}
 
 		// if we don't match, null our match to indicate failure

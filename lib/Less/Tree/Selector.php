@@ -22,6 +22,7 @@ class Less_Tree_Selector extends Less_Tree{
 
 	public $_oelements;
 	public $_oelements_len;
+	public $cacheable = true;
 
 	/**
 	 * @param boolean $isReferenced
@@ -39,6 +40,7 @@ class Less_Tree_Selector extends Less_Tree{
 		if( !$condition ){
 			$this->evaldCondition = true;
 		}
+		$this->CacheElements();
 	}
 
 	function accept($visitor) {
@@ -46,6 +48,10 @@ class Less_Tree_Selector extends Less_Tree{
 		$this->extendList = $visitor->visitArray($this->extendList);
 		if( $this->condition ){
 			$this->condition = $visitor->visitObj($this->condition);
+		}
+
+		if( $visitor instanceof Less_Visitor_extendFinder ){
+			$this->CacheElements();
 		}
 	}
 
@@ -60,9 +66,6 @@ class Less_Tree_Selector extends Less_Tree{
 	// Compiling bootstrap almost doubled: from 4.5 seconds to 7.8 seconds
 	public function match( $other ){
 
-		if( is_null($other->_oelements) ){
-			$other->CacheElements();
-		}
 		if( !$other->_oelements || ($this->elements_len < $other->_oelements_len) ){
 			return 0;
 		}
@@ -91,6 +94,7 @@ class Less_Tree_Selector extends Less_Tree{
 			}
 
 			if( !property_exists($v->value,'value') || !is_string($v->value->value) ){
+				$this->cacheable = false;
 				return;
 			}
 			$css .= $v->value->value;
