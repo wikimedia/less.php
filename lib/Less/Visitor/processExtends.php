@@ -183,6 +183,11 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	private function findMatch($extend, $haystackSelectorPath ){
 
 
+		if( !$this->HasMatches($extend, $haystackSelectorPath) ){
+			return false;
+		}
+
+
 		//
 		// look through the haystack selector path to try and find the needle - extend.selector
 		// returns an array of selector matches that can then be replaced
@@ -192,32 +197,11 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		$potentialMatches_len = 0;
 		$potentialMatch = null;
 		$matches = array();
-		$haystack_path_len = count($haystackSelectorPath);
-
-
-		// Performance tune:
-		// Before going through all the nested loops, lets check to see if a match is possible
-		// Reduces Bootstrap 3.1 compile time from ~6.5s to ~5.6s
-		$returning = false;
-		if( $extend->selector->cacheable ){
-			$has_matches = false;
-			$oelements = array();
-			for($haystackSelectorIndex = 0; $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++ ){
-				$hackstackSelector = $haystackSelectorPath[$haystackSelectorIndex];
-				if( array_intersect($extend->selector->_oelements,$hackstackSelector->_oelements) ){
-					$has_matches = true;
-					break;
-				}
-			}
-			if( !$has_matches ){
-				$returning = true;
-				return $matches;
-			}
-		}
 
 
 
 		// loop through the haystack elements
+		$haystack_path_len = count($haystackSelectorPath);
 		for($haystackSelectorIndex = 0; $haystackSelectorIndex < $haystack_path_len; $haystackSelectorIndex++ ){
 			$hackstackSelector = $haystackSelectorPath[$haystackSelectorIndex];
 
@@ -267,13 +251,25 @@ class Less_Visitor_processExtends extends Less_Visitor{
 			}
 		}
 
-		if( $matches && $returning ){
-			msg('<hr/>');
-			msg($extend->selector->_oelements);
-			msg($oelements);
+		return $matches;
+	}
+
+
+	// Performance tune:
+	// Before going through all the nested loops, lets check to see if a match is possible
+	// Reduces Bootstrap 3.1 compile time from ~6.5s to ~5.6s
+	private function HasMatches($extend, $haystackSelectorPath){
+		if( !$extend->selector->cacheable ){
+			return true;
 		}
 
-		return $matches;
+		foreach($haystackSelectorPath as $hackstackSelector){
+			if( array_intersect($extend->selector->_oelements,$hackstackSelector->_oelements) ){
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 
