@@ -144,10 +144,9 @@ class Less_Visitor_processExtends extends Less_Visitor{
 
 		$allExtends	= end($this->allExtendsStack);
 		$paths_len = count($rulesetNode->paths);
-		$all_extend_len = count($allExtends);
 
 		// look at each selector path in the ruleset, find any extend matches and then copy, find and replace
-		for( $extendIndex = 0; $extendIndex < $all_extend_len; $extendIndex++ ){
+		foreach($allExtends as $allExtend){
 			for($pathIndex = 0; $pathIndex < $paths_len; $pathIndex++ ){
 
 				// extending extends happens initially, before the main pass
@@ -161,7 +160,7 @@ class Less_Visitor_processExtends extends Less_Visitor{
 					continue;
 				}
 
-				$this->ExtendMatch( $rulesetNode, $allExtends[$extendIndex], $selectorPath);
+				$this->ExtendMatch( $rulesetNode, $allExtend, $selectorPath);
 
 			}
 		}
