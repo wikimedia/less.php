@@ -24,10 +24,9 @@ class Less_Tree_Expression extends Less_Tree{
 
 	public function compile($env) {
 
-		$inParenthesis = $this->parens && !$this->parensInOp;
 		$doubleParen = false;
 
-		if( $inParenthesis ) {
+		if( $this->parens && !$this->parensInOp ){
 			Less_Environment::$parensStack++;
 		}
 
@@ -44,11 +43,7 @@ class Less_Tree_Expression extends Less_Tree{
 				}
 				$returnValue = new Less_Tree_Expression($ret);
 
-			}elseif( $count === 1 ){
-
-				if( !isset($this->value[0]) ){
-					$this->value = array_slice($this->value,0);
-				}
+			}else{
 
 				if( ($this->value[0] instanceof Less_Tree_Expression) && $this->value[0]->parens && !$this->value[0]->parensInOp ){
 					$doubleParen = true;
@@ -60,11 +55,15 @@ class Less_Tree_Expression extends Less_Tree{
 		} else {
 			$returnValue = $this;
 		}
-		if( $inParenthesis ){
-			Less_Environment::$parensStack--;
-		}
-		if( $this->parens && $this->parensInOp && !Less_Environment::isMathOn() && !$doubleParen ){
-			$returnValue = new Less_Tree_Paren($returnValue);
+
+		if( $this->parens ){
+			if( !$this->parensInOp ){
+				Less_Environment::$parensStack--;
+
+			}elseif( !Less_Environment::isMathOn() && !$doubleParen ){
+				$returnValue = new Less_Tree_Paren($returnValue);
+
+			}
 		}
 		return $returnValue;
 	}
