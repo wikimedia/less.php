@@ -40,6 +40,7 @@ class Less_Tree_Selector extends Less_Tree{
 		if( !$condition ){
 			$this->evaldCondition = true;
 		}
+
 		$this->CacheElements();
 	}
 

@@ -27,10 +27,20 @@ class Less_Tree_Ruleset extends Less_Tree{
 	var $ruleset_id;
 	var $originalRuleset;
 
+	var $first_oelements;
+	var $first_oel_map;
 
 	public function SetRulesetIndex(){
 		$this->ruleset_id = Less_Parser::$next_id++;
 		$this->originalRuleset = $this->ruleset_id;
+
+		if( $this->selectors ){
+			foreach($this->selectors as $sel){
+				if( $sel->_oelements ){
+					$this->first_oelements[$sel->_oelements[0]] = true;
+				}
+			}
+		}
 	}
 
 	public function __construct($selectors, $rules, $strictImports = null){
@@ -220,10 +230,30 @@ class Less_Tree_Ruleset extends Less_Tree{
 		return true;
 	}
 
-	function resetCache() {
+	function resetCache(){
 		$this->_rulesets = null;
 		$this->_variables = null;
 		$this->lookups = array();
+
+		$this->first_oel_map = null;
+	}
+
+	function FirstOelMap(){
+		if( $this->rules ){
+			foreach($this->rules as $rule){
+				if( $rule instanceof Less_Tree_Ruleset ){
+					foreach( $rule->selectors as $sel ){
+						if( $sel->_oelements ){
+							$oel = $sel->_oelements[0];
+							if( !isset($this->first_oel_map[$oel]) ){
+								$this->first_oel_map[$oel] = array();
+							}
+							$this->first_oel_map[$oel][] = $rule;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	public function variables(){
@@ -255,28 +285,53 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 			$this->lookups[$key] = array();
 
+			$first_oelement = $selector->_oelements[0];
 
-			foreach($this->rules as $rule){
 
-				if( $rule instanceof Less_Tree_Ruleset ){
+			if( !isset($this->first_oel_map) ){
+				$this->FirstOelMap();
+			}
 
-					if( $rule->ruleset_id == $self ){
-						continue;
-					}
-
-					foreach( $rule->selectors as $ruleSelector ){
-						$match = $selector->match($ruleSelector);
-						if( $match ){
-							if( $selector->elements_len > $match ){
-								$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, $match)), $self));
-							} else {
-								$this->lookups[$key][] = $rule;
+			if( isset($this->first_oel_map[$first_oelement]) ){
+				foreach($this->first_oel_map[$first_oelement] as $rule){
+					if( $rule->ruleset_id != $self ){
+						foreach( $rule->selectors as $ruleSelector ){
+							$match = $selector->match($ruleSelector);
+							if( $match ){
+								if( $selector->elements_len > $match ){
+									$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, $match)), $self));
+								} else {
+									$this->lookups[$key][] = $rule;
+								}
+								break;
 							}
-							break;
 						}
 					}
 				}
 			}
+
+			/*
+			foreach($this->rules as $rule){
+				if( $rule instanceof Less_Tree_Ruleset && $rule->ruleset_id != $self ){
+
+					if( isset($rule->first_oelements[$first_oelement]) ){
+
+						foreach( $rule->selectors as $ruleSelector ){
+							$match = $selector->match($ruleSelector);
+							if( $match ){
+								if( $selector->elements_len > $match ){
+									$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, $match)), $self));
+								} else {
+									$this->lookups[$key][] = $rule;
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+			*/
+
 		}
 
 		return $this->lookups[$key];
