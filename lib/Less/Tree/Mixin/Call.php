@@ -45,7 +45,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 
 		foreach($env->frames as $frame){
 
-			$mixins = $frame->find($this->selector, null, $env);
+			$mixins = $frame->find($this->selector);
 
 			if( !$mixins ){
 				continue;

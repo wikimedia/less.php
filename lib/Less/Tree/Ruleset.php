@@ -243,15 +243,16 @@ class Less_Tree_Ruleset extends Less_Tree{
 		return isset($this->_variables[$name]) ? $this->_variables[$name] : null;
 	}
 
-	public function find( $selector, $self = null, $env = null){
+	public function find( $selector, $self = null ){
 
-		if( !$self ){
-			$self = $this->ruleset_id;
-		}
-
-		$key = $selector->toCSS();
+		$key = implode(' ',$selector->_oelements);
 
 		if( !isset($this->lookups[$key]) ){
+
+			if( !$self ){
+				$self = $this->ruleset_id;
+			}
+
 			$this->lookups[$key] = array();
 
 
@@ -267,7 +268,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 						$match = $selector->match($ruleSelector);
 						if( $match ){
 							if( $selector->elements_len > $match ){
-								$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, $match)), $self, $env));
+								$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, $match)), $self));
 							} else {
 								$this->lookups[$key][] = $rule;
 							}
