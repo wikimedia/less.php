@@ -28,7 +28,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 	var $originalRuleset;
 
 	var $first_oelements;
-	var $first_oel_map;
 
 	public function SetRulesetIndex(){
 		$this->ruleset_id = Less_Parser::$next_id++;
@@ -234,26 +233,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 		$this->_rulesets = null;
 		$this->_variables = null;
 		$this->lookups = array();
-
-		$this->first_oel_map = null;
-	}
-
-	function FirstOelMap(){
-		if( $this->rules ){
-			foreach($this->rules as $rule){
-				if( $rule instanceof Less_Tree_Ruleset ){
-					foreach( $rule->selectors as $sel ){
-						if( $sel->_oelements ){
-							$oel = $sel->_oelements[0];
-							if( !isset($this->first_oel_map[$oel]) ){
-								$this->first_oel_map[$oel] = array();
-							}
-							$this->first_oel_map[$oel][] = $rule;
-						}
-					}
-				}
-			}
-		}
 	}
 
 	public function variables(){
@@ -287,30 +266,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 			$first_oelement = $selector->_oelements[0];
 
-
-			if( !isset($this->first_oel_map) ){
-				$this->FirstOelMap();
-			}
-
-			if( isset($this->first_oel_map[$first_oelement]) ){
-				foreach($this->first_oel_map[$first_oelement] as $rule){
-					if( $rule->ruleset_id != $self ){
-						foreach( $rule->selectors as $ruleSelector ){
-							$match = $selector->match($ruleSelector);
-							if( $match ){
-								if( $selector->elements_len > $match ){
-									$this->lookups[$key] = array_merge($this->lookups[$key], $rule->find( new Less_Tree_Selector(array_slice($selector->elements, $match)), $self));
-								} else {
-									$this->lookups[$key][] = $rule;
-								}
-								break;
-							}
-						}
-					}
-				}
-			}
-
-			/*
 			foreach($this->rules as $rule){
 				if( $rule instanceof Less_Tree_Ruleset && $rule->ruleset_id != $self ){
 
@@ -330,8 +285,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 					}
 				}
 			}
-			*/
-
 		}
 
 		return $this->lookups[$key];
