@@ -87,7 +87,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 			if ( isset($evaldArguments[$i]) ){ continue; }
 
 			$arg = null;
-			if( array_key_exists($argIndex,$args) && $args[$argIndex] ){
+			if( isset($args[$argIndex]) ){
 				$arg = $args[$argIndex];
 			}
 

@@ -251,7 +251,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		$key = $selector->toCSS();
 
-		if( !array_key_exists($key, $this->lookups) ){
+		if( !isset($this->lookups[$key]) ){
 			$this->lookups[$key] = array();
 
 
