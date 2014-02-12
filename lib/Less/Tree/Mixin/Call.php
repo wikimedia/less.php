@@ -44,6 +44,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 		}
 
 		foreach($env->frames as $frame){
+
 			$mixins = $frame->find($this->selector, null, $env);
 
 			if( !$mixins ){
@@ -134,6 +135,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 				if( !$this->currentFileInfo || !isset($this->currentFileInfo['reference']) || !$this->currentFileInfo['reference'] ){
 					Less_Tree::ReferencedArray($rules);
 				}
+
 				return $rules;
 			}
 		}

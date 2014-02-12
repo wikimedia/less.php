@@ -209,7 +209,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 	}
 
 	public function matchArgs($args){
-		return !is_array($args) || !$args;
+		return !$args;
 	}
 
 	public function matchCondition( $args, $env ){

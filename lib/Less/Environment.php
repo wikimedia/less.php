@@ -158,12 +158,4 @@ class Less_Environment{
 		return array_shift($this->frames);
 	}
 
-	public function addFrame($frame){
-		$this->frames[] = $frame;
-	}
-
-	public function addFrames(array $frames){
-		$this->frames = array_merge($this->frames, $frames);
-	}
-
 }
