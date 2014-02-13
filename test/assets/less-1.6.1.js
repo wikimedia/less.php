@@ -4373,7 +4373,10 @@ tree.mixin.Call.prototype = {
             return { name: a.name, value: a.value.eval(env) };
         });
 
+		var frames_searched = 0;
         for (i = 0; i < env.frames.length; i++) {
+			frames_searched++;
+
             if ((mixins = env.frames[i].find(this.selector)).length > 0) {
                 isOneFound = true;
 
@@ -4467,6 +4470,7 @@ tree.mixin.Call.prototype = {
                             }
                         }
                     }
+
                     return rules;
                 }
             }

@@ -254,16 +254,18 @@ class Less_Visitor_processExtends extends Less_Visitor{
 	}
 
 
-	// Performance tune:
 	// Before going through all the nested loops, lets check to see if a match is possible
 	// Reduces Bootstrap 3.1 compile time from ~6.5s to ~5.6s
 	private function HasMatches($extend, $haystackSelectorPath){
+
 		if( !$extend->selector->cacheable ){
 			return true;
 		}
 
+		$first_el = $extend->selector->_oelements[0];
+
 		foreach($haystackSelectorPath as $hackstackSelector){
-			if( array_intersect($extend->selector->_oelements,$hackstackSelector->_oelements) ){
+			if( in_array($first_el, $hackstackSelector->_oelements) ){
 				return true;
 			}
 		}
