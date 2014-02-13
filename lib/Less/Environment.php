@@ -115,7 +115,6 @@ class Less_Environment{
 	 *
 	 */
 	static function normalizePath($path){
-		$path = str_replace('\\', '/', $path);
 
 		$segments = explode('/',$path);
 		$segments = array_reverse($segments);

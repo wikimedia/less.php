@@ -279,6 +279,8 @@ class Less_Parser{
 
 
 		$previousFileInfo = $this->env->currentFileInfo;
+		$filename = self::WinPath($filename);
+		$uri_root = self::WinPath($uri_root);
 		$this->SetFileInfo($filename, $uri_root);
 
 		self::AddParsedFile($filename);
@@ -373,7 +375,7 @@ class Less_Parser{
 			throw new Less_Exception_Parser('Less.php cache directory isn\'t writable: '.$dir);
 
 		}else{
-			$dir = str_replace('\\','/',$dir);
+			$dir = self::WinPath($dir);
 			Less_Cache::$cache_dir = rtrim($dir,'/').'/';
 			return true;
 		}
@@ -390,13 +392,13 @@ class Less_Parser{
 
 		foreach($dirs as $path => $uri_root){
 
-			$path = str_replace('\\','/',$path);
+			$path = self::WinPath($path);
 			if( !empty($path) ){
 				$path = rtrim($path,'/').'/';
 			}
 
 			if ( !is_callable($uri_root) ){
-				$uri_root = str_replace('\\','/',$uri_root);
+				$uri_root = self::WinPath($uri_root);
 				if( !empty($uri_root) ){
 					$uri_root = rtrim($uri_root,'/').'/';
 				}
@@ -2354,6 +2356,11 @@ class Less_Parser{
 			Less_Parser::$contentsMap[$uri] = $this->input;
 		}
 	}
+
+	public static function WinPath($path){
+		return str_replace('\\', '/', $path);
+	}
+
 }
 
 
