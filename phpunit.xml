@@ -4,11 +4,13 @@
     stopOnFailure = "false"
     stopOnError = "false"
     stopOnIncomplete="false"
-    stopOnSkipped="false">
+    stopOnSkipped="false"
+    bootstrap = "test/phpunit/bootstrap.php"
+    >
 
     <testsuites>
         <testsuite name="Less.php Test Suite">
-            <directory>./test</directory>
+            <directory>./test/phpunit</directory>
         </testsuite>
     </testsuites>
 
