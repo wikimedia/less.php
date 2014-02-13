@@ -20,6 +20,7 @@ class lessc
 
 	public $importDir = '';
 	protected $allParsedFiles = array();
+	protected $registeredVars = array();
 	private $formatterName;
 	
 	public function __construct($lessc=null, $sourceName=null)
@@ -46,6 +47,11 @@ class lessc
 		foreach( $variables as $name => $value ){
 			$this->setVariable( $name, $value );
 		}
+	}
+	
+	public function setVariable($name, $value)
+	{
+		$this->registeredVars[$name] = $value;
 	}
 	
 	public function unsetVariable($name)
@@ -161,6 +167,7 @@ class lessc
 
 		$parser = new Less_Parser();
 		$parser->SetImportDirs($this->getImportDirs());
+		$parser->SetOption('compress', true);
 		if( count( $this->registeredVars ) ) $parser->ModifyVars( $this->registeredVars );
 		$parser->parseFile($fname);
 		$out = $parser->getCss();
