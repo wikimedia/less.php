@@ -115,7 +115,10 @@ class Less_Environment{
 	 *
 	 */
 	static function normalizePath($path){
-
+		if (strtolower(substr(PHP_OS, 0, '3')) === 'win') {
+			$path = str_replace('\\', '/', $path);
+		}
+		
 		$segments = explode('/',$path);
 		$segments = array_reverse($segments);
 
