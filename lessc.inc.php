@@ -184,6 +184,14 @@ class lessc
 
 		return $out;
 	}
+	
+	public function checkedCompile($in, $out) {
+		if (!is_file($out) || filemtime($in) > filemtime($out)) {
+			$this->compileFile($in, $out);
+			return true;
+		}
+		return false;
+	}
 
 	public function allParsedFiles() {
 		return $this->allParsedFiles;
