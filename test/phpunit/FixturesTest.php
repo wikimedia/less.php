@@ -26,8 +26,10 @@ class phpunit_FixturesTest extends phpunit_bootstrap{
 				continue;
 			}
 
-			//$this->CompareFile( $expected_file );
+			$this->CompareFile( $expected_file );
 		}
+
+		echo "\n";
 	}
 
 
