@@ -60,7 +60,7 @@ class lessc
 		$dirs_ = (array)$this->importDir;
 		$dirs = array();
 		foreach($dirs_ as $dir) {
-			$dirs[$dir] = '/';
+			$dirs[$dir] = '';
 		}
 		return $dirs;
 	}

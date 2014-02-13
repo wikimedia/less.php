@@ -18,7 +18,7 @@ $dir = dirname(dirname(__FILE__));
 require_once $dir.'/lib/Less/Autoloader.php';
 Less_Autoloader::register();
 
-//require_once $dir.'/test/dist/Cache.php';
+require_once $dir.'/lessc.inc.php';
 
 
 //get diff
@@ -201,9 +201,14 @@ class ParserTest{
 			 */
 
 
-			$parser = new Less_Parser( $options );
-			$parser->parseFile( $file_less ); //$file_uri
-			$compiled = $parser->getCss();
+			//$parser = new Less_Parser( $options );
+			//$parser->parseFile( $file_less ); //$file_uri
+			//$compiled = $parser->getCss();
+
+
+			$parser = new lessc();
+			$compiled = $parser->compileFile($file_less);
+
 
 			//$this->SaveExpected($file_css, $compiled);
 
