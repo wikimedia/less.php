@@ -167,7 +167,6 @@ class lessc
 
 		$parser = new Less_Parser();
 		$parser->SetImportDirs($this->getImportDirs());
-		$parser->SetOption('compress', true);
 		if( count( $this->registeredVars ) ) $parser->ModifyVars( $this->registeredVars );
 		$parser->parseFile($fname);
 		$out = $parser->getCss();
