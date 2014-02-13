@@ -128,6 +128,7 @@ class Less_Parser{
 			case 'cache_dir':
 				if( is_string($value) ){
 					Less_Cache::SetCacheDir($value);
+					Less_Cache::CheckCacheDir();
 				}
 			return;
 		}
