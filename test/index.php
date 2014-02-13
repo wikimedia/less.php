@@ -77,35 +77,60 @@ class ParserTest{
 		$this->lessJsProvider($dir);
 	}
 
-    public function lessJsProvider($dir){
+	public function WhichComparisons($dir){
 
 		if( isset($_GET['file']) ){
-			$less = '/less/'.$_GET['file'].'.less';
-			$css = '/css/'.$_GET['file'].'.css';
-			$pairs = array( array($less,$css) );
 
-		}else{
+			//compare single css file
+			$full_css = $dir.'/css/'.$_GET['file'].'.css';
+			if( file_exists($full_css) ){
+				$less = '/less/'.$_GET['file'].'.less';
+				$css = '/css/'.$_GET['file'].'.css';
+				return array( array($less,$css) );
+			}
 
-			$list = scandir($dir.'/css');
-			foreach($list as $file){
-
-				if( $file === '.' || $file === '..' ){
-					continue;
-				}
-				$type = preg_replace('/.*\.([a-z]+)/','\1',$file);
-				if( $type !== 'css' ){
-					continue;
-				}
-				$pairs[] = array('/less/'.str_replace('.css','.less',$file), '/css/'.$file  );
+			//compare single sourcemap
+			$full_map = $dir.'/css/'.$_GET['file'].'.map';
+			if( file_exists($full_css) ){
+				$less = '/less/'.$_GET['file'].'.less';
+				$map = '/css/'.$_GET['file'].'.map';
+				return array( array($less,false, $map) );
 			}
 
 		}
 
+
+		$list = scandir($dir.'/css');
+		foreach($list as $file){
+
+			if( $file === '.' || $file === '..' ){
+				continue;
+			}
+			$type = preg_replace('/.*\.([a-z]+)/','\1',$file);
+			if( $type == 'css' ){
+				$pairs[] = array('/less/'.str_replace('.css','.less',$file), '/css/'.$file );
+			}elseif( $type == 'map' ){
+				$pairs[] = array('/less/'.str_replace('.map','.less',$file), false,'/css/'.$file  );
+			}
+
+		}
+
+		return $pairs;
+
+	}
+
+    public function lessJsProvider($dir){
+
+		$pairs = $this->WhichComparisons($dir);
+
 		$match_list = $diff = array();
 		foreach($pairs as $files){
+
+			$files += array(false,false,false);
+
 			ob_start();
 			echo '<div class="row">';
-			$matched = $this->testLessJsCssGeneration( $dir, $files[0], $files[1] );
+			$matched = $this->testLessJsCssGeneration( $dir, $files[0], $files[1], $files[2] );
 			echo '</div>';
 
 			if( $matched ){
@@ -135,28 +160,8 @@ class ParserTest{
 
     }
 
-    public function testLessJsCssGeneration($dir, $less, $css ){
+    public function testLessJsCssGeneration($dir, $less, $css, $map ){
 		global $obj_buffer;
-
-		$this->files_tested++;
-		$matched		= false;
-		$basename		= basename($less);
-		$basename 		= substr($basename,0,-5); //remove .less extension
-		$file_less		= $dir.$less;
-		$file_uri		= $this->AbsoluteToRelative( dirname($file_less) );
-		$file_css		= $dir.$css;
-		$file_expected	= $this->TranslateFile($file_css,'expected','css');
-		$file_sourcemap	= $dir.'/css/'.$basename.'.map';
-
-		echo '<a class="filename" href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">File: '.$basename.'</a>';
-
-		if( !file_exists($file_less) ){
-			echo '<b>LESS file missing: '.$file_less.'</b>';
-			return false;
-		}elseif( !file_exists($file_css) ){
-			echo '<b>CSS file missing: '.$file_css.'</b>';
-			return false;
-		}
 
 
 		$options = array();
@@ -164,6 +169,50 @@ class ParserTest{
 		//$options['relativeUrls']	= true;
 		//$options['cache_dir']		= $this->cache_dir;
 		//$options['cache_method']	= 'php';
+
+
+
+		$this->files_tested++;
+		$matched		= false;
+		$basename		= basename($less);
+		$basename 		= substr($basename,0,-5); //remove .less extension
+		$file_less		= $dir.$less;
+		$file_uri		= $this->AbsoluteToRelative( dirname($file_less) );
+		$file_sourcemap	= false;
+		$file_css		= false;
+
+
+		echo '<a class="filename" href="?dir='.rawurlencode($this->dir).'&amp;file='.rawurlencode($basename).'">File: '.$basename.'</a>';
+
+		if( !file_exists($file_less) ){
+			echo '<b>LESS file missing: '.$file_less.'</b>';
+			return false;
+		}
+
+
+		//css or map
+		if( $css ){
+			$file_css = $dir.$css;
+			$file_expected	= $this->TranslateFile($file_css,'expected','css');
+			if( !file_exists($file_css) ){
+				echo '<b>CSS file missing: '.$file_css.'</b>';
+				return false;
+			}
+		}elseif( $map ){
+			$file_sourcemap	= $dir.$map;
+			$file_expected	= $this->TranslateFile($file_sourcemap,'expected','map');
+			if( !file_exists($file_sourcemap) ){
+				echo '<b>Sourcemap file missing: '.$file_sourcemap.'</b>';
+				return false;
+			}
+		}else{
+			echo '<b>Unknown comparison file</b>';
+			return false;
+		}
+
+
+
+
 
 
 		//generate the sourcemap
@@ -210,82 +259,76 @@ class ParserTest{
 			//$compiled = $parser->compileFile($file_less);
 
 
-			//$this->SaveExpected($file_css, $compiled);
+
 
 		}catch(Exception $e){
 			$compiled = $e->getMessage();
 		}
 
 
-		//check agains less.js css
-		$css = file_get_contents($file_css);
-		if( empty($compiled) && empty($css) ){
-			echo '<b>----empty----</b>';
-			if( isset($_GET['file']) ){
-				$this->ObjBuffer();
-				$this->LessLink($file_less);
-			}
-			return;
-		}
-
-
-
 		//sourcemap comparison
-		if( isset($_GET['file']) && file_exists($file_sourcemap) ){
-			//$this->CompareSourceMap($generated_map, $file_sourcemap);
-		}
+		if( $file_sourcemap ){
 
-		// If compress is enabled, add some whitespaces back for comparison
-		if( $this->compress ){
-			$compiled = str_replace('{'," {\n",$compiled);
-			//$compiled = str_replace('}',"\n}",$compiled);
-			$compiled = str_replace(';',";\n",$compiled);
-			$compiled = preg_replace('/\s*}\s*/',"\n}\n",$compiled);
+			//$expected = file_get_contents($generated_map);
+			//$this->SaveExpected($file_expected, $expected);
 
 
-			$css = preg_replace('/\n\s+/',"\n",$css);
-			$css = preg_replace('/:\s+/',":",$css);
-			$css = preg_replace('/;(\s)}/','$1}',$css);
+			$generated_map = $this->ComparableSourceMap($generated_map);
+			$file_sourcemap = $this->ComparableSourceMap($file_sourcemap);
 
-		}
-
-		$css = trim($css);
-		$compiled = trim($compiled);
-
+			$expected_map = '';
+			if( file_exists($file_expected) ){
+				$expected_map = $this->ComparableSourceMap($file_expected);
+			}
 
 
-		if( $css === $compiled ){
-			$matched = true;
-			$this->matched_count++;
+			$matched = $this->CompareFiles( $generated_map, $file_sourcemap, $expected_map);
 
+
+			if( isset($_GET['file']) ){
+				$this->PHPDiff($generated_map,$file_sourcemap,true);
+				$this->ObjBuffer();
+			}
+
+			return $matched;
+
+
+		//css comparison
 		}else{
-			$line_diff = $this->LineDiff($compiled,$css);
-			echo ' <b>'.$line_diff.' lines mismatched</b>';
+
+			//$this->SaveExpected($file_expected, $compiled);
 
 
-			//check agains expected less.php results
+			$css = file_get_contents($file_css);
+
+			// If compress is enabled, add some whitespaces back for comparison
+			if( $this->compress ){
+				$compiled = str_replace('{'," {\n",$compiled);
+				//$compiled = str_replace('}',"\n}",$compiled);
+				$compiled = str_replace(';',";\n",$compiled);
+				$compiled = preg_replace('/\s*}\s*/',"\n}\n",$compiled);
+
+
+				$css = preg_replace('/\n\s+/',"\n",$css);
+				$css = preg_replace('/:\s+/',":",$css);
+				$css = preg_replace('/;(\s)}/','$1}',$css);
+			}
+
+			$css = trim($css);
+			$compiled = trim($compiled);
+
+			$expected = '';
 			if( file_exists($file_expected) ){
 				$expected = file_get_contents($file_expected);
-				$expected = trim($expected);
-				if( $compiled == $expected ){
-					echo '<span>Expected Matched</span>';
-				}else{
-					$line_diff = $this->LineDiff($compiled,$expected);
-					echo ' <b>'.$line_diff.' lines mismatched</b>';
-				}
-
-			}else{
-				echo '<span>file doesn\'t exist</span>';
 			}
 
+			$matched = $this->CompareFiles( $compiled, $css, $expected);
 
-
-			$this->PHPDiff($compiled,$css);
 		}
-
 
 
 		if( isset($_GET['file']) ){
+			$this->PHPDiff($compiled,$css);
 			echo '<table><tr><td>';
 			echo '<textarea id="lessphp_textarea" autocomplete="off">'.htmlspecialchars($compiled).'</textarea>';
 			echo '</td><td>';
@@ -299,23 +342,56 @@ class ParserTest{
 		return $matched;
 	}
 
+	function CompareFiles( $generated, $lessjs, $expected ){
+
+		$generated = trim($generated);
+		$lessjs = trim($lessjs);
+
+		if( empty($generated) && empty($lessjs) ){
+			echo '<b>----empty----</b>';
+			return true;
+		}
+
+		if( $generated === $lessjs ){
+			return true;
+		}
+
+		$line_diff = $this->LineDiff($generated,$lessjs);
+		echo ' <b>'.$line_diff.' lines mismatched</b>';
+
+
+		//check agains expected results
+		if( $expected ){
+			$expected = trim($expected);
+			if( $generated == $expected ){
+				echo '<span>Expected Matched</span>';
+			}else{
+				$line_diff = $this->LineDiff($generated,$expected);
+				echo ' <b>'.$line_diff.' lines mismatched</b>';
+			}
+
+		}else{
+			echo '<span>file doesn\'t exist</span>';
+		}
+
+		return false;
+	}
+
 
 	/**
 	 * Save the results of the compiler
 	 * The contents of these files are used by phpunit tests
 	 *
 	 */
-	function SaveExpected($file_css, $compiled ){
-		$name = basename($file_css);
-		$expected	= $this->TranslateFile($file_css,'expected','css');
-
-		$dir = dirname($expected);
+	function SaveExpected($file_expected, $compiled ){
+		$name = basename($file_expected);
+		$dir = dirname($file_expected);
 		if( !is_dir($dir) ){
 			msg('Expected directory does not exist: '.$dir);
 			return;
 		}
 
-		if( file_put_contents($expected, $compiled) ){
+		if( file_put_contents($file_expected, $compiled) ){
 			msg('Expected results for '.$name.' were saved');
 		}
 	}
@@ -360,13 +436,6 @@ class ParserTest{
 		return $path;
 	}
 
-    function CompareSourceMap($generated_map, $compare_map){
-
-		$generated = $this->ComparableSourceMap($generated_map);
-		$compare = $this->ComparableSourceMap($compare_map);
-
-		$this->PHPDiff($generated,$compare,true);
-	}
 
 	function ComparableSourceMap($file){
 		$content = file_get_contents($file);

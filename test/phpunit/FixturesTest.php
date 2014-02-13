@@ -1,24 +1,7 @@
 <?php
 
 
-class FixturesTest extends PHPUnit_Framework_TestCase{
-
-	public $fixtures_dir;
-	public $cache_dir;
-
-	function setUp(){
-		echo "\nSet-Up";
-		require_once( dirname(__FILE__) . '/../lib/Less/Autoloader.php' );
-		Less_Autoloader::register();
-
-		$this->fixtures_dir = dirname(__FILE__).'/Fixtures';
-		echo "\n  fixtures_dir: ".$this->fixtures_dir;
-
-		Less_Cache::$cache_dir = $this->CacheDirectory();
-		echo "\n  cache_dir:    ".Less_Cache::$cache_dir;
-
-		echo "\n\n";
-	}
+class phpunit_FixturesTest extends phpunit_bootstrap{
 
 
 	/**
@@ -43,30 +26,10 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 				continue;
 			}
 
-			$this->CompareFile( $expected_file );
+			//$this->CompareFile( $expected_file );
 		}
-
-		echo "\n\nTests Complete!!";
 	}
 
-
-	/**
-	 * Return the path of the cache directory if it's writable
-	 *
-	 */
-	function CacheDirectory(){
-		$cache_dir = dirname(__FILE__).'/_cache';
-
-		if( !file_exists($cache_dir) && !mkdir($cache_dir) ){
-			return false;
-		}
-
-		if( !is_writable($cache_dir) ){
-			return false;
-		}
-
-		return $cache_dir;
-	}
 
 
 	/**
@@ -106,11 +69,14 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 
 
 		// Check with cache
-		if( Less_Cache::$cache_dir ){
-			echo "\n    - Regenerating Cache";
+		if( $this->cache_dir ){
+
+			$options = array('cache_dir'=>$this->cache_dir);
 			$files = array( $less_file => '' );
-			$css_file_name = Less_Cache::Regen( $files );
-			$css = file_get_contents(Less_Cache::$cache_dir.'/'.$css_file_name);
+
+			echo "\n    - Regenerating Cache";
+			$css_file_name = Less_Cache::Regen( $files, $options );
+			$css = file_get_contents($this->cache_dir.'/'.$css_file_name);
 			$css = trim($css);
 			$this->assertEquals( $expected_css, $css );
 
@@ -118,8 +84,8 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 
 			// Check using the cached data
 			echo "\n    - Using Cache";
-			$css_file_name = Less_Cache::Get( $files );
-			$css = file_get_contents(Less_Cache::$cache_dir.'/'.$css_file_name);
+			$css_file_name = Less_Cache::Get( $files, $options );
+			$css = file_get_contents($this->cache_dir.'/'.$css_file_name);
 			$css = trim($css);
 			$this->assertEquals( $expected_css, $css );
 

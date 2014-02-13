@@ -6,7 +6,7 @@
 		fileAsync: false,
 		//poll: 1000,
 		functions: {},
-		dumpLineNumbers: "comments",
+		//dumpLineNumbers: "comments",
 		//relativeUrls: false,
 		//rootpath: ":/a.com/"
 	};

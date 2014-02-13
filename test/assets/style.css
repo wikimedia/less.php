@@ -19,7 +19,7 @@ pre{
 
 #links{float:left; margin:0; width:180px; padding:0;}
 #links li, #links a{display:block;list-style:none;padding:0;height:30px;line-height:30px;}
-#links a{text-decoration:none;padding:0 30px;color:#fff;}
+#links a{text-decoration:none;padding:0 20px 0 30px;color:#fff;white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis;}
 
 #links .active a,
 #links a:hover{background:#2C3E50;}
