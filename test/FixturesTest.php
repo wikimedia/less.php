@@ -7,17 +7,17 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 	public $cache_dir;
 
 	function setUp(){
-		print_r("\nSet-Up");
+		echo "\nSet-Up";
 		require_once( dirname(__FILE__) . '/../lib/Less/Autoloader.php' );
 		Less_Autoloader::register();
 
 		$this->fixtures_dir = dirname(__FILE__).'/Fixtures';
-		print_r("\n  fixtures_dir: ".$this->fixtures_dir);
+		echo "\n  fixtures_dir: ".$this->fixtures_dir;
 
 		Less_Cache::$cache_dir = $this->CacheDirectory();
-		print_r("\n  cache_dir:    ".Less_Cache::$cache_dir);
+		echo "\n  cache_dir:    ".Less_Cache::$cache_dir;
 
-		print_r("\n\n");
+		echo "\n\n";
 	}
 
 
@@ -27,7 +27,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 	 */
 	function testLessJs(){
 
-		print_r("\nBegin Tests");
+		echo "\nBegin Tests";
 
 		$css_dir = $this->fixtures_dir.'/lessjs/expected';
 		$files = scandir($css_dir);
@@ -46,7 +46,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 			$this->CompareFile( $expected_file );
 		}
 
-		print_r("\n\nTests Complete!!");
+		echo "\n\nTests Complete!!";
 	}
 
 
@@ -95,8 +95,8 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 
 
 		// Check with standard parser
-		print_r("\n  ".basename($expected_file));
-		print_r("\n    - Standard Compiler");
+		echo "\n  ".basename($expected_file);
+		echo "\n    - Standard Compiler";
 
 		$parser = new Less_Parser();
 		$parser->parseFile($less_file);
@@ -107,7 +107,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 
 		// Check with cache
 		if( Less_Cache::$cache_dir ){
-			print_r("\n    - Regenerating Cache");
+			echo "\n    - Regenerating Cache";
 			$files = array( $less_file => '' );
 			$css_file_name = Less_Cache::Regen( $files );
 			$css = file_get_contents(Less_Cache::$cache_dir.'/'.$css_file_name);
@@ -117,7 +117,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase{
 
 
 			// Check using the cached data
-			print_r("\n    - Using Cache");
+			echo "\n    - Using Cache";
 			$css_file_name = Less_Cache::Get( $files );
 			$css = file_get_contents(Less_Cache::$cache_dir.'/'.$css_file_name);
 			$css = trim($css);

@@ -201,13 +201,13 @@ class ParserTest{
 			 */
 
 
-			//$parser = new Less_Parser( $options );
-			//$parser->parseFile( $file_less ); //$file_uri
-			//$compiled = $parser->getCss();
+			$parser = new Less_Parser( $options );
+			$parser->parseFile( $file_less ); //$file_uri
+			$compiled = $parser->getCss();
 
 
-			$parser = new lessc();
-			$compiled = $parser->compileFile($file_less);
+			//$parser = new lessc();
+			//$compiled = $parser->compileFile($file_less);
 
 
 			//$this->SaveExpected($file_css, $compiled);
@@ -760,6 +760,7 @@ $content = ob_get_clean();
 	*/
 
 		if( isset($_GET['file']) ){
+			echo '<script src="assets/lessjs-config.js"></script>';
 			//echo '<script src="assets/less-1.4.2.js"></script>';
 			//echo '<script src="assets/less-1.5.1.js"></script>';
 			echo '<script src="assets/less-1.6.1.js"></script>';
