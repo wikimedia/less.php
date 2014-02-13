@@ -271,7 +271,7 @@ Use the built-in compiler to:
   .button-variant(white; red; blue);
 }`
 - set any built-in LESS variable: for example `@footer_bg_color: black;` sets the background color of the footer to black
-- use built-in mixins: - add a custom font: `.include-custom-font(@family: arial, @path: @custom-font-dir, @weight: normal, @style: normal);`
+- use built-in mixins: - add a custom font: `.include-custom-font(@family: arial,@font-path, @path: @custom-font-dir, @weight: normal, @style: normal);`
 
 The compiler can also be download as [plugin](http://wordpress.org/plugins/wp-less-to-css/)
 
