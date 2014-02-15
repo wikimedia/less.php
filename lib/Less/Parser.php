@@ -245,12 +245,30 @@ class Less_Parser{
 	 * Parse a Less string into css
 	 *
 	 * @param string $str The string to convert
+	 * @param string $uri_root The url of the file
 	 * @return Less_Tree_Ruleset|Less_Parser
 	 */
-	public function parse($str){
+	public function parse( $str, $file_uri = null ){
+
+		if( !$file_uri ){
+			$uri_root = '';
+			$filename = 'anonymous-file-'.Less_Parser::$next_id++.'.less';
+		}else{
+			$file_uri = self::WinPath($file_uri);
+			$filename = basename($file_uri);
+			$uri_root = dirname($fiel_uri);
+		}
+
+		$previousFileInfo = $this->env->currentFileInfo;
+		$uri_root = self::WinPath($uri_root);
+		$this->SetFileInfo($filename, $uri_root);
 
 		$this->input = $str;
 		$this->_parse();
+
+		if( $previousFileInfo ){
+			$this->env->currentFileInfo = $previousFileInfo;
+		}
 
 		return $this;
 	}

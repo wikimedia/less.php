@@ -255,6 +255,13 @@ class ParserTest{
 			$compiled = $parser->getCss();
 
 
+			//$parser = new Less_Parser( $options );
+			//$less_content = file_get_contents( $file_less );
+			//$parser->parse( $less_content );
+			//$compiled = $parser->getCss();
+
+
+
 			//$parser = new lessc();
 			//$compiled = $parser->compileFile($file_less);
 
