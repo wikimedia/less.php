@@ -219,6 +219,7 @@ class Less_Tree_Color extends Less_Tree{
 	 * @param string $keyword
 	 */
 	public static function fromKeyword( $keyword ){
+		$keyword = strtolower($keyword);
 
 		if( Less_Colors::hasOwnProperty($keyword) ){
 			// detect named color

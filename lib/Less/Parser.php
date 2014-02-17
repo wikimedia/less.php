@@ -865,6 +865,8 @@ class Less_Parser{
 
 	// duplicate of Less_Tree_Color::FromKeyword
 	private function FromKeyword( $keyword ){
+		$keyword = strtolower($keyword);
+
 		if( Less_Colors::hasOwnProperty($keyword) ){
 			// detect named color
 			return $this->NewObj1('Less_Tree_Color',substr(Less_Colors::color($keyword), 1));
