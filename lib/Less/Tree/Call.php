@@ -45,38 +45,43 @@ class Less_Tree_Call extends Less_Tree{
 			$args[] = $a->compile($env);
 		}
 
-		$name = $this->name;
-		switch($name){
+		$nameLC = strtolower($this->name);
+		switch($nameLC){
 			case '%':
-			$name = '_percent';
+			$nameLC = '_percent';
 			break;
 
 			case 'data-uri':
-			$name = 'datauri';
+			$nameLC = 'datauri';
 			break;
 
 			case 'svg-gradient':
-			$name = 'svggradient';
+			$nameLC = 'svggradient';
 			break;
-
-			case 'default':
-			return Less_Tree_DefaultFunc::compile();
 		}
 
-		//echo '<h4>'.$name.'</h4>';
-		if( method_exists('Less_Functions',$name) ){ // 1.
-			try {
-				$func = new Less_Functions($env, $this->currentFileInfo);
-				$result = call_user_func_array( array($func,$name),$args);
-				if( $result != null ){
-					return $result;
+		$result = null;
+		if( $nameLC === 'default' ){
+			$result = Less_Tree_DefaultFunc::compile();
+
+		}else{
+
+			if( method_exists('Less_Functions',$nameLC) ){ // 1.
+				try {
+
+					$func = new Less_Functions($env, $this->currentFileInfo);
+					$result = call_user_func_array( array($func,$nameLC),$args);
+
+				} catch (Exception $e) {
+					throw new Less_Exception_Compiler('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
 				}
-
-			} catch (Exception $e) {
-				throw new Less_Exception_Compiler('error evaluating function `' . $this->name . '` '.$e->getMessage().' index: '. $this->index);
 			}
-
 		}
+
+		if( $result !== null ){
+			return $result;
+		}
+
 
 		return new Less_Tree_Call( $this->name, $args, $this->index, $this->currentFileInfo );
     }
@@ -98,8 +103,9 @@ class Less_Tree_Call extends Less_Tree{
 		$output->add( ')' );
 	}
 
-    public function toCSS(){
-        return $this->compile()->toCSS();
-    }
+
+    //public function toCSS(){
+    //    return $this->compile()->toCSS();
+    //}
 
 }

@@ -52,6 +52,9 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 			}
 
 			$isOneFound = true;
+			$defNone = 0;
+			$defTrue = 1;
+			$defFalse = 2;
 
 			// To make `default()` function independent of definition order we have two "subpasses" here.
 			// At first we evaluate each guard *twice* (with `default() == true` and `default() == false`),
@@ -68,7 +71,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 
 				if( $mixin->matchArgs($args, $env) ){
 
-					$candidate = array('mixin' => $mixin);
+					$candidate = array('mixin' => $mixin, 'group' => $defNone);
 
 					if( $mixin instanceof Less_Tree_Ruleset ){
 
@@ -78,17 +81,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 						}
 						if( $conditionResult[0] || $conditionResult[1] ){
 							if( $conditionResult[0] != $conditionResult[1] ){
-								if( $defaultUsed ){
-									// todo: ideally, it would make sense to also print the candidate
-									// mixin definitions that cause the conflict (current one and the
-									// mixin that set defaultUsed flag). But is there any easy method
-									// to get their filename/line/index info here?
-									throw Exception( 'Ambiguous use of `default()` found when matching for `'. $this->format($args) + '`' );
-								}
-
-								$defaultUsed						= true;
-								$candidate['matchIfDefault']		= true;
-								$candidate['matchIfDefaultValue']	= $conditionResult[1];
+								$candidate['group'] = $conditionResult[1] ? $defTrue : $defFalse;
 							}
 
 							$candidates[] = $candidate;
@@ -103,27 +96,35 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 
 			Less_Tree_DefaultFunc::reset();
 
+
+			$count = array(0, 0, 0);
+			for( $m = 0; $m < count($candidates); $m++ ){
+				$count[ $candidates[$m]['group'] ]++;
+			}
+
+			if( $count[$defNone] > 0 ){
+				$defaultResult = $defFalse;
+			} else {
+				$defaultResult = $defTrue;
+				if( ($count[$defTrue] + $count[$defFalse]) > 1 ){
+					throw Exception( 'Ambiguous use of `default()` found when matching for `'. $this->format($args) + '`' );
+				}
+			}
+
+
 			$candidates_length = count($candidates);
 			$length_1 = ($candidates_length == 1);
 
 			for( $m = 0; $m < $candidates_length; $m++){
-				$candidate = $candidates[$m];
-				if( !isset($candidate['matchIfDefault']) || (isset($candidate['matchIfDefaultValue']) && ($candidate['matchIfDefaultValue'] == $length_1)) ){
+				$candidate = $candidates[$m]['group'];
+				if( ($candidate === $defNone) || ($candidate === $defaultResult) ){
 					try{
-						$mixin = $candidate['mixin'];
+						$mixin = $candidates[$m]['mixin'];
 						if( !($mixin instanceof Less_Tree_Mixin_Definition) ){
 							$mixin = new Less_Tree_Mixin_Definition('', array(), $mixin->rules, null, false);
 							$mixin->originalRuleset = $mixins[$m]->originalRuleset;
 						}
-
-						//if (this.important) {
-						//	isImportant = env.isImportant;
-						//	env.isImportant = true;
-						//}
 						$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
-						//if (this.important) {
-						//	env.isImportant = isImportant;
-						//}
 					} catch (Exception $e) {
 						//throw new Less_Exception_Compiler($e->getMessage(), $e->index, null, $this->currentFileInfo['filename']);
 						throw new Less_Exception_Compiler($e->getMessage(), null, null, $this->currentFileInfo);

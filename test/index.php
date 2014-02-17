@@ -695,7 +695,8 @@ function obj($mixed){
 	$output = '';
 
 
-	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','cache_string','elements_len');
+	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','cache_string','elements_len',
+					'_oelements','first_oelements','_oelements_len','cacheable');
 	//$exclude_keys = array();
 
 	$type = gettype($mixed);
