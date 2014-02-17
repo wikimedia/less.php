@@ -1696,9 +1696,11 @@ class Less_Parser{
 			$important = $this->parseImportant();
 
 			// a name returned by this.ruleProperty() is always an array of the form:
-			// ["", "string-1", ..., "string-n", ""] or ["", "string-1", ..., "string-n", "+"]
+			// [string-1, ..., string-n, ""] or [string-1, ..., string-n, "+"]
+			// where each item is a tree.Keyword or tree.Variable
 			if( is_array($name) ){
-				$merge = (array_pop($name) === '+');
+				$nm = array_pop($name);
+				$merge = ($nm->value === '+');
 			}
 
 			if( $value && $this->parseEnd() ){
@@ -2183,12 +2185,14 @@ class Less_Parser{
 		$index = array();
 		$length = 0;
 
+
 		$this->rulePropertyMatch('/\\G(\*?)/', $offset, $length, $index, $name );
 		while( $this->rulePropertyMatch('/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $offset, $length, $index, $name )); // !
 
+		/*
 		if( (count($name) > 1) && $this->rulePropertyMatch('/\\G\s*(\+?)\s*:/', $offset, $length, $index, $name) ){
 			// at last, we have the complete match now. move forward,
-			// convert @{var}s to tree.Variable(s) and return:
+			// convert name particles to tree objects and return:
 			$this->skipWhitespace($length);
 
 			foreach($name as $k => $name_k ){
@@ -2199,6 +2203,30 @@ class Less_Parser{
 
 			return $name;
 		}
+		*/
+
+
+
+		if( (count($name) > 1) && $this->rulePropertyMatch('/\\G\s*(\+?)\s*:/', $offset, $length, $index, $name) ){
+			// at last, we have the complete match now. move forward,
+			// convert name particles to tree objects and return:
+			$this->skipWhitespace($length);
+
+			if( $name[0] === '' ){
+				array_shift($name);
+				array_shift($index);
+			}
+			foreach($name as $k => $s ){
+				if( !$s || $s[0] !== '@' ){
+					$name[$k] = $this->NewObj1('Less_Tree_Keyword',$s);
+				}else{
+					$name[$k] = $this->NewObj3('Less_Tree_Variable',array('@' . substr($s,2,-1), $index[$k], $this->env->currentFileInfo));
+				}
+			}
+			return $name;
+		}
+
+
 	}
 
 	private function rulePropertyMatch( $re, &$offset, &$length,  &$index, &$name ){

@@ -55,18 +55,16 @@ class Less_Tree_Rule extends Less_Tree{
 
 	public function compile ($env){
 
-		$name = '';
-		if( is_array($this->name) ){
-
-			foreach($this->name as $v){
-				if( is_object($v) ){
-					$name .= $v->compile($env)->value;
-				}else{
-					$name .= $v;
-				}
+		$strictMathBypass = false;
+		$name = $this->name;
+		if( is_array($name) ){
+			// expand 'primitive' name directly to get
+			// things faster (~10% for benchmark.less):
+			if( count($name) === 1 && $name[0] instanceof Less_Tree_Keyword ){
+				$name = $name[0]->value;
+			}else{
+				$name = $this->CompileName($env,$name);
 			}
-		}else{
-			$name = $this->name;
 		}
 
 		$strictMathBypass = Less_Parser::$options['strictMath'];
@@ -86,6 +84,15 @@ class Less_Tree_Rule extends Less_Tree{
 		Less_Parser::$options['strictMath'] = $strictMathBypass;
 
 		return $return;
+	}
+
+	function CompileName( $env, $name ){
+	    $value = "";
+		$output = new Less_Output();
+		foreach($name as $n){
+			$n->compile($env)->genCSS($output);
+		}
+		return $output->toString();
 	}
 
 	function makeImportant(){
