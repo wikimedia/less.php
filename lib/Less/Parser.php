@@ -20,6 +20,7 @@ class Less_Parser{
 		'strictUnits'			=> false,			// whether units need to evaluate correctly
 		'strictMath'			=> false,			// whether math has to be within parenthesis
 		'relativeUrls'			=> true,			// option - whether to adjust URL's to be relative
+		'cacheBuster'			=> array(),			// whether to add a cache buster param into url tokens
 
 		'import_dirs'			=> array(),
 		'import_callback'		=> null,
@@ -32,6 +33,7 @@ class Less_Parser{
 		'sourceMapURL'			=> null,
 
 		'plugins'				=> array(),
+
 	);
 
 	public static $options = array();

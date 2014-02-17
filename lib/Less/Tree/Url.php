@@ -56,6 +56,20 @@ class Less_Tree_Url extends Less_Tree{
 			$val->value = Less_Environment::normalizePath( $val->value);
 		}
 
+		// Add cache buster if enabled
+		if( Less_Parser::$options['cacheBuster'] ){
+			if( !preg_match('/^\s*data:/',$val->value) ){
+				$delimiter = strpos($val->value,'?') === false ? '?' : '&';
+				$cacheBuster = $delimiter . Less_Parser::$options['cacheBuster'];
+				$hash_pos = strpos($val->value,'#');
+				if( $hash_pos !== false ){
+					$val->value = substr_replace($val->value,$cacheBuster, $hash_pos, 0);
+				} else {
+					$val->value .= $cacheBuster;
+				}
+			}
+		}
+
 		return new Less_Tree_URL($val, $this->currentFileInfo, true);
 	}
 
