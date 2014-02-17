@@ -57,15 +57,15 @@ class Less_Tree_Url extends Less_Tree{
 		}
 
 		// Add cache buster if enabled
-		if( Less_Parser::$options['cacheBuster'] ){
+		if( Less_Parser::$options['urlArgs'] ){
 			if( !preg_match('/^\s*data:/',$val->value) ){
 				$delimiter = strpos($val->value,'?') === false ? '?' : '&';
-				$cacheBuster = $delimiter . Less_Parser::$options['cacheBuster'];
+				$urlArgs = $delimiter . Less_Parser::$options['urlArgs'];
 				$hash_pos = strpos($val->value,'#');
 				if( $hash_pos !== false ){
-					$val->value = substr_replace($val->value,$cacheBuster, $hash_pos, 0);
+					$val->value = substr_replace($val->value,$urlArgs, $hash_pos, 0);
 				} else {
-					$val->value .= $cacheBuster;
+					$val->value .= $urlArgs;
 				}
 			}
 		}

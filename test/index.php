@@ -169,7 +169,7 @@ class ParserTest{
 		//$options['relativeUrls']	= true;
 		//$options['cache_dir']		= $this->cache_dir;
 		//$options['cache_method']	= 'php';
-		//$options['cacheBuster']	= '424242';
+		//$options['urlArgs']	= '424242';
 
 
 
