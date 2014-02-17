@@ -34,6 +34,15 @@ class Less_Functions{
 		return min( max($val, 0), $max);
 	}
 
+	static function fround( $value ){
+
+		if( Less_Parser::$options['numPrecision'] ){
+			$p = pow(10, Less_Parser::$options['numPrecision']);
+			return round( $value * $p) / $p;
+		}
+		return $value;
+	}
+
 	static public function number($n){
 
 		if ($n instanceof Less_Tree_Dimension) {

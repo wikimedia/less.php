@@ -21,6 +21,7 @@ class Less_Parser{
 		'strictMath'			=> false,			// whether math has to be within parenthesis
 		'relativeUrls'			=> true,			// option - whether to adjust URL's to be relative
 		'cacheBuster'			=> array(),			// whether to add a cache buster param into url tokens
+		'numPrecision'			=> 8,
 
 		'import_dirs'			=> array(),
 		'import_callback'		=> null,

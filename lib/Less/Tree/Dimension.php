@@ -45,7 +45,7 @@ class Less_Tree_Dimension extends Less_Tree{
 			throw new Less_Exception_Compiler("Multiple units in dimension. Correct the units or use the unit function. Bad unit: ".$this->unit->toString());
 		}
 
-		$value = $this->value;
+		$value = Less_Functions::fround( $this->value );
 		$strValue = (string)$value;
 
 		if( $value !== 0 && $value < 0.000001 && $value > -0.000001 ){

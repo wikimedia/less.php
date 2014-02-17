@@ -53,6 +53,7 @@ class Less_Tree_Color extends Less_Tree{
 
 	public function toCSS( $doNotCompress = false ){
 		$compress = Less_Parser::$options['compress'] && !$doNotCompress;
+		$alpha = Less_Functions::fround( $this->alpha );
 
 
 		//
@@ -61,8 +62,8 @@ class Less_Tree_Color extends Less_Tree{
 		// which has better compatibility with older browsers.
 		// Values are capped between `0` and `255`, rounded and zero-padded.
 		//
-		if( $this->alpha < 1 ){
-			if( $this->alpha === 0 && isset($this->isTransparentKeyword) && $this->isTransparentKeyword ){
+		if( $alpha < 1 ){
+			if( $alpha === 0 && isset($this->isTransparentKeyword) && $this->isTransparentKeyword ){
 				return 'transparent';
 			}
 
@@ -70,7 +71,7 @@ class Less_Tree_Color extends Less_Tree{
 			foreach($this->rgb as $c){
 				$values[] = Less_Functions::clamp( round($c), 255);
 			}
-			$values[] = $this->alpha;
+			$values[] = $alpha;
 
 			$glue = ($compress ? ',' : ', ');
 			return "rgba(" . implode($glue, $values) . ")";
