@@ -243,16 +243,18 @@ class ParserTest{
 
 			/**
 			 * Less_Cache Testing
+			 */
 			Less_Cache::$cache_dir = $this->cache_dir;
 			//$cached_css_file = Less_Cache::Regen( array($file_less=>'') );
 			$cached_css_file = Less_Cache::Get( array($file_less=>'') );
 			$compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
-			 */
 
 
+			/*
 			$parser = new Less_Parser( $options );
 			$parser->parseFile( $file_less ); //$file_uri
 			$compiled = $parser->getCss();
+			*/
 
 
 			//$parser = new Less_Parser( $options );
@@ -839,7 +841,8 @@ $content = ob_get_clean();
 			echo '<script src="assets/lessjs-config.js"></script>';
 			//echo '<script src="assets/less-1.4.2.js"></script>';
 			//echo '<script src="assets/less-1.5.1.js"></script>';
-			echo '<script src="assets/less-1.6.1.js"></script>';
+			//echo '<script src="assets/less-1.6.1.js"></script>';
+			echo '<script src="assets/less-1.6.3.js"></script>';
 		}
 	?>
 </head>
