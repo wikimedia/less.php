@@ -223,6 +223,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 	public function matchCondition( $args, $env ){
 		$lastSelector = end($this->selectors);
+
+		if( !$lastSelector->evaldCondition ){
+			return false;
+		}
 		if( $lastSelector->condition && !$lastSelector->condition->compile( $env->copyEvalEnv( $env->frames ) ) ){
 			return false;
 		}
