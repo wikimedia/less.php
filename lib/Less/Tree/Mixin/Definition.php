@@ -106,7 +106,6 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 					if ($val) {
 						$val = $val->compile($env);
 					} else if ( isset($param['value']) ) {
-						$not_called = false;
 
 						if( !$mixinEnv ){
 							$mixinEnv = new Less_Environment();
