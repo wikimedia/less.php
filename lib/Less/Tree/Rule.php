@@ -86,7 +86,6 @@ class Less_Tree_Rule extends Less_Tree{
 	}
 
 	function CompileName( $env, $name ){
-	    $value = "";
 		$output = new Less_Output();
 		foreach($name as $n){
 			$n->compile($env)->genCSS($output);
