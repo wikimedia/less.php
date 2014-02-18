@@ -88,10 +88,39 @@ class Less_Tree_Ruleset extends Less_Tree{
 		$this->EvalMixinCalls( $ruleset, $env, $ruleset_len );
 
 
-
+		// Evaluate everything else
 		for( $i=0; $i<$ruleset_len; $i++ ){
 			if(! ($ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition) ){
 				$ruleset->rules[$i] = $ruleset->rules[$i]->compile($env);
+			}
+		}
+
+		for( $i=0; $i<$ruleset_len; $i++ ){
+			$rule = $ruleset->rules[$i];
+			if (! ($rule instanceof Less_Tree_Mixin_Definition)) {
+				$ruleset->rules[$i] = $rule = $ruleset->rules[$i]->compile($env);
+
+				// for rulesets, check if it is a css guard and can be removed
+				if( $rule instanceof Less_Tree_Ruleset && $rule->selectors && count($rule->selectors) === 1 ){
+					// check if it can be folded in (e.g. & where)
+					if( $rule->selectors[0]->isJustParentSelector() ){
+						array_splice($ruleset->rules,$i--,1);
+						$ruleset_len--;
+
+
+						// cannot call if there is no selector, so we can just continue
+						if( !$rule->selectors[0]->evaldCondition ){
+							continue;
+						}
+						for($j = 0; $j < count($rule->rules); $j++ ){
+							$subRule = $rule->rules[$j];
+							if( !($subRule instanceof Less_Tree_Rule) || !$subRule->variable ){
+								array_splice($ruleset->rules, ++$i, 0, array($subRule));
+								$ruleset_len++;
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -221,6 +250,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 		return !$args;
 	}
 
+	// lets you call a css selector with a guard
 	public function matchCondition( $args, $env ){
 		$lastSelector = end($this->selectors);
 
@@ -295,9 +325,9 @@ class Less_Tree_Ruleset extends Less_Tree{
 	}
 
 
-    /**
-     * @see Less_Tree::genCSS
-     */
+	/**
+	 * @see Less_Tree::genCSS
+	 */
 	public function genCSS( $output ){
 
 		if( !$this->root ){
