@@ -262,12 +262,12 @@ class ParserTest{
 			//$compiled = $parser->getCss();
 
 
-
 			//$parser = new lessc();
 			//$compiled = $parser->compileFile($file_less);
 
 
-
+			//$parser = new lessc();
+			//$compiled = $parser->compile(file_get_contents($file_less));
 
 		}catch(Exception $e){
 			$compiled = $e->getMessage();
