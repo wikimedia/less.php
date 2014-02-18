@@ -13,6 +13,8 @@ class Less_Exception_Chunk extends Less_Exception_Parser{
 
 	protected $emitFrom = 0;
 
+	protected $input_len;
+
 
 	/**
 	 * Constructor
@@ -49,9 +51,6 @@ class Less_Exception_Chunk extends Less_Exception_Parser{
 		$lastMultiCommentEndBrace = null;
 		$lastOpening = null;
 		$lastMultiComment = null;
-		//$chunks = array();
-		$currentChunkStartIndex = null;
-		$matched = null;
 		$lastParen = null;
 
 		for( $this->parserCurrentIndex = 0; $this->parserCurrentIndex < $this->input_len; $this->parserCurrentIndex++ ){
