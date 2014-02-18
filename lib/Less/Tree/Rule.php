@@ -55,7 +55,6 @@ class Less_Tree_Rule extends Less_Tree{
 
 	public function compile ($env){
 
-		$strictMathBypass = false;
 		$name = $this->name;
 		if( is_array($name) ){
 			// expand 'primitive' name directly to get
