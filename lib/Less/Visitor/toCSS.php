@@ -28,7 +28,10 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 		return $ruleNode;
 	}
 
-	function visitMixinDefinition(){
+	function visitMixinDefinition($mixinNode){
+		// mixin definitions do not get eval'd - this means they keep state
+		// so we have to clear that state here so it isn't used if toCSS is called twice
+		$mixinNode->frames = array();
 		return array();
 	}
 
