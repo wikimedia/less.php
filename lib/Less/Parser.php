@@ -261,7 +261,7 @@ class Less_Parser{
 		}else{
 			$file_uri = self::WinPath($file_uri);
 			$filename = basename($file_uri);
-			$uri_root = dirname($fiel_uri);
+			$uri_root = dirname($uri_root);
 		}
 
 		$previousFileInfo = $this->env->currentFileInfo;
@@ -2082,7 +2082,7 @@ class Less_Parser{
 	private function parseCondition() {
 		$index = $this->pos;
 		$negate = false;
-
+		$c = null;
 
 		if ($this->MatchReg('/\\Gnot/')) $negate = true;
 		$this->expectChar('(');
