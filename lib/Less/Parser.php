@@ -448,43 +448,31 @@ class Less_Parser{
 	 */
 	private function GetRules( $file_path ){
 
-		$cache_file = false;
-		if( $file_path ){
-			if( Less_Parser::$options['cache_method'] ){
-				$cache_file = $this->CacheFile( $file_path );
+		$this->SetInput($file_path);
 
-				if( $cache_file && file_exists($cache_file) ){
-					switch(Less_Parser::$options['cache_method']){
+		$cache_file = $this->CacheFile( $file_path );
+		if( $cache_file && file_exists($cache_file) ){
+			switch(Less_Parser::$options['cache_method']){
 
-						// Using serialize
-						// Faster but uses more memory
-						case 'serialize':
-							$cache = unserialize(file_get_contents($cache_file));
-							if( $cache ){
-								touch($cache_file);
-								return $cache;
-							}
-						break;
-
-
-						// Using generated php code
-						case 'var_export':
-						case 'php':
-						return include($cache_file);
+				// Using serialize
+				// Faster but uses more memory
+				case 'serialize':
+					$cache = unserialize(file_get_contents($cache_file));
+					if( $cache ){
+						touch($cache_file);
+						$this->UnsetInput();
+						return $cache;
 					}
-				}
+				break;
+
+
+				// Using generated php code
+				case 'var_export':
+				case 'php':
+				$this->UnsetInput();
+				return include($cache_file);
 			}
-
-			$this->input = file_get_contents( $file_path );
 		}
-
-		$this->pos = $this->farthest = 0;
-
-		// Remove potential UTF Byte Order Mark
-		$this->input = preg_replace('/\\G\xEF\xBB\xBF/', '', $this->input);
-		$this->input_len = strlen($this->input);
-
-		$this->setFileContent();
 
 		$rules = $this->parsePrimary();
 
@@ -492,8 +480,7 @@ class Less_Parser{
 			throw new Less_Exception_Chunk($this->input, null, $this->farthest, $this->env->currentFileInfo);
 		}
 
-		// free up a little memory
-		unset($this->input, $this->pos);
+		$this->UnsetInput();
 
 
 		//save the cache
@@ -520,9 +507,43 @@ class Less_Parser{
 	}
 
 
+	/**
+	 * Set up the input buffer
+	 *
+	 */
+	public function SetInput( $file_path ){
+
+		if( $file_path ){
+			$this->input = file_get_contents( $file_path );
+		}
+
+		$this->pos = $this->farthest = 0;
+
+		// Remove potential UTF Byte Order Mark
+		$this->input = preg_replace('/\\G\xEF\xBB\xBF/', '', $this->input);
+		$this->input_len = strlen($this->input);
+
+
+		if( Less_Parser::$options['sourceMap'] && $this->env->currentFileInfo ){
+			$uri = $this->env->currentFileInfo['currentUri'];
+			Less_Parser::$contentsMap[$uri] = $this->input;
+		}
+
+	}
+
+
+	/**
+	 * Free up some memory
+	 *
+	 */
+	public function UnsetInput(){
+		unset($this->input, $this->pos, $this->input_len, $this->memo, $this->farthest);
+	}
+
+
 	public function CacheFile( $file_path ){
 
-		if( $file_path && Less_Cache::$cache_dir ){
+		if( $file_path && Less_Parser::$options['cache_method'] && Less_Cache::$cache_dir ){
 
 			$env = get_object_vars($this->env);
 			unset($env['frames']);
@@ -2394,21 +2415,6 @@ class Less_Parser{
 
 	public function Error($msg){
 		throw new Less_Exception_Parser($msg, null, $this->farthest, $this->env->currentFileInfo);
-	}
-
-
-
-	/**
-	 * Sets file contents to the map
-	 *
-	 * @param string $filePath
-	 */
-	public function setFileContent(){
-
-		if( Less_Parser::$options['sourceMap'] && $this->env->currentFileInfo ){
-			$uri = $this->env->currentFileInfo['currentUri'];
-			Less_Parser::$contentsMap[$uri] = $this->input;
-		}
 	}
 
 	public static function WinPath($path){
