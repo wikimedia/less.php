@@ -10,6 +10,7 @@ This is a PHP port of the official LESS processor <http://lesscss.org>. [![Build
 * [Source Maps](#source-maps)
 * [Command Line](#command-line)
 * [Integration with other projects](#integration-with-other-projects)
+* [Transitioning from Leafo/lessphp](#transitioning-from-leafolessphp)
 * [Credits](#credits)
 
 
@@ -250,7 +251,7 @@ This library can be used as drop-in replacement of lessphp to work with [Drupal 
 
 How to install:
 
-1. [Download the source code for the latest release](https://github.com/oyejorge/less.php/releases) and unpack it so that 'lessc.inc.php' is located at 'sites/all/libraries/lessphp/lessc.inc.php'.
+1. [Download the less.php source code](https://github.com/oyejorge/less.php/archive/master.zip) and unzip it so that 'lessc.inc.php' is located at 'sites/all/libraries/lessphp/lessc.inc.php'.
 2. Download and install [Drupal 7 less module](https://drupal.org/project/less) as usual.
 3. That's it :)
 
@@ -285,8 +286,11 @@ How to install:
 2. That's it :)
 
 
+Transitioning from Leafo/lessphp
+---
+Projects looking for an easy transition from leafo/lessphp can use the lessc.inc.php adapter. To use, [Download the less.php source code](https://github.com/oyejorge/less.php/archive/master.zip) and unzip the files into your project so that the new 'lessc.inc.php' replaces the existing 'lessc.inc.php'.
 
-
+Note, the 'setPreserveComments', 'registerFunction' and 'unregisterFunction' will no longer have any effect on the compiled less.
 
 Credits
 ---
