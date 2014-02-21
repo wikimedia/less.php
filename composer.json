@@ -24,5 +24,8 @@
 	"autoload": {
 		"psr-0": { "Less": "lib/" },
 		"classmap": ["lessc.inc.php"]
-	}
+	},
+	"bin": [
+		"bin/lessc"
+	]
 }
