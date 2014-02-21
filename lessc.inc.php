@@ -57,9 +57,10 @@ class lessc{
 		unset( $this->registeredVars[$name] );
 	}
 
-	public function parse($buffer){
+	public function parse($buffer, $presets = array()){
 		$options = array();
-
+		$this->setVariables($presets);
+		
 		switch($this->formatterName){
 			case 'compressed':
 				$options['compress'] = true;
