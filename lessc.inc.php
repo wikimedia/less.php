@@ -69,6 +69,7 @@ class lessc{
 
 		$parser = new Less_Parser($options);
 		$parser->setImportDirs($this->getImportDirs());
+		if( count( $this->registeredVars ) ) $parser->ModifyVars( $this->registeredVars );
 		$parser->parse($buffer);
 
 		return $parser->getCss();
