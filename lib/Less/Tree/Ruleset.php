@@ -203,7 +203,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 
 		// Evaluate imports
-		if( $ruleset->root || $ruleset->allowImports ){ //|| !$ruleset->strictImports
+		if( $ruleset->root || $ruleset->allowImports || !$ruleset->strictImports ){
 			$ruleset->evalImports($env);
 		}
 
