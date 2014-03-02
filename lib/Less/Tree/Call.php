@@ -51,6 +51,10 @@ class Less_Tree_Call extends Less_Tree{
 			$nameLC = '_percent';
 			break;
 
+			case 'get-unit':
+			$nameLC = 'getunit';
+			break;
+
 			case 'data-uri':
 			$nameLC = 'datauri';
 			break;
