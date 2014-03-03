@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * DetachedRuleset
+ *
+ * @package Less
+ * @subpackage tree
+ */
 class Less_Tree_DetachedRuleset extends Less_Tree{
 
 	public $ruleset;
