@@ -94,7 +94,7 @@ class Less_Exception_Chunk extends Less_Exception_Parser{
 						return $this->fail("missing opening `{`");
 
 					}
-					//if (!$level) { $this->emitChunk(); }
+					//if (!$level && !$parenLevel) { $this->emitChunk(); }
 					continue;
 				// \
 				case 92:
