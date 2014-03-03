@@ -88,6 +88,7 @@ class Less_Tree_Media extends Less_Tree{
 	}
 
 	public function markReferenced(){
+		$this->rules[0]->markReferenced();
 		$this->isReferenced = true;
 		Less_Tree::ReferencedArray($this->rules[0]->rules);
 	}
@@ -169,6 +170,9 @@ class Less_Tree_Media extends Less_Tree{
 	}
 
 	function bubbleSelectors($selectors) {
+
+		if( !$selectors) return;
+
 		$this->rules = array(new Less_Tree_Ruleset( $selectors, array($this->rules[0])));
 	}
 
