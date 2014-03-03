@@ -244,6 +244,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 			}
 		}
 
+
 		foreach($groups as $parts){
 
 			if( count($parts) > 1 ){
@@ -257,6 +258,47 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 				$rule->value = new Less_Tree_Value( $values );
 			}
 		}
+
+		foreach($groups as $parts){
+
+			if( count($parts) > 1 ){
+				$rule = $parts[0];
+				$spacedGroups = array();
+				$lastSpacedGroup = array();
+				$parts_mapped = array();
+				foreach($parts as $p){
+					if( $p->merge === '+' ){
+						if( $lastSpacedGroup ){
+							$spacedGroups[] = self::toExpression($lastSpacedGroup);
+						}
+						$lastSpacedGroup = array();
+					}
+					$lastSpacedGroup[] = $p;
+				}
+
+				$spacedGroups[] = self::toExpression($lastSpacedGroup);
+				$rule->value = self::toValue($spacedGroups);
+			}
+		}
+
+	}
+
+	static function toExpression($values){
+		$mapped = array();
+		foreach($values as $p){
+			$mapped[] = $p->value;
+		}
+		return new Less_Tree_Expression( $mapped );
+	}
+
+	static function toValue($values){
+		//return new Less_Tree_Value($values); ??
+
+		$mapped = array();
+		foreach($values as $p){
+			$mapped[] = $p;
+		}
+		return new Less_Tree_Value($mapped);
 	}
 }
 

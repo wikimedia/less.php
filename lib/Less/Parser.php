@@ -684,8 +684,8 @@ class Less_Parser{
 	 * @param string $tok
 	 */
 	public function PeekChar($tok){
-		return ($this->input[$this->pos] === $tok );
-		//return ($this->pos < $this->input_len) && ($this->input[$this->pos] === $tok );
+		//return ($this->input[$this->pos] === $tok );
+		return ($this->pos < $this->input_len) && ($this->input[$this->pos] === $tok );
 	}
 
 
@@ -1982,8 +1982,12 @@ class Less_Parser{
 			return;
 		}
 
+		$rules = null;
 		$index = $this->pos;
 		$hasBlock = true;
+		$hasIdentifier = false;
+		$hasExpression = false;
+		$hasUnknown = false;
 
 
 		$value = $this->MatchFuncs(array('parseImport','parseMedia'));
