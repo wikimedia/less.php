@@ -13,14 +13,14 @@ class Less_Exception_Parser extends Exception{
 	 *
 	 * @var Less_ImportedFile
 	 */
-	protected $currentFile;
+	public $currentFile;
 
 	/**
 	 * The current parser index
 	 *
 	 * @var integer
 	 */
-	protected $index;
+	public $index;
 
 	protected $input;
 
