@@ -1817,7 +1817,7 @@ class Less_Parser{
 
 			if( $value && $this->parseEnd() ){
 				$this->forget();
-				return $this->NewObj6('Less_Tree_Rule',array( $name, $value, $important, $merge, $startOfRule, $this->env->currentFileInfo));
+				return $this->NewObj6('Less_Tree_Rule',array( $name, $value, $important[0], $merge, $startOfRule, $this->env->currentFileInfo));
 			}else{
 				$this->restore();
 				if( $value && !$tryAnonymous ){

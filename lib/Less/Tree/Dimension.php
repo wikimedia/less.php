@@ -122,8 +122,16 @@ class Less_Tree_Dimension extends Less_Tree{
 	public function compare($other) {
 		if ($other instanceof Less_Tree_Dimension) {
 
-			$a = $this->unify();
-			$b = $other->unify();
+			if( $this->unit->isEmpty() || $other->unit->isEmpty() ){
+				$a = $this;
+				$b = $other;
+			} else {
+				$a = $this->unify();
+				$b = $other->unify();
+				if( $a->unit->compare($b->unit) !== 0 ){
+					return -1;
+				}
+			}
 			$aValue = $a->value;
 			$bValue = $b->value;
 
@@ -132,9 +140,6 @@ class Less_Tree_Dimension extends Less_Tree{
 			} elseif ($bValue < $aValue) {
 				return 1;
 			} else {
-				if( !$b->unit->isEmpty() && $a->unit->compare($b->unit) !== 0) {
-					return -1;
-				}
 				return 0;
 			}
 		} else {
@@ -143,7 +148,7 @@ class Less_Tree_Dimension extends Less_Tree{
 	}
 
 	function unify() {
-		return $this->convertTo(array('length'=> 'm', 'duration'=> 's', 'angle' => 'rad' ));
+		return $this->convertTo(array('length'=> 'px', 'duration'=> 's', 'angle' => 'rad' ));
 	}
 
     function convertTo($conversions) {
