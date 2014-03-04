@@ -55,6 +55,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 		$frame = new Less_Tree_Ruleset(null, array());
 		$params = $this->params;
 		$mixinEnv = null;
+		$argsLength = 0;
 
 		if( $args ){
 			$argsLength = count($args);
