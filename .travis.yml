@@ -5,6 +5,3 @@ php:
   - "5.3"
   - "5.2"
   - hhvm
-branches:
-  only:
-    - master
