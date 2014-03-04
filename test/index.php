@@ -799,7 +799,11 @@ function func_trace($len = 1){
 	$debug = debug_backtrace();
 	array_shift($debug);
 	for($i = 0; $i < $len; $i++ ){
-		$trace = $debug[$i]['file'].' @'.$debug[$i]['line'];
+		if( isset($debug[$i]['file']) ){
+			$trace = $debug[$i]['file'].' @'.$debug[$i]['line'];
+		}else{
+			$trace = $debug[$i]['class'].'::'.$debug[$i]['function'];
+		}
 		if( !in_array($trace, $traces) ){
 			msg($trace);
 			$traces[] = $trace;

@@ -5187,7 +5187,7 @@ tree.Ruleset.prototype = {
 
         if (!hasOnePassingSelector) {
             rules.length = 0;
-        }
+		}
 
         // push the current ruleset to the frames stack
         var envFrames = env.frames;
