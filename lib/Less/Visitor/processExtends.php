@@ -265,6 +265,10 @@ class Less_Visitor_processExtends extends Less_Visitor{
 		$first_el = $extend->selector->_oelements[0];
 
 		foreach($haystackSelectorPath as $hackstackSelector){
+			if( !$hackstackSelector->cacheable ){
+				return true;
+			}
+
 			if( in_array($first_el, $hackstackSelector->_oelements) ){
 				return true;
 			}
