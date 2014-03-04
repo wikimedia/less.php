@@ -566,11 +566,10 @@ class Less_Functions{
 
 			if( isset($values['']) && $unit !== '' && $unit === $unitStatic ){
 				$j = $values[''];
-			}else{
+			}elseif( isset($values[$unit]) ){
 				$j = $values[$unit];
-			}
+			}else{
 
-			if( is_null($j) ){
 				if( $unitStatic && $unit !== $unitStatic ){
 					throw new Less_Exception_Compiler( 'incompatible types');
 				}
