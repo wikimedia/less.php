@@ -684,8 +684,9 @@ class ParserTest{
  * Output an object in a readable format for comparison with similar output from javascript
  *
  */
-function obj($mixed){
-	static $objects = array();
+function obj($mixed, $objects = array() ){
+	$objects_before = $objects;
+
 	global $obj_buffer;
 	if( empty($obj_buffer) ){
 		$obj_buffer = "----make sure caching is turned off----\n";
@@ -696,7 +697,7 @@ function obj($mixed){
 
 
 	$exclude_keys = array('originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','cache_string','elements_len',
-					'_oelements','first_oelements','_oelements_len','cacheable');
+					'_oelements','first_oelements','_oelements_len','cacheable', ); //'variable','combinator'
 	//$exclude_keys = array();
 
 	$type = gettype($mixed);
@@ -736,7 +737,7 @@ function obj($mixed){
 			ksort($mixed);
 			foreach($mixed as $key => $value){
 				$level++;
-				$output .= str_repeat('    ',$level) . '[' . $key . '] => ' . obj($value) . "\n";
+				$output .= str_repeat('    ',$level) . '[' . $key . '] => ' . obj($value, $objects ) . "\n";
 				$level--;
 			}
 			$output .= str_repeat('    ',$level).')';
@@ -766,6 +767,8 @@ function obj($mixed){
 		$objects = array();
 		$obj_buffer .= $output . "\n------------------------------------------------------------\n";
 	}
+
+	$objects = $objects_before;
 	return $output;
 }
 
