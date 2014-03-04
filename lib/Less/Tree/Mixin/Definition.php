@@ -15,7 +15,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 
 
 	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition
-	public function __construct($name, $params, $rules, $condition, $variadic = false){
+	public function __construct($name, $params, $rules, $condition, $variadic = false, $frames = null ){
 		$this->name = $name;
 		$this->selectors = array(new Less_Tree_Selector(array( new Less_Tree_Element(null, $name))));
 
@@ -33,6 +33,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 			}
 		}
 
+		$this->frames = $frames;
 		$this->SetRulesetIndex();
 	}
 
@@ -54,29 +55,32 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 		$frame = new Less_Tree_Ruleset(null, array());
 		$params = $this->params;
 		$mixinEnv = null;
+		$argsLength = 0;
 
-		$args_len = count($args);
-		for($i = 0; $i < $args_len; $i++ ){
-			$arg = $args[$i];
+		if( $args ){
+			$argsLength = count($args);
+			for($i = 0; $i < $argsLength; $i++ ){
+				$arg = $args[$i];
 
-			if( $arg && $arg['name'] ){
-				$isNamedFound = false;
+				if( $arg && $arg['name'] ){
+					$isNamedFound = false;
 
-				foreach($params as $j => $param){
-					if( !isset($evaldArguments[$j]) && $arg['name'] === $params[$j]['name']) {
-						$evaldArguments[$j] = $arg['value']->compile($env);
-						array_unshift($frame->rules, new Less_Tree_Rule( $arg['name'], $arg['value']->compile($env) ) );
-						$isNamedFound = true;
-						break;
+					foreach($params as $j => $param){
+						if( !isset($evaldArguments[$j]) && $arg['name'] === $params[$j]['name']) {
+							$evaldArguments[$j] = $arg['value']->compile($env);
+							array_unshift($frame->rules, new Less_Tree_Rule( $arg['name'], $arg['value']->compile($env) ) );
+							$isNamedFound = true;
+							break;
+						}
 					}
-				}
-				if ($isNamedFound) {
-					array_splice($args, $i, 1);
-					$i--;
-					$args_len--;
-					continue;
-				} else {
-					throw new Less_Exception_Compiler("Named argument for " . $this->name .' '.$args[$i]['name'] . ' not found');
+					if ($isNamedFound) {
+						array_splice($args, $i, 1);
+						$i--;
+						$argsLength--;
+						continue;
+					} else {
+						throw new Less_Exception_Compiler("Named argument for " . $this->name .' '.$args[$i]['name'] . ' not found');
+					}
 				}
 			}
 		}
@@ -93,9 +97,9 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 
 			if (isset($param['name']) && $param['name']) {
 
-				if( isset($param['variadic']) && $args ){
+				if( isset($param['variadic']) ){
 					$varargs = array();
-					for ($j = $argIndex; $j < $args_len; $j++) {
+					for ($j = $argIndex; $j < $argsLength; $j++) {
 						$varargs[] = $args[$j]['value']->compile($env);
 					}
 					$expression = new Less_Tree_Expression($varargs);
@@ -115,7 +119,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 						$val = $param['value']->compile($mixinEnv);
 						$frame->resetCache();
 					} else {
-						throw new Less_Exception_Compiler("Wrong number of arguments for " . $this->name . " (" . count($args) . ' for ' . $this->arity . ")");
+						throw new Less_Exception_Compiler("Wrong number of arguments for " . $this->name . " (" . $argsLength . ' for ' . $this->arity . ")");
 					}
 
 					array_unshift($frame->rules, new Less_Tree_Rule($param['name'], $val));
@@ -124,7 +128,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 			}
 
 			if ( isset($param['variadic']) && $args) {
-				for ($j = $argIndex; $j < $args_len; $j++) {
+				for ($j = $argIndex; $j < $argsLength; $j++) {
 					$evaldArguments[$j] = $args[$j]['value']->compile($env);
 				}
 			}
@@ -137,14 +141,25 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 		return $frame;
 	}
 
-	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.eval
-	public function compile($env, $args = NULL, $important = NULL) {
+	public function compile($env) {
+		if( $this->frames ){
+			return new Less_Tree_Mixin_Definition($this->name, $this->params, $this->rules, $this->condition, $this->variadic, $this->frames );
+		}
+		return new Less_Tree_Mixin_Definition($this->name, $this->params, $this->rules, $this->condition, $this->variadic, $env->frames );
+	}
+
+	public function evalCall($env, $args = NULL, $important = NULL) {
 
 		Less_Environment::$mixin_stack++;
 
 		$_arguments = array();
 
-		$mixinFrames = array_merge($this->frames, $env->frames);
+		if( $this->frames ){
+			$mixinFrames = array_merge($this->frames, $env->frames);
+		}else{
+			$mixinFrames = $env->frames;
+		}
+
 		$frame = $this->compileParams($env, $mixinFrames, $args, $_arguments);
 
 		$ex = new Less_Tree_Expression($_arguments);

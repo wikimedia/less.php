@@ -72,10 +72,10 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 		// Store the frames around mixin definitions,
 		// so they can be evaluated like closures when the time comes.
-		$ruleset_len = count($ruleset->rules);
-		for( $i = 0; $i < $ruleset_len; $i++ ){
-			if( $ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition ){
-				$ruleset->rules[$i]->frames = $env->frames;
+		$rsRuleCnt = count($ruleset->rules);
+		for( $i = 0; $i < $rsRuleCnt; $i++ ){
+			if( $ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition || $ruleset->rules[$i] instanceof Less_Tree_DetachedRuleset ){
+				$ruleset->rules[$i] = $ruleset->rules[$i]->compile($env);
 			}
 		}
 
@@ -85,44 +85,39 @@ class Less_Tree_Ruleset extends Less_Tree{
 		}
 
 		// Evaluate mixin calls.
-		$this->EvalMixinCalls( $ruleset, $env, $ruleset_len );
+		$this->EvalMixinCalls( $ruleset, $env, $rsRuleCnt );
 
 
 		// Evaluate everything else
-		for( $i=0; $i<$ruleset_len; $i++ ){
-			if(! ($ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition) ){
+		for( $i=0; $i<$rsRuleCnt; $i++ ){
+			if(! ($ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition || $ruleset->rules[$i] instanceof Less_Tree_DetachedRuleset) ){
 				$ruleset->rules[$i] = $ruleset->rules[$i]->compile($env);
 			}
 		}
 
-		for( $i=0; $i<$ruleset_len; $i++ ){
+        // Evaluate everything else
+		for( $i=0; $i<$rsRuleCnt; $i++ ){
 			$rule = $ruleset->rules[$i];
-			if (! ($rule instanceof Less_Tree_Mixin_Definition)) {
-				$ruleset->rules[$i] = $rule = $ruleset->rules[$i]->compile($env);
 
-				// for rulesets, check if it is a css guard and can be removed
-				if( $rule instanceof Less_Tree_Ruleset && $rule->selectors && count($rule->selectors) === 1 ){
-					// check if it can be folded in (e.g. & where)
-					if( $rule->selectors[0]->isJustParentSelector() ){
-						array_splice($ruleset->rules,$i--,1);
-						$ruleset_len--;
+            // for rulesets, check if it is a css guard and can be removed
+			if( $rule instanceof Less_Tree_Ruleset && $rule->selectors && count($rule->selectors) === 1 ){
 
+                // check if it can be folded in (e.g. & where)
+				if( $rule->selectors[0]->isJustParentSelector() ){
+					array_splice($ruleset->rules,$i--,1);
+					$rsRuleCnt--;
 
-						// cannot call if there is no selector, so we can just continue
-						if( !$rule->selectors[0]->evaldCondition ){
-							continue;
-						}
-						for($j = 0; $j < count($rule->rules); $j++ ){
-							$subRule = $rule->rules[$j];
-							if( !($subRule instanceof Less_Tree_Rule) || !$subRule->variable ){
-								array_splice($ruleset->rules, ++$i, 0, array($subRule));
-								$ruleset_len++;
-							}
+					for($j = 0; $j < count($rule->rules); $j++ ){
+						$subRule = $rule->rules[$j];
+						if( !($subRule instanceof Less_Tree_Rule) || !$subRule->variable ){
+							array_splice($ruleset->rules, ++$i, 0, array($subRule));
+							$rsRuleCnt++;
 						}
 					}
-				}
-			}
-		}
+
+                }
+            }
+        }
 
 
 		// Pop the stack
@@ -142,11 +137,12 @@ class Less_Tree_Ruleset extends Less_Tree{
 	 * Compile Less_Tree_Mixin_Call objects
 	 *
 	 * @param Less_Tree_Ruleset $ruleset
-	 * @param integer $ruleset_len
+	 * @param integer $rsRuleCnt
 	 */
-	private function EvalMixinCalls( $ruleset, $env, &$ruleset_len ){
-		for($i=0; $i < $ruleset_len; $i++){
+	private function EvalMixinCalls( $ruleset, $env, &$rsRuleCnt ){
+		for($i=0; $i < $rsRuleCnt; $i++){
 			$rule = $ruleset->rules[$i];
+
 			if( $rule instanceof Less_Tree_Mixin_Call ){
 				$rule = $rule->compile($env);
 
@@ -165,10 +161,28 @@ class Less_Tree_Ruleset extends Less_Tree{
 				}
 				$temp_count = count($temp)-1;
 				array_splice($ruleset->rules, $i, 1, $temp);
-				$ruleset_len += $temp_count;
+				$rsRuleCnt += $temp_count;
 				$i += $temp_count;
 				$ruleset->resetCache();
+
+			}elseif( $rule instanceof Less_Tree_RulesetCall ){
+
+				$rule = $rule->compile($env);
+				$rules = array();
+				foreach($rule->rules as $r){
+					if( ($r instanceof Less_Tree_Rule) && $r->variable ){
+						continue;
+					}
+					$rules[] = $r;
+				}
+
+				array_splice($ruleset->rules, $i, 1, $rules);
+				$temp_count = count($rules);
+				$rsRuleCnt += $temp_count - 1;
+				$i += $temp_count-1;
+				$ruleset->resetCache();
 			}
+
 		}
 	}
 
@@ -179,24 +193,38 @@ class Less_Tree_Ruleset extends Less_Tree{
 	 */
 	private function PrepareRuleset($env){
 
+		$hasOnePassingSelector = false;
 		$selectors = array();
 		if( $this->selectors ){
 			Less_Tree_DefaultFunc::error("it is currently only allowed in parametric mixin guards,");
 
 			foreach($this->selectors as $s){
-				$selectors[] = $s->compile($env);
+				$selector = $s->compile($env);
+				$selectors[] = $selector;
+				if( $selector->evaldCondition ){
+					$hasOnePassingSelector = true;
+				}
 			}
 
 			Less_Tree_DefaultFunc::reset();
+		} else {
+			$hasOnePassingSelector = true;
 		}
 
-		$ruleset = new Less_Tree_Ruleset($selectors, $this->rules, $this->strictImports);
+		if( $this->rules && $hasOnePassingSelector ){
+			$rules = $this->rules;
+		}else{
+			$rules = array();
+		}
+
+		$ruleset = new Less_Tree_Ruleset($selectors, $rules, $this->strictImports);
 
 		$ruleset->originalRuleset = $this->ruleset_id;
 
 		$ruleset->root = $this->root;
 		$ruleset->firstRoot = $this->firstRoot;
 		$ruleset->allowImports = $this->allowImports;
+
 
 		// push the current ruleset to the frames stack
 		$env->unshiftFrame($ruleset);
@@ -435,7 +463,9 @@ class Less_Tree_Ruleset extends Less_Tree{
 
 
 	function markReferenced(){
-
+		if( !$this->selectors ){
+			return;
+		}
 		foreach($this->selectors as $selector){
 			$selector->markReferenced();
 		}

@@ -45,6 +45,11 @@ class Less_Tree_Unit extends Less_Tree{
 		return $returnStr;
 	}
 
+	function __toString(){
+		return $this->toString();
+	}
+
+
 	/**
 	 * @param Less_Tree_Unit $other
 	 */

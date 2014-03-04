@@ -77,7 +77,7 @@ function obj(mixed){
 
 
 
-	var exclude_keys = ['originalRuleset','currentFileInfo','_lookups','index'];
+	var exclude_keys = ['originalRuleset','currentFileInfo','_lookups','index'];//'variable','combinator'
 
 	if( mixed == null ){
 		output = '(NULL)';

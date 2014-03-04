@@ -20,7 +20,9 @@ class Less_Tree_Quoted extends Less_Tree{
 	public function __construct($str, $content = '', $escaped = false, $index = false, $currentFileInfo = null ){
 		$this->escaped = $escaped;
 		$this->value = $content;
-		$this->quote = $str[0];
+		if( $str ){
+			$this->quote = $str[0];
+		}
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 	}

@@ -124,7 +124,7 @@ class Less_Tree_Mixin_Call extends Less_Tree{
 							$mixin = new Less_Tree_Mixin_Definition('', array(), $mixin->rules, null, false);
 							$mixin->originalRuleset = $mixins[$m]->originalRuleset;
 						}
-						$rules = array_merge($rules, $mixin->compile($env, $args, $this->important)->rules);
+						$rules = array_merge($rules, $mixin->evalCall($env, $args, $this->important)->rules);
 					} catch (Exception $e) {
 						//throw new Less_Exception_Compiler($e->getMessage(), $e->index, null, $this->currentFileInfo['filename']);
 						throw new Less_Exception_Compiler($e->getMessage(), null, null, $this->currentFileInfo);

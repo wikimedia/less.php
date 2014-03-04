@@ -23,7 +23,7 @@ class Less_Tree_Rule extends Less_Tree{
 	 */
 	public function __construct($name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null,  $inline = false){
 		$this->name = $name;
-		$this->value = ($value instanceof Less_Tree_Value) ? $value : new Less_Tree_Value(array($value));
+		$this->value = ($value instanceof Less_Tree_Value || $value instanceof Less_Tree_Ruleset) ? $value : new Less_Tree_Value(array($value));
 		$this->important = $important ? ' ' . trim($important) : '';
 		$this->merge = $merge;
 		$this->index = $index;
@@ -45,9 +45,9 @@ class Less_Tree_Rule extends Less_Tree{
 		try{
 			$this->value->genCSS( $output);
 
-		}catch( Exception $e ){
+		}catch( Less_Exception_Parser $e ){
 			$e->index = $this->index;
-			$e->filename = $this->currentFileInfo['filename'];
+			$e->currentFile = $this->currentFileInfo;
 			throw $e;
 		}
 		$output->add( $this->important . (($this->inline || (Less_Environment::$lastRule && Less_Parser::$options['compress'])) ? "" : ";"), $this->currentFileInfo, $this->index);
@@ -71,19 +71,34 @@ class Less_Tree_Rule extends Less_Tree{
 			Less_Parser::$options['strictMath'] = true;
 		}
 
-		// missing try ... catch
-		if( Less_Environment::$mixin_stack ){
-			$return = new Less_Tree_Rule($name, $this->value->compile($env), $this->important, $this->merge, $this->index, $this->currentFileInfo, $this->inline);
-		}else{
-			$this->name = $name;
-			$this->value = $this->value->compile($env);
-			$return = $this;
+		try {
+			$evaldValue = $this->value->compile($env);
+
+			if( !$this->variable && $evaldValue->type === "DetachedRuleset") {
+				throw new Less_Exception_Compiler("Rulesets cannot be evaluated on a property.", null, $this->index, $this->currentFileInfo);
+			}
+
+			if( Less_Environment::$mixin_stack ){
+				$return = new Less_Tree_Rule($name, $evaldValue, $this->important, $this->merge, $this->index, $this->currentFileInfo, $this->inline);
+			}else{
+				$this->name = $name;
+				$this->value = $evaldValue;
+				$return = $this;
+			}
+
+		}catch( Less_Exception_Parser $e ){
+			if( !is_numeric($e->index) ){
+				$e->index = $this->index;
+				$e->currentFile = $this->currentFileInfo;
+			}
+			throw $e;
 		}
 
 		Less_Parser::$options['strictMath'] = $strictMathBypass;
 
 		return $return;
 	}
+
 
 	function CompileName( $env, $name ){
 		$output = new Less_Output();

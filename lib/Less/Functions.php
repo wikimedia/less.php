@@ -192,6 +192,15 @@ class Less_Functions{
 		return new Less_Tree_Dimension(Less_Parser::round( $color->luma() * $color->alpha * 100), '%');
 	}
 
+	public function luminance( $color ){
+		$luminance =
+			(0.2126 * $color->rgb[0] / 255)
+		  + (0.7152 * $color->rgb[1] / 255)
+		  + (0.0722 * $color->rgb[2] / 255);
+
+		return new Less_Tree_Dimension(Less_Parser::round( $luminance * $color->alpha * 100), '%');
+	}
+
 	public function saturate($color, $amount = null){
 		// filter: saturate(3.2);
 		// should be kept as is, so check for color
@@ -357,32 +366,82 @@ class Less_Functions{
 	}
 
 
+	/**
+	 * todo: This function will need some additional work to make it work the same as less.js
+	 *
+	 */
+	public function replace( $string, $pattern, $replacement, $flags = null ){
+		$result = $string->value;
+
+		$expr = '/'.str_replace('/','\\/',$pattern->value).'/';
+		if( $flags && $flags->value){
+			$expr .= self::replace_flags($flags->value);
+		}
+
+		$result = preg_replace($expr,$replacement->value,$result);
+
+
+		if( property_exists($string,'quote') ){
+			return new Less_Tree_Quoted( $string->quote, $result, $string->escaped);
+		}
+		return new Less_Tree_Quoted( '', $result );
+	}
+
+	public static function replace_flags($flags){
+		$flags = str_split($flags,1);
+		$new_flags = '';
+
+		foreach($flags as $flag){
+			switch($flag){
+				case 'e':
+				case 'g':
+				break;
+
+				default:
+				$new_flags .= $flag;
+				break;
+			}
+		}
+
+		return $new_flags;
+	}
+
 	public function _percent(){
-		$quoted = func_get_arg(0);
+		$string = func_get_arg(0);
 
 		$args = func_get_args();
 		array_shift($args);
-		$str = $quoted->value;
+		$result = $string->value;
 
 		foreach($args as $arg){
-			if( preg_match('/%[sda]/i',$str, $token) ){
+			if( preg_match('/%[sda]/i',$result, $token) ){
 				$token = $token[0];
 				$value = stristr($token, 's') ? $arg->value : $arg->toCSS();
 				$value = preg_match('/[A-Z]$/', $token) ? urlencode($value) : $value;
-				$str = preg_replace('/%[sda]/i',$value, $str, 1);
+				$result = preg_replace('/%[sda]/i',$value, $result, 1);
 			}
 		}
-		$str = str_replace('%%', '%', $str);
+		$result = str_replace('%%', '%', $result);
 
-		return new Less_Tree_Quoted('"' . $str . '"', $str);
+		return new Less_Tree_Quoted( $string->quote , $result, $string->escaped);
 	}
 
-	public function unit($val, $unit = null ){
+    public function unit( $val, $unit = null) {
 		if( !($val instanceof Less_Tree_Dimension) ){
 			throw new Less_Exception_Compiler('The first argument to unit must be a number' . ($val instanceof Less_Tree_Operation ? '. Have you forgotten parenthesis?' : '.') );
 		}
-		return new Less_Tree_Dimension($val->value, $unit ? $unit->toCSS() : "");
-	}
+
+		if( $unit ){
+			if( $unit instanceof Less_Tree_Keyword ){
+				$unit = $unit->value;
+			} else {
+				$unit = $unit->toCSS();
+			}
+		} else {
+			$unit = "";
+		}
+		return new Less_Tree_Dimension($val->value, $unit );
+    }
 
 	public function convert($val, $unit){
 		return $val->convertTo($unit->value);
@@ -463,49 +522,82 @@ class Less_Functions{
 
 		if( $arg_count < 1 ){
 			throw new Less_Exception_Compiler( 'one or more arguments required');
-
-		}elseif( $arg_count === 1 ){
-			return $args[0];
-
 		}
+
+		$j = null;
+		$unitClone = null;
+		$unitStatic = null;
 
 
 		$order = array();	// elems only contains original argument values.
 		$values = array();	// key is the unit.toString() for unified tree.Dimension values,
 							// value is the index into the order array.
 
+
 		for( $i = 0; $i < $arg_count; $i++ ){
 			$current = $args[$i];
 			if( !($current instanceof Less_Tree_Dimension) ){
-				$order[] = $current;
+				if( is_array($args[$i]->value) ){
+					$args[] = $args[$i]->value;
+				}
 				continue;
 			}
-			$currentUnified = $current->unify();
-			$unit = $currentUnified->unit->toString();
 
-			if( !isset($values[$unit]) ){
+			if( $current->unit->toString() === '' && !$unitClone ){
+				$temp = new Less_Tree_Dimension($current->value, $unitClone);
+				$currentUnified = $temp->unify();
+			}else{
+				$currentUnified = $current->unify();
+			}
+
+			if( $currentUnified->unit->toString() === "" && !$unitStatic ){
+				$unit = $unitStatic;
+			}else{
+				$unit = $currentUnified->unit->toString();
+			}
+
+			if( $unit !== '' && !$unitStatic || $unit !== '' && $order[0]->unify()->unit->toString() === "" ){
+				$unitStatic = $unit;
+			}
+
+			if( $unit != '' && !$unitClone ){
+				$unitClone = $current->unit->toString();
+			}
+
+			if( isset($values['']) && $unit !== '' && $unit === $unitStatic ){
+				$j = $values[''];
+			}elseif( isset($values[$unit]) ){
+				$j = $values[$unit];
+			}else{
+
+				if( $unitStatic && $unit !== $unitStatic ){
+					throw new Less_Exception_Compiler( 'incompatible types');
+				}
 				$values[$unit] = count($order);
 				$order[] = $current;
 				continue;
 			}
 
-			$j = $values[$unit];
-			$referenceUnified = $order[$j]->unify();
+
+			if( $order[$j]->unit->toString() === "" && $unitClone ){
+				$temp = new Less_Tree_Dimension( $order[$j]->value, $unitClone);
+				$referenceUnified = $temp->unifiy();
+			}else{
+				$referenceUnified = $order[$j]->unify();
+			}
 			if( ($isMin && $currentUnified->value < $referenceUnified->value) || (!$isMin && $currentUnified->value > $referenceUnified->value) ){
 				$order[$j] = $current;
 			}
 		}
+
 		if( count($order) == 1 ){
 			return $order[0];
 		}
-
-		foreach($order as $k => $a){
-			$order[$k] = $a->toCSS();
+		$args = array();
+		foreach($order as $a){
+			$args[] = $a->toCSS($this->env);
 		}
-
-		$args = implode( Less_Environment::$_outputMap[','], $order);
-
-		return new Less_Tree_Anonymous( ($isMin ? 'min' : 'max') . '(' . $args . ')');
+		return new Less_Tree_Anonymous( ($isMin?'min(':'max(') . implode(Less_Environment::$_outputMap[','],$args).')');
 	}
 
 	public function min(){
@@ -516,6 +608,10 @@ class Less_Functions{
 	public function max(){
 		$args = func_get_args();
 		return $this->_minmax( false, $args );
+	}
+
+	public function getunit($n){
+		return new Less_Tree_Anonymous($n->unit);
 	}
 
 	public function argb($color) {

@@ -26,6 +26,11 @@ class Less_Tree_Keyword extends Less_Tree{
      * @see Less_Tree::genCSS
      */
 	public function genCSS( $output ){
+
+		if( $this->value === '%') {
+			throw new Less_Exception_Compiler("Invalid % without number");
+		}
+
 		$output->add( $this->value );
 	}
 

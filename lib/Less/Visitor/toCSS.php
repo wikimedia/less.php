@@ -222,6 +222,8 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 	function _mergeRules( &$rules ){
 		$groups = array();
 
+		//obj($rules);
+
 		$rules_len = count($rules);
 		for( $i = 0; $i < $rules_len; $i++ ){
 			$rule = $rules[$i];
@@ -244,19 +246,47 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 			}
 		}
 
+
 		foreach($groups as $parts){
 
 			if( count($parts) > 1 ){
 				$rule = $parts[0];
-
-				$values = array();
+				$spacedGroups = array();
+				$lastSpacedGroup = array();
+				$parts_mapped = array();
 				foreach($parts as $p){
-					$values[] = $p->value;
+					if( $p->merge === '+' ){
+						if( $lastSpacedGroup ){
+							$spacedGroups[] = self::toExpression($lastSpacedGroup);
+						}
+						$lastSpacedGroup = array();
+					}
+					$lastSpacedGroup[] = $p;
 				}
 
-				$rule->value = new Less_Tree_Value( $values );
+				$spacedGroups[] = self::toExpression($lastSpacedGroup);
+				$rule->value = self::toValue($spacedGroups);
 			}
 		}
+
+	}
+
+	static function toExpression($values){
+		$mapped = array();
+		foreach($values as $p){
+			$mapped[] = $p->value;
+		}
+		return new Less_Tree_Expression( $mapped );
+	}
+
+	static function toValue($values){
+		//return new Less_Tree_Value($values); ??
+
+		$mapped = array();
+		foreach($values as $p){
+			$mapped[] = $p;
+		}
+		return new Less_Tree_Value($mapped);
 	}
 }
 
