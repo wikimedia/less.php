@@ -107,13 +107,6 @@ class Less_Tree_Ruleset extends Less_Tree{
 					array_splice($ruleset->rules,$i--,1);
 					$rsRuleCnt--;
 
-					// cannot call if there is no selector, so we can just continue
-					//if( !$rule->selectors[0]->evaldCondition ){
-					//	msg('this isnt in lessjs?');
-					//	continue;
-					//}
-
-
 					for($j = 0; $j < count($rule->rules); $j++ ){
 						$subRule = $rule->rules[$j];
 						if( !($subRule instanceof Less_Tree_Rule) || !$subRule->variable ){

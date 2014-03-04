@@ -2076,7 +2076,7 @@ class Less_Parser{
 
 		if( $rules || (!$hasBlock && $value && $this->MatchChar(';'))) {
 			$this->forget();
-			return $this->NewObj4('Less_Tree_Directive',array($name, $value, $rules, $index, $this->env->currentFileInfo));
+			return $this->NewObj5('Less_Tree_Directive',array($name, $value, $rules, $index, $this->env->currentFileInfo));
 		}
 
 		$this->restore();
