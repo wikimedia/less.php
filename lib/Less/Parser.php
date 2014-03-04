@@ -1315,7 +1315,7 @@ class Less_Parser{
 
 			if( $isCall ){
 				// Variable
-				if( $arg->value && count($arg->value) == 1 ){
+				if( property_exists($arg,'value') && count($arg->value) == 1 ){
 					$val = $arg->value[0];
 				}
 			} else {
@@ -1790,6 +1790,7 @@ class Less_Parser{
 				$value = $this->parseDetachedRuleset();
 			}
 
+			$important = null;
 			if( !$value ){
 
 				// prefer to try to parse first if its a variable or we are compressing
@@ -1817,7 +1818,7 @@ class Less_Parser{
 
 			if( $value && $this->parseEnd() ){
 				$this->forget();
-				return $this->NewObj6('Less_Tree_Rule',array( $name, $value, $important[0], $merge, $startOfRule, $this->env->currentFileInfo));
+				return $this->NewObj6('Less_Tree_Rule',array( $name, $value, $important, $merge, $startOfRule, $this->env->currentFileInfo));
 			}else{
 				$this->restore();
 				if( $value && !$tryAnonymous ){

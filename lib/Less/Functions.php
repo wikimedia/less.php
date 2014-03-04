@@ -380,7 +380,11 @@ class Less_Functions{
 
 		$result = preg_replace($expr,$replacement->value,$result);
 
-		return new Less_Tree_Quoted( $string->quote, $result, $string->escaped);
+
+		if( property_exists($string,'quote') ){
+			return new Less_Tree_Quoted( $string->quote, $result, $string->escaped);
+		}
+		return new Less_Tree_Quoted( '', $result );
 	}
 
 	public static function replace_flags($flags){

@@ -176,7 +176,7 @@ class Less_Tree_Ruleset extends Less_Tree{
 					$rules[] = $r;
 				}
 
-				array_splice($ruleset->rules[$i], $i, 1, $rules);
+				array_splice($ruleset->rules, $i, 1, $rules);
 				$temp_count = count($rules);
 				$rsRuleCnt += $temp_count - 1;
 				$i += $temp_count-1;

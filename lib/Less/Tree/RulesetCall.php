@@ -18,7 +18,8 @@ class Less_Tree_RulesetCall extends Less_Tree{
 	function accept($visitor) {}
 
 	function compile( $env ){
-		$detachedRuleset = new Less_Tree_Variable($this->variable)->compile($env);
+		$variable = new Less_Tree_Variable($this->variable);
+		$detachedRuleset = $variable->compile($env);
 		return $detachedRuleset->callEval($env);
 	}
 }

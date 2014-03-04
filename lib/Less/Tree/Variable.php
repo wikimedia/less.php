@@ -17,7 +17,7 @@ class Less_Tree_Variable extends Less_Tree{
     /**
      * @param string $name
      */
-    public function __construct($name, $index, $currentFileInfo = null) {
+    public function __construct($name, $index = null, $currentFileInfo = null) {
         $this->name = $name;
         $this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
