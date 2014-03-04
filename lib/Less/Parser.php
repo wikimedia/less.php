@@ -1810,7 +1810,7 @@ class Less_Parser{
 				if( !$isVariable && is_array($name) ){
 					$nm = array_pop($name);
 					if( $nm->value ){
-						$merge = true;
+						$merge = $nm->value;
 					}
 				}
 			}

@@ -222,6 +222,8 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 	function _mergeRules( &$rules ){
 		$groups = array();
 
+		//obj($rules);
+
 		$rules_len = count($rules);
 		for( $i = 0; $i < $rules_len; $i++ ){
 			$rule = $rules[$i];
@@ -244,20 +246,6 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing{
 			}
 		}
 
-
-		foreach($groups as $parts){
-
-			if( count($parts) > 1 ){
-				$rule = $parts[0];
-
-				$values = array();
-				foreach($parts as $p){
-					$values[] = $p->value;
-				}
-
-				$rule->value = new Less_Tree_Value( $values );
-			}
-		}
 
 		foreach($groups as $parts){
 
