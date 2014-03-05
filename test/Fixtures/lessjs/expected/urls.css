@@ -23,7 +23,7 @@
   background-image: url("http://fonts.googleapis.com/css?family=\"Rokkitt\":\(400\),700");
 }
 #svg-data-uri {
-  background: rgba(0, 0, 0, 0) url('data:image/svg+xml, <svg version="1.1"><g></g></svg>');
+  background: transparent url('data:image/svg+xml, <svg version="1.1"><g></g></svg>');
 }
 .comma-delimited {
   background: url(bg.jpg) no-repeat, url(bg.png) repeat-x top left, url(bg);
