@@ -44,7 +44,7 @@ class Less_Parser{
 	private $input_len;				// input string length
 	private $pos;					// current index in `input`
 	private $saveStack = array();	// holds state for backtracking
-	private $farthest;
+	private $furthest;
 
 	/**
 	 * @var Less_Environment
@@ -477,7 +477,7 @@ class Less_Parser{
 		$rules = $this->parsePrimary();
 
 		if( $this->pos < $this->input_len ){
-			throw new Less_Exception_Chunk($this->input, null, $this->farthest, $this->env->currentFileInfo);
+			throw new Less_Exception_Chunk($this->input, null, $this->furthest, $this->env->currentFileInfo);
 		}
 
 		$this->UnsetInput();
@@ -517,7 +517,7 @@ class Less_Parser{
 			$this->input = file_get_contents( $file_path );
 		}
 
-		$this->pos = $this->farthest = 0;
+		$this->pos = $this->furthest = 0;
 
 		// Remove potential UTF Byte Order Mark
 		$this->input = preg_replace('/\\G\xEF\xBB\xBF/', '', $this->input);
@@ -537,7 +537,7 @@ class Less_Parser{
 	 *
 	 */
 	public function UnsetInput(){
-		unset($this->input, $this->pos, $this->input_len, $this->farthest);
+		unset($this->input, $this->pos, $this->input_len, $this->furthest);
 		$this->saveStack = array();
 	}
 
@@ -582,7 +582,6 @@ class Less_Parser{
 	}
 
 	private function restore() {
-		$this->farthest = $this->pos;
 		$this->pos = array_pop($this->saveStack);
 	}
 
@@ -1452,7 +1451,7 @@ class Less_Parser{
 			// .mixincall(@a: {rule: set;});
 			// so we have to be nice and restore
 			if( !$this->MatchChar(')') ){
-				//furthest = i;
+				$this->furthest = $this->pos;
 				$this->restore();
 				return;
 			}
@@ -1735,6 +1734,8 @@ class Less_Parser{
 			}
 		}
 
+		// Backtrack
+		$this->furthest = $this->pos;
 		$this->restore();
 	}
 
@@ -1820,6 +1821,7 @@ class Less_Parser{
 				$this->forget();
 				return $this->NewObj6('Less_Tree_Rule',array( $name, $value, $important, $merge, $startOfRule, $this->env->currentFileInfo));
 			}else{
+				$this->furthest = $this->pos;
 				$this->restore();
 				if( $value && !$tryAnonymous ){
 					return $this->parseRule(true);
@@ -2527,7 +2529,7 @@ class Less_Parser{
 	}
 
 	public function Error($msg){
-		throw new Less_Exception_Parser($msg, null, $this->farthest, $this->env->currentFileInfo);
+		throw new Less_Exception_Parser($msg, null, $this->furthest, $this->env->currentFileInfo);
 	}
 
 	public static function WinPath($path){

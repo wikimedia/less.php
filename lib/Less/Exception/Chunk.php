@@ -30,6 +30,7 @@ class Less_Exception_Chunk extends Less_Exception_Parser{
 		$this->message = 'ParseError: Unexpected input'; //default message
 
 		$this->index = $index;
+
 		$this->currentFile = $currentFile;
 
 		$this->input = $input;
@@ -164,6 +165,10 @@ class Less_Exception_Chunk extends Less_Exception_Parser{
 		} else if ( $parenLevel !== 0 ){
 			return $this->fail("missing closing `)`", $lastParen);
 		}
+
+
+		//chunk didn't fail
+
 
 		//$this->emitChunk(true);
 	}
