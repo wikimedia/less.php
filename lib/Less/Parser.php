@@ -1020,12 +1020,11 @@ class Less_Parser{
 
 		$value = $this->match( array('parseEntitiesQuoted','parseEntitiesVariable') );
 		if( !$value ){
-
 			// prevent preg_match() crash. See #55
 			$value = $val = '';
 			do{
 				$value .= $val;
-				$val = $this->match( array('/\\G(?:\\\\[\(\)\'"\\\\])+/','/\\G(?:[^\(\)\'"\\\\])+/') );
+				$val = $this->match( array('/\\G(?:\\\\[\(\)\'"\\\\])+/','/\\G(?:[^\(\)\'"\\\\])+/','#\\') );
 			}while($val);
 		}
 
