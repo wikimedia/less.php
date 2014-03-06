@@ -1018,14 +1018,9 @@ class Less_Parser{
 			return;
 		}
 
-		$value = $this->match( array('parseEntitiesQuoted','parseEntitiesVariable') );
+		$value = $this->match( array('parseEntitiesQuoted','parseEntitiesVariable','/\\Gdata\:.*?[^\)]+/','/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/') );
 		if( !$value ){
-			// prevent preg_match() crash. See #55
-			$value = $val = '';
-			do{
-				$value .= $val;
-				$val = $this->match( array('/\\G(?:\\\\[\(\)\'"\\\\])+/','/\\G(?:[^\(\)\'"\\\\])+/','#\\') );
-			}while($val);
+			$value = '';
 		}
 
 
