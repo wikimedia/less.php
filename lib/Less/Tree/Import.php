@@ -103,11 +103,15 @@ class Less_Tree_Import extends Less_Tree{
 	function getPath(){
 		if ($this->path instanceof Less_Tree_Quoted) {
 			$path = $this->path->value;
-			return ( isset($this->css) || preg_match('/(\.[a-z]*$)|([\?;].*)$/',$path)) ? $path : $path . '.less';
+			$path = ( isset($this->css) || preg_match('/(\.[a-z]*$)|([\?;].*)$/',$path)) ? $path : $path . '.less';
 		} else if ($this->path instanceof Less_Tree_URL) {
-			return $this->path->value->value;
+			$path = $this->path->value->value;
+		}else{
+			return null;
 		}
-		return null;
+
+		//remove query string and fragment
+		return preg_replace('/[\?#][^\?]*$/','',$path);
 	}
 
 	function compileForImport( $env ){
