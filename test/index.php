@@ -244,16 +244,19 @@ class ParserTest{
 
 			/**
 			 * Less_Cache Testing
+			*/
 			Less_Cache::$cache_dir = $this->cache_dir;
 			//$cached_css_file = Less_Cache::Regen( array($file_less=>'') );
-			$cached_css_file = Less_Cache::Get( array($file_less=>'') );
+			//$options['output'] = md5($file_less).'.css';
+			$cached_css_file = Less_Cache::Get( array($file_less=>''), $options );
 			$compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
-			*/
 
 
+			/*
 			$parser = new Less_Parser( $options );
 			$parser->parseFile( $file_less ); //$file_uri
 			$compiled = $parser->getCss();
+			*/
 
 
 			//$parser = new Less_Parser( $options );
