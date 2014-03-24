@@ -27,7 +27,8 @@ class Less_Parser{
 		'import_callback'		=> null,
 		'cache_dir'				=> null,
 		'cache_method'			=> 'php', 			// false, 'serialize', 'php', 'var_export', 'callback';
-		'cache_callback'		=> array('get' => null, 'set' => null),
+		'cache_callback_get'	=> null,
+		'cache_callback_set'	=> null,
 
 		'sourceMap'				=> false,			// whether to output a source map
 		'sourceMapBasepath'		=> null,
@@ -449,9 +450,9 @@ class Less_Parser{
 		$cache_file = $this->CacheFile( $file_path );
 		if( $cache_file ){
 			if( Less_Parser::$options['cache_method'] == 'callback' ){
-				if( isset(Less_Parser::$options['cache_callback']['get']) && is_callable(Less_Parser::$options['cache_callback']['get']) ){
+				if( is_callable(Less_Parser::$options['cache_callback_get']) ){
 					$cache = call_user_func_array(
-						Less_Parser::$options['cache_callback']['get'],
+						Less_Parser::$options['cache_callback_get'],
 						array($this, $file_path, $cache_file)
 					);
 
@@ -497,9 +498,9 @@ class Less_Parser{
 		//save the cache
 		if( $cache_file ){
 			if( Less_Parser::$options['cache_method'] == 'callback' ){
-				if( isset(Less_Parser::$options['cache_callback']['set']) && is_callable(Less_Parser::$options['cache_callback']['set']) ){
+				if( is_callable(Less_Parser::$options['cache_callback_set']) ){
 					call_user_func_array(
-						Less_Parser::$options['cache_callback']['set'], 
+						Less_Parser::$options['cache_callback_set'], 
 						array($this, $file_path, $cache_file, $rules)
 					);
 				}
