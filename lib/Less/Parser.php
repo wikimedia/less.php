@@ -2557,7 +2557,7 @@ class Less_Parser{
 	}
 
 	public function CacheEnabled(){
-		return (Less_Parser::$options['cache_method'] && (LessParser::$cache_dir || (Less_Parser::$options['cache_method'] == 'callback')));
+		return (Less_Parser::$options['cache_method'] && (Less_Cache::$cache_dir || (Less_Parser::$options['cache_method'] == 'callback')));
 	}
 
 }
