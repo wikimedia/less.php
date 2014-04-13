@@ -139,7 +139,25 @@ class Less_Parser{
 		Less_Parser::$options[$option] = $value;
 	}
 
+	/**
+	 * Registers a new custom function
+	 *
+	 * @param  string   $name     function name
+	 * @param  callable $callback callback
+	 */
+	public function registerFunction($name, $callback) {
+		$this->env->functions[$name] = $callback;
+	}
 
+	/**
+	 * Removed an already registered function
+	 *
+	 * @param  string $name function name
+	 */
+	public function unregisterFunction($name) {
+		if( isset($this->env->functions[$name]) )
+			unset($this->env->functions[$name]);
+	}
 
 
 	/**
