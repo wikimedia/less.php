@@ -4,7 +4,7 @@ class phpunit_FunctionTest extends phpunit_bootstrap{
 	/**
 	 * Test
 	 */
-	public function testFunction(){
+	public function testFunction() {
 		echo "\nBegin Tests";
 
 		$less_file = $this->fixtures_dir.'/functions/less/f1.less';
@@ -12,12 +12,7 @@ class phpunit_FunctionTest extends phpunit_bootstrap{
 
 		$parser = new Less_Parser();
 
-		$parser->registerFunction( 'myfunc-reverse', function( $arg ) {
-			if( is_a( $arg, 'Less_Tree_Quoted' ) ) {
-				$arg->value = strrev( $arg->value );
-				return $arg;
-			}
-		});
+		$parser->registerFunction( 'myfunc-reverse', array( __CLASS__, 'reverse' ) );
 
 		$parser->parseFile( $less_file );
 		$generated_css = $parser->getCss();
@@ -25,4 +20,10 @@ class phpunit_FunctionTest extends phpunit_bootstrap{
 		$this->assertEquals( $expected_css, $generated_css );
 	}
 
+	public static function reverse( $arg ) {
+		if( is_a( $arg, 'Less_Tree_Quoted' ) ) {
+			$arg->value = strrev( $arg->value );
+			return $arg;
+		}
+	}
 }
