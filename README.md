@@ -193,6 +193,19 @@ $parser->parseFile( '/var/www/mysite/bootstrap.less', '/mysite/' );
 $css = $parser->getCss();
 ```
 
+You can specify the caching technique used by changing the ```cache_method``` option. Supported methods are:
+* ```php```: Creates valid PHP files which can be included without any changes (default method).
+* ```var_export```: Like "php", but using PHPs ```var_export()``` function without any optimizations.
+  It's recommended to use "php" instead.
+* ```serialize```: Faster, but pretty memory-intense.
+* ```callback```: Use custom callback functions to implement your own caching method. Give the "cache_callback_get" and
+  "cache_callback_set" options with callables (see PHPs ```call_user_func()``` and ```is_callable()``` functions). less.php
+  will pass the parser object (class ```Less_Parser```), the path to the parsed .less file ("/some/path/to/file.less") and
+  an identifier that will change every time the .less file is modified. The ```get``` callback must return the ruleset
+  (an array with ```Less_Tree``` objects) provided as fourth parameter of the ```set``` callback. If something goes wrong,
+  return ```NULL``` (cache doesn't exist) or ```FALSE```.
+  
+
 
 Source Maps
 ---
