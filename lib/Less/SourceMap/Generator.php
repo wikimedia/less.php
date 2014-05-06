@@ -170,7 +170,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 				$filename = substr($filename, 1);
 			}
 		}
-		return sprintf('%s%s', $this->getOption('sourceMapRootpath'), $filename);
+		return sprintf('%s%s', $this->getOption('sourceMapBasepath'), $filename);
 	}
 
 	/**
