@@ -37,7 +37,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 			'outputSourceFiles'		=> false,
 
 			// base path for filename normalization
-			'sourceMapBasepath'		=> ''
+			'sourceMapRootpath'		=> ''
 	);
 
 	/**
@@ -89,9 +89,14 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		$this->SetOptions($options);
 
 
+		if( empty($this->options['sourceMapRootpath']) && !empty($this->options['sourceMapBasepath']) ){
+			$this->options['sourceMapRootpath'] = $this->options['sourceMapBasepath'];
+		}
+
 		// fix windows paths
-		if( isset($this->options['sourceMapBasepath']) ){
-			$this->options['sourceMapBasepath'] = str_replace('\\', '/', $this->options['sourceMapBasepath']);
+		if( !empty($this->options['sourceMapRootpath']) ){
+			$this->options['sourceMapRootpath'] = str_replace('\\', '/', $this->options['sourceMapRootpath']);
+			$this->options['sourceMapRootpath'] = rtrim($this->options['sourceMapRootpath'],'/').'/';
 		}
 	}
 
@@ -162,15 +167,15 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 */
 	protected function normalizeFilename($filename){
 		$filename = str_replace('\\', '/', $filename);
-		$basePath = $this->getOption('sourceMapBasepath');
+		$rootpath = $this->getOption('sourceMapRootpath');
 
-		if( $basePath && ($pos = strpos($filename, $basePath)) !== false ){
-			$filename = substr($filename, $pos + strlen($basePath));
+		if( $rootpath && ($pos = strpos($filename, $rootpath)) !== false ){
+			$filename = substr($filename, $pos + strlen($rootpath));
 			if(strpos($filename, '\\') === 0 || strpos($filename, '/') === 0){
 				$filename = substr($filename, 1);
 			}
 		}
-		return sprintf('%s%s', $this->getOption('sourceMapBasepath'), $filename);
+		return $this->getOption('sourceMapRootpath') . $filename;
 	}
 
 	/**
