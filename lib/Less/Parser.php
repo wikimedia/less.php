@@ -518,7 +518,7 @@ class Less_Parser{
 			if( Less_Parser::$options['cache_method'] == 'callback' ){
 				if( is_callable(Less_Parser::$options['cache_callback_set']) ){
 					call_user_func_array(
-						Less_Parser::$options['cache_callback_set'], 
+						Less_Parser::$options['cache_callback_set'],
 						array($this, $file_path, $cache_file, $rules)
 					);
 				}
@@ -908,11 +908,11 @@ class Less_Parser{
 		if ($e) {
 			$this->MatchChar('~');
 		}
-                
+
                 // Fix for #124: match escaped newlines
                 //$str = $this->MatchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/');
 		$str = $this->MatchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.|\\\\\r\n|\\\\[\n\r\f])*)"|\'((?:[^\'\\\\\r\n]|\\\\.|\\\\\r\n|\\\\[\n\r\f])*)\'/');
-                
+
 		if( $str ){
 			$result = $str[0][0] == '"' ? $str[1] : $str[2];
 			return $this->NewObj5('Less_Tree_Quoted',array($str[0], $result, $e, $index, $this->env->currentFileInfo) );
