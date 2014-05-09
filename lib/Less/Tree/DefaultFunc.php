@@ -13,7 +13,7 @@ class Less_Tree_DefaultFunc{
 
 	static function compile(){
 		if( self::$error_ ){
-			throw Exception(self::$error_);
+			throw new Exception(self::$error_);
 		}
 		if( self::$value_ !== null ){
 			return self::$value_ ? new Less_Tree_Keyword('true') : new Less_Tree_Keyword('false');
