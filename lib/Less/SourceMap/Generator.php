@@ -37,7 +37,10 @@ class Less_SourceMap_Generator extends Less_Configurable {
 			'outputSourceFiles'		=> false,
 
 			// base path for filename normalization
-			'sourceMapRootpath'		=> ''
+			'sourceMapRootpath'		=> '',
+
+			// base path for filename normalization
+			'sourceMapBasepath'   => ''
 	);
 
 	/**
@@ -89,10 +92,6 @@ class Less_SourceMap_Generator extends Less_Configurable {
 
 		$this->SetOptions($options);
 
-
-		if( empty($this->options['sourceMapRootpath']) && !empty($this->options['sourceMapBasepath']) ){
-			$this->options['sourceMapRootpath'] = $this->options['sourceMapBasepath'];
-		}
 
 		// fix windows paths
 		if( !empty($this->options['sourceMapRootpath']) ){
@@ -167,16 +166,22 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @return string
 	 */
 	protected function normalizeFilename($filename){
+
 		$filename = str_replace('\\', '/', $filename);
 		$rootpath = $this->getOption('sourceMapRootpath');
+		$basePath = $this->getOption('sourceMapBasepath');
 
-		if( $rootpath && ($pos = strpos($filename, $rootpath)) !== false ){
-			$filename = substr($filename, $pos + strlen($rootpath));
-			if(strpos($filename, '\\') === 0 || strpos($filename, '/') === 0){
-				$filename = substr($filename, 1);
-			}
+		// "Trim" the 'sourceMapBasepath' from the output filename.
+		if (strpos($filename, $basePath) === 0) {
+			$filename = substr($filename, strlen($basePath));
 		}
-		return $this->getOption('sourceMapRootpath') . $filename;
+
+		// Remove extra leading path separators.
+		if(strpos($filename, '\\') === 0 || strpos($filename, '/') === 0){
+			$filename = substr($filename, 1);
+		}
+
+		return $rootpath . $filename;
 	}
 
 	/**
@@ -234,7 +239,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		// A list of original sources used by the 'mappings' entry.
 		$sourceMap['sources'] = array();
 		foreach($this->sources as $source_uri => $source_filename){
-			$sourceMap['sources'][] = $this->normalizeFilename($source_uri);
+			$sourceMap['sources'][] = $this->normalizeFilename($source_filename);
 		}
 
 
