@@ -119,7 +119,7 @@ class Less_Environment{
 	 * @return string Canonicalized path
 	 *
 	 */
-	static function normalizePath($path){
+	public static function normalizePath($path){
 
 		$segments = explode('/',$path);
 		$segments = array_reverse($segments);
