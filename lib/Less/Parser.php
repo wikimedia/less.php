@@ -680,10 +680,12 @@ class Less_Parser{
 	 */
 	private function MatchFuncs($toks){
 
-		foreach($toks as $tok){
-			$match = $this->$tok();
-			if( $match ){
-				return $match;
+		if( $this->pos < $this->input_len ){
+			foreach($toks as $tok){
+				$match = $this->$tok();
+				if( $match ){
+					return $match;
+				}
 			}
 		}
 
@@ -1610,22 +1612,24 @@ class Less_Parser{
 	// in the input, to see if it's a ` ` character.
 	//
 	private function parseCombinator(){
-		$c = $this->input[$this->pos];
-		if ($c === '>' || $c === '+' || $c === '~' || $c === '|' || $c === '^' ){
+		if( $this->pos < $this->input_len ){
+			$c = $this->input[$this->pos];
+			if ($c === '>' || $c === '+' || $c === '~' || $c === '|' || $c === '^' ){
 
-			$this->pos++;
-			if( $this->input[$this->pos] === '^' ){
-				$c = '^^';
 				$this->pos++;
+				if( $this->input[$this->pos] === '^' ){
+					$c = '^^';
+					$this->pos++;
+				}
+
+				$this->skipWhitespace(0);
+
+				return $c;
 			}
 
-			$this->skipWhitespace(0);
-
-			return $c;
-		}
-
-		if( $this->pos > 0 && $this->isWhitespace(-1) ){
-			return ' ';
+			if( $this->pos > 0 && $this->isWhitespace(-1) ){
+				return ' ';
+			}
 		}
 	}
 
@@ -1666,7 +1670,9 @@ class Less_Parser{
 				//if( count($extendList) ){
 					//error("Extend can only be used at the end of selector");
 				//}
-				$c = $this->input[ $this->pos ];
+				if( $this->pos < $this->input_len ){
+					$c = $this->input[ $this->pos ];
+				}
 				$elements[] = $e;
 				$e = null;
 			}
