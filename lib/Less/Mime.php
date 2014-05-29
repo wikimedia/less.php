@@ -16,7 +16,12 @@ class Less_Mime{
 	        '.gif' => 'image/gif',
 	        '.jpg' => 'image/jpeg',
 	        '.jpeg'=> 'image/jpeg',
-	        '.png' => 'image/png'
+	        '.png' => 'image/png',
+	        '.ttf' => 'application/x-font-ttf',
+	        '.otf' => 'application/x-font-otf',
+	        '.eot' => 'application/vnd.ms-fontobject',
+	        '.woff' => 'application/x-font-woff',
+	        '.svg' => 'image/svg+xml',
 	        );
 
 	public static function lookup( $filepath ){
