@@ -174,6 +174,10 @@ class Less_Parser{
 		$locale = setlocale(LC_NUMERIC, 0);
 		setlocale(LC_NUMERIC, "C");
 
+		if (ini_get("mbstring.func_overload")) {
+			$mb_internal_encoding = ini_get("mbstring.internal_encoding", "ascii");
+			@ini_set("mbstring.internal_encoding", "ascii");
+		}
 
  		$root = new Less_Tree_Ruleset(array(), $this->rules );
 		$root->root = true;
@@ -205,6 +209,10 @@ class Less_Parser{
 		//reset php settings
 		@ini_set('precision',$precision);
 		setlocale(LC_NUMERIC, $locale);
+
+		if (ini_get("mbstring.func_overload")) {
+			@ini_set("mbstring.internal_encoding", $mb_internal_encoding);
+		}
 
 		return $css;
 	}
