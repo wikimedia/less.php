@@ -175,7 +175,7 @@ class Less_Parser{
 		setlocale(LC_NUMERIC, "C");
 
 		if (ini_get("mbstring.func_overload")) {
-			$mb_internal_encoding = ini_get("mbstring.internal_encoding", "ascii");
+			$mb_internal_encoding = ini_get("mbstring.internal_encoding");
 			@ini_set("mbstring.internal_encoding", "ascii");
 		}
 
