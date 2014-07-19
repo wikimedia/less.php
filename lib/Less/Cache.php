@@ -11,7 +11,11 @@ require_once( dirname(__FILE__).'/Version.php');
  */
 class Less_Cache{
 
-	public static $cache_dir = false;		// directory less.php can use for storing data
+	// directory less.php can use for storing data
+	public static $cache_dir	= false;
+
+	// specifies the number of seconds after which data created by less.php will be seen as 'garbage' and potentially cleaned up
+	public static $gc_lifetime	= 2; //604800;
 
 
 	/**
@@ -62,14 +66,7 @@ class Less_Cache{
  		if( !isset($parser_options['use_cache']) || $parser_options['use_cache'] === true ){
 			if( file_exists($list_file) ){
 
-				$list = explode("\n",file_get_contents($list_file));
-
-				//pop the cached name that should match $compiled_name
-				$cached_name = array_pop($list);
-				if( !preg_match('/^lessphp_[a-f0-9]+\.css$/',$cached_name) ){
-					$list[] = $cached_name;
-					$cached_name = false;
-				}
+				self::ListFiles($list_file, $list, $cached_name);
 				$compiled_name = self::CompiledName($list);
 
 				// if $cached_name != $compiled_name, we know we need to recompile
@@ -79,7 +76,6 @@ class Less_Cache{
 
 					if( $output_file && file_exists($output_file) ){
 						@touch($list_file);
-						@touch($output_file);
 						return basename($output_file); // for backwards compatibility, we just return the name of the file
 					}
 				}
@@ -213,6 +209,10 @@ class Less_Cache{
 	}
 
 
+	/**
+	 * Delete unused less.php files
+	 *
+	 */
 	public static function CleanCache(){
 		static $clean = false;
 
@@ -222,20 +222,73 @@ class Less_Cache{
 
 		$files = scandir(Less_Cache::$cache_dir);
 		if( $files ){
-			$check_time = time() - 604800;
+			$check_time = time() - self::$gc_lifetime;
 			foreach($files as $file){
+
+				// don't delete if the file wasn't created with less.php
 				if( strpos($file,'lessphp_') !== 0 ){
 					continue;
 				}
+
 				$full_path = Less_Cache::$cache_dir.'/'.$file;
-				if( filemtime($full_path) > $check_time ){
+
+				// make sure the file still exists
+				// css files may have already been deleted
+				if( !file_exists($full_path) ){
 					continue;
 				}
+				$mtime = filemtime($full_path);
+
+				// don't delete if it's a relatively new file
+				if( $mtime > $check_time ){
+					continue;
+				}
+
+				$parts = explode('.',$file);
+				$type = array_pop($parts);
+
+
+				// delete css files based on the list files
+				if( $type === 'css' ){
+					continue;
+				}
+
+
+				// delete the list file and associated css file
+				if( $type === 'list' ){
+					self::ListFiles($full_path, $list, $css_file_name);
+					if( $css_file_name ){
+						$css_file = Less_Cache::$cache_dir.'/'.$css_file_name;
+						if( file_exists($css_file) ){
+							unlink($css_file);
+						}
+					}
+				}
+
 				unlink($full_path);
 			}
 		}
 
 		$clean = true;
+	}
+
+
+	/**
+	 * Get the list of less files and generated css file from a list file
+	 *
+	 */
+	static function ListFiles($list_file, &$list, &$css_file_name ){
+
+		$list = explode("\n",file_get_contents($list_file));
+
+		//pop the cached name that should match $compiled_name
+		$css_file_name = array_pop($list);
+
+		if( !preg_match('/^lessphp_[a-f0-9]+\.css$/',$css_file_name) ){
+			$list[] = $css_file_name;
+			$css_file_name = false;
+		}
+
 	}
 
 }
