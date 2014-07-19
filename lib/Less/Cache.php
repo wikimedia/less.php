@@ -15,7 +15,7 @@ class Less_Cache{
 	public static $cache_dir	= false;
 
 	// specifies the number of seconds after which data created by less.php will be seen as 'garbage' and potentially cleaned up
-	public static $gc_lifetime	= 2; //604800;
+	public static $gc_lifetime	= 604800;
 
 
 	/**
