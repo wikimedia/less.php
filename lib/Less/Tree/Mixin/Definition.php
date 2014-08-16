@@ -199,6 +199,8 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 				, $env->frames		// the current environment frames
 			);
 
+		$compile_env->functions = $env->functions;
+
 		return (bool)$this->condition->compile($compile_env);
 	}
 
