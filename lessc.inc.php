@@ -22,6 +22,7 @@ class lessc{
 	protected $allParsedFiles = array();
 	protected $libFunctions = array();
 	protected $registeredVars = array();
+	protected $options = array();
 	private $formatterName;
 
 	public function __construct($lessc=null, $sourceName=null) {}
@@ -62,8 +63,18 @@ class lessc{
 		unset( $this->registeredVars[$name] );
 	}
 
+	public function setOptions($options){
+		foreach( $options as $name => $value ){
+			$this->setOption( $name, $value);
+		}
+	}
+	
+	public function setOption($name, $value){
+		$this->options[$name] = $value;
+	}
+	
 	public function parse($buffer, $presets = array()){
-		$options = array();
+		$options = $this->options;
 		$this->setVariables($presets);
 
 		switch($this->formatterName){
