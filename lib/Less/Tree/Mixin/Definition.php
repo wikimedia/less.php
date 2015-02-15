@@ -190,6 +190,11 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset{
 			return true;
 		}
 
+		// set array to prevent error on array_merge
+		if(!is_array($this->frames)) {
+             $this->frames = array();
+        }
+
 		$frame = $this->compileParams($env, array_merge($this->frames,$env->frames), $args );
 
 		$compile_env = new Less_Environment();
