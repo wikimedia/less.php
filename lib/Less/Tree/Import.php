@@ -283,7 +283,7 @@ class Less_Tree_Import extends Less_Tree{
 	 */
 	private function Skip($path, $env){
 
-		$path = realpath($path);
+		$path = Less_Parser::winPath(realpath($path));
 
 		if( $path && Less_Parser::FileParsed($path) ){
 
