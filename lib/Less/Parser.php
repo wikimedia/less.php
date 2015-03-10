@@ -329,12 +329,11 @@ class Less_Parser{
 
 		$previousFileInfo = $this->env->currentFileInfo;
 
+
 		if( $filename ){
 			$filename = self::WinPath(realpath($filename));
 		}
-		if( $uri_root ){
-			$uri_root = self::WinPath(realpath($uri_root));
-		}
+		$uri_root = self::WinPath($uri_root);
 
 		$this->SetFileInfo($filename, $uri_root);
 
