@@ -145,101 +145,176 @@ class Less_Functions{
 	}
 
 	public function hue($color){
-		$c = $color->toHSL();
-		return new Less_Tree_Dimension(Less_Parser::round($c['h']));
+
+		if( $color instanceof Less_Tree_Color ){
+			$c = $color->toHSL();
+			return new Less_Tree_Dimension(Less_Parser::round($c['h']));
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function saturation($color){
-		$c = $color->toHSL();
-		return new Less_Tree_Dimension(Less_Parser::round($c['s'] * 100), '%');
+
+		if( $color instanceof Less_Tree_Color ){
+			$c = $color->toHSL();
+			return new Less_Tree_Dimension(Less_Parser::round($c['s'] * 100), '%');
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function lightness($color){
-		$c = $color->toHSL();
-		return new Less_Tree_Dimension(Less_Parser::round($c['l'] * 100), '%');
+
+		if( $color instanceof Less_Tree_Color ){
+			$c = $color->toHSL();
+			return new Less_Tree_Dimension(Less_Parser::round($c['l'] * 100), '%');
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function hsvhue( $color ){
-		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( Less_Parser::round($hsv['h']) );
+
+		if( $color instanceof Less_Tree_Color ){
+			$hsv = $color->toHSV();
+			return new Less_Tree_Dimension( Less_Parser::round($hsv['h']) );
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 
 	public function hsvsaturation( $color ){
-		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( Less_Parser::round($hsv['s'] * 100), '%' );
+
+		if( $color instanceof Less_Tree_Color ){
+			$hsv = $color->toHSV();
+			return new Less_Tree_Dimension( Less_Parser::round($hsv['s'] * 100), '%' );
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function hsvvalue( $color ){
-		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( Less_Parser::round($hsv['v'] * 100), '%' );
+
+		if( $color instanceof Less_Tree_Color ){
+			$hsv = $color->toHSV();
+			return new Less_Tree_Dimension( Less_Parser::round($hsv['v'] * 100), '%' );
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function red($color) {
-		return new Less_Tree_Dimension( $color->rgb[0] );
+
+		if( $color instanceof Less_Tree_Color ){
+			return new Less_Tree_Dimension( $color->rgb[0] );
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function green($color) {
-		return new Less_Tree_Dimension( $color->rgb[1] );
+
+		if( $color instanceof Less_Tree_Color ){
+			return new Less_Tree_Dimension( $color->rgb[1] );
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function blue($color) {
-		return new Less_Tree_Dimension( $color->rgb[2] );
+
+		if( $color instanceof Less_Tree_Color ){
+			return new Less_Tree_Dimension( $color->rgb[2] );
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function alpha($color){
-		$c = $color->toHSL();
-		return new Less_Tree_Dimension($c['a']);
+
+		if( $color instanceof Less_Tree_Color ){
+			$c = $color->toHSL();
+			return new Less_Tree_Dimension($c['a']);
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function luma ($color) {
-		return new Less_Tree_Dimension(Less_Parser::round( $color->luma() * $color->alpha * 100), '%');
+
+		if( $color instanceof Less_Tree_Color ){
+			return new Less_Tree_Dimension(Less_Parser::round( $color->luma() * $color->alpha * 100), '%');
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function luminance( $color ){
-		$luminance =
-			(0.2126 * $color->rgb[0] / 255)
-		  + (0.7152 * $color->rgb[1] / 255)
-		  + (0.0722 * $color->rgb[2] / 255);
 
-		return new Less_Tree_Dimension(Less_Parser::round( $luminance * $color->alpha * 100), '%');
+		if( $color instanceof Less_Tree_Color ){
+			$luminance =
+				(0.2126 * $color->rgb[0] / 255)
+			  + (0.7152 * $color->rgb[1] / 255)
+			  + (0.0722 * $color->rgb[2] / 255);
+
+			return new Less_Tree_Dimension(Less_Parser::round( $luminance * $color->alpha * 100), '%');
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function saturate($color, $amount = null){
-		// filter: saturate(3.2);
-		// should be kept as is, so check for color
-		if( !property_exists($color,'rgb') ){
-			return null;
+
+		if( $color instanceof Less_Tree_Color ){
+			// filter: saturate(3.2);
+			// should be kept as is, so check for color
+			if( !property_exists($color,'rgb') ){
+				return null;
+			}
+			$hsl = $color->toHSL();
+
+			$hsl['s'] += $amount->value / 100;
+			$hsl['s'] = self::clamp($hsl['s']);
+
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 		}
-		$hsl = $color->toHSL();
 
-		$hsl['s'] += $amount->value / 100;
-		$hsl['s'] = self::clamp($hsl['s']);
-
-		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		Less_Functions::Expected('color',$color);
 	}
 
 	/**
 	 * @param Less_Tree_Dimension $amount
 	 */
 	public function desaturate($color, $amount){
-		$hsl = $color->toHSL();
 
-		$hsl['s'] -= $amount->value / 100;
-		$hsl['s'] = self::clamp($hsl['s']);
+		if( $color instanceof Less_Tree_Color ){
+			$hsl = $color->toHSL();
 
-		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+			$hsl['s'] -= $amount->value / 100;
+			$hsl['s'] = self::clamp($hsl['s']);
+
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 
 
 	public function lighten($color, $amount){
-		$hsl = $color->toHSL();
 
-		$hsl['l'] += $amount->value / 100;
-		$hsl['l'] = self::clamp($hsl['l']);
+		if( $color instanceof Less_Tree_Color ){
+			$hsl = $color->toHSL();
 
-		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+			$hsl['l'] += $amount->value / 100;
+			$hsl['l'] = self::clamp($hsl['l']);
+
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function darken($color, $amount){
@@ -256,36 +331,56 @@ class Less_Functions{
 	}
 
 	public function fadein($color, $amount){
-		$hsl = $color->toHSL();
-		$hsl['a'] += $amount->value / 100;
-		$hsl['a'] = self::clamp($hsl['a']);
-		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+
+		if( $color instanceof Less_Tree_Color ){
+			$hsl = $color->toHSL();
+			$hsl['a'] += $amount->value / 100;
+			$hsl['a'] = self::clamp($hsl['a']);
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function fadeout($color, $amount){
-		$hsl = $color->toHSL();
-		$hsl['a'] -= $amount->value / 100;
-		$hsl['a'] = self::clamp($hsl['a']);
-		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+
+		if( $color instanceof Less_Tree_Color ){
+			$hsl = $color->toHSL();
+			$hsl['a'] -= $amount->value / 100;
+			$hsl['a'] = self::clamp($hsl['a']);
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	public function fade($color, $amount){
-		$hsl = $color->toHSL();
 
-		$hsl['a'] = $amount->value / 100;
-		$hsl['a'] = self::clamp($hsl['a']);
-		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		if( $color instanceof Less_Tree_Color ){
+			$hsl = $color->toHSL();
+
+			$hsl['a'] = $amount->value / 100;
+			$hsl['a'] = self::clamp($hsl['a']);
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 
 
 	public function spin($color, $amount){
-		$hsl = $color->toHSL();
-		$hue = fmod($hsl['h'] + $amount->value, 360);
 
-		$hsl['h'] = $hue < 0 ? 360 + $hue : $hue;
+		if( $color instanceof Less_Tree_Color ){
+			$hsl = $color->toHSL();
+			$hue = fmod($hsl['h'] + $amount->value, 360);
 
-		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+			$hsl['h'] = $hue < 0 ? 360 + $hue : $hue;
+
+			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		}
+
+		Less_Functions::Expected('color',$color);
 	}
 
 	//
@@ -301,22 +396,30 @@ class Less_Functions{
 			$weight = new Less_Tree_Dimension('50', '%');
 		}
 
-		$p = $weight->value / 100.0;
-		$w = $p * 2 - 1;
-		$hsl1 = $color1->toHSL();
-		$hsl2 = $color2->toHSL();
-		$a = $hsl1['a'] - $hsl2['a'];
+		if( !$color1 instanceof Less_Tree_Color ) {
+			Less_Functions::Expected('color',$color);
+		}
+		elseif( !$color2 instanceof Less_Tree_Color ) {
+			Less_Functions::Expected('color',$color);
+		}
+		else {
+			$p = $weight->value / 100.0;
+			$w = $p * 2 - 1;
+			$hsl1 = $color1->toHSL();
+			$hsl2 = $color2->toHSL();
+			$a = $hsl1['a'] - $hsl2['a'];
 
-		$w1 = (((($w * $a) == -1) ? $w : ($w + $a) / (1 + $w * $a)) + 1) / 2;
-		$w2 = 1 - $w1;
+			$w1 = (((($w * $a) == -1) ? $w : ($w + $a) / (1 + $w * $a)) + 1) / 2;
+			$w2 = 1 - $w1;
 
-		$rgb = array($color1->rgb[0] * $w1 + $color2->rgb[0] * $w2,
-					 $color1->rgb[1] * $w1 + $color2->rgb[1] * $w2,
-					 $color1->rgb[2] * $w1 + $color2->rgb[2] * $w2);
+			$rgb = array($color1->rgb[0] * $w1 + $color2->rgb[0] * $w2,
+						 $color1->rgb[1] * $w1 + $color2->rgb[1] * $w2,
+						 $color1->rgb[2] * $w1 + $color2->rgb[2] * $w2);
 
-		$alpha = $color1->alpha * $p + $color2->alpha * (1 - $p);
+			$alpha = $color1->alpha * $p + $color2->alpha * (1 - $p);
 
-		return new Less_Tree_Color($rgb, $alpha);
+			return new Less_Tree_Color($rgb, $alpha);
+		}
 	}
 
 	public function greyscale($color){
