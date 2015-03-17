@@ -266,22 +266,17 @@ class Less_Functions{
 	}
 
 	public function saturate($color, $amount = null){
-
-		if( $color instanceof Less_Tree_Color ){
-			// filter: saturate(3.2);
-			// should be kept as is, so check for color
-			if( !property_exists($color,'rgb') ){
-				return null;
-			}
-			$hsl = $color->toHSL();
-
-			$hsl['s'] += $amount->value / 100;
-			$hsl['s'] = self::clamp($hsl['s']);
-
-			return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
+		// filter: saturate(3.2);
+		// should be kept as is, so check for color
+		if( !property_exists($color,'rgb') ){
+			return null;
 		}
+		$hsl = $color->toHSL();
 
-		Less_Functions::Expected('color',$color);
+		$hsl['s'] += $amount->value / 100;
+		$hsl['s'] = self::clamp($hsl['s']);
+
+		return $this->hsla($hsl['h'], $hsl['s'], $hsl['l'], $hsl['a']);
 	}
 
 	/**
