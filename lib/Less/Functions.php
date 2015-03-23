@@ -265,7 +265,7 @@ class Less_Functions{
 		if (!$color instanceof Less_Tree_Color) {
 			throw new Less_Exception_Compiler('The first argument to saturate must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
-		if (!$amount instanceof Less_Tree_Dimension || !$amount->unit->is('%')) {
+		if (!$amount instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The second argument to saturate must be a percentage' . ($amount instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
@@ -284,7 +284,7 @@ class Less_Functions{
 		if (!$color instanceof Less_Tree_Color) {
 			throw new Less_Exception_Compiler('The first argument to desaturate must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
-		if (!$amount instanceof Less_Tree_Dimension || !$amount->unit->is('%')) {
+		if (!$amount instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The second argument to desaturate must be a percentage' . ($amount instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
@@ -302,7 +302,7 @@ class Less_Functions{
 		if (!$color instanceof Less_Tree_Color) {
 			throw new Less_Exception_Compiler('The first argument to lighten must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
-		if (!$amount instanceof Less_Tree_Dimension || !$amount->unit->is('%')) {
+		if (!$amount instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The second argument to lighten must be a percentage' . ($amount instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
@@ -318,7 +318,7 @@ class Less_Functions{
 		if (!$color instanceof Less_Tree_Color) {
 			throw new Less_Exception_Compiler('The first argument to darken must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
-		if (!$amount instanceof Less_Tree_Dimension || !$amount->unit->is('%')) {
+		if (!$amount instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The second argument to darken must be a percentage' . ($amount instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
@@ -333,7 +333,7 @@ class Less_Functions{
 		if (!$color instanceof Less_Tree_Color) {
 			throw new Less_Exception_Compiler('The first argument to fadein must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
-		if (!$amount instanceof Less_Tree_Dimension || !$amount->unit->is('%')) {
+		if (!$amount instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The second argument to fadein must be a percentage' . ($amount instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
@@ -347,7 +347,7 @@ class Less_Functions{
 		if (!$color instanceof Less_Tree_Color) {
 			throw new Less_Exception_Compiler('The first argument to fadeout must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
-		if (!$amount instanceof Less_Tree_Dimension || !$amount->unit->is('%')) {
+		if (!$amount instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The second argument to fadeout must be a percentage' . ($amount instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
@@ -361,7 +361,7 @@ class Less_Functions{
 		if (!$color instanceof Less_Tree_Color) {
 			throw new Less_Exception_Compiler('The first argument to fade must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
-		if (!$amount instanceof Less_Tree_Dimension || !$amount->unit->is('%')) {
+		if (!$amount instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The second argument to fade must be a percentage' . ($amount instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
@@ -378,7 +378,7 @@ class Less_Functions{
 		if (!$color instanceof Less_Tree_Color) {
 			throw new Less_Exception_Compiler('The first argument to spin must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
-		if (!$amount instanceof Less_Tree_Dimension || !$amount->unit->is('')) {
+		if (!$amount instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The second argument to spin must be a number' . ($amount instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
@@ -408,7 +408,7 @@ class Less_Functions{
 		if (!$weight) {
 			$weight = new Less_Tree_Dimension('50', '%');
 		}
-		if (!$weight instanceof Less_Tree_Dimension || !$weight->unit->is('%')) {
+		if (!$weight instanceof Less_Tree_Dimension) {
 			throw new Less_Exception_Compiler('The third argument to contrast must be a percentage' . ($weight instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
