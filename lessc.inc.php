@@ -74,16 +74,10 @@ class lessc{
 	}
 	
 	public function parse($buffer, $presets = array()){
-		$options = $this->options;
+
 		$this->setVariables($presets);
 
-		switch($this->formatterName){
-			case 'compressed':
-				$options['compress'] = true;
-				break;
-		}
-
-		$parser = new Less_Parser($options);
+		$parser = new Less_Parser($this->getOptions());
 		$parser->setImportDirs($this->getImportDirs());
 		if( count( $this->registeredVars ) ) $parser->ModifyVars( $this->registeredVars );
 		foreach ($this->libFunctions as $name => $func) {
@@ -92,6 +86,17 @@ class lessc{
 		$parser->parse($buffer);
 
 		return $parser->getCss();
+	}
+
+	protected function getOptions(){
+		$options = $this->options;
+		
+		switch($this->formatterName){
+			case 'compressed':
+				$options['compress'] = true;
+				break;
+		}
+		return $options;
 	}
 
 	protected function getImportDirs(){
@@ -110,7 +115,7 @@ class lessc{
 
 		$this->allParsedFiles = array();
 
-		$parser = new Less_Parser();
+		$parser = new Less_Parser($this->getOptions());
 		$parser->SetImportDirs($this->getImportDirs());
 		if( count( $this->registeredVars ) ){
 			$parser->ModifyVars( $this->registeredVars );
@@ -146,7 +151,7 @@ class lessc{
 		$this->allParsedFiles = array();
 		$this->addParsedFile($fname);
 
-		$parser = new Less_Parser();
+		$parser = new Less_Parser($this->getOptions());
 		$parser->SetImportDirs($this->getImportDirs());
 		if( count( $this->registeredVars ) ) $parser->ModifyVars( $this->registeredVars );
 		foreach ($this->libFunctions as $name => $func) {
