@@ -233,9 +233,13 @@ class Less_Tree_Import extends Less_Tree{
 					}
 				}elseif( !empty($rootpath) ){
 
-					if( strpos($evald_path,$rooturi) === 0 ){
-						$evald_path = substr( $evald_path, strlen($rooturi) );
+
+					if( $rooturi ){
+						if( strpos($evald_path,$rooturi) === 0 ){
+							$evald_path = substr( $evald_path, strlen($rooturi) );
+						}
 					}
+
 					$path = rtrim($rootpath,'/\\').'/'.ltrim($evald_path,'/\\');
 
 					if( file_exists($path) ){
