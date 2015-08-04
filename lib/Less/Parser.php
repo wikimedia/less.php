@@ -47,7 +47,7 @@ class Less_Parser{
 	private $pos;					// current index in `input`
 	private $saveStack = array();	// holds state for backtracking
 	private $furthest;
-	private $mb_internal_encoding = false; // for remember exists value of mbstring.internal_encoding
+	private $mb_internal_encoding = ''; // for remember exists value of mbstring.internal_encoding
 
 	/**
 	 * @var Less_Environment
@@ -222,9 +222,9 @@ class Less_Parser{
 
 		// If you previously defined $this->mb_internal_encoding 
 		// is required to return the encoding as it was before
-		if ($this->mb_internal_encoding) {
+		if ($this->mb_internal_encoding != '') {
 			@ini_set("mbstring.internal_encoding", $this->mb_internal_encoding);
-			$this->mb_internal_encoding = false;
+			$this->mb_internal_encoding = '';
 		}
 
 		// Rethrow exception after we handled resetting the environment
