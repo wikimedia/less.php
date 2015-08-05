@@ -67,11 +67,11 @@ class lessc{
 
 		$parser = new Less_Parser($this->getOptions());
 		$parser->setImportDirs($this->getImportDirs());
-		if( count( $this->registeredVars ) ) $parser->ModifyVars( $this->registeredVars );
 		foreach ($this->libFunctions as $name => $func) {
 			$parser->registerFunction($name, $func);
 		}
 		$parser->parse($buffer);
+		if( count( $this->registeredVars ) ) $parser->ModifyVars( $this->registeredVars );
 
 		return $parser->getCss();
 	}
