@@ -77,7 +77,7 @@ class lessc{
 	}
 
 	protected function getOptions(){
-		$options = array();
+		$options = array('relativeUrls'=>false);
 		switch($this->formatterName){
 			case 'compressed':
 				$options['compress'] = true;
