@@ -22,7 +22,6 @@ class lessc{
 	protected $allParsedFiles = array();
 	protected $libFunctions = array();
 	protected $registeredVars = array();
-	protected $options = array();
 	private $formatterName;
 
 	public function __construct($lessc=null, $sourceName=null) {}
@@ -89,8 +88,7 @@ class lessc{
 	}
 
 	protected function getOptions(){
-		$options = $this->options;
-		
+		$options = array('relativeUrls'=>false);
 		switch($this->formatterName){
 			case 'compressed':
 				$options['compress'] = true;
