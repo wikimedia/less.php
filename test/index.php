@@ -839,7 +839,7 @@ $content = ob_get_clean();
 	<link rel="stylesheet" type="text/css" href="assets/style.css" />
 	<link rel="stylesheet" type="text/css" href="assets/jsdiff.css" />
 
-	<script src="assets/jquery-1.10.2.min.js"></script>
+	<script src="assets/jquery-1.11.3.min.js"></script>
 	<script src="assets/diffview.js"></script>
 	<script src="assets/difflib.js"></script>
 	<script src="assets/script.js"></script>
@@ -856,7 +856,7 @@ $content = ob_get_clean();
 		if( isset($_GET['file']) ){
 			echo '<script src="assets/lessjs-config.js"></script>';
 			//echo '<script src="assets/less-1.6.3.js"></script>';
-			echo '<script src="assets/less-1.7.0.js"></script>';
+			echo '<script src="assets/less-1.7.5.js"></script>';
 		}
 	?>
 </head>
