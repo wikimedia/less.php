@@ -15,9 +15,9 @@ $dir = dirname(dirname(__FILE__));
 
 
 //get parser
-require_once $dir.'/lib/Less/Autoloader.php';
+require_once $dir.'/../lib/Less/Autoloader.php';
 Less_Autoloader::register();
-require_once $dir.'/lessc.inc.php';
+require_once $dir.'/../lessc.inc.php';
 
 
 //? performance improvement (php 5.3+)
@@ -35,7 +35,7 @@ require( $dir. '/test/php-diff/lib/Diff/Renderer/Html/SideBySide.php');
 require( $dir. '/test/php-diff/lib/Diff/Renderer/Html/Inline.php');
 
 
-class ParserTest{
+class ParserTest {
 
 	//options
 	var $compress = false;
@@ -48,7 +48,6 @@ class ParserTest{
 
 	function __construct(){
 
-
 		$this->cache_dir = dirname(__FILE__).'/_cache';
 
 		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
@@ -56,7 +55,6 @@ class ParserTest{
 		}elseif( !is_writable($this->cache_dir) ){
 			echo '<p>Cache directory not writable</p>';
 		}
-
 
 		//get any other possible test folders
 		$fixtures_dir = dirname(__FILE__).'/Fixtures';
@@ -85,7 +83,7 @@ class ParserTest{
 		$this->lessJsProvider($dir);
 	}
 
-	public function WhichComparisons($dir){
+	public function WhichComparisons( $dir ) {
 
 		if( isset($_GET['file']) ){
 
@@ -127,7 +125,7 @@ class ParserTest{
 
 	}
 
-    public function lessJsProvider($dir){
+	public function lessJsProvider($dir){
 
 		$pairs = $this->WhichComparisons($dir);
 
@@ -166,9 +164,9 @@ class ParserTest{
 			}
 		}
 
-    }
+	}
 
-    public function testLessJsCssGeneration($dir, $less, $css, $map ){
+	public function testLessJsCssGeneration($dir, $less, $css, $map ){
 		global $obj_buffer;
 
 
@@ -218,11 +216,6 @@ class ParserTest{
 			echo '<b>Unknown comparison file</b>';
 			return false;
 		}
-
-
-
-
-
 
 		//generate the sourcemap
 		if( file_exists($file_sourcemap) ){
@@ -306,7 +299,7 @@ class ParserTest{
 			return $matched;
 
 		//css comparison
-		}else{
+		} else {
 
 			//$this->SaveExpected($file_expected, $compiled);
 
@@ -335,7 +328,6 @@ class ParserTest{
 			$matched = $this->CompareFiles( $compiled, $css, $expected);
 
 		}
-
 
 		if( isset($_GET['file']) ){
 			$this->PHPDiff($compiled,$css);
@@ -387,7 +379,6 @@ class ParserTest{
 		return false;
 	}
 
-
 	/**
 	 * Save the results of the compiler
 	 * The contents of these files are used by phpunit tests
@@ -406,7 +397,6 @@ class ParserTest{
 		}
 	}
 
-
 	/**
 	 * Change a css file name to a less file name
 	 *
@@ -421,7 +411,7 @@ class ParserTest{
 		return dirname( dirname($file_css) ).'/'.$dir.'/'.$filename.'.'.$type;
 	}
 
-    function ObjBuffer(){
+	function ObjBuffer(){
 		global $obj_buffer;
 
 
@@ -472,7 +462,7 @@ class ParserTest{
 	 * Show diff using php (optional)
 	 *
 	 */
-    function PHPDiff($compiled,$css, $force = false){
+	function PHPDiff($compiled,$css, $force = false){
 
 		if( !$force && isset($_COOKIE['phpdiff']) && $_COOKIE['phpdiff'] == 0 ){
 			return;
@@ -596,25 +586,24 @@ class ParserTest{
 	static function showError($errno, $errmsg, $filename, $linenum, $vars){
 		static $reported = array();
 
-
 		//readable types
 		$errortype = array (
-					E_ERROR				=> 'Fatal Error',
-					E_WARNING			=> 'Warning',
-					E_PARSE				=> 'Parsing Error',
-					E_NOTICE 			=> 'Notice',
-					E_CORE_ERROR		=> 'Core Error',
-					E_CORE_WARNING 		=> 'Core Warning',
-					E_COMPILE_ERROR		=> 'Compile Error',
-					E_COMPILE_WARNING 	=> 'Compile Warning',
-					E_USER_ERROR		=> 'User Error',
-					E_USER_WARNING 		=> 'User Warning',
-					E_USER_NOTICE		=> 'User Notice',
-					E_STRICT			=> 'Strict Notice',
-					E_RECOVERABLE_ERROR => 'Recoverable Error',
-					E_DEPRECATED		=> 'Deprecated',
-					E_USER_DEPRECATED	=> 'User Deprecated',
-				 );
+			E_ERROR				=> 'Fatal Error',
+			E_WARNING			=> 'Warning',
+			E_PARSE				=> 'Parsing Error',
+			E_NOTICE 			=> 'Notice',
+			E_CORE_ERROR		=> 'Core Error',
+			E_CORE_WARNING 		=> 'Core Warning',
+			E_COMPILE_ERROR		=> 'Compile Error',
+			E_COMPILE_WARNING 	=> 'Compile Warning',
+			E_USER_ERROR		=> 'User Error',
+			E_USER_WARNING 		=> 'User Warning',
+			E_USER_NOTICE		=> 'User Notice',
+			E_STRICT			=> 'Strict Notice',
+			E_RECOVERABLE_ERROR => 'Recoverable Error',
+			E_DEPRECATED		=> 'Deprecated',
+			E_USER_DEPRECATED	=> 'User Deprecated',
+		);
 
 
 		//get the backtrace and function where the error was thrown
@@ -644,8 +633,6 @@ class ParserTest{
 			restore_error_handler();
 		}
 
-
-
 		//build message
 		echo '<fieldset style="padding:1em">';
 		echo '<legend>'.$errortype[$errno].' ('.$errno.')</legend> '.$errmsg;
@@ -657,7 +644,6 @@ class ParserTest{
 		if( isset($_SERVER['REQUEST_METHOD']) ){
 			echo '<br/> &nbsp; &nbsp; <b>Method:</b> '.$_SERVER['REQUEST_METHOD'];
 		}
-
 
 		//attempting to entire all data can result in a blank screen
 		foreach($backtrace as $i => $trace){
@@ -679,14 +665,11 @@ class ParserTest{
 	}
 }
 
-
-
-
 /**
  * Output an object in a readable format for comparison with similar output from javascript
  *
  */
-function obj($mixed, $objects = array() ){
+function obj($mixed, $objects = array() ) {
 	$objects_before = $objects;
 
 	global $obj_buffer;
@@ -815,8 +798,6 @@ function func_trace($len = 1){
 		}
 	}
 }
-
-
 
 ob_start();
 $test_obj = new ParserTest();
