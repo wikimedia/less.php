@@ -252,13 +252,12 @@ class ParserTest{
 
 			/**
 			 * Less_Cache Testing
-			Less_Cache::$cache_dir = $this->cache_dir;
-			//$cached_css_file = Less_Cache::Regen( array($file_less=>'') );
-			//$options['output'] = md5($file_less).'.css';
-			$cached_css_file = Less_Cache::Get( array($file_less=>''), $options );
-			$compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
-			*/
-
+			 * Less_Cache::$cache_dir = $this->cache_dir;
+			 * //$cached_css_file = Less_Cache::Regen( array($file_less=>'') );
+			 * //$options['output'] = md5($file_less).'.css';
+			 * $cached_css_file = Less_Cache::Get( array($file_less=>''), $options );
+			 * $compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
+			 */
 
 			$parser = new Less_Parser( $options );
 			$parser->parseFile( $file_less ); //$file_uri
@@ -270,18 +269,15 @@ class ParserTest{
 			//$parser->parse( $less_content );
 			//$compiled = $parser->getCss();
 
-
 			//$parser = new lessc();
 			//$compiled = $parser->compileFile($file_less);
-
 
 			//$parser = new lessc();
 			//$compiled = $parser->compile(file_get_contents($file_less));
 
-		}catch(Exception $e){
+		} catch(Exception $e){
 			$compiled = $e->getMessage();
 		}
-
 
 		//sourcemap comparison
 		if( $file_sourcemap ){
@@ -309,12 +305,10 @@ class ParserTest{
 
 			return $matched;
 
-
 		//css comparison
 		}else{
 
 			//$this->SaveExpected($file_expected, $compiled);
-
 
 			$css = file_get_contents($file_css);
 
@@ -324,7 +318,6 @@ class ParserTest{
 				//$compiled = str_replace('}',"\n}",$compiled);
 				$compiled = str_replace(';',";\n",$compiled);
 				$compiled = preg_replace('/\s*}\s*/',"\n}\n",$compiled);
-
 
 				$css = preg_replace('/\n\s+/',"\n",$css);
 				$css = preg_replace('/:\s+/',":",$css);
