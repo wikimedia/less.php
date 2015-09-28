@@ -15,9 +15,9 @@ $dir = dirname(dirname(__FILE__));
 
 
 //get parser
-require_once $dir.'/lib/Less/Autoloader.php';
+require_once $dir.'/../lib/Less/Autoloader.php';
 Less_Autoloader::register();
-require_once $dir.'/lessc.inc.php';
+require_once $dir.'/../lessc.inc.php';
 
 
 //? performance improvement (php 5.3+)
@@ -35,7 +35,7 @@ require( $dir. '/test/php-diff/lib/Diff/Renderer/Html/SideBySide.php');
 require( $dir. '/test/php-diff/lib/Diff/Renderer/Html/Inline.php');
 
 
-class ParserTest{
+class ParserTest {
 
 	//options
 	var $compress = false;
@@ -48,7 +48,6 @@ class ParserTest{
 
 	function __construct(){
 
-
 		$this->cache_dir = dirname(__FILE__).'/_cache';
 
 		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
@@ -56,7 +55,6 @@ class ParserTest{
 		}elseif( !is_writable($this->cache_dir) ){
 			echo '<p>Cache directory not writable</p>';
 		}
-
 
 		//get any other possible test folders
 		$fixtures_dir = dirname(__FILE__).'/Fixtures';
@@ -85,7 +83,7 @@ class ParserTest{
 		$this->lessJsProvider($dir);
 	}
 
-	public function WhichComparisons($dir){
+	public function WhichComparisons( $dir ) {
 
 		if( isset($_GET['file']) ){
 
@@ -127,7 +125,7 @@ class ParserTest{
 
 	}
 
-    public function lessJsProvider($dir){
+	public function lessJsProvider($dir){
 
 		$pairs = $this->WhichComparisons($dir);
 
@@ -166,9 +164,9 @@ class ParserTest{
 			}
 		}
 
-    }
+	}
 
-    public function testLessJsCssGeneration($dir, $less, $css, $map ){
+	public function testLessJsCssGeneration($dir, $less, $css, $map ){
 		global $obj_buffer;
 
 
@@ -219,11 +217,6 @@ class ParserTest{
 			return false;
 		}
 
-
-
-
-
-
 		//generate the sourcemap
 		if( file_exists($file_sourcemap) ){
 
@@ -252,13 +245,12 @@ class ParserTest{
 
 			/**
 			 * Less_Cache Testing
-			Less_Cache::$cache_dir = $this->cache_dir;
-			//$cached_css_file = Less_Cache::Regen( array($file_less=>'') );
-			//$options['output'] = md5($file_less).'.css';
-			$cached_css_file = Less_Cache::Get( array($file_less=>''), $options );
-			$compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
-			*/
-
+			 * Less_Cache::$cache_dir = $this->cache_dir;
+			 * //$cached_css_file = Less_Cache::Regen( array($file_less=>'') );
+			 * //$options['output'] = md5($file_less).'.css';
+			 * $cached_css_file = Less_Cache::Get( array($file_less=>''), $options );
+			 * $compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
+			 */
 
 			$parser = new Less_Parser( $options );
 			$parser->parseFile( $file_less ); //$file_uri
@@ -270,18 +262,15 @@ class ParserTest{
 			//$parser->parse( $less_content );
 			//$compiled = $parser->getCss();
 
-
 			//$parser = new lessc();
 			//$compiled = $parser->compileFile($file_less);
-
 
 			//$parser = new lessc();
 			//$compiled = $parser->compile(file_get_contents($file_less));
 
-		}catch(Exception $e){
+		} catch(Exception $e){
 			$compiled = $e->getMessage();
 		}
-
 
 		//sourcemap comparison
 		if( $file_sourcemap ){
@@ -309,12 +298,10 @@ class ParserTest{
 
 			return $matched;
 
-
 		//css comparison
-		}else{
+		} else {
 
 			//$this->SaveExpected($file_expected, $compiled);
-
 
 			$css = file_get_contents($file_css);
 
@@ -324,7 +311,6 @@ class ParserTest{
 				//$compiled = str_replace('}',"\n}",$compiled);
 				$compiled = str_replace(';',";\n",$compiled);
 				$compiled = preg_replace('/\s*}\s*/',"\n}\n",$compiled);
-
 
 				$css = preg_replace('/\n\s+/',"\n",$css);
 				$css = preg_replace('/:\s+/',":",$css);
@@ -342,7 +328,6 @@ class ParserTest{
 			$matched = $this->CompareFiles( $compiled, $css, $expected);
 
 		}
-
 
 		if( isset($_GET['file']) ){
 			$this->PHPDiff($compiled,$css);
@@ -394,7 +379,6 @@ class ParserTest{
 		return false;
 	}
 
-
 	/**
 	 * Save the results of the compiler
 	 * The contents of these files are used by phpunit tests
@@ -413,7 +397,6 @@ class ParserTest{
 		}
 	}
 
-
 	/**
 	 * Change a css file name to a less file name
 	 *
@@ -428,7 +411,7 @@ class ParserTest{
 		return dirname( dirname($file_css) ).'/'.$dir.'/'.$filename.'.'.$type;
 	}
 
-    function ObjBuffer(){
+	function ObjBuffer(){
 		global $obj_buffer;
 
 
@@ -479,7 +462,7 @@ class ParserTest{
 	 * Show diff using php (optional)
 	 *
 	 */
-    function PHPDiff($compiled,$css, $force = false){
+	function PHPDiff($compiled,$css, $force = false){
 
 		if( !$force && isset($_COOKIE['phpdiff']) && $_COOKIE['phpdiff'] == 0 ){
 			return;
@@ -603,25 +586,24 @@ class ParserTest{
 	static function showError($errno, $errmsg, $filename, $linenum, $vars){
 		static $reported = array();
 
-
 		//readable types
 		$errortype = array (
-					E_ERROR				=> 'Fatal Error',
-					E_WARNING			=> 'Warning',
-					E_PARSE				=> 'Parsing Error',
-					E_NOTICE 			=> 'Notice',
-					E_CORE_ERROR		=> 'Core Error',
-					E_CORE_WARNING 		=> 'Core Warning',
-					E_COMPILE_ERROR		=> 'Compile Error',
-					E_COMPILE_WARNING 	=> 'Compile Warning',
-					E_USER_ERROR		=> 'User Error',
-					E_USER_WARNING 		=> 'User Warning',
-					E_USER_NOTICE		=> 'User Notice',
-					E_STRICT			=> 'Strict Notice',
-					E_RECOVERABLE_ERROR => 'Recoverable Error',
-					E_DEPRECATED		=> 'Deprecated',
-					E_USER_DEPRECATED	=> 'User Deprecated',
-				 );
+			E_ERROR				=> 'Fatal Error',
+			E_WARNING			=> 'Warning',
+			E_PARSE				=> 'Parsing Error',
+			E_NOTICE 			=> 'Notice',
+			E_CORE_ERROR		=> 'Core Error',
+			E_CORE_WARNING 		=> 'Core Warning',
+			E_COMPILE_ERROR		=> 'Compile Error',
+			E_COMPILE_WARNING 	=> 'Compile Warning',
+			E_USER_ERROR		=> 'User Error',
+			E_USER_WARNING 		=> 'User Warning',
+			E_USER_NOTICE		=> 'User Notice',
+			E_STRICT			=> 'Strict Notice',
+			E_RECOVERABLE_ERROR => 'Recoverable Error',
+			E_DEPRECATED		=> 'Deprecated',
+			E_USER_DEPRECATED	=> 'User Deprecated',
+		);
 
 
 		//get the backtrace and function where the error was thrown
@@ -651,8 +633,6 @@ class ParserTest{
 			restore_error_handler();
 		}
 
-
-
 		//build message
 		echo '<fieldset style="padding:1em">';
 		echo '<legend>'.$errortype[$errno].' ('.$errno.')</legend> '.$errmsg;
@@ -664,7 +644,6 @@ class ParserTest{
 		if( isset($_SERVER['REQUEST_METHOD']) ){
 			echo '<br/> &nbsp; &nbsp; <b>Method:</b> '.$_SERVER['REQUEST_METHOD'];
 		}
-
 
 		//attempting to entire all data can result in a blank screen
 		foreach($backtrace as $i => $trace){
@@ -686,14 +665,11 @@ class ParserTest{
 	}
 }
 
-
-
-
 /**
  * Output an object in a readable format for comparison with similar output from javascript
  *
  */
-function obj($mixed, $objects = array() ){
+function obj($mixed, $objects = array() ) {
 	$objects_before = $objects;
 
 	global $obj_buffer;
@@ -823,8 +799,6 @@ function func_trace($len = 1){
 	}
 }
 
-
-
 ob_start();
 $test_obj = new ParserTest();
 $content = ob_get_clean();
@@ -839,7 +813,7 @@ $content = ob_get_clean();
 	<link rel="stylesheet" type="text/css" href="assets/style.css" />
 	<link rel="stylesheet" type="text/css" href="assets/jsdiff.css" />
 
-	<script src="assets/jquery-1.10.2.min.js"></script>
+	<script src="assets/jquery-1.11.3.min.js"></script>
 	<script src="assets/diffview.js"></script>
 	<script src="assets/difflib.js"></script>
 	<script src="assets/script.js"></script>
@@ -856,7 +830,7 @@ $content = ob_get_clean();
 		if( isset($_GET['file']) ){
 			echo '<script src="assets/lessjs-config.js"></script>';
 			//echo '<script src="assets/less-1.6.3.js"></script>';
-			echo '<script src="assets/less-1.7.0.js"></script>';
+			echo '<script src="assets/less-1.7.5.js"></script>';
 		}
 	?>
 </head>
