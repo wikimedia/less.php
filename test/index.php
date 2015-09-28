@@ -15,9 +15,9 @@ $dir = dirname(dirname(__FILE__));
 
 
 //get parser
-require_once $dir.'/../lib/Less/Autoloader.php';
+require_once $dir.'/lib/Less/Autoloader.php';
 Less_Autoloader::register();
-require_once $dir.'/../lessc.inc.php';
+require_once $dir.'/lessc.inc.php';
 
 
 //? performance improvement (php 5.3+)
