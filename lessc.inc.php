@@ -1,11 +1,9 @@
 <?php
 /**
- *
  * This file provides the part of lessphp API (https://github.com/leafo/lessphp)
  * to be a drop-in replacement for following products:
  *  - Drupal 7, by the less module v3.0+ (https://drupal.org/project/less)
  *  - Symfony 2
- *
  */
 
 // Register autoloader for non-composer installations
