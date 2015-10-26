@@ -1,0 +1,153 @@
+@color1: rgba(51, 102, 153, 0.9);
+@color2: rgba(204, 102, 0, 0.9);
+@color3: rgba(252, 179, 208, 0.9);
+
+/* color channel functions */
+@h: hue(@color1);
+@s: saturation(@color1);
+@l: lightness(@color1);
+@hsvh: hsvhue(@color1);
+@hsvs: hsvsaturation(@color1);
+@hsvv: hsvvalue(@color1);
+@r: red(@color1);
+@g: green(@color1);
+@b: blue(@color1);
+@a: alpha(@color1);
+@luma: luma(@color1);
+@luminance: luminance(@color1);
+
+body {
+
+	.color-channels {
+		--hue: @h;
+		--saturation: @s;
+		--lightness: @l;
+		--hsvhue: @hsvh;
+		--hsvsaturation: @hsvs;
+		--hsvvalue: @hsvv;
+		--red: @r;
+		--green: @g;
+		--blue: @b;
+		--alpha: @a;
+		--luma: @luma;
+		--luminance: @luminance;
+	}
+
+	.color-definitions {
+		.rgb {
+			color: rgb(@r,@g,@b);
+		}
+		.rgba {
+			color: rgba(@r,@g,@b,@a);
+		}
+		.argb {
+			color: argb(rgba(@r,@g,@b,@a));
+		}
+		.hsl {
+			color: hsl(@h,@s,@l);
+		}
+		.hsla {
+			color: hsla(@h,@s,@l,@a);
+		}
+		.hsv {
+			color: hsv(@hsvh,@hsvs,@hsvv);
+		}
+		.hsva {
+			color: hsva(@hsvh,@hsvs,@hsvv,@a);
+		}
+	}
+
+	.css-filters {
+		.saturate {
+			color: saturate(200%);
+		}
+	}
+
+	.color-operations {
+		.saturate {
+			color: saturate(@color1,50%);
+		}
+		.desaturate {
+			color: desaturate(@color1,50%);
+		}
+		.lighten {
+			color: lighten(@color1,50%);
+		}
+		.darken {
+			color: darken(@color1,50%);
+		}
+		.fadein {
+			color: fadein(@color1,50%);
+		}
+		.fadeout {
+			color: fadeout(@color1,50%);
+		}
+		.fade {
+			color: fade(@color1,50%);
+		}
+		.spin50 {
+			color: spin(@color1,50);
+		}
+		.spin720 {
+			color: spin(@color1,720);
+		}
+		.spin-50 {
+			color: spin(@color1,-50);
+		}
+		.spin-720 {
+			color: spin(@color1,-720);
+		}
+		.mix-default {
+			color: mix(@color1,@color2);
+		}
+		.mix60 {
+			color: mix(@color1,@color2,60%);
+		}
+		.greyscale {
+			color: greyscale(@color1);
+		}
+		.contrast-1param {
+			color: contrast(@color1);
+		}
+		.contrast-2param {
+			color: contrast(@color1,@color2);
+		}
+		.contrast-3param {
+			color: contrast(@color1,@color2,@color3);
+		}
+		.contrast-4param {
+			color: contrast(@color1,@color2,@color3,75%);
+		}
+	}
+
+	.color-blenders {
+		.multiply {
+			color: multiply(@color1,@color2);
+		}
+		.screen {
+			color: screen(@color1,@color2);
+		}
+		.overlay {
+			color: overlay(@color1,@color2);
+		}
+		.softlight {
+			color: softlight(@color1,@color2);
+		}
+		.hardlight {
+			color: hardlight(@color1,@color2);
+		}
+		.difference {
+			color: difference(@color1,@color2);
+		}
+		.exclusion {
+			color: exclusion(@color1,@color2);
+		}
+		.average {
+			color: average(@color1,@color2);
+		}
+		.negation {
+			color: negation(@color1,@color2);
+		}
+	}
+
+}
