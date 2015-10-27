@@ -249,7 +249,7 @@ class Less_Parser{
 	 */
 	public function getVariables()
 	{
-		$vars = [];
+		$vars = array();
 		foreach($this->rules as $key => $rule){
 
 			if(isset($rule->variable) && ($rule->variable == true)){
