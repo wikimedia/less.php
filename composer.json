@@ -19,7 +19,11 @@
 		}
 	],
 	"require": {
-		"PHP" : ">=5.3"
+		"PHP" : ">=5.3",
+		"phpunit/phpunit": "~4.3"
+	},
+	"scripts": {
+		"test": "phpunit"
 	},
 	"autoload": {
 		"psr-0": { "Less": "lib/" },
