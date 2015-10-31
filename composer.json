@@ -20,7 +20,7 @@
 	],
 	"require": {
 		"PHP" : ">=5.3",
-		"phpunit/phpunit": "~4.3"
+		"phpunit/phpunit": "~4.8.16"
 	},
 	"scripts": {
 		"test": "phpunit"
