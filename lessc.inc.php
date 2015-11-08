@@ -94,6 +94,10 @@ class lessc{
 				$options['compress'] = true;
 				break;
 		}
+		if (is_array($this->options))
+		{
+			$options = array_merge($options, $this->options);
+		}
 		return $options;
 	}
 
