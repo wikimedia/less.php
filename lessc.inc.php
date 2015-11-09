@@ -23,6 +23,7 @@ class lessc{
 	protected $libFunctions = array();
 	protected $registeredVars = array();
 	private $formatterName;
+	private $options = array();
 
 	public function __construct($lessc=null, $sourceName=null) {}
 
