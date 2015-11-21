@@ -23,6 +23,7 @@ class lessc{
 	protected $libFunctions = array();
 	protected $registeredVars = array();
 	private $formatterName;
+	private $options = array();
 
 	public function __construct($lessc=null, $sourceName=null) {}
 
@@ -93,6 +94,10 @@ class lessc{
 			case 'compressed':
 				$options['compress'] = true;
 				break;
+		}
+		if (is_array($this->options))
+		{
+			$options = array_merge($options, $this->options);
 		}
 		return $options;
 	}
