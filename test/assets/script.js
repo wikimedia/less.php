@@ -63,6 +63,26 @@ $(function(){
 	//SideBySideObjects();
 
 
+
+	/**
+	 * Generate css using less.js and display a diff
+	 * https://github.com/less/less.js/issues/626
+	 * http://winless.org/scripts/online_less_compiler.js
+	 *
+	 */
+	var $raw_less = $('#raw_less');
+	if( $raw_less.length ){
+		var parser		= less.Parser();
+		parser.parse($raw_less.val(), function(error, result){
+			$('#lessjs_textarea').val( result.toCSS() );
+			diffUsingJS(0);
+		});
+
+		//less.render('.class { width: (1 + 1) }', function (e, output) {
+		//	console.log(output.css);
+		//});
+	}
+
 });
 
 var object_level = 0;
