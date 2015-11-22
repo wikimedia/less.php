@@ -336,12 +336,18 @@ class ParserTest {
 			echo '</td><td>';
 			echo '<textarea id="lessjs_textarea" autocomplete="off"></textarea>';
 			echo '</td></tr></table>';
-			echo '<textarea id="raw_less" style="display:none">'.htmlspecialchars(file_get_contents($file_less)).'</textarea>';
 			$this->ObjBuffer();
+			$this->LessLink($file_less);
 		}
 
 
 		return $matched;
+	}
+
+
+	function LessLink($less){
+		$less = $this->AbsoluteToRelative($less);
+		$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.$less.'" />';
 	}
 
 	function CompareFiles( $generated, $lessjs, $expected ){
