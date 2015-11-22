@@ -739,7 +739,7 @@ class Less_Functions{
 
 	public function argb($color) {
 		if (!$color instanceof Less_Tree_Color) {
-			throw new Less_Exception_Compiler('The first argument to argb must be a color' . ($dark instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
+			throw new Less_Exception_Compiler('The first argument to argb must be a color' . ($color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '') );
 		}
 
 		return new Less_Tree_Anonymous($color->toARGB());
