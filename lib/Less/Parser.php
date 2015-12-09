@@ -235,12 +235,20 @@ class Less_Parser{
 			throw $exc;
 		}
 
-
-
 		return $css;
 	}
-	
-		/**
+
+    public function findValueOf($varName)
+    {
+        foreach($this->rules as $rule){
+            if(isset($rule->variable) && ($rule->variable == true) && (str_replace("@","",$rule->name) == $varName)){
+                return $this->getVariableValue($rule);
+            }
+        }
+        return null;
+    }
+
+	/**
 	 *
 	 * this function gets the private rules variable and returns an array of the found variables
 	 * it uses a helper method getVariableValue() that contains the logic ot fetch the value from the rule object
@@ -251,7 +259,6 @@ class Less_Parser{
 	{
 		$vars = array();
 		foreach($this->rules as $key => $rule){
-
 			if(isset($rule->variable) && ($rule->variable == true)){
 				$vars[$rule->name] = $this->getVariableValue($rule);
 			}
@@ -259,12 +266,22 @@ class Less_Parser{
 		return $vars ;
 	}
 
+    public function findVarByName($var_name)
+    {
+        foreach($this->rules as $rule){
+            if(isset($rule->variable) && ($rule->variable == true)){
+                if($rule->name == $var_name){
+                    return $this->getVariableValue($rule);
+                }
+            }
+        }
+        return false;
+    }
+
 	/**
 	 *
 	 * This method gets the value of the less variable from the rules object.
 	 * Since the objects vary here we add the logic for extracting the css/less value.
-	 * This will return false if it does not have the logic to extract the value
-	 * @TODO add more handles
 	 *
 	 * @param $var
 	 *
@@ -272,7 +289,29 @@ class Less_Parser{
 	 */
 	private function getVariableValue($var)
 	{
+        $gigi = $var;
 		if(get_class($var->value->value[0]->value[0]) == "Less_Tree_Dimension"){
+            if(get_class($var->value->value[0]) == "Less_Tree_Expression" ){
+                $value = "";
+                foreach($var->value->value[0]->value as $item){
+                    if(isset($item->name)){
+                        $value.= $this->findVarByName($item->name)." ";
+                    }
+                    if(isset($item->value)){
+                        if($item->type == "Dimension"){
+                            $value .= $item->value;
+                            if(isset($item->unit)){
+                                if(isset($item->unit->numerator[0])){
+                                    $value .= $item->unit->numerator[0]." ";
+                                }
+                            }
+                        }else{
+                            $value .= $item->value." ";
+                        }
+                    }
+                }
+                return $value;
+            }
 			if(isset($var->value->value[0]->value[0]->unit->numerator[0])) {
 				return "{$var->value->value[0]->value[0]->value}{$var->value->value[0]->value[0]->unit->numerator[0]}";
 			}else{
@@ -280,10 +319,32 @@ class Less_Parser{
 			}
 		}
 		if(get_class($var->value->value[0]->value[0]) == "Less_Tree_Color"){
-			return implode(",",$var->value->value[0]->value[0]->rgb);
+//			return implode(",",$var->value->value[0]->value[0]->rgb);
+            return $this->rgb2html($var->value->value[0]->value[0]->rgb);
 		}
+        if(get_class($var->value->value[0]->value[0]) == 'Less_Tree_Variable'){
+            return "#000";
+        }
 		return false;
 	}
+
+    private function rgb2html($r, $g=-1, $b=-1)
+    {
+        if (is_array($r) && sizeof($r) == 3)
+            list($r, $g, $b) = $r;
+
+        $r = intval($r); $g = intval($g);
+        $b = intval($b);
+
+        $r = dechex($r<0?0:($r>255?255:$r));
+        $g = dechex($g<0?0:($g>255?255:$g));
+        $b = dechex($b<0?0:($b>255?255:$b));
+
+        $color = (strlen($r) < 2?'0':'').$r;
+        $color .= (strlen($g) < 2?'0':'').$g;
+        $color .= (strlen($b) < 2?'0':'').$b;
+        return '#'.$color;
+    }
 
 	/**
 	 * Run pre-compile visitors
