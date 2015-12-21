@@ -275,7 +275,7 @@ class Less_Parser{
                 }
             }
         }
-        return false;
+        return null;
     }
 
 	/**
@@ -323,7 +323,7 @@ class Less_Parser{
             return $this->rgb2html($var->value->value[0]->value[0]->rgb);
 		}
         if(get_class($var->value->value[0]->value[0]) == 'Less_Tree_Variable'){
-            return "#000";
+            return $this->findVarByName($var->value->value[0]->value[0]->name);
         }
 		return false;
 	}
