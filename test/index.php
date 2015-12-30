@@ -8,7 +8,9 @@ error_reporting(E_ALL | E_STRICT); //previous to php 5.4, E_ALL did not include 
 error_reporting(E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR);
 set_error_handler(array('ParserTest','showError'),E_ALL | E_STRICT);
 
-set_time_limit(60);
+if (php_sapi_name() != "cli") {
+    set_time_limit(60);
+}
 //error_reporting(E_ALL | E_STRICT);
 
 $dir = dirname(dirname(__FILE__));

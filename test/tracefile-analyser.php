@@ -5,7 +5,9 @@
 $fileName = '/tmp/trace.2043925204.xt';
 $sortKey  = 'time-own'; //array( 'calls','time-inclusive' , 'memory-inclusive', 'time-own', 'memory-own','time-own-percall' )
 $elements = 50;
-set_time_limit(120);
+if (php_sapi_name() != "cli") {
+    set_time_limit(120);
+}
 echo '<pre>';
 
 $o = new drXdebugTraceFileParser( $fileName );
