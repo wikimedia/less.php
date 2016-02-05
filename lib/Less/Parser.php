@@ -946,15 +946,22 @@ class Less_Parser{
 			$this->MatchChar('~');
 		}
 
-                // Fix for #124: match escaped newlines
-                //$str = $this->MatchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/');
-		$str = $this->MatchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.|\\\\\r\n|\\\\[\n\r\f])*)"|\'((?:[^\'\\\\\r\n]|\\\\.|\\\\\r\n|\\\\[\n\r\f])*)\'/');
 
+
+		// Fix for #124: match escaped newlines
+		//$str = $this->MatchReg('/\\G"((?:[^"\\\\\r\n]|\\\\.)*)"|\'((?:[^\'\\\\\r\n]|\\\\.)*)\'/');
+
+		$regex	= '/\\G\'((?:[^\'\\\\\r\n]|\\\\.|\\\\\r\n|\\\\[\n\r\f])*)\'/';
+		$str	= $this->MatchReg($regex);
 		if( $str ){
-			$result = $str[0][0] == '"' ? $str[1] : $str[2];
-			return $this->NewObj5('Less_Tree_Quoted',array($str[0], $result, $e, $index, $this->env->currentFileInfo) );
+			return $this->NewObj5('Less_Tree_Quoted',array($str[0], $str[1], $e, $index, $this->env->currentFileInfo) );
 		}
-		return;
+
+		$regex	= '/\\G"((?:[^"\\\\\r\n]|\\\\.|\\\\\r\n|\\\\[\n\r\f])*)"/';
+		$str	= $this->MatchReg($regex);
+		if( $str ){
+			return $this->NewObj5('Less_Tree_Quoted',array($str[0], $str[1], $e, $index, $this->env->currentFileInfo) );
+		}
 	}
 
 
