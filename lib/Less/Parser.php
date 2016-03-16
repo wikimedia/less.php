@@ -1138,7 +1138,7 @@ class Less_Parser{
 	}
 
 
-	// A variable entity useing the protective {} e.g. @{var}
+	// A variable entity using the protective {} e.g. @{var}
 	private function parseEntitiesVariableCurly() {
 		$index = $this->pos;
 
@@ -1575,7 +1575,7 @@ class Less_Parser{
 	//
 	// A Rule terminator. Note that we use `peek()` to check for '}',
 	// because the `block` rule will be expecting it, but we still need to make sure
-	// it's there, if ';' was ommitted.
+	// it's there, if ';' was omitted.
 	//
 	private function parseEnd(){
 		return $this->MatchChar(';') || $this->PeekChar('}');
