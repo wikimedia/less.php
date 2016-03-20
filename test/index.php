@@ -83,6 +83,8 @@ class ParserTest {
 		$dir = $fixtures_dir.'/'.$this->dir;
 
 		$this->lessJsProvider($dir);
+
+		Less_Cache::CleanCache();
 	}
 
 	public function WhichComparisons( $dir ) {
@@ -245,9 +247,11 @@ class ParserTest {
 		$compiled = '';
 		try{
 
+
+
 			/**
 			 * Less_Cache Testing
-			 * Less_Cache::$cache_dir = $this->cache_dir;
+			 * Less_Cache::SetCacheDir($this->cache_dir);
 			 * //$cached_css_file = Less_Cache::Regen( array($file_less=>'') );
 			 * //$options['output'] = md5($file_less).'.css';
 			 * $cached_css_file = Less_Cache::Get( array($file_less=>''), $options );
