@@ -337,9 +337,9 @@ class ParserTest {
 
 		if( isset($_GET['file']) ){
 			$this->PHPDiff($compiled,$css);
-			echo '<table><tr><td>';
+			echo '<table><tr><td>less.php';
 			echo '<textarea id="lessphp_textarea" autocomplete="off">'.htmlspecialchars($compiled).'</textarea>';
-			echo '</td><td>';
+			echo '</td><td>less.js output';
 			echo '<textarea id="lessjs_textarea" autocomplete="off"></textarea>';
 			echo '</td></tr></table>';
 			$this->ObjBuffer();
