@@ -55,7 +55,7 @@ class ParserTest {
 		if( !file_exists($this->cache_dir) || !is_dir($this->cache_dir) ){
 			echo '<p>Invalid cache directory</p>';
 		}elseif( !is_writable($this->cache_dir) ){
-			echo '<p>Cache directory not writable</p>';
+			echo '<p>Cache directory not writable: '.$this->cache_dir.'</p>';
 		}
 
 		//get any other possible test folders
