@@ -2792,7 +2792,7 @@ class Less_Parser{
 	}
 
 	public static function AbsPath($path, $winPath = false){
-		if (preg_match('_^(https?:)?//\\w+(\\.\\w+)+/\\w+_', $path)) {
+		if (strpos($path, '//') !== false && preg_match('_^(https?:)?//\\w+(\\.\\w+)+/\\w+_', $path)) {
 			return $winPath ? '' : false;
 		} else {
 			$path = realpath($path);
