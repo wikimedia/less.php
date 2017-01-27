@@ -260,11 +260,13 @@ class Less_Parser{
 		$variables = [];
 
 		$not_variable_type = [
-			'Comment',  // this include less comments ( // ) and css comments (/* */)
-			'Import',   // do not search variables in included files @import
-			'Ruleset',  // selectors (.someclass, #someid, …)
+			'Comment',   // this include less comments ( // ) and css comments (/* */)
+			'Import',    // do not search variables in included files @import
+			'Ruleset',   // selectors (.someclass, #someid, …)
+			'Operation', //
 		];
 
+		// @TODO run compilation if not runned yet
 		foreach ($this->rules as $key => $rule) {
 			if (in_array($rule->type, $not_variable_type)) {
 				continue;
@@ -340,11 +342,13 @@ class Less_Parser{
 					$value .= $this->getVariableValue($item)." ";
 				}
 				return $value;
+			case 'Operation':
+				throw new Exception('getVariables() require Less to be compiled. please use $parser->getCss() before calling getVariables()');
 			case 'Comment':
 			case 'Import':
 			case 'Ruleset':
 			default:
-				throw new Exception("type missing in switch/case getVariableValue for $variable_type");
+				throw new Exception("type missing in switch/case getVariableValue for ".$var->type);
 		}
 		return false;
 	}
