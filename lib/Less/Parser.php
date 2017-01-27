@@ -483,7 +483,7 @@ class Less_Parser{
 
 
 		if( $filename ){
-			$filename = self::WinPath(realpath($filename));
+			$filename = self::AbsPath($filename, true);
 		}
 		$uri_root = self::WinPath($uri_root);
 
@@ -795,9 +795,15 @@ class Less_Parser{
 		array_pop($this->saveStack);
 	}
 
-
+	/**
+	 * Determine if the character at the specified offset from the current position is a white space.
+	 *
+	 * @param int $offset
+	 *
+	 * @return bool
+	 */
 	private function isWhitespace($offset = 0) {
-		return preg_match('/\s/',$this->input[ $this->pos + $offset]);
+		return strpos(" \t\n\r\v\f", $this->input[$this->pos + $offset]) !== false;
 	}
 
 	/**
@@ -2789,6 +2795,18 @@ class Less_Parser{
 
 	public static function WinPath($path){
 		return str_replace('\\', '/', $path);
+	}
+
+	public static function AbsPath($path, $winPath = false){
+		if (strpos($path, '//') !== false && preg_match('_^(https?:)?//\\w+(\\.\\w+)+/\\w+_i', $path)) {
+			return $winPath ? '' : false;
+		} else {
+			$path = realpath($path);
+			if ($winPath) {
+				$path = self::WinPath($path);
+			}
+			return $path;
+		}
 	}
 
 	public function CacheEnabled(){
