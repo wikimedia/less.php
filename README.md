@@ -140,6 +140,20 @@ $parser->parseFile( '/var/www/mysite/bootstrap.less', '/mysite/' );
 $css = $parser->getCss();
 ```
 
+#### Getting Variables
+You can use the getVariables() method to get an all variables defined and
+their value in a php associative array. Note than less have to be previously
+compiled
+```php
+$parser = new Less_Parser;
+$parser->parseFile( '/var/www/mysite/bootstrap.less');
+$css = $parser->getCss();
+$variables = $parser->getVariables();
+
+```
+
+
+
 #### Setting Variables
 You can use the ModifyVars() method to customize your css if you have variables stored in php associative arrays
 
