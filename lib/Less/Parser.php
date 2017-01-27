@@ -238,15 +238,15 @@ class Less_Parser{
 		return $css;
 	}
 
-    public function findValueOf($varName)
-    {
-        foreach($this->rules as $rule){
-            if(isset($rule->variable) && ($rule->variable == true) && (str_replace("@","",$rule->name) == $varName)){
-                return $this->getVariableValue($rule);
-            }
-        }
-        return null;
-    }
+	public function findValueOf($varName)
+	{
+		foreach($this->rules as $rule){
+			if(isset($rule->variable) && ($rule->variable == true) && (str_replace("@","",$rule->name) == $varName)){
+				return $this->getVariableValue($rule);
+			}
+		}
+		return null;
+	}
 
 	/**
 	 *
@@ -257,26 +257,42 @@ class Less_Parser{
 	 */
 	public function getVariables()
 	{
-		$vars = array();
-		foreach($this->rules as $key => $rule){
-			if(isset($rule->variable) && ($rule->variable == true)){
-				$vars[$rule->name] = $this->getVariableValue($rule);
+		$variables = [];
+
+		$not_variable_type = [
+			'Comment',  // this include less comments ( // ) and css comments (/* */)
+			'Import',   // do not search variables in included files @import
+			'Ruleset',  // selectors (.someclass, #someid, …)
+		];
+
+		foreach ($this->rules as $key => $rule) {
+			if (in_array($rule->type, $not_variable_type)) {
+				continue;
+			}
+
+			// Note: it seems rule->type is always Rule when variable = true
+			if ($rule->type == 'Rule' && $rule->variable) {
+				$variables[$rule->name] = $this->getVariableValue($rule);
+			} else {
+				if ($rule->type == 'Comment') {
+					$variables[] = $this->getVariableValue($rule);
+				}
 			}
 		}
-		return $vars ;
+		return $variables;
 	}
 
-    public function findVarByName($var_name)
-    {
-        foreach($this->rules as $rule){
-            if(isset($rule->variable) && ($rule->variable == true)){
-                if($rule->name == $var_name){
-                    return $this->getVariableValue($rule);
-                }
-            }
-        }
-        return null;
-    }
+	public function findVarByName($var_name)
+	{
+		foreach($this->rules as $rule){
+			if(isset($rule->variable) && ($rule->variable == true)){
+				if($rule->name == $var_name){
+					return $this->getVariableValue($rule);
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 *
@@ -289,62 +305,67 @@ class Less_Parser{
 	 */
 	private function getVariableValue($var)
 	{
-        $gigi = $var;
-		if(get_class($var->value->value[0]->value[0]) == "Less_Tree_Dimension"){
-            if(get_class($var->value->value[0]) == "Less_Tree_Expression" ){
-                $value = "";
-                foreach($var->value->value[0]->value as $item){
-                    if(isset($item->name)){
-                        $value.= $this->findVarByName($item->name)." ";
-                    }
-                    if(isset($item->value)){
-                        if($item->type == "Dimension"){
-                            $value .= $item->value;
-                            if(isset($item->unit)){
-                                if(isset($item->unit->numerator[0])){
-                                    $value .= $item->unit->numerator[0]." ";
-                                }
-                            }
-                        }else{
-                            $value .= $item->value." ";
-                        }
-                    }
-                }
-                return $value;
-            }
-			if(isset($var->value->value[0]->value[0]->unit->numerator[0])) {
-				return "{$var->value->value[0]->value[0]->value}{$var->value->value[0]->value[0]->unit->numerator[0]}";
-			}else{
-				return $var->value->value[0]->value[0]->value;
-			}
+		if (!is_a($var, 'Less_Tree')) {
+			throw new Exception('var is not a Less_Tree object');
 		}
-		if(get_class($var->value->value[0]->value[0]) == "Less_Tree_Color"){
-//			return implode(",",$var->value->value[0]->value[0]->rgb);
-            return $this->rgb2html($var->value->value[0]->value[0]->rgb);
+
+		switch ($var->type) {
+			case 'Color':
+				return $this->rgb2html($var->rgb);
+			case 'Unit':
+				return $var->value. $var->unit->numerator[0];
+			case 'Variable':
+				return $this->findVarByName($var->name);
+			case 'Keyword':
+				return $var->value;
+			case 'Rule':
+				return $this->getVariableValue($var->value);
+			case 'Value':
+				$value = '';
+				foreach ($var->value as $sub_value) {
+					$value .= $this->getVariableValue($sub_value).' ';
+				}
+				return $value;
+			case 'Quoted':
+				return $var->quote.$var->value.$var->quote;
+			case 'Dimension':
+				$value = $var->value;
+				if ($var->unit && $var->unit->numerator) {
+					$value .= $var->unit->numerator[0];
+				}
+				return $value;
+			case 'Expression':
+				$value = "";
+				foreach($var->value as $item) {
+					$value .= $this->getVariableValue($item)." ";
+				}
+				return $value;
+			case 'Comment':
+			case 'Import':
+			case 'Ruleset':
+			default:
+				throw new Exception("type missing in switch/case getVariableValue for $variable_type");
 		}
-        if(get_class($var->value->value[0]->value[0]) == 'Less_Tree_Variable'){
-            return $this->findVarByName($var->value->value[0]->value[0]->name);
-        }
 		return false;
 	}
 
-    private function rgb2html($r, $g=-1, $b=-1)
-    {
-        if (is_array($r) && sizeof($r) == 3)
-            list($r, $g, $b) = $r;
+	private function rgb2html($r, $g=-1, $b=-1)
+	{
+		if (is_array($r) && sizeof($r) == 3)
+			list($r, $g, $b) = $r;
 
-        $r = intval($r); $g = intval($g);
-        $b = intval($b);
+		$r = intval($r); $g = intval($g);
+		$b = intval($b);
 
-        $r = dechex($r<0?0:($r>255?255:$r));
-        $g = dechex($g<0?0:($g>255?255:$g));
-        $b = dechex($b<0?0:($b>255?255:$b));
+		$r = dechex($r<0?0:($r>255?255:$r));
+		$g = dechex($g<0?0:($g>255?255:$g));
+		$b = dechex($b<0?0:($b>255?255:$b));
 
-        $color = (strlen($r) < 2?'0':'').$r;
-        $color .= (strlen($g) < 2?'0':'').$g;
-        $color .= (strlen($b) < 2?'0':'').$b;
-        return '#'.$color;
-    }
+		$color = (strlen($r) < 2?'0':'').$r;
+		$color .= (strlen($g) < 2?'0':'').$g;
+		$color .= (strlen($b) < 2?'0':'').$b;
+		return '#'.$color;
+	}
 
 	/**
 	 * Run pre-compile visitors
@@ -634,14 +655,14 @@ class Less_Parser{
 							$this->UnsetInput();
 							return $cache;
 						}
-					break;
+						break;
 
 
-					// Using generated php code
+						// Using generated php code
 					case 'var_export':
 					case 'php':
-					$this->UnsetInput();
-					return include($cache_file);
+						$this->UnsetInput();
+						return include($cache_file);
 				}
 			}
 		}
@@ -670,14 +691,14 @@ class Less_Parser{
 				switch(Less_Parser::$options['cache_method']){
 					case 'serialize':
 						file_put_contents( $cache_file, serialize($rules) );
-					break;
+						break;
 					case 'php':
 						file_put_contents( $cache_file, '<?php return '.self::ArgString($rules).'; ?>' );
-					break;
+						break;
 					case 'var_export':
 						//Requires __set_state()
 						file_put_contents( $cache_file, '<?php return '.var_export($rules,true).'; ?>' );
-					break;
+						break;
 				}
 
 				Less_Cache::CleanCache();
@@ -983,7 +1004,7 @@ class Less_Parser{
 				break;
 			}
 
-            if( $this->PeekChar('}') ){
+			if( $this->PeekChar('}') ){
 				break;
 			}
 		}
@@ -1849,7 +1870,7 @@ class Less_Parser{
 				$extendList = array_merge($extendList,$extend);
 			}else{
 				//if( count($extendList) ){
-					//error("Extend can only be used at the end of selector");
+				//error("Extend can only be used at the end of selector");
 				//}
 				if( $this->pos < $this->input_len ){
 					$c = $this->input[ $this->pos ];
@@ -2122,11 +2143,11 @@ class Less_Parser{
 					case "css":
 						$optionName = "less";
 						$value = false;
-					break;
+						break;
 					case "once":
 						$optionName = "multiple";
 						$value = false;
-					break;
+						break;
 				}
 				$options[$optionName] = $value;
 				if( !$this->MatchChar(',') ){ break; }
