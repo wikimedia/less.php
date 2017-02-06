@@ -33,8 +33,7 @@
 	"scripts": {
 		"test": [
 			"phpunit",
-			"parallel-lint . --exclude vendor",
-			"phpcs --standard= --extensions=php,php5,inc --ignore=vendor,*fail.php -p ."
+			"parallel-lint . --exclude vendor"
 		]
 	},
 	"autoload": {
