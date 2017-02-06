@@ -1,6 +1,6 @@
 {
-	"name": "oyejorge/less.php",
-	"description": "PHP port of the Javascript version of LESS http://lesscss.org",
+	"name": "Asenar/less.php",
+	"description": "PHP port of the Javascript version of LESS http://lesscss.org (Originally maintained by Josh Schmidt)",
 	"keywords": [ "less", "css", "php", "stylesheet", "less.js", "lesscss" ],
 	"homepage": "http://lessphp.gpeasy.com",
 	"license": "Apache-2.0",
@@ -16,6 +16,10 @@
 		{
 			"name": "Martin Jantošovič",
 			"homepage": "https://github.com/Mordred"
+		},
+		{
+			"name": "Michaël Marinetti",
+			"homepage": "https://github.com/Asenar"
 		}
 	],
 	"require": {
