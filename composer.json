@@ -26,18 +26,15 @@
 		"PHP" : ">=5.3"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "~4.8.24",
-		"jakub-onderka/php-parallel-lint": "0.9.*",
-		"squizlabs/php_codesniffer": "2.5.1"
+		"phpunit/phpunit": "~4.8.24"
 	},
 	"scripts": {
 		"test": [
-			"phpunit",
-			"parallel-lint . --exclude vendor"
+			"phpunit"
 		]
 	},
 	"autoload": {
-		"psr-4": { "Less\\": "lib/Less/" },
+		"psr-0": { "Less": "lib/" },
 		"classmap": ["lessc.inc.php"]
 	},
 	"bin": [
