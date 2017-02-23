@@ -257,14 +257,14 @@ class Less_Parser{
 	 */
 	public function getVariables()
 	{
-		$variables = [];
+		$variables = array();
 
-		$not_variable_type = [
+		$not_variable_type = array(
 			'Comment',   // this include less comments ( // ) and css comments (/* */)
 			'Import',    // do not search variables in included files @import
 			'Ruleset',   // selectors (.someclass, #someid, …)
 			'Operation', //
-		];
+		);
 
 		// @TODO run compilation if not runned yet
 		foreach ($this->rules as $key => $rule) {
