@@ -72,3 +72,36 @@ jobs:
       run: composer cover
       env:
         XDEBUG_MODE: coverage
+
+  php-phan:
+    name: Phan
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Use PHP 7.4
+      run: sudo update-alternatives --set php /usr/bin/php7.4
+
+    - name: Validate
+      run: composer validate
+
+    - name: Install
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: phan
+      run: composer phan
+      # FIXME:
+      # - Without 'continue-on-error', it means the commit-level status indicator
+      #   in commit logs, file history, and PR overview will be marked as
+      #   failure (even if PR requirements allow Phan to fail), which is confusing
+      #   and can also cause email spam.
+      # - With 'continue-on-error' it means the build is falsely marked as passing.
+      #   and you have to click two times, scroll down, click once more to find out
+      #   whether it is still failing or not. This is the least-worst of option for
+      #   now, but go complain at <https://github.com/actions/toolkit/issues/399>
+      #   for GitHub to implememnt a reasonable "allow failure" job-level option.
+      #
+      continue-on-error: true
