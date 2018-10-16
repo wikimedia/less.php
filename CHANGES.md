@@ -1,3 +1,10 @@
+# 1.8.0
+- [All Changes](https://github.com/Asenar/less.php/compare/v1.7.0.13...v1.8.0)
+- Wikimedia fork
+- Supports up to PHP 7.3
+- No longer tested against PHP 5, though it's still remains allowed in `composer.json` for HHVM compatibility
+- Switched to [semantic versioning](https://semver.org/), hence version numbers now use 3 digits
+
 # 1.7.0.13
  - [All Changes](https://github.com/Asenar/less.php/compare/v1.7.0.12...v1.7.0.13)
  - Fix composer.json (PSR-4 was invalid)
