@@ -21,7 +21,7 @@
 		"PHP" : ">=5.3"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "~4.8.24"
+		"phpunit/phpunit": "~4.8.36 || 6.5.14 || 7.5.14"
 	},
 	"scripts": {
 		"test": [

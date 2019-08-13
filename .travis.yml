@@ -7,7 +7,11 @@ php:
   - 7
   - hhvm-3.18
   - nightly
-  
+
+matrix:
+  allow_failures:
+    - php: nightly
+
 sudo: false
 
 install:
