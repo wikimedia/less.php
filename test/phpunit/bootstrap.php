@@ -6,21 +6,22 @@ if (!class_exists(PHPUnit_Framework_TestCase::class)) {
 
 class phpunit_bootstrap extends PHPUnit_Framework_TestCase{
 
+	protected $root_directory;
 	public $fixtures_dir;
 	public $cache_dir;
 
 	function setUp(){
 		echo "\nSet-Up: ".get_class($this);
 
-		$root_directory = dirname(dirname(dirname(__FILE__)));
+		$this->root_directory = dirname(dirname(dirname(__FILE__)));
 
-		require_once( $root_directory . '/lib/Less/Autoloader.php' );
+		require_once( $this->root_directory . '/lib/Less/Autoloader.php' );
 		Less_Autoloader::register();
 
-		$this->fixtures_dir = $root_directory.'/test/Fixtures';
+		$this->fixtures_dir = $this->root_directory.'/test/Fixtures';
 		echo "\n  fixtures_dir: ".$this->fixtures_dir;
 
-		$this->cache_dir = $root_directory.'/test/phpunit/_cache/';
+		$this->cache_dir = $this->root_directory.'/test/phpunit/_cache/';
 		$this->CheckCacheDirectory();
 
 
