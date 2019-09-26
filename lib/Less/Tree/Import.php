@@ -183,7 +183,7 @@ class Less_Tree_Import extends Less_Tree{
 		}
 
 		// optional (need to be before "CSS" to support optional CSS imports. CSS should be checked only if empty($this->currentFileInfo))
-		if( isset($this->options['optional']) && $this->options['optional'] && !file_exists($full_path) && (!$evald->css || !empty($this->currentFileInfo))) {
+		if( isset($this->options['optional']) && $this->options['optional'] && (!Less_Parser::IsAbsPath($full_path) || !file_exists($full_path)) && (!$evald->css || !empty($this->currentFileInfo))) {
 			return array();
 		}
 

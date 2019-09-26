@@ -2813,4 +2813,25 @@ class Less_Parser{
 		return (Less_Parser::$options['cache_method'] && (Less_Cache::$cache_dir || (Less_Parser::$options['cache_method'] == 'callback')));
 	}
 
+	public static function IsAbsPath($path){
+		$path = (string) $path;
+		if ($path === '') {
+			return false;
+		}
+		if (preg_match('%^(\w+:)?//%', $path)) {
+			// URL
+			return true;
+		}
+		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+		if ($path[0] === '/') {
+			// path starts with '/' (or with '\' on Windows)
+			return true;
+		}
+		if (DIRECTORY_SEPARATOR === '\\') {
+			if (preg_match('%^[a-z]:/%i', $path)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
