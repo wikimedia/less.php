@@ -1,5 +1,5 @@
 # 1.8.1
-- [All Changes](https://github.com/Asenar/less.php/compare/v1.8.0...v1.8.1)
+- [All Changes](https://github.com/wikimedia/less.php/compare/v1.8.0...1.8.1)
 - Another PHP 7.3 compatibility tweak
 
 # 1.8.0
