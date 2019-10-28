@@ -1,5 +1,8 @@
 <?php
 
+if (!class_exists(PHPUnit_Framework_TestCase::class)) {
+	class_alias(\PHPUnit\Framework\TestCase::class, PHPUnit_Framework_TestCase::class);
+}
 
 class phpunit_bootstrap extends PHPUnit_Framework_TestCase{
 
