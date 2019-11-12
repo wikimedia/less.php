@@ -37,7 +37,7 @@ Step 1. Edit your `composer.json`:
 ```json
 {
     "require": {
-        "wikimedia/less.php": "~1.7.0.9"
+        "wikimedia/less.php": "~1.8.2"
     }
 }
 ```
