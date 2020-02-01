@@ -1,3 +1,7 @@
+# 1.8.3
+- [All Changes](https://github.com/wikimedia/less.php/compare/1.8.2...1.8.3)
+- Allow installation with PHP 7.1 (Franz Liedke)
+
 # 1.8.2
 - [All Changes](https://github.com/wikimedia/less.php/compare/1.8.1...1.8.2)
 - Require PHP 7.2.9+, up from 5.3+ (James Forrester)
