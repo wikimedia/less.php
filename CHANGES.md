@@ -1,6 +1,7 @@
-# 1.8.3
-- [All Changes](https://github.com/wikimedia/less.php/compare/1.8.2...1.8.3)
-- Allow installation with PHP 7.1 (Franz Liedke)
+# 2.0.0
+- [All Changes](https://github.com/wikimedia/less.php/compare/1.8.2...2.0.0)
+- Relax PHP requirement down to 7.1, from 7.2.9 (Franz Liedke)
+- Reflect recent breaking changes properly with the semantic versioning (James Forrester)
 
 # 1.8.2
 - [All Changes](https://github.com/wikimedia/less.php/compare/1.8.1...1.8.2)
