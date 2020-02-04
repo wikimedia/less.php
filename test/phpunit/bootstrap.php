@@ -9,7 +9,7 @@ class phpunit_bootstrap extends PHPUnit_Framework_TestCase{
 	public $fixtures_dir;
 	public $cache_dir;
 
-	function setUp(){
+	function setUp() : void {
 		echo "\nSet-Up: ".get_class($this);
 
 		$root_directory = dirname(dirname(dirname(__FILE__)));
