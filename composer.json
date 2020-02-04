@@ -21,10 +21,12 @@
 		"PHP" : ">=7.2.9"
 	},
 	"require-dev": {
+		"jakub-onderka/php-parallel-lint": "1.0.0",
 		"phpunit/phpunit": "^8.5"
 	},
 	"scripts": {
 		"test": [
+			"parallel-lint . --exclude vendor",
 			"phpunit"
 		]
 	},
