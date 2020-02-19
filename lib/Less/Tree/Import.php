@@ -41,7 +41,7 @@ class Less_Tree_Import extends Less_Tree{
 				$this->css = !isset($this->options['less']) || !$this->options['less'] || $this->options['inline'];
 			} else {
 				$pathValue = $this->getPath();
-				if( $pathValue && preg_match('/css([\?;].*)?$/',$pathValue) ){
+				if( $pathValue && preg_match('/^https?:\/\/|css([\?;].*)?$/',$pathValue) ){
 					$this->css = true;
 				}
 			}
