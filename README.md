@@ -1,7 +1,9 @@
+[![Continuous Integration](https://github.com/wikimedia/less.php/workflows/PHP%20Test/badge.svg)](https://github.com/wikimedia/less.php/actions)
+
 [Less.php](http://lessphp.typesettercms.com)
 ========
 
-This is the Wikimedia fork of a PHP port of the official LESS processor <http://lesscss.org>. [![Build Status](https://travis-ci.org/wikimedia/less.php.png?branch=master)](https://travis-ci.org/wikimedia/less.php)
+This is the Wikimedia fork of a PHP port of the official LESS processor <http://lesscss.org>.
 
 * [About](#about)
 * [Installation](#installation)
