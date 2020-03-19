@@ -53,8 +53,9 @@ class Less_Visitor_processExtends extends Less_Visitor{
 				$extend = $extendsList[$extendIndex];
 				$targetExtend = $extendsListTarget[$targetExtendIndex];
 
-				// look for circular references
-				if (isset($extend->parent_ids[$targetExtend->object_id])) {
+				// Optimisation: Explicit reference, <https://github.com/wikimedia/less.php/pull/14>
+				if( \array_key_exists($targetExtend->object_id, $extend->parent_ids) ){
+					// ignore circular references
 					continue;
 				}
 
@@ -269,7 +270,8 @@ class Less_Visitor_processExtends extends Less_Visitor{
 				return true;
 			}
 
-			if (isset($hackstackSelector->_oelements_assoc[$first_el])) {
+			// Optimisation: Explicit reference, <https://github.com/wikimedia/less.php/pull/14>
+			if( \array_key_exists($first_el, $hackstackSelector->_oelements_assoc) ){
 				return true;
 			}
 		}
