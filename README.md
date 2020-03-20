@@ -39,22 +39,12 @@ You can install the library with Composer or manually.
 
 #### Manually From Release
 
-Step 1. [Download the latest release](https://github.com/wikimedia/less.php/releases) and upload the PHP files to your server.
+Step 1. [Download a release](https://github.com/wikimedia/less.php/releases) and upload the PHP files to your server.
 
 Step 2. Include the library:
 
 ```php
-require_once '[path to less.php]/Less.php';
-```
-
-#### Manually From Source
-
-Step 1. [Download the source](https://github.com/wikimedia/less.php/archive/master.zip) and upload the files in /lib/Less to a folder on your server.
-
-Step 2. Include the library and register the autoloader
-
-```php
-require_once '[path to less.php]/Autoloader.php';
+require_once '[path to less.php]/lib/Less/Autoloader.php';
 Less_Autoloader::register();
 ```
 
