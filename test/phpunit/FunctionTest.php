@@ -22,4 +22,35 @@ class phpunit_FunctionTest extends phpunit_bootstrap {
 			return $arg;
 		}
 	}
+
+	public function testException() {
+		$lessCode = '
+		.foo {
+			content: number("x");
+		}
+		';
+
+		$parser = new Less_Parser();
+		$parser->parse( $lessCode );
+
+		try {
+			$parser->getCss();
+			$this->fail();
+		} catch ( Exception $e ) {
+			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
+			$this->assertStringContainsString(
+				'error evaluating function',
+				$e->getMessage()
+			);
+
+			// Bypass PHPUnit's excectException() to assert presence and specifics
+			// of the previous exception as well.
+			$prev = $e->getPrevious();
+			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
+			$this->assertStringContainsString(
+				'color functions take numbers as parameters',
+				$e->getMessage()
+			);
+		}
+	}
 }
