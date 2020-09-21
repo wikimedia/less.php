@@ -11,7 +11,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	/**
 	 * What version of source map does the generator generate?
 	 */
-	const VERSION = 3;
+	private const VERSION = 3;
 
 	/**
 	 * Array of default options
