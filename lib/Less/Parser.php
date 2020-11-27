@@ -301,6 +301,10 @@ class Less_Parser {
 				return $this->findVarByName( $var->name );
 			case 'Keyword':
 				return $var->value;
+			case 'Url':
+				// Based on Less_Tree_Url::genCSS()
+				// Recurse to serialize the Less_Tree_Quoted value
+				return 'url(' . $this->getVariableValue( $var->value ) . ')';
 			case 'Rule':
 				return $this->getVariableValue( $var->value );
 			case 'Value':
