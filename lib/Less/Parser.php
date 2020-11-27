@@ -320,6 +320,7 @@ class Less_Parser{
 				return $this->findVarByName($var->name);
 			case 'Keyword':
 				return $var->value;
+			case 'Url':
 			case 'Rule':
 				return $this->getVariableValue($var->value);
 			case 'Value':
