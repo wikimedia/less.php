@@ -1,3 +1,15 @@
+# 3.0.0
+- [All Changes](https://github.com/wikimedia/less.php/compare/2.0.0...3.0.0)
+- Raise PHP requirement from 7.1 to 7.2.9 (James Forrester)
+- build: Upgrade phpunit to ^8.5 and make pass  (James Forrester)
+- build: Install php-parallel-lint  (James Forrester)
+- build: Install minus-x and make pass  (James Forrester)
+
+# 2.0.0
+- [All Changes](https://github.com/wikimedia/less.php/compare/1.8.2...2.0.0)
+- Relax PHP requirement down to 7.1, from 7.2.9 (Franz Liedke)
+- Reflect recent breaking changes properly with the semantic versioning (James Forrester)
+
 # 1.8.2
 - [All Changes](https://github.com/wikimedia/less.php/compare/1.8.1...1.8.2)
 - Require PHP 7.2.9+, up from 5.3+ (James Forrester)
