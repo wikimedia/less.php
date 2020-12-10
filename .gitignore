@@ -12,3 +12,4 @@ vendor/
 x_*
 X_*
 _*
+.phpunit.result.cache
