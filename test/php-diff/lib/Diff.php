@@ -8,10 +8,10 @@
  * PHP version 5
  *
  * Copyright (c) 2009 Chris Boulton <chris.boulton@interspire.com>
- * 
+ *
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without 
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
  *  - Redistributions of source code must retain the above copyright notice,
@@ -19,20 +19,20 @@
  *  - Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- *  - Neither the name of the Chris Boulton nor the names of its contributors 
- *    may be used to endorse or promote products derived from this software 
+ *  - Neither the name of the Chris Boulton nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
  *    without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package Diff
@@ -43,8 +43,7 @@
  * @link http://github.com/chrisboulton/php-diff
  */
 
-class Diff
-{
+class Diff {
 	/**
 	 * @var array The "old" sequence to use as the basis for the comparison.
 	 */
@@ -81,12 +80,11 @@ class Diff
 	 * @param array $a Array containing the lines of the first string to compare.
 	 * @param array $b Array containing the lines for the second string to compare.
 	 */
-	public function __construct($a, $b, $options=array())
-	{
+	public function __construct( $a, $b, $options = array() ) {
 		$this->a = $a;
 		$this->b = $b;
 
-		$this->options = array_merge($this->defaultOptions, $options);
+		$this->options = array_merge( $this->defaultOptions, $options );
 	}
 
 	/**
@@ -95,8 +93,7 @@ class Diff
 	 * @param object $renderer An instance of the rendering object to use for generating the diff.
 	 * @return mixed The generated diff. Exact return value depends on the rendered.
 	 */
-	public function render(Diff_Renderer_Abstract $renderer)
-	{
+	public function render( Diff_Renderer_Abstract $renderer ) {
 		$renderer->diff = $this;
 		return $renderer->render();
 	}
@@ -111,20 +108,18 @@ class Diff
 	 * @param int $end The ending number. If not supplied, only the item in $start will be returned.
 	 * @return array Array of all of the lines between the specified range.
 	 */
-	public function getA($start=0, $end=null)
-	{
-		if($start == 0 && $end === null) {
+	public function getA( $start = 0, $end = null ) {
+		if ( $start == 0 && $end === null ) {
 			return $this->a;
 		}
 
-		if($end === null) {
+		if ( $end === null ) {
 			$length = 1;
-		}
-		else {
+		} else {
 			$length = $end - $start;
 		}
 
-		return array_slice($this->a, $start, $length);
+		return array_slice( $this->a, $start, $length );
 
 	}
 
@@ -138,20 +133,18 @@ class Diff
 	 * @param int $end The ending number. If not supplied, only the item in $start will be returned.
 	 * @return array Array of all of the lines between the specified range.
 	 */
-	public function getB($start=0, $end=null)
-	{
-		if($start == 0 && $end === null) {
+	public function getB( $start = 0, $end = null ) {
+		if ( $start == 0 && $end === null ) {
 			return $this->b;
 		}
 
-		if($end === null) {
+		if ( $end === null ) {
 			$length = 1;
-		}
-		else {
+		} else {
 			$length = $end - $start;
 		}
 
-		return array_slice($this->b, $start, $length);
+		return array_slice( $this->b, $start, $length );
 	}
 
 	/**
@@ -162,15 +155,14 @@ class Diff
 	 *
 	 * @return array Array of the grouped opcodes for the generated diff.
 	 */
-	public function getGroupedOpcodes()
-	{
-		if(!is_null($this->groupedCodes)) {
+	public function getGroupedOpcodes() {
+		if ( !is_null( $this->groupedCodes ) ) {
 			return $this->groupedCodes;
 		}
 
-		require_once dirname(__FILE__).'/Diff/SequenceMatcher.php';
-		$sequenceMatcher = new Diff_SequenceMatcher($this->a, $this->b, null, $this->options);
-		$this->groupedCodes = $sequenceMatcher->getGroupedOpcodes($this->options['context']);
+		require_once dirname( __FILE__ ).'/Diff/SequenceMatcher.php';
+		$sequenceMatcher = new Diff_SequenceMatcher( $this->a, $this->b, null, $this->options );
+		$this->groupedCodes = $sequenceMatcher->getGroupedOpcodes( $this->options['context'] );
 		return $this->groupedCodes;
 	}
 }
