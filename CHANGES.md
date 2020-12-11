@@ -1,11 +1,10 @@
 # 3.1.0
 - [All Changes](https://github.com/wikimedia/less.php/compare/v3.0.0...v3.1.0)
 * PHP 8.0 support: Drop use of curly braces for sub-string eval (James D. Forrester)
-* Directive: Make __construct $rules arg optional (fix PHP 7.4 warning) (Sam Reed)
-* Performance: ProcessExtends: Use map instead of list for selectors and parents (Andrey Legayev)
+* Make `Directive::__construct` $rules arg optional (fix PHP 7.4 warning) (Sam Reed)
+* ProcessExtends: Improve performance by using a map for selectors and parents (Andrey Legayev)
 * build: Run CI tests on PHP 8.0 too (James D. Forrester)
 * code: Fix PSR12.Properties.ConstantVisibility.NotFound (Sam Reed)
-* docs: Update include path for manual installation (Timo Tijhof)
 
 # 3.0.0
 - [All Changes](https://github.com/wikimedia/less.php/compare/v2.0.0...v3.0.0)
