@@ -302,6 +302,18 @@ How to install:
 1. Install the plugin from your WordPress Dashboard: http://wordpress.org/plugins/lessphp/
 2. That's it :)
 
+#### WordPress Library
+
+[wp_enqueue_less](https://github.com/Ed-ITSolutions/wp_enqueue_less) is a composer installable package which provides a less compiler for use in themes and plugins. It doesn't require any additional plugins to be installed on users sites and works entirely from your code.
+
+How to install:
+
+1. Run `composer require ed-itsolutions/wp_enqueue_less` to install from composer.
+	-	Add `require_once('vendor/autoload.php');` to your `functions.php` if not already there.
+2. In your `wp_enqueue_styles` action add `wp_enqueue_less('style-key', '/path/to/less/on/disk.less', array('variable' => 'value))`.
+
+Your theme/plugin now supports less with variables, caching, compression, and auto cleanup!
+
 
 Transitioning from Leafo/lessphp
 ---
