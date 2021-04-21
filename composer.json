@@ -34,6 +34,7 @@
 			"phpunit",
 			"minus-x check ."
 		],
+		"cover": "phpunit --coverage-text --coverage-html coverage/ --coverage-clover coverage/clover.xml",
 		"fix": [
 			"minus-x fix .",
 			"phpcbf"

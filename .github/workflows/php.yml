@@ -1,27 +1,38 @@
-name: PHP Test
+name: Test
 
-on: [push,pull_request]
+on:
+  - push
+  - pull_request
 
 jobs:
-  build:
-    name: Test PHP ${{ matrix.php-version }}
+  php:
+    name: PHP ${{ matrix.php }}
 
     strategy:
+      fail-fast: false
       matrix:
-        php-version: ['7.2', '7.3', '7.4', '8.0']
+        include:
+          # Includes php7.1 - 8.0 and composer 2
+          # https://github.com/actions/virtual-environments/blob/ubuntu18/20210318.0/images/linux/Ubuntu1804-README.md#php
+          - php: '7.2'
+            os: ubuntu-18.04
+          - php: '7.3'
+            os: ubuntu-18.04
+          # Includes php7.4 - 8.0 and composer 2
+          # https://github.com/actions/virtual-environments/blob/ubuntu20/20210318.0/images/linux/Ubuntu2004-README.md#php
+          - php: '7.4'
+            os: ubuntu-20.04
+          - php: '8.0'
+            os: ubuntu-20.04
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
-    - name: Setup PHP, with composer and extensions
-      uses: shivammathur/setup-php@master
-      with:
-        php-version: ${{ matrix.php-version }}
-        extension-csv: dom, mbstring
-        # coverage: xdebug
+    - name: Use PHP ${{ matrix.php }}
+      run: sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
 
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -29,5 +40,35 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Run test suite
-      run: composer run-script test
+    - name: Test
+      run: composer test
+
+  php-cover:
+    name: PHP ${{ matrix.php }} coverage
+
+    strategy:
+      matrix:
+        include:
+          # PHPUnit 8.5 does not support code coverage on PHP 8
+          - php: '7.4'
+            os: ubuntu-20.04
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Use PHP ${{ matrix.php }}
+      run: sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
+
+    - name: Validate
+      run: composer validate
+
+    - name: Install
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Test with coverage
+      run: composer cover
+      env:
+        XDEBUG_MODE: coverage
