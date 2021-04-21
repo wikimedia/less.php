@@ -1,3 +1,11 @@
+# Build tools
+/coverage/
+/vendor/
+/test/phpunit/_cache/
+/.phpunit.result.cache
+/composer.lock
+
+# Developer environment
 .buildpath
 .project
 .settings
@@ -7,9 +15,3 @@ ehthumbs.db
 Icon?
 Thumbs.db
 *.komodoproject
-composer.lock
-vendor/
-x_*
-X_*
-_*
-.phpunit.result.cache

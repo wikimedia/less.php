@@ -12,5 +12,12 @@
 			<directory>./test/phpunit</directory>
 		</testsuite>
 	</testsuites>
+	<filter>
+		<!-- TODO: use <coverage includeUncoveredFiles> in PHPUnit 9.3+ -->
+		<whitelist addUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">lib/</directory>
+			<file>lessc.inc.php</file>
+		</whitelist>
+	</filter>
 </phpunit>
 
