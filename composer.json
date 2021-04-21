@@ -1,6 +1,6 @@
 {
 	"name": "wikimedia/less.php",
-	"description": "PHP port of the Javascript version of LESS http://lesscss.org (Originally maintained by Josh Schmidt)",
+	"description": "PHP port of the LESS processor",
 	"keywords": [ "less", "css", "php", "stylesheet", "less.js", "lesscss" ],
 	"license": "Apache-2.0",
 	"authors": [
