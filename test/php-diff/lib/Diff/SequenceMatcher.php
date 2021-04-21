@@ -35,9 +35,9 @@
  * @package Diff
  * @author Chris Boulton <chris.boulton@interspire.com>
  * @copyright (c) 2009 Chris Boulton
- * @license New BSD License http://www.opensource.org/licenses/bsd-license.php
+ * @license New BSD License https://opensource.org/licenses/bsd-license
  * @version 1.1
- * @link http://github.com/chrisboulton/php-diff
+ * @link https://github.com/chrisboulton/php-diff
  */
 
 class Diff_SequenceMatcher {

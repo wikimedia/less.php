@@ -5,7 +5,7 @@
  *
  * @package Less
  * @subpackage function
- * @see http://lesscss.org/functions/
+ * @see https://lesscss.org/functions/
  */
 class Less_Functions {
 
@@ -385,7 +385,7 @@ return $a / $b;
 
 	//
 	// Copyright (c) 2006-2009 Hampton Catlin, Nathan Weizenbaum, and Chris Eppstein
-	// http://sass-lang.com
+	// https://sass-lang.com/
 	//
 
 	/**
@@ -1014,7 +1014,7 @@ return $a / $b;
 	}
 
 	// Color Blending
-	// ref: http://www.w3.org/TR/compositing-1
+	// ref: https://www.w3.org/TR/compositing-1/
 
 	public function colorBlend( $mode, $color1, $color2 ) {
 		$ab = $color1->alpha;	// backdrop
