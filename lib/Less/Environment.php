@@ -110,7 +110,6 @@ class Less_Environment {
 	 * Does not remove leading "../"
 	 * @param string path or url
 	 * @return string Canonicalized path
-	 *
 	 */
 	public static function normalizePath( $path ) {
 		$segments = explode( '/', $path );
