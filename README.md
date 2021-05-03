@@ -7,6 +7,7 @@ This is a PHP port of the [official LESS processor](https://lesscss.org).
 
 * [About](#about)
 * [Installation](#installation)
+* [Security](#%EF%B8%8F-security)
 * [Basic Use](#basic-use)
 * [Caching](#caching)
 * [Source Maps](#source-maps)
@@ -45,6 +46,15 @@ You can install the library with Composer or manually.
 require_once '[path to less.php]/lib/Less/Autoloader.php';
 Less_Autoloader::register();
 ```
+
+⚠️ Security
+---
+
+The LESS processor language is powerful and including features that can read or embed arbitrary files that the web server has access to, and features that may be computationally exensive if misused.
+
+In general you should treat LESS files as being in the same trust domain as other server-side executables, such as Node.js or PHP code. In particular, it is not recommended to allow people that use your web service to provide arbitrary LESS code for server-side processing.
+
+_See also [SECURITY](./SECURITY.md)._
 
 Basic Use
 ---
