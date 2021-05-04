@@ -7,7 +7,6 @@ require_once dirname( __FILE__ ).'/Version.php';
  *
  * @package Less
  * @subpackage cache
- *
  */
 class Less_Cache {
 
@@ -214,7 +213,6 @@ class Less_Cache {
 
 	/**
 	 * Delete unused less.php files
-	 *
 	 */
 	public static function CleanCache() {
 		static $clean = false;
@@ -275,7 +273,6 @@ class Less_Cache {
 
 	/**
 	 * Get the list of less files and generated css file from a list file
-	 *
 	 */
 	static function ListFiles( $list_file, &$list, &$css_file_name ) {
 		$list = explode( "\n", file_get_contents( $list_file ) );

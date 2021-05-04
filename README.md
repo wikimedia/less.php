@@ -284,7 +284,7 @@ This library can be used as drop-in replacement of lessphp to work with [Drupal 
 
 How to install:
 
-1. [Download the Less.php source code](https://github.com/wikimedia/less.php/archive/master.zip) and unzip it so that 'lessc.inc.php' is located at 'sites/all/libraries/lessphp/lessc.inc.php'.
+1. [Download the Less.php source code](https://github.com/wikimedia/less.php/archive/main.zip) and unzip it so that 'lessc.inc.php' is located at 'sites/all/libraries/lessphp/lessc.inc.php'.
 2. Download and install [Drupal 7 less module](https://drupal.org/project/less) as usual.
 3. That's it :)
 
@@ -322,7 +322,7 @@ How to install:
 Transitioning from Leafo/lessphp
 ---
 
-Projects looking for an easy transition from leafo/lessphp can use the lessc.inc.php adapter. To use, [Download the Less.php source code](https://github.com/wikimedia/less.php/archive/master.zip) and unzip the files into your project so that the new `lessc.inc.php` replaces the existing `lessc.inc.php`.
+Projects looking for an easy transition from leafo/lessphp can use the lessc.inc.php adapter. To use, [Download the Less.php source code](https://github.com/wikimedia/less.php/archive/main.zip) and unzip the files into your project so that the new `lessc.inc.php` replaces the existing `lessc.inc.php`.
 
 Note, the `setPreserveComments` will no longer have any effect on the compiled LESS.
 

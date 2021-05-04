@@ -7,7 +7,6 @@ require_once dirname( __FILE__ ).'/Cache.php';
  *
  * @package Less
  * @subpackage parser
- *
  */
 class Less_Parser {
 
@@ -94,7 +93,6 @@ class Less_Parser {
 
 	/**
 	 * Reset the parser state completely
-	 *
 	 */
 	public function Reset( $options = null ) {
 		$this->rules = array();
@@ -117,7 +115,6 @@ class Less_Parser {
 	/**
 	 * Set one or more compiler options
 	 *  options: import_dirs, cache_dir, cache_method
-	 *
 	 */
 	public function SetOptions( $options ) {
 		foreach ( $options as $option => $value ) {
@@ -127,7 +124,6 @@ class Less_Parser {
 
 	/**
 	 * Set one compiler option
-	 *
 	 */
 	public function SetOption( $option, $value ) {
 		switch ( $option ) {
@@ -305,6 +301,10 @@ class Less_Parser {
 				return $this->findVarByName( $var->name );
 			case 'Keyword':
 				return $var->value;
+			case 'Url':
+				// Based on Less_Tree_Url::genCSS()
+				// Recurse to serialize the Less_Tree_Quoted value
+				return 'url(' . $this->getVariableValue( $var->value ) . ')';
 			case 'Rule':
 				return $this->getVariableValue( $var->value );
 			case 'Value':
@@ -357,7 +357,6 @@ class Less_Parser {
 
 	/**
 	 * Run pre-compile visitors
-	 *
 	 */
 	private function PreVisitors( $root ) {
 		if ( Less_Parser::$options['plugins'] ) {
@@ -371,7 +370,6 @@ class Less_Parser {
 
 	/**
 	 * Run post-compile visitors
-	 *
 	 */
 	private function PostVisitors( $evaldRoot ) {
 		$visitors = array();
@@ -530,7 +528,6 @@ class Less_Parser {
 
 	/**
 	 * @deprecated 1.5.1.2
-	 *
 	 */
 	public function SetCacheDir( $dir ) {
 		if ( !file_exists( $dir ) ) {
@@ -674,7 +671,6 @@ class Less_Parser {
 
 	/**
 	 * Set up the input buffer
-	 *
 	 */
 	public function SetInput( $file_path ) {
 		if ( $file_path ) {
@@ -696,7 +692,6 @@ class Less_Parser {
 
 	/**
 	 * Free up some memory
-	 *
 	 */
 	public function UnsetInput() {
 		unset( $this->input, $this->pos, $this->input_len, $this->furthest );
@@ -1909,7 +1904,6 @@ class Less_Parser {
 	/**
 	 * Custom less.php parse function for finding simple name-value css pairs
 	 * ex: width:100px;
-	 *
 	 */
 	private function parseNameValue() {
 		$index = $this->pos;
@@ -2411,7 +2405,6 @@ class Less_Parser {
 	/**
 	 * An operand is anything that can be part of an operation,
 	 * such as a Color, or a Variable
-	 *
 	 */
 	private function parseOperand() {
 		$negate = false;
@@ -2547,7 +2540,6 @@ class Less_Parser {
 	/**
 	 * Round numbers similarly to javascript
 	 * eg: 1.499999 to 1 instead of 2
-	 *
 	 */
 	public static function round( $i, $precision = 0 ) {
 		$precision = pow( 10, $precision );
