@@ -108,7 +108,7 @@ class Less_Environment {
 	/**
 	 * Canonicalize a path by resolving references to '/./', '/../'
 	 * Does not remove leading "../"
-	 * @param string path or url
+	 * @param string $path or url
 	 * @return string Canonicalized path
 	 */
 	public static function normalizePath( $path ) {
