@@ -40,7 +40,6 @@ class Less_Exception_Chunk extends Less_Exception_Parser {
 	/**
 	 * See less.js chunks()
 	 * We don't actually need the chunks
-	 *
 	 */
 	protected function Chunks() {
 		$level = 0;

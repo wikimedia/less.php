@@ -184,7 +184,6 @@ class Less_Tree_Ruleset extends Less_Tree {
 
 	/**
 	 * Compile the selectors and create a new ruleset object for the compile() method
-	 *
 	 */
 	private function PrepareRuleset( $env ) {
 		$hasOnePassingSelector = false;

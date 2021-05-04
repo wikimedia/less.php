@@ -4,7 +4,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 
 	/**
 	 * Test the contents of the files in /test/Fixtures/lessjs/expected
-	 *
 	 */
 	function testLessJs() {
 		echo "\nBegin Tests";
@@ -33,7 +32,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 	 * Change a css file name to a less file name
 	 *
 	 * eg: /Fixtures/lessjs/css/filename.css -> /Fixtures/lessjs/less/filename.less
-	 *
 	 */
 	function TranslateFile( $file_css, $dir = 'less', $type = 'less' ) {
 		$filename = basename( $file_css );
@@ -44,7 +42,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 
 	/**
 	 * Compare the parser results with the expected css
-	 *
 	 */
 	function CompareFile( $expected_file ) {
 		$less_file = $this->TranslateFile( $expected_file );
