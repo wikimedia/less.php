@@ -727,7 +727,7 @@ return $a / $b;
 		}
 		$args = array();
 		foreach ( $order as $a ) {
-			$args[] = $a->toCSS( $this->env );
+			$args[] = $a->toCSS();
 		}
 		return new Less_Tree_Anonymous( ( $isMin ? 'min(' : 'max(' ) . implode( Less_Environment::$_outputMap[','], $args ).')' );
 	}
@@ -914,7 +914,7 @@ return $a / $b;
 		$DATA_URI_MAX_KB = 32;
 		$fileSizeInKB = round( strlen( $buf ) / 1024 );
 		if ( $fileSizeInKB >= $DATA_URI_MAX_KB ) {
-			$url = new Less_Tree_Url( ( $filePathNode ? $filePathNode : $mimetypeNode ), $this->currentFileInfo );
+			$url = new Less_Tree_Url( ( $filePathNode ?: $mimetypeNode ), $this->currentFileInfo );
 			return $url->compile( $this );
 		}
 

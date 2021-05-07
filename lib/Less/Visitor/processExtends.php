@@ -353,8 +353,8 @@ class Less_Visitor_processExtends extends Less_Visitor {
 			return true;
 		}
 
-		$elementValue1 = ( $elementValue1->value->value ? $elementValue1->value->value : $elementValue1->value );
-		$elementValue2 = ( $elementValue2->value->value ? $elementValue2->value->value : $elementValue2->value );
+		$elementValue1 = ( $elementValue1->value->value ?: $elementValue1->value );
+		$elementValue2 = ( $elementValue2->value->value ?: $elementValue2->value );
 
 		return $elementValue1 === $elementValue2;
 	}

@@ -101,7 +101,7 @@ class Less_Parser {
 		self::$imports = array();
 		self::$contentsMap = array();
 
-		$this->env = new Less_Environment( $options );
+		$this->env = new Less_Environment();
 
 		// set new options
 		if ( is_array( $options ) ) {
@@ -170,12 +170,11 @@ class Less_Parser {
 	 */
 	public function getCss() {
 		$precision = ini_get( 'precision' );
-		@ini_set( 'precision', 16 );
+		@ini_set( 'precision', '16' );
 		$locale = setlocale( LC_NUMERIC, 0 );
 		setlocale( LC_NUMERIC, "C" );
 
 		try {
-
 			$root = new Less_Tree_Ruleset( array(), $this->rules );
 			$root->root = true;
 			$root->firstRoot = true;
@@ -279,13 +278,11 @@ class Less_Parser {
 	}
 
 	/**
-	 *
 	 * This method gets the value of the less variable from the rules object.
 	 * Since the objects vary here we add the logic for extracting the css/less value.
 	 *
 	 * @param $var
-	 *
-	 * @return bool|string
+	 * @return string
 	 */
 	private function getVariableValue( $var ) {
 		if ( !is_a( $var, 'Less_Tree' ) ) {
@@ -335,7 +332,6 @@ class Less_Parser {
 			default:
 				throw new Exception( "type missing in switch/case getVariableValue for ".$var->type );
 		}
-		return false;
 	}
 
 	private function rgb2html( $r, $g = -1, $b = -1 ) {
@@ -403,7 +399,7 @@ class Less_Parser {
 	 * Parse a Less string into css
 	 *
 	 * @param string $str The string to convert
-	 * @param string $uri_root The url of the file
+	 * @param string|null $file_uri The url of the file
 	 * @return Less_Tree_Ruleset|Less_Parser
 	 */
 	public function parse( $str, $file_uri = null ) {
@@ -694,7 +690,7 @@ class Less_Parser {
 	 * Free up some memory
 	 */
 	public function UnsetInput() {
-		unset( $this->input, $this->pos, $this->input_len, $this->furthest );
+		$this->input = $this->pos = $this->input_len = $this->furthest = null;
 		$this->saveStack = array();
 	}
 
@@ -2098,7 +2094,7 @@ class Less_Parser {
 	private function parseMediaFeatures() {
 		$features = array();
 
-		do{
+		do {
 			$e = $this->parseMediaFeature();
 			if ( $e ) {
 				$features[] = $e;
@@ -2112,7 +2108,7 @@ class Less_Parser {
 			}
 		} while ( $e );
 
-		return $features ? $features : null;
+		return $features ?: null;
 	}
 
 	private function parseMedia() {
@@ -2431,15 +2427,12 @@ class Less_Parser {
 	 * Expressions either represent mathematical operations,
 	 * or white-space delimited Entities.
 	 *
-	 *	 1px solid black
-	 * @var * 2
-	 *
 	 * @return Less_Tree_Expression|null
 	 */
 	private function parseExpression() {
 		$entities = array();
 
-		do{
+		do {
 			$e = $this->MatchFuncs( array( 'parseAddition','parseEntity' ) );
 			if ( $e ) {
 				$entities[] = $e;
@@ -2451,7 +2444,7 @@ class Less_Parser {
 					}
 				}
 			}
-		}while ( $e );
+		} while ( $e );
 
 		if ( $entities ) {
 			return $this->NewObj1( 'Less_Tree_Expression', $entities );
@@ -2541,9 +2534,9 @@ class Less_Parser {
 	 * Round numbers similarly to javascript
 	 * eg: 1.499999 to 1 instead of 2
 	 */
-	public static function round( $i, $precision = 0 ) {
+	public static function round( $input, $precision = 0 ) {
 		$precision = pow( 10, $precision );
-		$i = $i * $precision;
+		$i = $input * $precision;
 
 		$ceil = ceil( $i );
 		$floor = floor( $i );
