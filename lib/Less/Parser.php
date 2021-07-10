@@ -436,7 +436,7 @@ class Less_Parser {
 	 * @return Less_Tree_Ruleset|Less_Parser
 	 */
 	public function parseFile( $filename, $uri_root = '', $returnRoot = false ) {
-		if ( !file_exists( $filename ) ) {
+		if ( !preg_match('#^https?://#', $filename) && !file_exists( $filename ) ) {
 			$this->Error( sprintf( 'File `%s` not found.', $filename ) );
 		}
 
