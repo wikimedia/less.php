@@ -1208,7 +1208,7 @@ class Less_Parser {
 			return $this->NewObj( 'Less_Tree_Url', array( $value, $this->env->currentFileInfo ) );
 		}
 
-		return $this->NewObj( 'Less_Tree_Url', array( $this->NewObj( 'Less_Tree_Anonymous', $value ), [ $this->env->currentFileInfo ] ) );
+		return $this->NewObj( 'Less_Tree_Url', array( $this->NewObj( 'Less_Tree_Anonymous', [ $value ] ), $this->env->currentFileInfo ) );
 	}
 
 	//
