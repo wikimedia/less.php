@@ -595,9 +595,9 @@ fieldset legend {
   line-height: 1;
   color: #404040;
   *padding: 0 0 5px 145px;
+  /* IE6-7 */
   *line-height: 1.5;
   /* IE6-7 */
-
 }
 form .clearfix {
   margin-bottom: 18px;
@@ -664,7 +664,6 @@ input[type=radio] {
   margin: 3px 0;
   *margin-top: 0;
   /* IE6-7 */
-
   line-height: normal;
   border: none;
 }
@@ -690,7 +689,6 @@ input[type=file] {
   line-height: 27px;
   *margin-top: 4px;
   /* For IE7, add top margin to align select with labels */
-
 }
 select[multiple] {
   height: inherit;
@@ -999,9 +997,9 @@ textarea[readonly] {
 .help-inline {
   padding-left: 5px;
   *position: relative;
+  /* IE6-7 */
   *top: -5px;
   /* IE6-7 */
-
 }
 .help-block {
   display: block;
@@ -1049,7 +1047,6 @@ textarea[readonly] {
 .input-prepend .add-on {
   *margin-top: 1px;
   /* IE6-7 */
-
 }
 .input-append input {
   float: left;
@@ -1191,7 +1188,6 @@ table tbody th {
   border-collapse: separate;
   *border-collapse: collapse;
   /* IE7, collapse table to remove spacing */
-
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
@@ -2232,7 +2228,6 @@ input[type=submit].btn::-moz-focus-inner {
   border-right-color: rgba(0, 0, 0, 0.15);
   *border-right-color: #ddd;
   /* IE6-7 */
-
   text-decoration: none;
 }
 .pagination a:hover,
@@ -2296,7 +2291,6 @@ input[type=submit].btn::-moz-focus-inner {
   border: 1px solid rgba(0, 0, 0, 0.3);
   *border: 1px solid #999;
   /* IE6-7 */
-
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
