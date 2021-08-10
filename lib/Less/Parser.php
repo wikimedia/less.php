@@ -232,9 +232,9 @@ class Less_Parser {
 	}
 
 	/**
-	 *
-	 * this function gets the private rules variable and returns an array of the found variables
-	 * it uses a helper method getVariableValue() that contains the logic ot fetch the value from the rule object
+	 * Gets the private rules variable and returns an array of the found variables
+	 * it uses a helper method getVariableValue() that contains the logic ot fetch the value
+	 * from the rule object
 	 *
 	 * @return array
 	 */
@@ -281,54 +281,49 @@ class Less_Parser {
 	 * This method gets the value of the less variable from the rules object.
 	 * Since the objects vary here we add the logic for extracting the css/less value.
 	 *
-	 * @param $var
+	 * @param Less_Tree $var
 	 * @return string
 	 */
-	private function getVariableValue( $var ) {
-		if ( !is_a( $var, 'Less_Tree' ) ) {
-			throw new Exception( 'var is not a Less_Tree object' );
-		}
-
-		switch ( $var->type ) {
-			case 'Color':
+	private function getVariableValue( Less_Tree $var ) {
+		switch ( get_class( $var ) ) {
+			case Less_Tree_Color::class:
 				return $this->rgb2html( $var->rgb );
-			case 'Unit':
-				return $var->value. $var->unit->numerator[0];
-			case 'Variable':
+			case Less_Tree_Variable::class:
 				return $this->findVarByName( $var->name );
-			case 'Keyword':
+			case Less_Tree_Keyword::class:
 				return $var->value;
-			case 'Url':
+			case Less_Tree_Url::class:
 				// Based on Less_Tree_Url::genCSS()
 				// Recurse to serialize the Less_Tree_Quoted value
 				return 'url(' . $this->getVariableValue( $var->value ) . ')';
-			case 'Rule':
+			case Less_Tree_Rule::class:
 				return $this->getVariableValue( $var->value );
-			case 'Value':
+			case Less_Tree_Value::class:
 				$value = '';
 				foreach ( $var->value as $sub_value ) {
 					$value .= $this->getVariableValue( $sub_value ).' ';
 				}
 				return $value;
-			case 'Quoted':
+			case Less_Tree_Quoted::class:
 				return $var->quote.$var->value.$var->quote;
-			case 'Dimension':
+			case Less_Tree_Dimension::class:
 				$value = $var->value;
 				if ( $var->unit && $var->unit->numerator ) {
 					$value .= $var->unit->numerator[0];
 				}
 				return $value;
-			case 'Expression':
+			case Less_Tree_Expression::class:
 				$value = "";
 				foreach ( $var->value as $item ) {
 					$value .= $this->getVariableValue( $item )." ";
 				}
 				return $value;
-			case 'Operation':
+			case Less_Tree_Operation::class:
 				throw new Exception( 'getVariables() require Less to be compiled. please use $parser->getCss() before calling getVariables()' );
-			case 'Comment':
-			case 'Import':
-			case 'Ruleset':
+			case Less_Tree_Unit::class:
+			case Less_Tree_Comment::class:
+			case Less_Tree_Import::class:
+			case Less_Tree_Ruleset::class:
 			default:
 				throw new Exception( "type missing in switch/case getVariableValue for ".$var->type );
 		}
