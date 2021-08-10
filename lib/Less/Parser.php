@@ -2562,18 +2562,14 @@ class Less_Parser {
 	public function NewObj( $class, $args = [] ) {
 		$obj = new $class( ...$args );
 		if ( $this->CacheEnabled() ) {
-			$this->ObjCache( $obj, $class, $args );
+			$argStrings = array_map(
+				[ __CLASS__, 'ArgString' ],
+				$args
+			);
+			$argCache = implode( ',', $argStrings );
+			$obj->cache_string = " new $class($argCache)";
 		}
 		return $obj;
-	}
-
-	// caching
-	public function ObjCache( $obj, $class, $args = array() ) {
-		$obj->cache_string = ' new '.$class.'('. self::ArgCache( $args ).')';
-	}
-
-	public function ArgCache( $args ) {
-		return implode( ',', array_map( array( 'Less_Parser','ArgString' ), $args ) );
 	}
 
 	/**
