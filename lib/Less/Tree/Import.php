@@ -41,7 +41,10 @@ class Less_Tree_Import extends Less_Tree {
 				$this->css = !isset( $this->options['less'] ) || !$this->options['less'] || $this->options['inline'];
 			} else {
 				$pathValue = $this->getPath();
-				if ( $pathValue && preg_match( '/css([\?;].*)?$/', $pathValue ) ) {
+				// Leave any ".css" file imports as literals for the browser.
+				// Also leave any remote HTTP resources as literals regardless of whether
+				// they contain ".css" in their filename.
+				if ( $pathValue && preg_match( '/^(https?:)?\/\/|\.css$/i', $pathValue ) ) {
 					$this->css = true;
 				}
 			}
