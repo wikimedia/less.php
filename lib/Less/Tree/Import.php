@@ -106,7 +106,11 @@ class Less_Tree_Import extends Less_Tree {
 		if ( $this->path instanceof Less_Tree_Quoted ) {
 			$path = $this->path->value;
 			$path = ( isset( $this->css ) || preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $path ) ) ? $path : $path . '.less';
-		} else if ( $this->path instanceof Less_Tree_URL ) {
+
+		// During the first pass, Less_Tree_URL may contain a Less_Tree_Variable (not yet expanded),
+		// and thus has no value property defined yet. Return null until we reach the next phase.
+		// https://github.com/wikimedia/less.php/issues/29
+		} else if ( $this->path instanceof Less_Tree_URL && !( $this->path->value instanceof Less_Tree_Variable ) ) {
 			$path = $this->path->value->value;
 		} else {
 			return null;
