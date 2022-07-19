@@ -123,7 +123,7 @@ return $a / $b;
 		$v = Less_Functions::number( $v );
 		$a = Less_Functions::number( $a );
 
-		$i = floor( ( $h / 60 ) % 6 );
+		$i = floor( (int)( $h / 60 ) % 6 );
 		$f = ( $h / 60 ) - $i;
 
 		$vs = array( $v,
