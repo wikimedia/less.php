@@ -11,6 +11,7 @@ class Less_Tree_Color extends Less_Tree {
 	public $alpha;
 	public $isTransparentKeyword;
 	public $type = 'Color';
+	public $name = 'n/a';
 
 	public function __construct( $rgb, $a = 1, $isTransparentKeyword = null ) {
 		if ( $isTransparentKeyword ) {
