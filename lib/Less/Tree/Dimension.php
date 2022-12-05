@@ -11,6 +11,7 @@ class Less_Tree_Dimension extends Less_Tree {
 	public $value;
 	public $unit;
 	public $type = 'Dimension';
+	public $parensInOp;
 
 	public function __construct( $value, $unit = null ) {
 		$this->value = floatval( $value );
