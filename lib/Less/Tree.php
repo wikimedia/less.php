@@ -9,6 +9,9 @@
 class Less_Tree {
 
 	public $cache_string;
+    public $parensInOp;
+    public $extendOnEveryPath;
+    public $allExtends;
 
 	public function toCSS() {
 		$output = new Less_Output();
