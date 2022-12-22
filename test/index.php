@@ -20,11 +20,7 @@ require_once $dir.'/lib/Less/Autoloader.php';
 Less_Autoloader::register();
 require_once $dir.'/lessc.inc.php';
 
-// ? performance improvement (php 5.3+)
-//https://github.com/composer/composer/pull/3482
-//gc_disable();
-
-//using release
+// using release
 /* require_once $dir.'/test/release/Less.php'; */
 
 //get diff
@@ -506,7 +502,9 @@ class ParserTest {
 	}
 
 	function microtime_diff( $a, $b = false, $eff = 6 ) {
-		if ( !$b ) $b = microtime();
+		if ( !$b ) {
+			$b = microtime();
+		}
 		$a = array_sum( explode( " ", $a ) );
 		$b = array_sum( explode( " ", $b ) );
 		return sprintf( '%0.'.$eff.'f', $b - $a );

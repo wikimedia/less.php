@@ -11,7 +11,12 @@ return [
 	// Thus, both first-party and third-party code being used by
 	// your application should be included in this list.
 	'directory_list' => [
+		'.phan/stubs/',
 		'lib/',
+	],
+
+	'exclude_file_list' => [
+		'lib/Less/Tree/Selector.php',
 	],
 
 	// A directory list that defines files that will be excluded
@@ -44,5 +49,14 @@ return [
 		// 'PrintfCheckerPlugin',
 		// 'SleepCheckerPlugin',
 		// 'UseReturnValuePlugin',
+	],
+
+	'suppress_issue_types' => [
+		'PhanPluginDuplicateConditionalTernaryDuplication',
+		'PhanPluginDuplicateExpressionAssignmentOperation',
+		'PhanTypeInvalidDimOffset',
+		'PhanTypeMismatchDimFetch',
+		'PhanTypePossiblyInvalidDimOffset',
+		'PhanTypeArraySuspiciousNullable',
 	],
 ];

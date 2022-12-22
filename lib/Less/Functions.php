@@ -12,7 +12,7 @@ class Less_Functions {
 	public $env;
 	public $currentFileInfo;
 
-	function __construct( $env, $currentFileInfo = null ) {
+	function __construct( $env, array $currentFileInfo = null ) {
 		$this->env = $env;
 		$this->currentFileInfo = $currentFileInfo;
 	}
@@ -107,7 +107,15 @@ class Less_Functions {
 	 */
 	public function hsla_hue( $h, $m1, $m2 ) {
 		$h = $h < 0 ? $h + 1 : ( $h > 1 ? $h - 1 : $h );
-		if ( $h * 6 < 1 ) return $m1 + ( $m2 - $m1 ) * $h * 6; else if ( $h * 2 < 1 ) return $m2; else if ( $h * 3 < 2 ) return $m1 + ( $m2 - $m1 ) * ( 2 / 3 - $h ) * 6; else return $m1;
+		if ( $h * 6 < 1 ) {
+			return $m1 + ( $m2 - $m1 ) * $h * 6;
+		} else if ( $h * 2 < 1 ) {
+			return $m2;
+		} else if ( $h * 3 < 2 ) {
+			return $m1 + ( $m2 - $m1 ) * ( 2 / 3 - $h ) * 6;
+		} else {
+			return $m1;
+		}
 	}
 
 	public function hsv( $h, $s, $v ) {
@@ -866,11 +874,12 @@ class Less_Functions {
 
 		$filePath = str_replace( '\\', '/', $filePath );
 		if ( Less_Environment::isPathRelative( $filePath ) ) {
-
+			$currentFileInfo = $this->currentFileInfo;
+			'@phan-var array $currentFileInfo';
 			if ( Less_Parser::$options['relativeUrls'] ) {
-				$temp = $this->currentFileInfo['currentDirectory'];
+				$temp = $currentFileInfo['currentDirectory'];
 			} else {
-				$temp = $this->currentFileInfo['entryPath'];
+				$temp = $currentFileInfo['entryPath'];
 			}
 
 			if ( !empty( $temp ) ) {
@@ -915,7 +924,7 @@ class Less_Functions {
 		$fileSizeInKB = round( strlen( $buf ) / 1024 );
 		if ( $fileSizeInKB >= $DATA_URI_MAX_KB ) {
 			$url = new Less_Tree_Url( ( $filePathNode ?: $mimetypeNode ), $this->currentFileInfo );
-			return $url->compile( $this );
+			return $url->compile( $this->env );
 		}
 
 		if ( $buf ) {

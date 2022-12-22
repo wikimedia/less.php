@@ -28,6 +28,10 @@ class Less_Tree {
 	public function genCSS( $output ) {
 	}
 
+	public function compile( $env ) {
+		return $this;
+	}
+
 	/**
 	 * @param Less_Tree_Ruleset[] $rules
 	 */

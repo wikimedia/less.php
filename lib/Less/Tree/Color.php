@@ -35,10 +35,6 @@ class Less_Tree_Color extends Less_Tree {
 		$this->alpha = is_numeric( $a ) ? $a : 1;
 	}
 
-	public function compile() {
-		return $this;
-	}
-
 	public function luma() {
 		$r = $this->rgb[0] / 255;
 		$g = $this->rgb[1] / 255;

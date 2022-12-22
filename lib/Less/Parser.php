@@ -1,7 +1,5 @@
 <?php
 
-require_once dirname( __FILE__ ).'/Cache.php';
-
 /**
  * Class for parsing and compiling less files into css
  *
@@ -39,6 +37,7 @@ class Less_Parser {
 
 	);
 
+	/** @var array{compress:bool,strictUnits:bool,strictMath:bool,numPrecision:int,import_dirs:array,import_callback:null|callable,indentation:string} */
 	public static $options = array();
 
 	private $input;					// Less input string
@@ -159,8 +158,9 @@ class Less_Parser {
 	 * @param string $name function name
 	 */
 	public function unregisterFunction( $name ) {
-		if ( isset( $this->env->functions[$name] ) )
+		if ( isset( $this->env->functions[$name] ) ) {
 			unset( $this->env->functions[$name] );
+		}
 	}
 
 	/**
@@ -313,7 +313,7 @@ class Less_Parser {
 				}
 				return $value;
 			case Less_Tree_Expression::class:
-				$value = "";
+				$value = '';
 				foreach ( $var->value as $item ) {
 					$value .= $this->getVariableValue( $item )." ";
 				}
@@ -330,8 +330,9 @@ class Less_Parser {
 	}
 
 	private function rgb2html( $r, $g = -1, $b = -1 ) {
-		if ( is_array( $r ) && sizeof( $r ) == 3 )
+		if ( is_array( $r ) && sizeof( $r ) == 3 ) {
 			list( $r, $g, $b ) = $r;
+		}
 
 		$r = intval( $r ); $g = intval( $g );
 		$b = intval( $b );
@@ -737,10 +738,10 @@ class Less_Parser {
 	 * Determine if the character at the specified offset from the current position is a white space.
 	 *
 	 * @param int $offset
-	 *
 	 * @return bool
 	 */
 	private function isWhitespace( $offset = 0 ) {
+		// @phan-suppress-next-line PhanParamSuspiciousOrder False positive
 		return strpos( " \t\n\r\v\f", $this->input[$this->pos + $offset] ) !== false;
 	}
 
@@ -750,7 +751,7 @@ class Less_Parser {
 	 * @param array $toks
 	 * @return array
 	 */
-	private function match( $toks ) {
+	private function matcher( $toks ) {
 		// The match is confirmed, add the match length to `this::pos`,
 		// and consume any extra white-space characters (' ' || '\n')
 		// which come after that. The reason for this is that LeSS's
@@ -785,8 +786,7 @@ class Less_Parser {
 
 	/**
 	 * @param string[] $toks
-	 *
-	 * @return string
+	 * @return null|string|array|Less_Tree
 	 */
 	private function MatchFuncs( $toks ) {
 		if ( $this->pos < $this->input_len ) {
@@ -808,7 +808,11 @@ class Less_Parser {
 		}
 	}
 
-	// Match a regexp from the current start point
+	/**
+	 * Match a regexp from the current start point
+	 *
+	 * @return array|null
+	 */
 	private function MatchReg( $tok ) {
 		if ( preg_match( $tok, $this->input, $match, 0, $this->pos ) ) {
 			$this->skipWhitespace( strlen( $match[0] ) );
@@ -821,7 +825,7 @@ class Less_Parser {
 	 * just return the match.
 	 *
 	 * @param string $tok
-	 * @return integer
+	 * @return integer|false
 	 */
 	public function PeekReg( $tok ) {
 		return preg_match( $tok, $this->input, $match, 0, $this->pos );
@@ -855,7 +859,7 @@ class Less_Parser {
 	 * @param string|null $msg
 	 */
 	public function expect( $tok, $msg = NULL ) {
-		$result = $this->match( array( $tok ) );
+		$result = $this->matcher( array( $tok ) );
 		if ( !$result ) {
 			$this->Error( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 		} else {
@@ -988,11 +992,13 @@ class Less_Parser {
 		return $comments;
 	}
 
-	//
-	// A string, which supports escaping " and '
-	//
-	//	 "milky way" 'he\'s the one!'
-	//
+	/**
+	 * A string, which supports escaping " and '
+	 *
+	 *	 "milky way" 'he\'s the one!'
+	 *
+	 * @return Less_Tree_Quoted|null
+	 */
 	private function parseEntitiesQuoted() {
 		$j = $this->pos;
 		$e = false;
@@ -1057,11 +1063,13 @@ class Less_Parser {
 		return false;
 	}
 
-	//
-	// A catch-all word, such as:
-	//
-	//	 black border-collapse
-	//
+	/**
+	 * A catch-all word, such as:
+	 *
+	 *	 black border-collapse
+	 *
+	 * @return Less_Tree_Keyword|Less_Tree_Color|null
+	 */
 	private function parseEntitiesKeyword() {
 		// $k = $this->MatchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/');
 		$k = $this->MatchReg( '/\\G%|\\G[_A-Za-z-][_A-Za-z0-9-]*/' );
@@ -1155,6 +1163,7 @@ class Less_Parser {
 		return $args;
 	}
 
+	/** @return Less_Tree_Dimension|Less_Tree_Color|Less_Tree_Quoted|Less_Tree_UnicodeDescriptor|null */
 	private function parseEntitiesLiteral() {
 		return $this->MatchFuncs( array( 'parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor' ) );
 	}
@@ -1192,13 +1201,14 @@ class Less_Parser {
 			return;
 		}
 
-		$value = $this->match( array( 'parseEntitiesQuoted','parseEntitiesVariable','/\\Gdata\:.*?[^\)]+/','/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/' ) );
+		$value = $this->matcher( array( 'parseEntitiesQuoted','parseEntitiesVariable','/\\Gdata\:.*?[^\)]+/','/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/' ) );
 		if ( !$value ) {
 			$value = '';
 		}
 
 		$this->expectChar( ')' );
 
+		// @phan-suppress-next-line PhanTypeExpectedObjectPropAccess
 		if ( isset( $value->value ) || $value instanceof Less_Tree_Variable ) {
 			return $this->NewObj( 'Less_Tree_Url', array( $value, $this->env->currentFileInfo ) );
 		}
@@ -1206,14 +1216,16 @@ class Less_Parser {
 		return $this->NewObj( 'Less_Tree_Url', array( $this->NewObj( 'Less_Tree_Anonymous', [ $value ] ), $this->env->currentFileInfo ) );
 	}
 
-	//
-	// A Variable entity, such as `@fink`, in
-	//
-	//	 width: @fink + 2px
-	//
-	// We use a different parser for variable definitions,
-	// see `parsers.variable`.
-	//
+	/**
+	 * A Variable entity, such as `@fink`, in
+	 *
+	 *	 width: @fink + 2px
+	 *
+	 * We use a different parser for variable definitions,
+	 * see `parsers.variable`.
+	 *
+	 * @return Less_Tree_Variable|null
+	 */
 	private function parseEntitiesVariable() {
 		$index = $this->pos;
 		if ( $this->PeekChar( '@' ) && ( $name = $this->MatchReg( '/\\G@@?[\w-]+/' ) ) ) {
@@ -1221,7 +1233,11 @@ class Less_Parser {
 		}
 	}
 
-	// A variable entity using the protective {} e.g. @{var}
+	/**
+	 * A variable entity using the protective `{}` e.g. `@{var}`.
+	 *
+	 * @return Less_Tree_Variable|null
+	 */
 	private function parseEntitiesVariableCurly() {
 		$index = $this->pos;
 
@@ -1230,24 +1246,28 @@ class Less_Parser {
 		}
 	}
 
-	//
-	// A Hexadecimal color
-	//
-	//	 #4F3C2F
-	//
-	// `rgb` and `hsl` colors are parsed through the `entities.call` parser.
-	//
+	/**
+	 * A Hexadecimal color
+	 *
+	 *	 #4F3C2F
+	 *
+	 * `rgb` and `hsl` colors are parsed through the `entities.call` parser.
+	 *
+	 * @return Less_Tree_Color|null
+	 */
 	private function parseEntitiesColor() {
 		if ( $this->PeekChar( '#' ) && ( $rgb = $this->MatchReg( '/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/' ) ) ) {
 			return $this->NewObj( 'Less_Tree_Color', [ $rgb[1] ] );
 		}
 	}
 
-	//
-	// A Dimension, that is, a number and a unit
-	//
-	//	 0.5em 95%
-	//
+	/**
+	 * A Dimension, that is, a number and a unit
+	 *
+	 *	 0.5em 95%
+	 *
+	 * @return Less_Tree_Dimension|null
+	 */
 	private function parseEntitiesDimension() {
 		$c = @ord( $this->input[$this->pos] );
 
@@ -1258,7 +1278,6 @@ class Less_Parser {
 
 		$value = $this->MatchReg( '/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/' );
 		if ( $value ) {
-
 			if ( isset( $value[2] ) ) {
 				return $this->NewObj( 'Less_Tree_Dimension', array( $value[1],$value[2] ) );
 			}
@@ -1266,11 +1285,13 @@ class Less_Parser {
 		}
 	}
 
-	//
-	// A unicode descriptor, as is used in unicode-range
-	//
-	// U+0?? or U+00A1-00A9
-	//
+	/**
+	 * A unicode descriptor, as is used in unicode-range
+	 *
+	 * U+0?? or U+00A1-00A9
+	 *
+	 * @return Less_Tree_UnicodeDescriptor|null
+	 */
 	function parseUnicodeDescriptor() {
 		$ud = $this->MatchReg( '/\\G(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/' );
 		if ( $ud ) {
@@ -1458,6 +1479,7 @@ class Less_Parser {
 				}
 				$arg = $this->MatchFuncs( array( 'parseEntitiesVariable','parseEntitiesLiteral','parseEntitiesKeyword' ) );
 			}
+			'@phan-var Less_Tree_DetachedRuleset|Less_Tree_Expression|Less_Tree_Variable|Less_Tree_Dimension|Less_Tree_Color|Less_Tree_Quoted|Less_Tree_UnicodeDescriptor|Less_Tree_Keyword|null $arg';
 
 			if ( !$arg ) {
 				break;
@@ -1686,7 +1708,7 @@ class Less_Parser {
 		$c = $this->parseCombinator();
 		$index = $this->pos;
 
-		$e = $this->match( array( '/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
+		$e = $this->matcher( array( '/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
 			'#*', '#&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#](?=@)/', 'parseEntitiesVariableCurly' ) );
 
 		if ( is_null( $e ) ) {
@@ -1812,7 +1834,7 @@ class Less_Parser {
 
 		$op = $this->MatchReg( '/\\G[|~*$^]?=/' );
 		if ( $op ) {
-			$val = $this->match( array( 'parseEntitiesQuoted','/\\G[0-9]+%/','/\\G[\w-]+/','parseEntitiesVariableCurly' ) );
+			$val = $this->matcher( array( 'parseEntitiesQuoted','/\\G[0-9]+%/','/\\G[\w-]+/','parseEntitiesVariableCurly' ) );
 		}
 
 		$this->expectChar( ']' );
@@ -1843,6 +1865,7 @@ class Less_Parser {
 		return $block;
 	}
 
+	/** @return Less_Tree_DetachedRuleset|null */
 	private function parseDetachedRuleset() {
 		$blockRuleset = $this->parseBlockRuleset();
 		if ( $blockRuleset ) {
@@ -2077,7 +2100,9 @@ class Less_Parser {
 					} else {
 						return null;
 					}
-				} else return null;
+				} else {
+					return null;
+				}
 			}
 		} while ( $e );
 
@@ -2093,12 +2118,16 @@ class Less_Parser {
 			$e = $this->parseMediaFeature();
 			if ( $e ) {
 				$features[] = $e;
-				if ( !$this->MatchChar( ',' ) ) break;
+				if ( !$this->MatchChar( ',' ) ) {
+					break;
+				}
 			} else {
 				$e = $this->parseEntitiesVariable();
 				if ( $e ) {
 					$features[] = $e;
-					if ( !$this->MatchChar( ',' ) ) break;
+					if ( !$this->MatchChar( ',' ) ) {
+						break;
+					}
 				}
 			}
 		} while ( $e );
@@ -2143,7 +2172,9 @@ class Less_Parser {
 
 		$name = $this->MatchReg( '/\\G@[a-z-]+/' );
 
-		if ( !$name ) return;
+		if ( !$name ) {
+			return;
+		}
 		$name = $name[0];
 
 		$nonVendorSpecificName = $name;
@@ -2321,7 +2352,7 @@ class Less_Parser {
 					$op = $op[0];
 				} else {
 					if ( !$isSpaced ) {
-						$op = $this->match( array( '#+','#-' ) );
+						$op = $this->matcher( array( '#+','#-' ) );
 					}
 					if ( !$op ) {
 						break;
@@ -2371,7 +2402,9 @@ class Less_Parser {
 		$negate = false;
 		$c = null;
 
-		if ( $this->MatchReg( '/\\Gnot/' ) ) $negate = true;
+		if ( $this->MatchReg( '/\\Gnot/' ) ) {
+			$negate = true;
+		}
 		$this->expectChar( '(' );
 		$a = $this->MatchFuncs( array( 'parseAddition','parseEntitiesKeyword','parseEntitiesQuoted' ) );
 
@@ -2389,6 +2422,7 @@ class Less_Parser {
 				$c = $this->NewObj( 'Less_Tree_Condition', array( '=', $a, $k, $index, $negate ) );
 			}
 			$this->expectChar( ')' );
+			// @phan-suppress-next-line PhanPossiblyInfiniteRecursionSameParams
 			return $this->MatchReg( '/\\Gand/' ) ? $this->NewObj( 'Less_Tree_Condition', array( 'and', $c, $this->parseCondition() ) ) : $c;
 		}
 	}
@@ -2463,7 +2497,7 @@ class Less_Parser {
 	 * Parse a rule property
 	 * eg: 'color', 'width', 'height', etc
 	 *
-	 * @return string
+	 * @return array
 	 */
 	private function parseRuleProperty() {
 		$offset = $this->pos;
@@ -2546,9 +2580,10 @@ class Less_Parser {
 	 * Create a new instance of $class with args $args, and optionally generates a cache string.
 	 * $class should be a Less_Tree_* class.
 	 *
-	 * @phan-param class-string<Less_Tree> $class
+	 * @phan-template TClassName
+	 * @phan-param class-string<TClassName> $class
 	 * @phan-param array<int,mixed> $args
-	 * @phan-return Less_True
+	 * @phan-return TClassName
 	 *
 	 * @param string $class
 	 * @param mixed[] $args
@@ -2562,6 +2597,7 @@ class Less_Parser {
 				$args
 			);
 			$argCache = implode( ',', $argStrings );
+			// @phan-suppress-next-line PhanTypeExpectedObjectPropAccess False positive
 			$obj->cache_string = " new $class($argCache)";
 		}
 		return $obj;

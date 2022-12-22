@@ -8,7 +8,6 @@
 		<exclude name="Generic.Arrays.DisallowLongArraySyntax.Found" />
 		<exclude name="Generic.CodeAnalysis.JumbledIncrementer.Found" />
 		<exclude name="Generic.ControlStructures.DisallowYodaConditions.Found" />
-		<exclude name="Generic.ControlStructures.InlineControlStructure.NotAllowed" />
 		<exclude name="Generic.Files.LineLength.TooLong" />
 		<exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine" />
 		<exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning" />
@@ -73,5 +72,9 @@
 		<exclude name="Squiz.Scope.MemberVarScope.Missing" />
 		<exclude name="Squiz.Scope.MethodScope.Missing" />
 		<exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound" />
+	</rule>
+	<rule ref="Generic.Classes.DuplicateClassName.Found">
+		<!-- See .phan/stubs/Less_Tree_Selector.php -->
+		<exclude-pattern>Less/Tree/Selector.php</exclude-pattern>
 	</rule>
 </ruleset>

@@ -69,7 +69,7 @@ class Less_Exception_Parser extends Exception {
 				$last_line = min( $count, $start_line + 6 );
 				$num_len = strlen( $last_line );
 				for ( $i = $start_line; $i < $last_line; $i++ ) {
-					$this->message .= "\n".str_pad( $i + 1, $num_len, '0', STR_PAD_LEFT ).'| '.$lines[$i];
+					$this->message .= "\n".str_pad( (string)( $i + 1 ), $num_len, '0', STR_PAD_LEFT ).'| '.$lines[$i];
 				}
 			}
 		}

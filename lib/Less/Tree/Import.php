@@ -168,6 +168,7 @@ class Less_Tree_Import extends Less_Tree {
 		if ( $evald->skip( $full_path, $env ) ) {
 			return array();
 		}
+		'@phan-var string $full_path';
 
 		if ( $this->options['inline'] ) {
 			// todo needs to reference css file not import
@@ -254,6 +255,9 @@ class Less_Tree_Import extends Less_Tree {
 	/**
 	 * Parse the import url and return the rules
 	 *
+	 * @param string $full_path
+	 * @param string|null $uri
+	 * @param mixed $env
 	 * @return Less_Tree_Media|array
 	 */
 	public function ParseImport( $full_path, $uri, $env ) {
@@ -278,9 +282,11 @@ class Less_Tree_Import extends Less_Tree {
 	/**
 	 * Should the import be skipped?
 	 *
+	 * @param string|null $path
+	 * @param Less_Environment $env
 	 * @return boolean|null
 	 */
-	private function Skip( $path, $env ) {
+	private function skip( $path, $env ) {
 		$path = Less_Parser::AbsPath( $path, true );
 
 		if ( $path && Less_Parser::FileParsed( $path ) ) {

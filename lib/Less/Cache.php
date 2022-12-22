@@ -1,7 +1,5 @@
 <?php
 
-require_once dirname( __FILE__ ).'/Version.php';
-
 /**
  * Utility for handling the generation and caching of css files
  *
@@ -30,7 +28,7 @@ class Less_Cache {
 	 * @param array $less_files Array of .less files to compile
 	 * @param array $parser_options Array of compiler options
 	 * @param array $modify_vars Array of variables
-	 * @return string Name of the css file
+	 * @return string|false Name of the css file
 	 */
 	public static function Get( $less_files, $parser_options = array(), $modify_vars = array() ) {
 		// check $cache_dir
