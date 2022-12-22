@@ -7,8 +7,7 @@
  * @subpackage tree
  */
 class Less_Tree {
-
-	public $cache_string;
+    public $cache_string;
     public $parensInOp;
     public $extendOnEveryPath;
     public $allExtends;
