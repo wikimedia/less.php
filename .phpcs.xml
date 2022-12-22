@@ -5,6 +5,8 @@
 	<arg name="encoding" value="UTF-8" />
 	<exclude-pattern>vendor</exclude-pattern>
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
+		<exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed" />
+		<exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter" />
 		<exclude name="Generic.Arrays.DisallowLongArraySyntax.Found" />
 		<exclude name="Generic.CodeAnalysis.JumbledIncrementer.Found" />
 		<exclude name="Generic.ControlStructures.DisallowYodaConditions.Found" />
