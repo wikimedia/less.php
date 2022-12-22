@@ -53,7 +53,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 	public function accept( $visitor ) {
 		if ( $this->paths ) {
 			$paths_len = count( $this->paths );
-			for ( $i = 0,$paths_len; $i < $paths_len; $i++ ) {
+			for ( $i = 0; $i < $paths_len; $i++ ) {
 				$this->paths[$i] = $visitor->visitArray( $this->paths[$i] );
 			}
 		} elseif ( $this->selectors ) {

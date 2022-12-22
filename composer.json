@@ -31,8 +31,8 @@
 	"scripts": {
 		"test": [
 			"parallel-lint . --exclude vendor",
-			"phpcs -sp",
 			"phpunit",
+			"phpcs -sp",
 			"minus-x check ."
 		],
 		"cover": "phpunit --coverage-text --coverage-html coverage/ --coverage-clover coverage/clover.xml",
