@@ -42,7 +42,7 @@
 
 abstract class Diff_Renderer_Abstract {
 	/**
-	 * @var object Instance of the diff class that this renderer is generating the rendered diff for.
+	 * @var Diff Instance of the Diff class that this renderer is generating the rendered diff for.
 	 */
 	public $diff;
 

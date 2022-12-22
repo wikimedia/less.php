@@ -178,7 +178,7 @@ class drXdebugTraceFileParser {
 
 		if ( $sortKey !== null ) {
 			uasort( $result,
-				function ( $a, $b ) use ( $sortKey )
+				static function ( $a, $b ) use ( $sortKey )
 				{
 					return ( $a[$sortKey] > $b[$sortKey] ) ? -1 : ( $a[$sortKey] < $b[$sortKey] ? 1 : 0 );
 				}

@@ -123,7 +123,7 @@ class Less_Environment {
 			switch ( $segment ) {
 
 				case '.':
-				break;
+					break;
 
 				case '..':
 					if ( !$path_len || ( $path[$path_len - 1] === '..' ) ) {
@@ -133,12 +133,12 @@ class Less_Environment {
 						array_pop( $path );
 						$path_len--;
 					}
-				break;
+					break;
 
 				default:
 					$path[] = $segment;
 					$path_len++;
-				break;
+					break;
 			}
 		}
 

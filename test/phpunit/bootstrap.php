@@ -1,10 +1,6 @@
 <?php
 
-if ( !class_exists( PHPUnit_Framework_TestCase::class ) ) {
-	class_alias( \PHPUnit\Framework\TestCase::class, PHPUnit_Framework_TestCase::class );
-}
-
-class phpunit_bootstrap extends PHPUnit_Framework_TestCase {
+class phpunit_bootstrap extends PHPUnit\Framework\TestCase {
 	public $fixtures_dir;
 	public $cache_dir;
 
@@ -13,7 +9,7 @@ class phpunit_bootstrap extends PHPUnit_Framework_TestCase {
 		return $rootDir . '/test/Fixtures';
 	}
 
-	public function setUp() : void {
+	public function setUp(): void {
 		$rootDir = dirname( dirname( __DIR__ ) );
 		require_once $rootDir . '/lib/Less/Autoloader.php';
 		Less_Autoloader::register();

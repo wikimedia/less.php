@@ -649,7 +649,6 @@ function obj( $mixed, $objects = array() ) {
 	$type = gettype( $mixed );
 	switch ( $type ) {
 		case 'object':
-
 			if ( in_array( $mixed, $objects, true ) ) {
 				return 'recursive';
 			}
@@ -672,8 +671,8 @@ function obj( $mixed, $objects = array() ) {
 				$temp[$key] = $value;
 			}
 			$mixed = $temp;
+			// fall-through
 		case 'array':
-
 			if ( !count( $mixed ) ) {
 				$output = $type.'()';
 				break;
@@ -687,15 +686,15 @@ function obj( $mixed, $objects = array() ) {
 				$level--;
 			}
 			$output .= str_repeat( '    ', $level ).')';
-		break;
+			break;
 		case 'string':
 			$output = '(string:'.strlen( $mixed ).')'.htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false ).'';
-		break;
+			break;
 
 		case 'integer':
 			$type = 'number';
 			$output = '(number)'.$mixed;
-		break;
+			break;
 
 		case 'boolean':
 			if ( $mixed ) {
@@ -703,9 +702,10 @@ function obj( $mixed, $objects = array() ) {
 			} else {
 				$mixed = 'false';
 			}
+			// fall-through
 		default:
 			$output = '('.$type.')'.htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false ).'';
-		break;
+			break;
 	}
 
 	if ( $level === 0 ) {

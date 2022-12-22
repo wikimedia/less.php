@@ -23,13 +23,13 @@ class Less_Functions {
 	public static function operate( $op, $a, $b ) {
 		switch ( $op ) {
 			case '+':
-return $a + $b;
+				return $a + $b;
 			case '-':
-return $a - $b;
+				return $a - $b;
 			case '*':
-return $a * $b;
+				return $a * $b;
 			case '/':
-return $a / $b;
+				return $a / $b;
 		}
 	}
 
@@ -507,11 +507,11 @@ return $a / $b;
 			switch ( $flag ) {
 				case 'e':
 				case 'g':
-				break;
+					break;
 
 				default:
 				$new_flags .= $flag;
-				break;
+					break;
 			}
 		}
 

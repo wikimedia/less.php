@@ -13,16 +13,20 @@ jobs:
       matrix:
         include:
           # Includes php7.1 - 8.0 and composer 2
-          # https://github.com/actions/virtual-environments/blob/ubuntu18/20210318.0/images/linux/Ubuntu1804-README.md#php
+          # https://github.com/actions/runner-images/blob/ubuntu18/20210318.0/images/linux/Ubuntu1804-README.md#php
           - php: '7.2'
             os: ubuntu-18.04
           - php: '7.3'
             os: ubuntu-18.04
-          # Includes php7.4 - 8.0 and composer 2
-          # https://github.com/actions/virtual-environments/blob/ubuntu20/20210318.0/images/linux/Ubuntu2004-README.md#php
+          # Includes php7.4 - 8.2 and composer 2
+          # https://github.com/actions/runner-images/blob/ubuntu20/20221212.2/images/linux/Ubuntu2004-Readme.md#php
           - php: '7.4'
             os: ubuntu-20.04
           - php: '8.0'
+            os: ubuntu-20.04
+          - php: '8.1'
+            os: ubuntu-20.04
+          - php: '8.2'
             os: ubuntu-20.04
 
     runs-on: ${{ matrix.os }}

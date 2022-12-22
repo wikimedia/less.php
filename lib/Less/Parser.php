@@ -130,14 +130,14 @@ class Less_Parser {
 
 			case 'import_dirs':
 				$this->SetImportDirs( $value );
-			return;
+				return;
 
 			case 'cache_dir':
 				if ( is_string( $value ) ) {
 					Less_Cache::SetCacheDir( $value );
 					Less_Cache::CheckCacheDir();
 				}
-			return;
+				return;
 		}
 
 		Less_Parser::$options[$option] = $value;
