@@ -1,3 +1,12 @@
+## 3.2.0
+
+* [All changes](https://github.com/wikimedia/less.php/compare/v3.1.0...v3.2.0)
+* Fix "Implicit conversion" PHP 8.1 warnings (Ayokunle Odusan)
+* Fix "Creation of dynamic property" PHP 8.2 warnings (Bas Couwenberg)
+* Fix "Creation of dynamic property" PHP 8.2 warnings (Rajesh Kumar)
+* Tree_Url: Add support for "Url" type to `Parser::getVariables()` (ciroarcadio) [#51](https://github.com/wikimedia/less.php/pull/51)
+* Tree_Import: Add support for importing URLs without file extension (Timo Tijhof) [#27](https://github.com/wikimedia/less.php/issues/27)
+
 ## 3.1.0
 
 * [All changes](https://github.com/wikimedia/less.php/compare/v3.0.0...v3.1.0)
