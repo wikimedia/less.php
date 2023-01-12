@@ -8,22 +8,11 @@
  */
 class Less_Autoloader {
 
-	/**
-	 * Registered flag
-	 *
-	 * @var boolean
-	 */
+	/** @var boolean */
 	protected static $registered = false;
 
 	/**
-	 * Library directory
-	 *
-	 * @var string
-	 */
-	protected static $libDir;
-
-	/**
-	 * Register the autoloader in the spl autoloader
+	 * Register the autoloader in the SPL autoloader
 	 *
 	 * @return void
 	 * @throws Exception If there was an error in registration
@@ -33,8 +22,6 @@ class Less_Autoloader {
 			return;
 		}
 
-		self::$libDir = dirname( __FILE__ );
-
 		if ( !spl_autoload_register( array( 'Less_Autoloader', 'loadClass' ) ) ) {
 			throw new Exception( 'Unable to register Less_Autoloader::loadClass as an autoloading method.' );
 		}
@@ -43,7 +30,7 @@ class Less_Autoloader {
 	}
 
 	/**
-	 * Unregisters the autoloader
+	 * Unregister the autoloader
 	 *
 	 * @return void
 	 */
@@ -53,7 +40,7 @@ class Less_Autoloader {
 	}
 
 	/**
-	 * Loads the class
+	 * Load the class
 	 *
 	 * @param string $className The class to load
 	 */
@@ -64,14 +51,10 @@ class Less_Autoloader {
 		}
 
 		$className = substr( $className, 5 );
-		$fileName = self::$libDir . DIRECTORY_SEPARATOR . str_replace( '_', DIRECTORY_SEPARATOR, $className ) . '.php';
+		$fileName = __DIR__ . DIRECTORY_SEPARATOR . str_replace( '_', DIRECTORY_SEPARATOR, $className ) . '.php';
 
-		if ( file_exists( $fileName ) ) {
-			require $fileName;
-			return true;
-		} else {
-			throw new Exception( 'file not loadable '.$fileName );
-		}
+		require $fileName;
+		return true;
 	}
 
 }

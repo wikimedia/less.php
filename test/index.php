@@ -13,7 +13,7 @@ if ( php_sapi_name() != "cli" ) {
 }
 // error_reporting(E_ALL | E_STRICT);
 
-$dir = dirname( dirname( __FILE__ ) );
+$dir = dirname( __DIR__ );
 
 // get parser
 require_once $dir.'/lib/Less/Autoloader.php';
@@ -40,7 +40,7 @@ class ParserTest {
 	var $matched_count = 0;
 
 	function __construct() {
-		$this->cache_dir = dirname( __FILE__ ).'/_cache';
+		$this->cache_dir = __DIR__.'/_cache';
 
 		if ( !file_exists( $this->cache_dir ) || !is_dir( $this->cache_dir ) ) {
 			echo '<p>Invalid cache directory</p>';
@@ -49,7 +49,7 @@ class ParserTest {
 		}
 
 		// get any other possible test folders
-		$fixtures_dir = dirname( __FILE__ ).'/Fixtures';
+		$fixtures_dir = __DIR__ . '/Fixtures';
 		$temp = scandir( $fixtures_dir );
 		foreach ( $temp as $dir ) {
 			if ( $dir == '.' || $dir == '..' ) {
