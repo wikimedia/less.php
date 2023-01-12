@@ -1,6 +1,7 @@
 # Build tools
 /coverage/
 /vendor/
+/test/_cache/
 /test/phpunit/_cache/
 /.phpunit.result.cache
 /composer.lock

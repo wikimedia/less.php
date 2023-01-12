@@ -2,31 +2,20 @@
 
 define( 'phpless_start_time', microtime() );
 
-error_reporting( E_ALL | E_STRICT ); // previous to php 5.4, E_ALL did not include E_STRICT
-@ini_set( 'display_errors', 1 );
+error_reporting( E_ALL );
+ini_set( 'display_errors', 1 );
 
-error_reporting( E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR );
 set_error_handler( array( 'ParserTest','showError' ), E_ALL | E_STRICT );
-
-if ( php_sapi_name() != "cli" ) {
-	set_time_limit( 60 );
-}
-// error_reporting(E_ALL | E_STRICT);
+set_time_limit( 60 );
 
 $dir = dirname( __DIR__ );
 
-// get parser
-require_once $dir.'/lib/Less/Autoloader.php';
-Less_Autoloader::register();
+// Use standalone mode (without Composer)
 require_once $dir.'/lessc.inc.php';
 
-// using release
-/* require_once $dir.'/test/release/Less.php'; */
-
-//get diff
-require $dir. '/test/php-diff/lib/Diff.php';
-require $dir. '/test/php-diff/lib/Diff/Renderer/Html/SideBySide.php';
-require $dir. '/test/php-diff/lib/Diff/Renderer/Html/Inline.php';
+require_once $dir. '/test/php-diff/lib/Diff.php';
+require_once $dir. '/test/php-diff/lib/Diff/Renderer/Html/SideBySide.php';
+require_once $dir. '/test/php-diff/lib/Diff/Renderer/Html/Inline.php';
 
 class ParserTest {
 
@@ -42,10 +31,8 @@ class ParserTest {
 	function __construct() {
 		$this->cache_dir = __DIR__.'/_cache';
 
-		if ( !file_exists( $this->cache_dir ) || !is_dir( $this->cache_dir ) ) {
-			echo '<p>Invalid cache directory</p>';
-		} elseif ( !is_writable( $this->cache_dir ) ) {
-			echo '<p>Cache directory not writable: '.$this->cache_dir.'</p>';
+		if ( !is_writable( $this->cache_dir ) || !is_dir( $this->cache_dir ) ) {
+			echo '<p>Invalid cache directory: ' . $this->cache_dir . '</p>';
 		}
 
 		// get any other possible test folders
@@ -140,8 +127,8 @@ class ParserTest {
 
 			echo '<div class="row row_heading">';
 			echo '<b class="filename">File</b>';
-			echo '<b>Less.js CSS</b>';
-			echo '<b>Expected Less.php CSS</b>';
+			echo '<b>Less.php output</b>';
+			echo '<b>Expected (Less.js output)</b>';
 			echo '</div>';
 
 			echo implode( '', $diff );
@@ -161,10 +148,6 @@ class ParserTest {
 
 		$options = array();
 		$options['compress'] 		= $this->compress;
-		// $options['relativeUrls']  = false;
-		//$options['cache_dir']		= $this->cache_dir;
-		//$options['cache_method']	= 'php';
-		//$options['urlArgs']	= '424242';
 
 		$this->files_tested++;
 		$matched		= false;
@@ -213,43 +196,13 @@ class ParserTest {
 			$options['sourceMapURL']		= $this->AbsoluteToRelative( $generated_map );
 		}
 
-		// example, but not very functional import callback
-		/*
-		$options['import_callback'] = 'callback';
-		if( !function_exists('callback') ){
-			function callback($evald){
-				$evaldPath = $evald->getPath();
-				msg('evaldpath: '.$evaldPath);
-			}
-		}
-		*/
-
-		$compiled = '';
-		try{
-
-			/**
-			 * Less_Cache Testing
-			 * Less_Cache::SetCacheDir($this->cache_dir);
-			 * //$cached_css_file = Less_Cache::Regen( array($file_less=>'') );
-			 * //$options['output'] = md5($file_less).'.css';
-			 * $cached_css_file = Less_Cache::Get( array($file_less=>''), $options );
-			 * $compiled = file_get_contents( $this->cache_dir.'/'.$cached_css_file );
-			 */
-
+		try {
 			$parser = new Less_Parser( $options );
 			$parser->parseFile( $file_less ); // $file_uri
 			$compiled = $parser->getCss();
 
-			// $parser = new Less_Parser( $options );
-			//$less_content = file_get_contents( $file_less );
-			//$parser->parse( $less_content );
-			//$compiled = $parser->getCss();
-
-			//$parser = new lessc();
-			//$compiled = $parser->compileFile($file_less);
-
-			//$parser = new lessc();
-			//$compiled = $parser->compile(file_get_contents($file_less));
+			// $parser = new lessc();
+			// $compiled = $parser->compileFile($file_less);
 
 		} catch ( Exception $e ) {
 			$compiled = $e->getMessage();
@@ -259,7 +212,7 @@ class ParserTest {
 		if ( $file_sourcemap ) {
 
 			// $expected = file_get_contents($generated_map);
-			//$this->SaveExpected($file_expected, $expected);
+			// $this->SaveExpected($file_expected, $expected);
 
 			$generated_map = $this->ComparableSourceMap( $generated_map );
 			$file_sourcemap = $this->ComparableSourceMap( $file_sourcemap );
@@ -312,12 +265,12 @@ class ParserTest {
 		if ( isset( $_GET['file'] ) ) {
 			$this->PHPDiff( $compiled, $css );
 			echo '<table><tr><td>less.php';
-			echo '<textarea id="lessphp_textarea" autocomplete="off">'.htmlspecialchars( $compiled ).'</textarea>';
+			echo '<textarea id="lessphp_textarea" rows="20" autocomplete="off">'.htmlspecialchars( $compiled ).'</textarea>';
 			echo '</td><td>less.js output';
-			echo '<textarea id="lessjs_textarea" autocomplete="off"></textarea>';
+			echo '<textarea id="lessjs_textarea" rows="20" autocomplete="off">'.htmlspecialchars( $css ).'</textarea>';
 			echo '</td></tr></table>';
 			$this->ObjBuffer();
-			$this->LessLink( $file_less );
+			// $this->LessLink( $file_less );
 		}
 
 		return $matched;
@@ -345,18 +298,18 @@ class ParserTest {
 		echo ' <b>'.$line_diff.' lines mismatched</b>';
 
 		// check agains expected results
-		if ( $expected ) {
-			$expected = trim( $expected );
-			if ( $generated == $expected ) {
-				echo '<span>Expected Matched</span>';
-			} else {
-				$line_diff = $this->LineDiff( $generated, $expected );
-				echo ' <b>'.$line_diff.' lines mismatched</b>';
-			}
+		// if ( $expected ) {
+		// 	$expected = trim( $expected );
+		// 	if ( $generated == $expected ) {
+		// 		echo '<span>Expected Matched</span>';
+		// 	} else {
+		// 		$line_diff = $this->LineDiff( $generated, $expected );
+		// 		echo ' <b>'.$line_diff.' lines mismatched</b>';
+		// 	}
 
-		} else {
-			echo '<span>file doesn\'t exist</span>';
-		}
+		// } else {
+		// 	echo '<span>file doesn\'t exist</span>';
+		// }
 
 		return false;
 	}
