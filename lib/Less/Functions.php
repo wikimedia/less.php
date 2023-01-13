@@ -685,6 +685,8 @@ class Less_Functions {
 				}
 				continue;
 			}
+			// PhanTypeInvalidDimOffset -- False positive, safe after continue or non-first iterations
+			'@phan-var non-empty-list<Less_Tree_Dimension> $order';
 
 			if ( $current->unit->toString() === '' && !$unitClone ) {
 				$temp = new Less_Tree_Dimension( $current->value, $unitClone );

@@ -870,7 +870,7 @@ $g = intval( $g );
 	public function expectChar( $tok, $msg = null ) {
 		$result = $this->MatchChar( $tok );
 		if ( !$result ) {
-			$msg = $msg ? $msg : "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'";
+			$msg = $msg ?: "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'";
 			$this->Error( $msg );
 		} else {
 			return $result;
@@ -1142,7 +1142,7 @@ $g = intval( $g );
 	/**
 	 * Parse a list of arguments
 	 *
-	 * @return array
+	 * @return array<Less_Tree_Assignment|Less_Tree_Expression>
 	 */
 	private function parseEntitiesArguments() {
 		$args = [];
@@ -1165,11 +1165,15 @@ $g = intval( $g );
 		return $this->MatchFuncs( [ 'parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor' ] );
 	}
 
-	// Assignments are argument entities for calls.
-	// They are present in ie filter properties as shown below.
-	//
-	//	 filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
-	//
+	/**
+	 * Assignments are argument entities for calls.
+	 *
+	 * They are present in IE filter properties as shown below.
+	 *
+	 *	 filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
+	 *
+	 * @return Less_Tree_Assignment|null
+	 */
 	private function parseEntitiesAssignment() {
 		$key = $this->MatchReg( '/\\G\w+(?=\s?=)/' );
 		if ( !$key ) {
@@ -2502,7 +2506,10 @@ $g = intval( $g );
 		$length = 0;
 
 		$this->rulePropertyMatch( '/\\G(\*?)/', $offset, $length, $index, $name );
-		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $offset, $length, $index, $name ) ); // !
+
+		// Consume!
+		// @phan-suppress-next-line PhanPluginEmptyStatementWhileLoop
+		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $offset, $length, $index, $name ) );
 
 		if ( ( count( $name ) > 1 ) && $this->rulePropertyMatch( '/\\G\s*((?:\+_|\+)?)\s*:/', $offset, $length, $index, $name ) ) {
 			// at last, we have the complete match now. move forward,
@@ -2622,6 +2629,7 @@ $g = intval( $g );
 		return var_export( $arg, true );
 	}
 
+	/** @return never */
 	public function Error( $msg ) {
 		throw new Less_Exception_Parser( $msg, null, $this->furthest, $this->env->currentFileInfo );
 	}

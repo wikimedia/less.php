@@ -177,6 +177,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		return $ruleset;
 	}
 
+	/** @return bool */
 	public function matchCondition( $args, $env ) {
 		if ( !$this->condition ) {
 			return true;

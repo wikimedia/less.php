@@ -71,11 +71,14 @@ class Less_Tree_Mixin_Call extends Less_Tree {
 					$candidate = [ 'mixin' => $mixin, 'group' => $defNone ];
 
 					if ( $mixin instanceof Less_Tree_Ruleset ) {
-
 						for ( $f = 0; $f < 2; $f++ ) {
 							Less_Tree_DefaultFunc::value( $f );
 							$conditionResult[$f] = $mixin->matchCondition( $args, $env );
 						}
+
+						// PhanTypeInvalidDimOffset -- False positive
+						'@phan-var array{0:bool,1:bool} $conditionResult';
+
 						if ( $conditionResult[0] || $conditionResult[1] ) {
 							if ( $conditionResult[0] != $conditionResult[1] ) {
 								$candidate['group'] = $conditionResult[1] ? $defTrue : $defFalse;

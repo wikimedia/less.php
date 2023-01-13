@@ -40,7 +40,9 @@ class Less_Visitor {
 	}
 
 	public function visitArray( $nodes ) {
-		array_map( [ $this,'visitObj' ], $nodes );
+		foreach ( $nodes as $node ) {
+			$this->visitObj( $node );
+		}
 		return $nodes;
 	}
 }

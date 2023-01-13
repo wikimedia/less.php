@@ -33,6 +33,7 @@ return [
 	//
 	'plugins' => [
 		// Recommended set from mediawiki-phan-config:
+		'AddNeverReturnTypePlugin',
 		'DuplicateArrayKeyPlugin',
 		'DuplicateExpressionPlugin',
 		'LoopVariableReusePlugin',
@@ -41,20 +42,18 @@ return [
 		'SimplifyExpressionPlugin',
 		'UnreachableCodePlugin',
 		'UnusedSuppressionPlugin',
+		'UseReturnValuePlugin',
 
 		// Extra ones:
 		// 'AlwaysReturnPlugin',
-		// 'DollarDollarPlugin',
-		// 'EmptyStatementListPlugin',
-		// 'PrintfCheckerPlugin',
-		// 'SleepCheckerPlugin',
-		// 'UseReturnValuePlugin',
+		'DollarDollarPlugin',
+		'EmptyStatementListPlugin',
+		'PrintfCheckerPlugin',
+		'SleepCheckerPlugin',
 	],
 
 	'suppress_issue_types' => [
-		'PhanPluginDuplicateConditionalTernaryDuplication',
 		'PhanPluginDuplicateExpressionAssignmentOperation',
-		'PhanTypeInvalidDimOffset',
 		'PhanTypeMismatchDimFetch',
 		'PhanTypePossiblyInvalidDimOffset',
 		'PhanTypeArraySuspiciousNullable',

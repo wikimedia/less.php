@@ -126,6 +126,7 @@ class Less_Environment {
 					break;
 
 				case '..':
+					// @phan-suppress-next-line PhanTypeInvalidDimOffset False positive
 					if ( !$path_len || ( $path[$path_len - 1] === '..' ) ) {
 						$path[] = $segment;
 						$path_len++;
