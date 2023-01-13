@@ -5,6 +5,10 @@
 	"license": "Apache-2.0",
 	"authors": [
 		{
+			"name": "Timo Tijhof",
+			"homepage": "https://timotijhof.net"
+		},
+		{
 			"name": "Josh Schmidt",
 			"homepage": "https://github.com/oyejorge"
 		},
@@ -15,10 +19,6 @@
 		{
 			"name": "Martin Jantošovič",
 			"homepage": "https://github.com/Mordred"
-		},
-		{
-			"name": "Timo Tijhof",
-			"homepage": "https://timotijhof.net"
 		}
 	],
 	"require": {
