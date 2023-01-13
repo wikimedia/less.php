@@ -5,18 +5,6 @@ Less.php
 
 This is a PHP port of the [official LESS processor](https://lesscss.org).
 
-* [Installation](#installation)
-* [Security](#security)
-* [API](./API.md)
-  * [Basic use](./API.md#basic-use)
-  * [Caching](./API.md#caching)
-  * [Source maps](./API.md#source-maps)
-  * [Command line](./API.md#command-line)
-* [Who uses Less.php?](#who-uses-lessphp)
-* [Integration with other projects](#integrations)
-* [Transitioning from Leafo/lessphp](#transitioning-from-leafolessphp)
-* [Credits](#credits)
-
 ## About
 
 The code structure of Less.php mirrors that of upstream Less.js to ensure compatibility and help reduce maintenance. The port is currently compatible with Less.js 2.5.3. Please note that "inline JavaScript expressions" (via eval or backticks) are not supported.

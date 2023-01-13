@@ -1,10 +1,8 @@
 <?php
-
 /**
  * Parser output with source map
  *
- * @package Less
- * @subpackage Output
+ * @private
  */
 class Less_Output_Mapped extends Less_Output {
 

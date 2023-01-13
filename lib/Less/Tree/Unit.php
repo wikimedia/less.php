@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Unit
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Unit extends Less_Tree {
 

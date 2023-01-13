@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Extend Finder Visitor
- *
- * @package Less
- * @subpackage visitor
+ * @private
  */
 class Less_Visitor_extendFinder extends Less_Visitor {
 

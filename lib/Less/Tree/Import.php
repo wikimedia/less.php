@@ -1,7 +1,6 @@
 <?php
-
 /**
- * CSS @import node
+ * CSS `@import` node
  *
  * The general strategy here is that we don't want to wait
  * for the parsing to be completed, before we start importing
@@ -12,8 +11,7 @@
  * `import,push`, we also pass it a callback, which it'll call once
  * the file has been fetched, and parsed.
  *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Import extends Less_Tree {
 

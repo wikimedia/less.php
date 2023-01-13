@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Anonymous
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Anonymous extends Less_Tree {
 	public $value;

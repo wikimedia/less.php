@@ -7,6 +7,8 @@
 		<exclude name="Generic.NamingConventions.UpperCaseConstantName.ConstantNotUpperCase" />
 		<exclude name="Generic.PHP.NoSilencedErrors.Discouraged" />
 		<exclude name="Generic.PHP.SAPIUsage.FunctionFound" />
+		<!-- RedundantVarName: https://phabricator.wikimedia.org/T278474 -->
+		<exclude name="MediaWiki.Commenting.RedundantVarName.Found"/>
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic" />

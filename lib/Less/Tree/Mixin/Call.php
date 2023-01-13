@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @private
+ */
 class Less_Tree_Mixin_Call extends Less_Tree {
 
 	public $selector;

@@ -2,9 +2,6 @@
 
 /**
  * Utility for handling the generation and caching of css files
- *
- * @package Less
- * @subpackage cache
  */
 class Less_Cache {
 

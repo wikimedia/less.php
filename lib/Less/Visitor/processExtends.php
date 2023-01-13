@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Process Extends Visitor
- *
- * @package Less
- * @subpackage visitor
+ * @private
  */
 class Less_Visitor_processExtends extends Less_Visitor {
 

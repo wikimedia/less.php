@@ -2,9 +2,6 @@
 
 /**
  * Autoloader
- *
- * @package Less
- * @subpackage autoload
  */
 class Less_Autoloader {
 

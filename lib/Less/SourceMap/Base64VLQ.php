@@ -1,10 +1,8 @@
 <?php
-
 /**
  * Encode / Decode Base64 VLQ.
  *
- * @package Less
- * @subpackage SourceMap
+ * @private
  */
 class Less_SourceMap_Base64VLQ {
 

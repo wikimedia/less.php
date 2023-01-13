@@ -1,10 +1,6 @@
 <?php
-
 /**
- * RulesetCall
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_RulesetCall extends Less_Tree {
 

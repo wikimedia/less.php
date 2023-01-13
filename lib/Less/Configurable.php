@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Configurable
- *
- * @package Less
- * @subpackage Core
+ * @private
  */
 abstract class Less_Configurable {
 
@@ -28,7 +24,6 @@ abstract class Less_Configurable {
 	 * If $options is an object it will be converted into an array by called
 	 * it's toArray method.
 	 *
-	 * @throws Exception
 	 * @param array|object $options
 	 */
 	public function setOptions( $options ) {

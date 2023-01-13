@@ -2,9 +2,6 @@
 
 /**
  * Release numbers
- *
- * @package Less
- * @subpackage version
  */
 class Less_Version {
 

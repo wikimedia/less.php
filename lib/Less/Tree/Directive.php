@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Directive
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Directive extends Less_Tree {
 

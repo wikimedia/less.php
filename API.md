@@ -1,11 +1,6 @@
 Less.php API
 ========
 
-* [Basic use](#basic-use)
-* [Caching](#caching)
-* [Source maps](#source-maps)
-* [Command line](#command-line)
-
 ## Basic use
 
 #### Parse strings

@@ -1,10 +1,8 @@
 <?php
-
 /**
  * Mime lookup
  *
- * @package Less
- * @subpackage node
+ * @private
  */
 class Less_Mime {
 

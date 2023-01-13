@@ -1,0 +1,20 @@
+# Doxyfile <https://www.doxygen.nl/manual/config.html>
+PROJECT_NAME           = "wikimedia/less.php"
+PROJECT_BRIEF          = "PHP port of the LESS processor"
+OUTPUT_DIRECTORY       = doc
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = YES
+QUIET                  = YES
+WARNINGS               = NO
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = NO
+INPUT                  = README.md API.md SECURITY.md CHANGES.md lib/
+FILE_PATTERNS          = *.php
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = README.md
+HTML_COLORSTYLE        = LIGHT
+HTML_DYNAMIC_SECTIONS  = YES
+GENERATE_TREEVIEW      = YES
+TREEVIEW_WIDTH         = 250
+GENERATE_LATEX         = NO
+GENERATE_TAGFILE       = doc/html/tagfile.xml

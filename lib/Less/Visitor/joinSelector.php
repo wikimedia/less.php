@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Join Selector Visitor
- *
- * @package Less
- * @subpackage visitor
+ * @private
  */
 class Less_Visitor_joinSelector extends Less_Visitor {
 

@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Comment
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Comment extends Less_Tree {
 

@@ -1,10 +1,6 @@
 <?php
-
 /**
- * toCSS Visitor
- *
- * @package Less
- * @subpackage visitor
+ * @private
  */
 class Less_Visitor_toCSS extends Less_VisitorReplacing {
 

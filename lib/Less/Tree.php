@@ -8,9 +8,6 @@
  * the 'value' property that most subclasses implement to there, and use
  * something else (special value, method, or intermediate class?) to
  * signal whether a subclass is considered value-holding.
- *
- * @package Less
- * @subpackage tree
  */
 class Less_Tree {
 
@@ -39,6 +36,7 @@ class Less_Tree {
 	}
 
 	/**
+	 * @param Less_Output $output
 	 * @param Less_Tree_Ruleset[] $rules
 	 */
 	public static function outputRuleset( $output, $rules ) {

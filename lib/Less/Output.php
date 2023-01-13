@@ -1,10 +1,8 @@
 <?php
-
 /**
  * Parser output
  *
- * @package Less
- * @subpackage output
+ * @private
  */
 class Less_Output {
 

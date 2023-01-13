@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Chunk Exception
- *
- * @package Less
- * @subpackage exception
+ * @private
  */
 class Less_Exception_Chunk extends Less_Exception_Parser {
 

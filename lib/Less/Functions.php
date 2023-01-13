@@ -2,9 +2,6 @@
 
 /**
  * Builtin functions
- *
- * @package Less
- * @subpackage function
  * @see https://lesscss.org/functions/
  */
 class Less_Functions {
@@ -19,6 +16,8 @@ class Less_Functions {
 
 	/**
 	 * @param string $op
+	 * @param float $a
+	 * @param float $b
 	 */
 	public static function operate( $op, $a, $b ) {
 		switch ( $op ) {
@@ -105,7 +104,9 @@ class Less_Functions {
 	}
 
 	/**
-	 * @param double $h
+	 * @param float $h
+	 * @param float $m1
+	 * @param float $m2
 	 */
 	public function hsla_hue( $h, $m1, $m2 ) {
 		$h = $h < 0 ? $h + 1 : ( $h > 1 ? $h - 1 : $h );
@@ -125,7 +126,10 @@ class Less_Functions {
 	}
 
 	/**
-	 * @param double $a
+	 * @param Less_Tree|float $h
+	 * @param Less_Tree|float $s
+	 * @param Less_Tree|float $v
+	 * @param float $a
 	 */
 	public function hsva( $h, $s, $v, $a ) {
 		$h = ( ( self::number( $h ) % 360 ) / 360 ) * 360;
@@ -405,7 +409,9 @@ class Less_Functions {
 	//
 
 	/**
-	 * @param Less_Tree_Color|null $color1
+	 * @param Less_Tree|null $color1
+	 * @param Less_Tree|null $color2
+	 * @param Less_Tree|null $weight
 	 */
 	public function mix( $color1 = null, $color2 = null, $weight = null ) {
 		if ( !$color1 instanceof Less_Tree_Color ) {
@@ -832,10 +838,12 @@ class Less_Functions {
 	}
 
 	/**
-	 * @param string $unit
+	 * @param Less_Tree $n
+	 * @param Less_Tree|string $unit
 	 */
 	public function isunit( $n, $unit ) {
 		if ( is_object( $unit ) && property_exists( $unit, 'value' ) ) {
+			// @phan-suppress-next-line PhanUndeclaredProperty Checked Less_Tree->value
 			$unit = $unit->value;
 		}
 
@@ -843,6 +851,7 @@ class Less_Functions {
 	}
 
 	/**
+	 * @param Less_Tree $n
 	 * @param string $type
 	 */
 	private function _isa( $n, $type ) {

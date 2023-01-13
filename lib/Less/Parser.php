@@ -1,10 +1,7 @@
 <?php
 
 /**
- * Class for parsing and compiling less files into css
- *
- * @package Less
- * @subpackage parser
+ * Parse and compile Less files into CSS
  */
 class Less_Parser {
 
@@ -391,11 +388,12 @@ $g = intval( $g );
 	}
 
 	/**
-	 * Parse a Less string into css
+	 * Parse a Less string
 	 *
+	 * @throws Less_Exception_Parser If the compiler encounters invalid syntax
 	 * @param string $str The string to convert
 	 * @param string|null $file_uri The url of the file
-	 * @return Less_Tree_Ruleset|Less_Parser
+	 * @return Less_Parser
 	 */
 	public function parse( $str, $file_uri = null ) {
 		if ( !$file_uri ) {
@@ -424,7 +422,7 @@ $g = intval( $g );
 	/**
 	 * Parse a Less string from a given file
 	 *
-	 * @throws Less_Exception_Parser
+	 * @throws Less_Exception_Parser If the compiler encounters invalid syntax
 	 * @param string $filename The file to parse
 	 * @param string $uri_root The url of the file
 	 * @param bool $returnRoot Indicates whether the return value should be a css string a root node
@@ -481,6 +479,7 @@ $g = intval( $g );
 
 	/**
 	 * @param string $filename
+	 * @param string $uri_root
 	 */
 	public function SetFileInfo( $filename, $uri_root = '' ) {
 		$filename = Less_Environment::normalizePath( $filename );
@@ -639,17 +638,17 @@ $g = intval( $g );
 				}
 
 			} else {
-				// msg('write cache file');
 				switch ( self::$options['cache_method'] ) {
 					case 'serialize':
 						file_put_contents( $cache_file, serialize( $rules ) );
 						break;
 					case 'php':
-						file_put_contents( $cache_file, '<?php return ' . self::ArgString( $rules ) . '; ?>' );
+						// Mask PHP open tag to avoid breaking Doxygen
+						file_put_contents( $cache_file, '<' . '?php return ' . self::ArgString( $rules ) . '; ?>' );
 						break;
 					case 'var_export':
 						// Requires __set_state()
-						file_put_contents( $cache_file, '<?php return ' . var_export( $rules, true ) . '; ?>' );
+						file_put_contents( $cache_file, '<' . '?php return ' . var_export( $rules, true ) . '; ?>' );
 						break;
 				}
 
@@ -866,6 +865,7 @@ $g = intval( $g );
 
 	/**
 	 * @param string $tok
+	 * @param string|null $msg
 	 */
 	public function expectChar( $tok, $msg = null ) {
 		$result = $this->MatchChar( $tok );
@@ -1907,7 +1907,9 @@ $g = intval( $g );
 			$rules = $this->parseBlock();
 			if ( is_array( $rules ) ) {
 				$this->forget();
-				return $this->NewObj( 'Less_Tree_Ruleset', [ $selectors, $rules ] ); // Less_Environment::$strictImports
+				// TODO: Less_Environment::$strictImports is not yet ported
+				// It is passed here by less.js
+				return $this->NewObj( 'Less_Tree_Ruleset', [ $selectors, $rules ] );
 			}
 		}
 
@@ -2553,8 +2555,9 @@ $g = intval( $g );
 	}
 
 	/**
-	 * Some versions of php have trouble with method_exists($a,$b) if $a is not an object
+	 * Some versions of PHP have trouble with method_exists($a,$b) if $a is not an object
 	 *
+	 * @param mixed $a
 	 * @param string $b
 	 */
 	public static function is_method( $a, $b ) {

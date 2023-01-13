@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Javascript
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Javascript extends Less_Tree {
 

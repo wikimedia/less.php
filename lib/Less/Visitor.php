@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Visitor
- *
- * @package Less
- * @subpackage visitor
+ * @private
  */
 class Less_Visitor {
 

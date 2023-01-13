@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Paren
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Paren extends Less_Tree {
 

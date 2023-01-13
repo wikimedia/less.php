@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Expression
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Expression extends Less_Tree {
 	/** @var array */

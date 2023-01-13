@@ -1,10 +1,6 @@
 <?php
-
 /**
- * UnitConversions
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_UnitConversions {
 

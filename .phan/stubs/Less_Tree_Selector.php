@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @method mach($other)
  */

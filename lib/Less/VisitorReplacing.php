@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Replacing Visitor
- *
- * @package Less
- * @subpackage visitor
+ * @private
  */
 class Less_VisitorReplacing extends Less_Visitor {
 

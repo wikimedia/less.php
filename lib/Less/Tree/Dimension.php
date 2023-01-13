@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Dimension
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Dimension extends Less_Tree {
 

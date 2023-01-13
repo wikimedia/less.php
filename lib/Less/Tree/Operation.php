@@ -1,10 +1,6 @@
 <?php
-
 /**
- * Operation
- *
- * @package Less
- * @subpackage tree
+ * @private
  */
 class Less_Tree_Operation extends Less_Tree {
 

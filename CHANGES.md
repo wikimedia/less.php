@@ -1,3 +1,5 @@
+# Changelog
+
 ## 3.2.0
 
 * [All changes](https://github.com/wikimedia/less.php/compare/v3.1.0...v3.2.0)
@@ -68,7 +70,7 @@ Library forked by Wikimedia, from [oyejorge/less.php](https://github.com/oyejorg
 
 * [All changes](https://github.com/wikimedia/less.php/compare/v1.7.0.9...v1.7.10)
 * Add indentation option
-* Add `optional` modifier for @import
+* Add `optional` modifier for `@import`
 * Fix $color in Exception messages
 * take relative-url into account when building the cache filename
 * urlArgs should be string no array()
