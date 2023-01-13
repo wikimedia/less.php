@@ -659,6 +659,7 @@ class Less_Functions {
 
 	/**
 	 * @param bool $isMin
+	 * @param array<Less_Tree> $args
 	 */
 	private function _minmax( $isMin, $args ) {
 		$arg_count = count( $args );
@@ -680,7 +681,9 @@ class Less_Functions {
 		for ( $i = 0; $i < $arg_count; $i++ ) {
 			$current = $args[$i];
 			if ( !( $current instanceof Less_Tree_Dimension ) ) {
-				if ( is_array( $args[$i]->value ) ) {
+				// @phan-suppress-next-line PhanUndeclaredProperty Checked Less_Tree->value
+				if ( property_exists( $args[$i], 'value' ) && is_array( $args[$i]->value ) ) {
+					// @phan-suppress-next-line PhanUndeclaredProperty Checked Less_Tree->value
 					$args[] = $args[$i]->value;
 				}
 				continue;

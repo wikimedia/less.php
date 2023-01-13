@@ -51,4 +51,29 @@ class phpunit_FunctionTest extends phpunit_bootstrap {
 			);
 		}
 	}
+
+	public function testInvalidMinmax() {
+		// The min/max functions only accept Less_Tree arguments that contain
+		// a value property. Less_Tree_Color is one of the very few subclasses
+		// that doesn't use a value property.
+		//
+		// This is garbage input. We mainly test it to ensure we handle it without
+		// causing internal warnings/errors.
+		$lessCode = '
+		.foo {
+			color: min(rgb(1,1,1), 2, rgb(3,3,3));
+		}
+		';
+
+		$parser = new Less_Parser();
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+
+		$expected = <<<CSS
+		.foo {
+		  color: 2;
+		}
+		CSS;
+		$this->assertEquals( $expected, $css );
+	}
 }
