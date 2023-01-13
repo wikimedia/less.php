@@ -85,13 +85,11 @@ Note: The `setPreserveComments` option is ignored. Less.php already preserves CS
 
 Less.php can be used with [Drupal's less module](https://drupal.org/project/less) via the `lessc.inc.php` adapter. [Download Less.php](https://github.com/wikimedia/less.php/archive/main.zip) and unzip it so that `lessc.inc.php` is located at `sites/all/libraries/lessphp/lessc.inc.php`, then install the Drupal less module as usual.
 
-#### WordPress JBST theme
+#### WordPress
 
-A copy of Less.php is built-in to the [JBST framework](https://github.com/bassjobsen/jamedo-bootstrap-start-theme).
-
-#### WordPress plugin
-
-The [Less PHP plugin for WordPress](https://wordpress.org/plugins/lessphp/) bundles a copy of Less.php for use in other plugins or themes. This dependency can also be combined with the [TGM Library](http://tgmpluginactivation.com/).
+* [wp_enqueue_less](https://github.com/Ed-ITSolutions/wp_enqueue_less) is a Composer package for use in WordPress themes and plugins. It provides a `wp_enqueue_less()` function to automatically manage caching and compilation on-demand, and loads the compressed CSS on the page.
+* [JBST framework](https://github.com/bassjobsen/jamedo-bootstrap-start-theme) bundles a copy of Less.php.
+* The [lessphp plugin](https://wordpress.org/plugins/lessphp/) bundles a copy of Less.php for use in other plugins or themes. This dependency can also be combined with the [TGM Library](http://tgmpluginactivation.com/).
 
 ## Credits
 
