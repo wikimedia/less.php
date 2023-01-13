@@ -3,6 +3,7 @@
 	"description": "PHP port of the LESS processor",
 	"keywords": [ "less", "css", "php", "stylesheet", "less.js", "lesscss" ],
 	"license": "Apache-2.0",
+	"homepage": "https://gerrit.wikimedia.org/g/mediawiki/libs/less.php",
 	"authors": [
 		{
 			"name": "Timo Tijhof",
@@ -21,12 +22,19 @@
 			"homepage": "https://github.com/Mordred"
 		}
 	],
+	"autoload": {
+		"psr-0": { "Less": "lib/" },
+		"classmap": ["lessc.inc.php"]
+	},
+	"bin": [
+		"bin/lessc"
+	],
 	"require": {
 		"php": ">=7.2.9"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "39.0.0",
-		"mediawiki/mediawiki-phan-config": "0.11.1 || 0.12.0",
+		"mediawiki/mediawiki-phan-config": "0.12.0",
 		"mediawiki/minus-x": "1.1.1",
 		"php-parallel-lint/php-console-highlighter": "1.0.0",
 		"php-parallel-lint/php-parallel-lint": "1.3.2",
@@ -37,20 +45,14 @@
 			"parallel-lint . --exclude vendor",
 			"phpunit",
 			"phpcs -sp",
+			"@phan",
 			"minus-x check ."
 		],
-		"cover": "phpunit --coverage-text --coverage-html coverage/ --coverage-clover coverage/clover.xml",
+		"cover": "phpunit --coverage-html coverage",
 		"fix": [
-			"minus-x fix .",
-			"phpcbf"
+			"phpcbf",
+			"minus-x fix ."
 		],
-		"phan": "phan --allow-polyfill-parser --no-progress-bar"
-	},
-	"autoload": {
-		"psr-0": { "Less": "lib/" },
-		"classmap": ["lessc.inc.php"]
-	},
-	"bin": [
-		"bin/lessc"
-	]
+		"phan": "phan --allow-polyfill-parser"
+	}
 }

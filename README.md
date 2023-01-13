@@ -1,5 +1,4 @@
 [![Packagist](https://img.shields.io/packagist/v/wikimedia/less.php.svg?style=flat)](https://packagist.org/packages/wikimedia/less.php)
-[![Build Status](https://github.com/wikimedia/less.php/actions/workflows/php.yml/badge.svg)](https://github.com/wikimedia/less.php/actions)
 
 Less.php
 ========
@@ -37,7 +36,7 @@ If you have [Composer](https://getcomposer.org/download/) installed:
 
 #### Standalone
 
-1. [Download a release](https://github.com/wikimedia/less.php/tags) and upload the PHP files to your server.
+1. [Download Less.php](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+archive/HEAD.tar.gz) and upload the PHP files to your server.
 2. Include the library:
    ```php
    require_once '[path to]/less.php/lib/Less/Autoloader.php';
@@ -77,13 +76,13 @@ If you're looking to transition from the [Leafo/lessphp](https://github.com/leaf
 
 This allows Less.php to be a drop-in replacement for Leafo/lessphp.
 
-[Download Less.php](https://github.com/wikimedia/less.php/archive/main.zip), unzip the files into your project, and include its `lessc.inc.php` instead.
+[Download Less.php](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+archive/HEAD.tar.gz), unzip the files into your project, and include its `lessc.inc.php` instead.
 
 Note: The `setPreserveComments` option is ignored. Less.php already preserves CSS block comments by default, and removes LESS inline comments.
 
 #### Drupal
 
-Less.php can be used with [Drupal's less module](https://drupal.org/project/less) via the `lessc.inc.php` adapter. [Download Less.php](https://github.com/wikimedia/less.php/archive/main.zip) and unzip it so that `lessc.inc.php` is located at `sites/all/libraries/lessphp/lessc.inc.php`, then install the Drupal less module as usual.
+Less.php can be used with [Drupal's less module](https://drupal.org/project/less) via the `lessc.inc.php` adapter. [Download Less.php](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+archive/HEAD.tar.gz) and unzip it so that `lessc.inc.php` is located at `sites/all/libraries/lessphp/lessc.inc.php`, then install the Drupal less module as usual.
 
 #### WordPress
 

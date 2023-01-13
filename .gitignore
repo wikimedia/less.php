@@ -1,18 +1,9 @@
 # Build tools
 /coverage/
+/doc/
 /vendor/
 /test/_cache/
 /test/phpunit/_cache/
+/.idea
 /.phpunit.result.cache
 /composer.lock
-
-# Developer environment
-.buildpath
-.project
-.settings
-.idea
-.DS_Store?
-ehthumbs.db
-Icon?
-Thumbs.db
-*.komodoproject

@@ -1,5 +1,7 @@
 /.* export-ignore
 /test/ export-ignore
-/phpunit.xml export-ignore
 /test/**/*.map binary
 /test/**/*.min.js binary
+/composer.json export-ignore
+/Doxyfile export-ignore
+/phpunit.xml.dist export-ignore

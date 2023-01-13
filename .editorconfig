@@ -1,0 +1,16 @@
+# https://editorconfig.org
+root = true
+
+[*]
+indent_style = tab
+indent_size = tab
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Markdown:
+# - Editors should not change leading spaces to tabs (e.g. multi-line list items)
+# YAML:
+# - Tabs cause problems <https://yaml.org/spec/1.2/spec.html#id2777534>
+[*.{md,yml,yaml}]
+indent_style = space
+indent_size = 2

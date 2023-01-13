@@ -1,9 +1,5 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ruleset>
-	<file>.</file>
-	<arg name="extensions" value="php" />
-	<arg name="encoding" value="UTF-8" />
-	<exclude-pattern>vendor</exclude-pattern>
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
 		<exclude name="Generic.Arrays.DisallowLongArraySyntax.Found" />
 		<exclude name="Generic.CodeAnalysis.JumbledIncrementer.Found" />
@@ -74,7 +70,14 @@
 		<exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound" />
 	</rule>
 	<rule ref="Generic.Classes.DuplicateClassName.Found">
-		<!-- See .phan/stubs/Less_Tree_Selector.php -->
+		<exclude-pattern>.phan/stubs/Less_Tree_Selector.php</exclude-pattern>
 		<exclude-pattern>Less/Tree/Selector.php</exclude-pattern>
 	</rule>
+
+	<file>.</file>
+	<arg name="encoding" value="UTF-8"/>
+	<arg name="extensions" value="php"/>
+	<exclude-pattern>coverage</exclude-pattern>
+	<exclude-pattern>doc/html</exclude-pattern>
+	<exclude-pattern>vendor</exclude-pattern>
 </ruleset>
