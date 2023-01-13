@@ -96,10 +96,12 @@ class Less_Functions {
 
 		$m1 = $l * 2 - $m2;
 
-		return $this->rgba( self::hsla_hue( $h + 1 / 3, $m1, $m2 ) * 255,
-							self::hsla_hue( $h, $m1, $m2 ) * 255,
-							self::hsla_hue( $h - 1 / 3, $m1, $m2 ) * 255,
-							$a );
+		return $this->rgba(
+			self::hsla_hue( $h + 1 / 3, $m1, $m2 ) * 255,
+			self::hsla_hue( $h, $m1, $m2 ) * 255,
+			self::hsla_hue( $h - 1 / 3, $m1, $m2 ) * 255,
+			$a
+		);
 	}
 
 	/**
@@ -134,22 +136,28 @@ class Less_Functions {
 		$i = floor( (int)( $h / 60 ) % 6 );
 		$f = ( $h / 60 ) - $i;
 
-		$vs = [ $v,
-				  $v * ( 1 - $s ),
-				  $v * ( 1 - $f * $s ),
-				  $v * ( 1 - ( 1 - $f ) * $s ) ];
+		$vs = [
+			$v,
+			$v * ( 1 - $s ),
+			$v * ( 1 - $f * $s ),
+			$v * ( 1 - ( 1 - $f ) * $s )
+		];
 
-		$perm = [ [ 0, 3, 1 ],
-					[ 2, 0, 1 ],
-					[ 1, 0, 3 ],
-					[ 1, 2, 0 ],
-					[ 3, 1, 0 ],
-					[ 0, 1, 2 ] ];
+		$perm = [
+			[ 0, 3, 1 ],
+			[ 2, 0, 1 ],
+			[ 1, 0, 3 ],
+			[ 1, 2, 0 ],
+			[ 3, 1, 0 ],
+			[ 0, 1, 2 ]
+		];
 
-		return $this->rgba( $vs[$perm[$i][0]] * 255,
-						 $vs[$perm[$i][1]] * 255,
-						 $vs[$perm[$i][2]] * 255,
-						 $a );
+		return $this->rgba(
+			$vs[$perm[$i][0]] * 255,
+			$vs[$perm[$i][1]] * 255,
+			$vs[$perm[$i][2]] * 255,
+			$a
+		);
 	}
 
 	public function hue( $color = null ) {
@@ -422,9 +430,11 @@ class Less_Functions {
 		$w1 = ( ( ( ( $w * $a ) == -1 ) ? $w : ( $w + $a ) / ( 1 + $w * $a ) ) + 1 ) / 2;
 		$w2 = 1 - $w1;
 
-		$rgb = [ $color1->rgb[0] * $w1 + $color2->rgb[0] * $w2,
-					 $color1->rgb[1] * $w1 + $color2->rgb[1] * $w2,
-					 $color1->rgb[2] * $w1 + $color2->rgb[2] * $w2 ];
+		$rgb = [
+			$color1->rgb[0] * $w1 + $color2->rgb[0] * $w2,
+			$color1->rgb[1] * $w1 + $color2->rgb[1] * $w2,
+			$color1->rgb[2] * $w1 + $color2->rgb[2] * $w2
+		];
 
 		$alpha = $color1->alpha * $p + $color2->alpha * ( 1 - $p );
 
