@@ -19,22 +19,22 @@ This is a PHP port of the [official LESS processor](https://lesscss.org).
 
 ## About
 
-The code structure of Less.php mirrors that of upstream Less.js to ensure compatibility and help reduce maintenance. The port is currently compatible with Less.js 2.5.3.
+The code structure of Less.php mirrors that of upstream Less.js to ensure compatibility and help reduce maintenance. The port is currently compatible with Less.js 2.5.3. Please note that "inline JavaScript expressions" (via eval or backticks) are not supported.
 
-Please note that "inline JavaScript expressions" (via eval or backticks) are not supported.
+* [API § Caching](./API.md#caching), Less.php includes a file-based cache.
+* [API § Source maps](./API.md#source-maps), Less.php supports v3 sourcemaps.
+* [API § Command line](./API.md#command-line), the `lessc` command includes a watch mode.
 
 ## Installation
 
 You can install the library with Composer or standalone.
-
-#### Composer
 
 If you have [Composer](https://getcomposer.org/download/) installed:
 
 1. Run `composer require wikimedia/less.php`
 2. Use `Less_Parser` in your code.
 
-#### Standalone
+Or standalone:
 
 1. [Download Less.php](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+archive/HEAD.tar.gz) and upload the PHP files to your server.
 2. Include the library:
@@ -51,12 +51,6 @@ The LESS processor language is powerful and includes features that may read or e
 In general you should treat LESS files as being in the same trust domain as other server-side executables, such as PHP code. In particular, it is not recommended to allow people that use your web service to provide arbitrary LESS code for server-side processing.
 
 _See also [SECURITY](./SECURITY.md)._
-
-## Features
-
-* [API § Caching](./API.md#caching), Less.php includes a file-based cache.
-* [API § Source maps](./API.md#source-maps), Less.php supports v3 sourcemaps.
-* [API § Command line](./API.md#command-line), the `lessc` command includes a watch mode.
 
 ## Who uses Less.php?
 
