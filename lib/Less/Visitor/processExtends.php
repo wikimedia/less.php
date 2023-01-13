@@ -22,7 +22,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 
 		$root->allExtends = $this->doExtendChaining( $root->allExtends, $root->allExtends );
 
-		$this->allExtendsStack = array();
+		$this->allExtendsStack = [];
 		$this->allExtendsStack[] = &$root->allExtends;
 
 		return $this->visitObj( $root );
@@ -38,7 +38,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 		// this is also the most expensive.. and a match on one selector can cause an extension of a selector we had already processed if
 		// we look at each selector at a time, as is done in visitRuleset
 
-		$extendsToAdd = array();
+		$extendsToAdd = [];
 
 		// loop through comparing every extend with every target extend.
 		// a target extend is the one on the ruleset we are looking at copy/edit/pasting in place
@@ -59,7 +59,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 				}
 
 				// find a match in the target extends self selector (the bit before :extend)
-				$selectorPath = array( $targetExtend->selfSelectors[0] );
+				$selectorPath = [ $targetExtend->selfSelectors[0] ];
 				$matches = $this->findMatch( $extend, $selectorPath );
 
 				if ( $matches ) {
@@ -75,7 +75,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 						$newExtend->selfSelectors = $newSelector;
 
 						// add the extend onto the list of extends for that selector
-						end( $newSelector )->extendList = array( $newExtend );
+						end( $newSelector )->extendList = [ $newExtend ];
 						// $newSelector[ count($newSelector)-1]->extendList = array($newExtend);
 
 						// record that we need to add it.
@@ -181,10 +181,10 @@ class Less_Visitor_processExtends extends Less_Visitor {
 		// returns an array of selector matches that can then be replaced
 		//
 		$needleElements = $extend->selector->elements;
-		$potentialMatches = array();
+		$potentialMatches = [];
 		$potentialMatches_len = 0;
 		$potentialMatch = null;
-		$matches = array();
+		$matches = [];
 
 		// loop through the haystack elements
 		$haystack_path_len = count( $haystackSelectorPath );
@@ -198,7 +198,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 
 				// if we allow elements before our match we can add a potential match every time. otherwise only at the first element.
 				if ( $extend->allowBefore || ( $haystackSelectorIndex === 0 && $hackstackElementIndex === 0 ) ) {
-					$potentialMatches[] = array( 'pathIndex' => $haystackSelectorIndex, 'index' => $hackstackElementIndex, 'matched' => 0, 'initialCombinator' => $haystackElement->combinator );
+					$potentialMatches[] = [ 'pathIndex' => $haystackSelectorIndex, 'index' => $hackstackElementIndex, 'matched' => 0, 'initialCombinator' => $haystackElement->combinator ];
 					$potentialMatches_len++;
 				}
 
@@ -222,7 +222,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 							$potentialMatch['length'] = $extend->selector->elements_len;
 							$potentialMatch['endPathIndex'] = $haystackSelectorIndex;
 							$potentialMatch['endPathElementIndex'] = $hackstackElementIndex + 1; // index after end of match
-							$potentialMatches = array(); // we don't allow matches to overlap, so start matching again
+							$potentialMatches = []; // we don't allow matches to overlap, so start matching again
 							$potentialMatches_len = 0;
 							$matches[] = $potentialMatch;
 						}
@@ -263,7 +263,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 	}
 
 	/**
-	 * @param integer $hackstackElementIndex
+	 * @param int $hackstackElementIndex
 	 */
 	private function PotentialMatch( $potentialMatch, $needleElements, $haystackElement, $hackstackElementIndex ) {
 		if ( $potentialMatch['matched'] > 0 ) {
@@ -369,7 +369,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 
 		$currentSelectorPathIndex = 0;
 		$currentSelectorPathElementIndex = 0;
-		$path = array();
+		$path = [];
 		$selectorPath_len = count( $selectorPath );
 
 		for ( $matchIndex = 0, $matches_len = count( $matches ); $matchIndex < $matches_len; $matchIndex++ ) {
@@ -393,7 +393,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 
 			$newElements = array_merge(
 				array_slice( $selector->elements, $currentSelectorPathElementIndex, ( $match['index'] - $currentSelectorPathElementIndex ) ), // last parameter of array_slice is different than the last parameter of javascript's slice
-				 array( $firstElement ),
+				 [ $firstElement ],
 				 array_slice( $replacementSelector->elements, 1 )
 				);
 

@@ -59,8 +59,8 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		$this->assertSame( $expectedCSS, $css, "Standard compiler" );
 
 		// Check with cache
-		$options = array( 'cache_dir' => $this->cache_dir );
-		$files = array( $lessFile => '' );
+		$options = [ 'cache_dir' => $this->cache_dir ];
+		$files = [ $lessFile => '' ];
 		try {
 			$cacheFile = Less_Cache::Regen( $files, $options );
 			$css = file_get_contents( $this->cache_dir . '/' . $cacheFile );

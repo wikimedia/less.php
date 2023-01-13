@@ -5,31 +5,31 @@ define( 'phpless_start_time', microtime() );
 error_reporting( E_ALL );
 ini_set( 'display_errors', 1 );
 
-set_error_handler( array( 'ParserTest','showError' ), E_ALL | E_STRICT );
+set_error_handler( [ 'ParserTest','showError' ], E_ALL | E_STRICT );
 set_time_limit( 60 );
 
 $dir = dirname( __DIR__ );
 
 // Use standalone mode (without Composer)
-require_once $dir.'/lessc.inc.php';
+require_once $dir . '/lessc.inc.php';
 
-require_once $dir. '/test/php-diff/lib/Diff.php';
-require_once $dir. '/test/php-diff/lib/Diff/Renderer/Html/SideBySide.php';
-require_once $dir. '/test/php-diff/lib/Diff/Renderer/Html/Inline.php';
+require_once $dir . '/test/php-diff/lib/Diff.php';
+require_once $dir . '/test/php-diff/lib/Diff/Renderer/Html/SideBySide.php';
+require_once $dir . '/test/php-diff/lib/Diff/Renderer/Html/Inline.php';
 
 class ParserTest {
 
 	// options
 	var $compress = false;
 	var $dir;
-	var $test_dirs = array( 'lessjs','bootstrap3' );
+	var $test_dirs = [ 'lessjs','bootstrap3' ];
 	var $cache_dir;
 	var $head;
 	var $files_tested = 0;
 	var $matched_count = 0;
 
 	function __construct() {
-		$this->cache_dir = __DIR__.'/_cache';
+		$this->cache_dir = __DIR__ . '/_cache';
 
 		if ( !is_writable( $this->cache_dir ) || !is_dir( $this->cache_dir ) ) {
 			echo '<p>Invalid cache directory: ' . $this->cache_dir . '</p>';
@@ -42,7 +42,7 @@ class ParserTest {
 			if ( $dir == '.' || $dir == '..' ) {
 				continue;
 			}
-			$full_path = $fixtures_dir.'/'.$dir.'/less';
+			$full_path = $fixtures_dir . '/' . $dir . '/less';
 			if ( !file_exists( $full_path ) || !is_dir( $full_path ) ) {
 				continue;
 			}
@@ -56,7 +56,7 @@ class ParserTest {
 		} else {
 			$this->dir = reset( $this->test_dirs );
 		}
-		$dir = $fixtures_dir.'/'.$this->dir;
+		$dir = $fixtures_dir . '/' . $this->dir;
 
 		$this->lessJsProvider( $dir );
 
@@ -67,24 +67,24 @@ class ParserTest {
 		if ( isset( $_GET['file'] ) ) {
 
 			// compare single css file
-			$full_css = $dir.'/css/'.$_GET['file'].'.css';
+			$full_css = $dir . '/css/' . $_GET['file'] . '.css';
 			if ( file_exists( $full_css ) ) {
-				$less = '/less/'.$_GET['file'].'.less';
-				$css = '/css/'.$_GET['file'].'.css';
-				return array( array( $less,$css ) );
+				$less = '/less/' . $_GET['file'] . '.less';
+				$css = '/css/' . $_GET['file'] . '.css';
+				return [ [ $less,$css ] ];
 			}
 
 			// compare single sourcemap
-			$full_map = $dir.'/css/'.$_GET['file'].'.map';
+			$full_map = $dir . '/css/' . $_GET['file'] . '.map';
 			if ( file_exists( $full_css ) ) {
-				$less = '/less/'.$_GET['file'].'.less';
-				$map = '/css/'.$_GET['file'].'.map';
-				return array( array( $less,false, $map ) );
+				$less = '/less/' . $_GET['file'] . '.less';
+				$map = '/css/' . $_GET['file'] . '.map';
+				return [ [ $less,false, $map ] ];
 			}
 
 		}
 
-		$list = scandir( $dir.'/css' );
+		$list = scandir( $dir . '/css' );
 		foreach ( $list as $file ) {
 
 			if ( $file === '.' || $file === '..' ) {
@@ -92,24 +92,23 @@ class ParserTest {
 			}
 			$type = preg_replace( '/.*\.([a-z]+)/', '\1', $file );
 			if ( $type == 'css' ) {
-				$pairs[] = array( '/less/'.str_replace( '.css', '.less', $file ), '/css/'.$file );
+				$pairs[] = [ '/less/' . str_replace( '.css', '.less', $file ), '/css/' . $file ];
 			} elseif ( $type == 'map' ) {
-				$pairs[] = array( '/less/'.str_replace( '.map', '.less', $file ), false,'/css/'.$file );
+				$pairs[] = [ '/less/' . str_replace( '.map', '.less', $file ), false,'/css/' . $file ];
 			}
 
 		}
 
 		return $pairs;
-
 	}
 
 	public function lessJsProvider( $dir ) {
 		$pairs = $this->WhichComparisons( $dir );
 
-		$match_list = $diff = array();
+		$match_list = $diff = [];
 		foreach ( $pairs as $files ) {
 
-			$files += array( false,false,false );
+			$files += [ false,false,false ];
 
 			ob_start();
 			echo '<div class="row">';
@@ -140,44 +139,41 @@ class ParserTest {
 				echo $a;
 			}
 		}
-
 	}
 
 	public function testLessJsCssGeneration( $dir, $less, $css, $map ) {
-		global $obj_buffer;
-
-		$options = array();
+		$options = [];
 		$options['compress'] 		= $this->compress;
 
 		$this->files_tested++;
 		$matched		= false;
 		$basename		= basename( $less );
 		$basename 		= substr( $basename, 0, -5 ); // remove .less extension
-		$file_less		= $dir.$less;
+		$file_less		= $dir . $less;
 		$file_uri		= $this->AbsoluteToRelative( dirname( $file_less ) );
 		$file_sourcemap	= false;
 		$file_css		= false;
 
-		echo '<a class="filename" href="?dir='.rawurlencode( $this->dir ).'&amp;file='.rawurlencode( $basename ).'">File: '.$basename.'</a>';
+		echo '<a class="filename" href="?dir=' . rawurlencode( $this->dir ) . '&amp;file=' . rawurlencode( $basename ) . '">File: ' . $basename . '</a>';
 
 		if ( !file_exists( $file_less ) ) {
-			echo '<b>LESS file missing: '.$file_less.'</b>';
+			echo '<b>LESS file missing: ' . $file_less . '</b>';
 			return false;
 		}
 
 		// css or map
 		if ( $css ) {
-			$file_css = $dir.$css;
+			$file_css = $dir . $css;
 			$file_expected	= $this->TranslateFile( $file_css, 'expected', 'css' );
 			if ( !file_exists( $file_css ) ) {
-				echo '<b>CSS file missing: '.$file_css.'</b>';
+				echo '<b>CSS file missing: ' . $file_css . '</b>';
 				return false;
 			}
 		} elseif ( $map ) {
-			$file_sourcemap	= $dir.$map;
+			$file_sourcemap	= $dir . $map;
 			$file_expected	= $this->TranslateFile( $file_sourcemap, 'expected', 'map' );
 			if ( !file_exists( $file_sourcemap ) ) {
-				echo '<b>Sourcemap file missing: '.$file_sourcemap.'</b>';
+				echo '<b>Sourcemap file missing: ' . $file_sourcemap . '</b>';
 				return false;
 			}
 		} else {
@@ -188,7 +184,7 @@ class ParserTest {
 		// generate the sourcemap
 		if ( file_exists( $file_sourcemap ) ) {
 
-			$generated_map = $this->cache_dir.'/'.$basename.'.map';
+			$generated_map = $this->cache_dir . '/' . $basename . '.map';
 
 			$options['sourceMap']			= true;
 			$options['sourceMapBasepath']	= $dir;
@@ -265,9 +261,9 @@ class ParserTest {
 		if ( isset( $_GET['file'] ) ) {
 			$this->PHPDiff( $compiled, $css );
 			echo '<table><tr><td>less.php';
-			echo '<textarea id="lessphp_textarea" rows="20" autocomplete="off">'.htmlspecialchars( $compiled ).'</textarea>';
+			echo '<textarea id="lessphp_textarea" rows="20" autocomplete="off">' . htmlspecialchars( $compiled ) . '</textarea>';
 			echo '</td><td>less.js output';
-			echo '<textarea id="lessjs_textarea" rows="20" autocomplete="off">'.htmlspecialchars( $css ).'</textarea>';
+			echo '<textarea id="lessjs_textarea" rows="20" autocomplete="off">' . htmlspecialchars( $css ) . '</textarea>';
 			echo '</td></tr></table>';
 			$this->ObjBuffer();
 			// $this->LessLink( $file_less );
@@ -278,7 +274,7 @@ class ParserTest {
 
 	function LessLink( $less ) {
 		$less = $this->AbsoluteToRelative( $less );
-		$this->head .= '<link rel="stylesheet/less" type="text/css" href="'.$less.'" />';
+		$this->head .= '<link rel="stylesheet/less" type="text/css" href="' . $less . '" />';
 	}
 
 	function CompareFiles( $generated, $lessjs, $expected ) {
@@ -295,7 +291,7 @@ class ParserTest {
 		}
 
 		$line_diff = $this->LineDiff( $generated, $lessjs );
-		echo ' <b>'.$line_diff.' lines mismatched</b>';
+		echo ' <b>' . $line_diff . ' lines mismatched</b>';
 
 		// check agains expected results
 		// if ( $expected ) {
@@ -323,12 +319,12 @@ class ParserTest {
 		$name = basename( $file_expected );
 		$dir = dirname( $file_expected );
 		if ( !is_dir( $dir ) ) {
-			msg( 'Expected directory does not exist: '.$dir );
+			msg( 'Expected directory does not exist: ' . $dir );
 			return;
 		}
 
 		if ( file_put_contents( $file_expected, $compiled ) ) {
-			msg( 'Expected results for '.$name.' were saved' );
+			msg( 'Expected results for ' . $name . ' were saved' );
 		}
 	}
 
@@ -342,7 +338,7 @@ class ParserTest {
 		$filename = basename( $file_css );
 		$filename = substr( $filename, 0, -4 );
 
-		return dirname( dirname( $file_css ) ).'/'.$dir.'/'.$filename.'.'.$type;
+		return dirname( dirname( $file_css ) ) . '/' . $dir . '/' . $filename . '.' . $type;
 	}
 
 	function ObjBuffer() {
@@ -350,11 +346,10 @@ class ParserTest {
 
 		if ( !empty( $obj_buffer ) ) {
 			echo '<h3>Object comparison</h3>';
-			echo '<textarea id="object_comparison">'.htmlspecialchars( $obj_buffer, ENT_COMPAT, 'UTF-8', false ).'</textarea>';
+			echo '<textarea id="object_comparison">' . htmlspecialchars( $obj_buffer, ENT_COMPAT, 'UTF-8', false ) . '</textarea>';
 		}
 		echo '<div id="objectdiff"></div>';
 		echo '<div id="diffoutput"></div>';
-
 	}
 
 	function AbsoluteToRelative( $path ) {
@@ -393,7 +388,7 @@ class ParserTest {
 		$compiled = explode( "\n", $compiled );
 		$css = explode( "\n", $css );
 
-		$options = array();
+		$options = [];
 		$diff = new Diff( $compiled, $css, $options );
 		$renderer = new Diff_Renderer_Html_SideBySide();
 		// $renderer = new Diff_Renderer_Html_Inline();
@@ -423,7 +418,7 @@ class ParserTest {
 			if ( $dir == $this->dir ) {
 				$class = ' class="active"';
 			}
-			echo '<li '.$class.'><a href="?dir='.$dir.'">'.$dir.'</a></li>';
+			echo '<li ' . $class . '><a href="?dir=' . $dir . '">' . $dir . '</a></li>';
 		}
 		echo '</ul>';
 	}
@@ -436,22 +431,21 @@ class ParserTest {
 		echo '<div id="summary">';
 
 		// success rate
-		echo '<fieldset><legend>Success Rate</legend>'.$this->matched_count.' out of '.$this->files_tested.'  files</fieldset>';
+		echo '<fieldset><legend>Success Rate</legend>' . $this->matched_count . ' out of ' . $this->files_tested . '  files</fieldset>';
 
 		// current memory usage
 		$memory = memory_get_usage();
-		echo '<fieldset><legend>Memory</legend>'.self::FormatBytes( $memory ).' ('.number_format( $memory ).')</fieldset>';
+		echo '<fieldset><legend>Memory</legend>' . self::FormatBytes( $memory ) . ' (' . number_format( $memory ) . ')</fieldset>';
 
 		// max memory usage
 		$memory = memory_get_peak_usage();
-		echo '<fieldset><legend>Memory Peak</legend>'.self::FormatBytes( $memory ).' ('.number_format( $memory ).')</fieldset>';
+		echo '<fieldset><legend>Memory Peak</legend>' . self::FormatBytes( $memory ) . ' (' . number_format( $memory ) . ')</fieldset>';
 
 		// time
-		echo '<fieldset><legend>Time (PHP):</legend>'.self::microtime_diff( phpless_start_time, microtime() ).'</fieldset>';
-		echo '<fieldset><legend>Time (Request)</legend>'.self::microtime_diff( $_SERVER['REQUEST_TIME'], microtime() ).'</fieldset>';
+		echo '<fieldset><legend>Time (PHP):</legend>' . self::microtime_diff( phpless_start_time, microtime() ) . '</fieldset>';
+		echo '<fieldset><legend>Time (Request)</legend>' . self::microtime_diff( $_SERVER['REQUEST_TIME'], microtime() ) . '</fieldset>';
 
 		echo '</div>';
-
 	}
 
 	function microtime_diff( $a, $b = false, $eff = 6 ) {
@@ -460,24 +454,24 @@ class ParserTest {
 		}
 		$a = array_sum( explode( " ", $a ) );
 		$b = array_sum( explode( " ", $b ) );
-		return sprintf( '%0.'.$eff.'f', $b - $a );
+		return sprintf( '%0.' . $eff . 'f', $b - $a );
 	}
 
 	static function FormatBytes( $size, $precision = 2 ) {
 		$base = log( $size ) / log( 1024 );
-		$suffixes = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+		$suffixes = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 		$floor = max( 0, floor( $base ) );
-		return round( pow( 1024, $base - $floor ), $precision ) .' '. $suffixes[$floor];
+		return round( pow( 1024, $base - $floor ), $precision ) . ' ' . $suffixes[$floor];
 	}
 
 	static function Options() {
 		// debugging
-		$request = str_replace( array( 'XDEBUG_PROFILE','XDEBUG_TRACE' ), '', $_SERVER['REQUEST_URI'] );
+		$request = str_replace( [ 'XDEBUG_PROFILE','XDEBUG_TRACE' ], '', $_SERVER['REQUEST_URI'] );
 		echo '<div style="float:right">';
 		echo 'XDEBUG: ';
-		echo '<a href="'.str_replace( '&&', '&', $request.'&XDEBUG_PROFILE' ).'">Debug Profile</a>';
+		echo '<a href="' . str_replace( '&&', '&', $request . '&XDEBUG_PROFILE' ) . '">Debug Profile</a>';
 		echo ' - ';
-		echo '<a href="'.str_replace( '&&', '&', $request.'&XDEBUG_TRACE' ).'">Debug Trace</a>';
+		echo '<a href="' . str_replace( '&&', '&', $request . '&XDEBUG_TRACE' ) . '">Debug Trace</a>';
 		echo '</div>';
 
 		// options
@@ -488,7 +482,7 @@ class ParserTest {
 		if ( isset( $_COOKIE['phpdiff'] ) && $_COOKIE['phpdiff'] == 0 ) {
 			$checked = '';
 		}
-		echo '<label><input type="checkbox" name="phpdiff" value="phpdiff" '.$checked.' autocomplete="off"/><span>Show PHP Diff</span></label>';
+		echo '<label><input type="checkbox" name="phpdiff" value="phpdiff" ' . $checked . ' autocomplete="off"/><span>Show PHP Diff</span></label>';
 
 		echo '</div>';
 	}
@@ -498,10 +492,10 @@ class ParserTest {
 	 *
 	 */
 	static function showError( $errno, $errmsg, $filename, $linenum, $vars ) {
-		static $reported = array();
+		static $reported = [];
 
 		// readable types
-		$errortype = array(
+		$errortype = [
 			E_ERROR				=> 'Fatal Error',
 			E_WARNING			=> 'Warning',
 			E_PARSE				=> 'Parsing Error',
@@ -517,7 +511,7 @@ class ParserTest {
 			E_RECOVERABLE_ERROR => 'Recoverable Error',
 			E_DEPRECATED		=> 'Deprecated',
 			E_USER_DEPRECATED	=> 'User Deprecated',
-		);
+		];
 
 		// get the backtrace and function where the error was thrown
 		$backtrace = debug_backtrace();
@@ -531,9 +525,9 @@ class ParserTest {
 
 		// record one error per function and only record the error once per request
 		if ( isset( $backtrace[0]['function'] ) ) {
-			$uniq = $filename.$backtrace[0]['function'];
+			$uniq = $filename . $backtrace[0]['function'];
 		} else {
-			$uniq = $filename.$linenum;
+			$uniq = $filename . $linenum;
 		}
 
 		if ( isset( $reported[$uniq] ) ) {
@@ -548,23 +542,23 @@ class ParserTest {
 
 		// build message
 		echo '<fieldset style="padding:1em">';
-		echo '<legend>'.$errortype[$errno].' ('.$errno.')</legend> '.$errmsg;
-		echo '<br/> &nbsp; &nbsp; <b>in:</b> '.$filename;
-		echo '<br/> &nbsp; &nbsp; <b>on line:</b> '.$linenum;
+		echo '<legend>' . $errortype[$errno] . ' (' . $errno . ')</legend> ' . $errmsg;
+		echo '<br/> &nbsp; &nbsp; <b>in:</b> ' . $filename;
+		echo '<br/> &nbsp; &nbsp; <b>on line:</b> ' . $linenum;
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-			echo '<br/> &nbsp; &nbsp; <b>Request:</b> '.$_SERVER['REQUEST_URI'];
+			echo '<br/> &nbsp; &nbsp; <b>Request:</b> ' . $_SERVER['REQUEST_URI'];
 		}
 		if ( isset( $_SERVER['REQUEST_METHOD'] ) ) {
-			echo '<br/> &nbsp; &nbsp; <b>Method:</b> '.$_SERVER['REQUEST_METHOD'];
+			echo '<br/> &nbsp; &nbsp; <b>Method:</b> ' . $_SERVER['REQUEST_METHOD'];
 		}
 
 		// attempting to entire all data can result in a blank screen
 		foreach ( $backtrace as $i => $trace ) {
 			foreach ( $trace as $tk => $tv ) {
 				if ( is_array( $tv ) ) {
-					$backtrace[$i][$tk] = 'array('.count( $tv ).')';
+					$backtrace[$i][$tk] = 'array(' . count( $tv ) . ')';
 				} elseif ( is_object( $tv ) ) {
-					$backtrace[$i][$tk] = 'object '.get_class( $tv );
+					$backtrace[$i][$tk] = 'object ' . get_class( $tv );
 				}
 			}
 		}
@@ -582,7 +576,7 @@ class ParserTest {
  * Output an object in a readable format for comparison with similar output from javascript
  *
  */
-function obj( $mixed, $objects = array() ) {
+function obj( $mixed, $objects = [] ) {
 	$objects_before = $objects;
 
 	global $obj_buffer;
@@ -593,8 +587,8 @@ function obj( $mixed, $objects = array() ) {
 	static $level = 0;
 	$output = '';
 
-	$exclude_keys = array( 'originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','cache_string','elements_len',
-					'_oelements','_oelements_assoc','first_oelements','_oelements_len','cacheable', ); // 'variable','combinator'
+	$exclude_keys = [ 'originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','cache_string','elements_len',
+					'_oelements','_oelements_assoc','first_oelements','_oelements_len','cacheable', ]; // 'variable','combinator'
 	//$exclude_keys = array();
 
 	$type = gettype( $mixed );
@@ -608,12 +602,12 @@ function obj( $mixed, $objects = array() ) {
 			$type = 'object';
 
 			if ( property_exists( $mixed, 'type' ) ) {
-				$type .= ' '.$mixed->type;
+				$type .= ' ' . $mixed->type;
 			}
 
 			// $type = get_class($mixed).' object';
 			//$output = $type.'(...)'."\n"; //recursive object references creates an infinite loop
-			$temp = array();
+			$temp = [];
 			foreach ( $mixed as $key => $value ) {
 				// declutter
 				if ( in_array( $key, $exclude_keys, true ) ) {
@@ -625,26 +619,26 @@ function obj( $mixed, $objects = array() ) {
 			// fall-through
 		case 'array':
 			if ( !count( $mixed ) ) {
-				$output = $type.'()';
+				$output = $type . '()';
 				break;
 			}
 
-			$output = $type.'('."\n";
+			$output = $type . '(' . "\n";
 			ksort( $mixed );
 			foreach ( $mixed as $key => $value ) {
 				$level++;
 				$output .= str_repeat( '    ', $level ) . '[' . $key . '] => ' . obj( $value, $objects ) . "\n";
 				$level--;
 			}
-			$output .= str_repeat( '    ', $level ).')';
+			$output .= str_repeat( '    ', $level ) . ')';
 			break;
 		case 'string':
-			$output = '(string:'.strlen( $mixed ).')'.htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false ).'';
+			$output = '(string:' . strlen( $mixed ) . ')' . htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false ) . '';
 			break;
 
 		case 'integer':
 			$type = 'number';
-			$output = '(number)'.$mixed;
+			$output = '(number)' . $mixed;
 			break;
 
 		case 'boolean':
@@ -655,12 +649,12 @@ function obj( $mixed, $objects = array() ) {
 			}
 			// fall-through
 		default:
-			$output = '('.$type.')'.htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false ).'';
+			$output = '(' . $type . ')' . htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false ) . '';
 			break;
 	}
 
 	if ( $level === 0 ) {
-		$objects = array();
+		$objects = [];
 		$obj_buffer .= $output . "\n------------------------------------------------------------\n";
 	}
 
@@ -692,14 +686,14 @@ function msg( $arg ) {
 }
 
 function func_trace( $len = 1 ) {
-	static $traces = array();
+	static $traces = [];
 	$debug = debug_backtrace();
 	array_shift( $debug );
 	for ( $i = 0; $i < $len; $i++ ) {
 		if ( isset( $debug[$i]['file'] ) ) {
-			$trace = $debug[$i]['file'].' @'.$debug[$i]['line'];
+			$trace = $debug[$i]['file'] . ' @' . $debug[$i]['line'];
 		} else {
-			$trace = $debug[$i]['class'].'::'.$debug[$i]['function'];
+			$trace = $debug[$i]['class'] . '::' . $debug[$i]['function'];
 		}
 		if ( !in_array( $trace, $traces ) ) {
 			msg( $trace );
@@ -746,7 +740,7 @@ $content = ob_get_clean();
 <?php
 
 echo '<div id="heading">';
-echo '<h1><a href="?">Less.php '.Less_Version::version.'</a></h1>';
+echo '<h1><a href="?">Less.php ' . Less_Version::version . '</a></h1>';
 echo $test_obj->Summary();
 echo '</div>';
 

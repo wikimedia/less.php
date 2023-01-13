@@ -8,7 +8,7 @@
  */
 class Less_Autoloader {
 
-	/** @var boolean */
+	/** @var bool */
 	protected static $registered = false;
 
 	/**
@@ -22,7 +22,7 @@ class Less_Autoloader {
 			return;
 		}
 
-		if ( !spl_autoload_register( array( 'Less_Autoloader', 'loadClass' ) ) ) {
+		if ( !spl_autoload_register( [ 'Less_Autoloader', 'loadClass' ] ) ) {
 			throw new Exception( 'Unable to register Less_Autoloader::loadClass as an autoloading method.' );
 		}
 
@@ -35,7 +35,7 @@ class Less_Autoloader {
 	 * @return void
 	 */
 	public static function unregister() {
-		spl_autoload_unregister( array( 'Less_Autoloader', 'loadClass' ) );
+		spl_autoload_unregister( [ 'Less_Autoloader', 'loadClass' ] );
 		self::$registered = false;
 	}
 

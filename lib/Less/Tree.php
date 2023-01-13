@@ -52,8 +52,8 @@ class Less_Tree {
 		}
 
 		// Non-compressed
-		$tabSetStr = "\n".str_repeat( Less_Parser::$options['indentation'], Less_Environment::$tabLevel - 1 );
-		$tabRuleStr = $tabSetStr.Less_Parser::$options['indentation'];
+		$tabSetStr = "\n" . str_repeat( Less_Parser::$options['indentation'], Less_Environment::$tabLevel - 1 );
+		$tabRuleStr = $tabSetStr . Less_Parser::$options['indentation'];
 
 		$output->add( " {" );
 		for ( $i = 0; $i < $ruleCnt; $i++ ) {
@@ -61,8 +61,7 @@ class Less_Tree {
 			$rules[$i]->genCSS( $output );
 		}
 		Less_Environment::$tabLevel--;
-		$output->add( $tabSetStr.'}' );
-
+		$output->add( $tabSetStr . '}' );
 	}
 
 	public function accept( $visitor ) {

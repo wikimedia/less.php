@@ -3,23 +3,22 @@
 class phpunit_MapTest extends phpunit_bootstrap {
 
 	public function testMap() {
-		$less_file			= $this->fixtures_dir.'/bootstrap3-sourcemap/less/bootstrap.less';
-		$map_file			= $this->fixtures_dir.'/bootstrap3-sourcemap/expected/bootstrap.map';
-		$map_destination	= $this->cache_dir.'/bootstrap.map';
+		$lessFile = $this->fixtures_dir . '/bootstrap3-sourcemap/less/bootstrap.less';
+		$expectedFile = $this->fixtures_dir . '/bootstrap3-sourcemap/expected/bootstrap.map';
+		$mapDestination = $this->cache_dir . '/bootstrap.map';
 
-		$options['sourceMap']			= true;
-		$options['sourceMapWriteTo']	= $map_destination;
-		$options['sourceMapURL']		= '/';
-		$options['sourceMapBasepath']	= dirname( dirname( $less_file ) );
+		$options['sourceMap'] = true;
+		$options['sourceMapWriteTo'] = $mapDestination;
+		$options['sourceMapURL'] = '/';
+		$options['sourceMapBasepath'] = dirname( dirname( $lessFile ) );
 
 		$parser = new Less_Parser( $options );
-		$parser->parseFile( $less_file );
+		$parser->parseFile( $lessFile );
 		$css = $parser->getCss();
 
-		$expected_map	= file_get_contents( $map_file );
-		$generated_map	= file_get_contents( $map_destination );
-		$this->assertEquals( $expected_map, $generated_map );
-
+		$expected = file_get_contents( $expectedFile );
+		$generated = file_get_contents( $mapDestination );
+		$this->assertEquals( $expected, $generated );
 	}
 
 }

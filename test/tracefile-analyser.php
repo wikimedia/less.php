@@ -67,10 +67,10 @@ class drXdebugTraceFileParser {
 		if ( !$this->handle ) {
 			throw new Exception( "Can't open '$fileName'" );
 		}
-		$this->stack[-1] = array( '', 0, 0, 0, 0 );
-		$this->stack[ 0] = array( '', 0, 0, 0, 0 );
+		$this->stack[-1] = [ '', 0, 0, 0, 0 ];
+		$this->stack[ 0] = [ '', 0, 0, 0, 0 ];
 
-		$this->stackFunctions = array();
+		$this->stackFunctions = [];
 		$header1 = fgets( $this->handle );
 		$header2 = fgets( $this->handle );
 		if ( !preg_match( '@Version: 2.*@', $header1 ) || !preg_match( '@File format: 2@', $header2 ) ) {
@@ -125,10 +125,10 @@ class drXdebugTraceFileParser {
 				$funcName = $parts[5];
 				$intFunc = $parts[6];
 
-				$this->stack[$depth] = array( $funcName, $time, $memory, 0, 0 );
+				$this->stack[$depth] = [ $funcName, $time, $memory, 0, 0 ];
 
 				array_push( $this->stackFunctions, $funcName );
-			} else if ( $parts[2] == '1' ) {
+			} elseif ( $parts[2] == '1' ) {
 				list( $funcName, $prevTime, $prevMem, $nestedTime, $nestedMemory ) = $this->stack[$depth];
 
 				// collapse data onto functions array
@@ -147,7 +147,7 @@ class drXdebugTraceFileParser {
 
 	protected function addToFunction( $function, $time, $memory, $nestedTime, $nestedMemory ) {
 		if ( !isset( $this->functions[$function] ) ) {
-			$this->functions[$function] = array( 0, 0, 0, 0, 0 );
+			$this->functions[$function] = [ 0, 0, 0, 0, 0 ];
 		}
 
 		$elem = &$this->functions[$function];
@@ -161,9 +161,9 @@ class drXdebugTraceFileParser {
 	}
 
 	public function getFunctions( $sortKey = null ) {
-		$result = array();
+		$result = [];
 		foreach ( $this->functions as $name => $function ) {
-			$result[$name] = array(
+			$result[$name] = [
 				'calls'                 => $function[0],
 				'time-inclusive'        => $function[1],
 				'memory-inclusive'      => $function[2],
@@ -173,7 +173,7 @@ class drXdebugTraceFileParser {
 				'memory-own'            => $function[2] - $function[4],
 				'time-own-percall'      => ( $function[1] - $function[3] ) / $function[0],
 
-			);
+			];
 		}
 
 		if ( $sortKey !== null ) {

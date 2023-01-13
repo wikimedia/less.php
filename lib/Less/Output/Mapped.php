@@ -18,14 +18,14 @@ class Less_Output_Mapped extends Less_Output {
 	/**
 	 * Current line
 	 *
-	 * @var integer
+	 * @var int
 	 */
 	protected $lineNumber = 0;
 
 	/**
 	 * Current column
 	 *
-	 * @var integer
+	 * @var int
 	 */
 	protected $column = 0;
 
@@ -34,7 +34,7 @@ class Less_Output_Mapped extends Less_Output {
 	 *
 	 * @var array
 	 */
-	protected $contentsMap = array();
+	protected $contentsMap = [];
 
 	/**
 	 * Constructor
@@ -62,7 +62,7 @@ class Less_Output_Mapped extends Less_Output {
 			return;
 		}
 
-		$sourceLines = array();
+		$sourceLines = [];
 		$sourceColumns = ' ';
 
 		if ( $fileInfo ) {
@@ -74,7 +74,7 @@ class Less_Output_Mapped extends Less_Output {
 				$sourceLines = explode( "\n", $inputSource );
 				$sourceColumns = end( $sourceLines );
 			} else {
-				throw new Exception( 'Filename '.$url.' not in contentsMap' );
+				throw new Exception( 'Filename ' . $url . ' not in contentsMap' );
 			}
 
 		}

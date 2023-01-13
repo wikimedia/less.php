@@ -10,12 +10,12 @@ class Less_Tree_Selector extends Less_Tree {
 
 	public $elements;
 	public $condition;
-	public $extendList = array();
+	public $extendList = [];
 	public $_css;
 	public $index;
 	public $evaldCondition = false;
 	public $type = 'Selector';
-	public $currentFileInfo = array();
+	public $currentFileInfo = [];
 	public $isReferenced;
 	public $mediaEmpty;
 
@@ -27,9 +27,9 @@ class Less_Tree_Selector extends Less_Tree {
 	public $cacheable = true;
 
 	/**
-	 * @param boolean $isReferenced
+	 * @param bool $isReferenced
 	 */
-	public function __construct( $elements, $extendList = array(), $condition = null, $index = null, $currentFileInfo = null, $isReferenced = null ) {
+	public function __construct( $elements, $extendList = [], $condition = null, $index = null, $currentFileInfo = null, $isReferenced = null ) {
 		$this->elements = $elements;
 		$this->elements_len = count( $elements );
 		$this->extendList = $extendList;
@@ -85,8 +85,8 @@ class Less_Tree_Selector extends Less_Tree {
 	}
 
 	public function CacheElements() {
-		$this->_oelements = array();
-		$this->_oelements_assoc = array();
+		$this->_oelements = [];
+		$this->_oelements_assoc = [];
 
 		$css = '';
 
@@ -126,12 +126,12 @@ class Less_Tree_Selector extends Less_Tree {
 	}
 
 	public function compile( $env ) {
-		$elements = array();
+		$elements = [];
 		foreach ( $this->elements as $el ) {
 			$elements[] = $el->compile( $env );
 		}
 
-		$extendList = array();
+		$extendList = [];
 		foreach ( $this->extendList as $el ) {
 			$extendList[] = $el->compile( $el );
 		}

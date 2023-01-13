@@ -3,17 +3,15 @@
 class phpunit_FunctionTest extends phpunit_bootstrap {
 
 	public function testFunction() {
-		$less_file = $this->fixtures_dir.'/functions/less/f1.less';
-		$expected_css = file_get_contents( $this->fixtures_dir.'/functions/css/f1.css' );
+		$lessFile = $this->fixtures_dir . '/functions/less/f1.less';
+		$expected = file_get_contents( $this->fixtures_dir . '/functions/css/f1.css' );
 
 		$parser = new Less_Parser();
+		$parser->registerFunction( 'myfunc-reverse', [ __CLASS__, 'reverse' ] );
+		$parser->parseFile( $lessFile );
+		$generated = $parser->getCss();
 
-		$parser->registerFunction( 'myfunc-reverse', array( __CLASS__, 'reverse' ) );
-
-		$parser->parseFile( $less_file );
-		$generated_css = $parser->getCss();
-
-		$this->assertEquals( $expected_css, $generated_css );
+		$this->assertEquals( $expected, $generated );
 	}
 
 	public static function reverse( $arg ) {
