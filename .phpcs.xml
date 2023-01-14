@@ -15,7 +15,6 @@
 		<exclude name="MediaWiki.Commenting.FunctionComment.ObjectTypeHintParam" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.ParamNameNoMatch" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.WrongStyle" />
-		<exclude name="MediaWiki.Commenting.LicenseComment.InvalidLicenseTag" />
 		<exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers" />
 		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate" />
 		<exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected" />
@@ -30,7 +29,6 @@
 		<exclude name="MediaWiki.Usage.AssignmentInReturn.AssignmentInReturn" />
 		<exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
-		<exclude name="PEAR.Functions.ValidDefaultValue.NotAtEnd" />
 		<exclude name="PSR2.Classes.PropertyDeclaration.ScopeMissing" />
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore" />
 		<exclude name="PSR2.Classes.PropertyDeclaration.VarUsed" />
@@ -48,8 +46,6 @@
 	<file>.</file>
 	<arg name="encoding" value="UTF-8"/>
 	<arg name="extensions" value="php"/>
-	<exclude-pattern>coverage</exclude-pattern>
 	<exclude-pattern>doc/html</exclude-pattern>
 	<exclude-pattern>test/php-diff</exclude-pattern>
-	<exclude-pattern>vendor</exclude-pattern>
 </ruleset>

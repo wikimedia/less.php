@@ -1,7 +1,14 @@
 {
 	"name": "wikimedia/less.php",
 	"description": "PHP port of the LESS processor",
-	"keywords": [ "less", "css", "php", "stylesheet", "less.js", "lesscss" ],
+	"keywords": [
+		"less",
+		"css",
+		"php",
+		"stylesheet",
+		"less.js",
+		"lesscss"
+	],
 	"license": "Apache-2.0",
 	"homepage": "https://gerrit.wikimedia.org/g/mediawiki/libs/less.php",
 	"authors": [
@@ -23,8 +30,12 @@
 		}
 	],
 	"autoload": {
-		"psr-0": { "Less": "lib/" },
-		"classmap": ["lessc.inc.php"]
+		"psr-0": {
+			"Less": "lib/"
+		},
+		"classmap": [
+			"lessc.inc.php"
+		]
 	},
 	"bin": [
 		"bin/lessc"
@@ -33,7 +44,7 @@
 		"php": ">=7.2.9"
 	},
 	"require-dev": {
-		"mediawiki/mediawiki-codesniffer": "39.0.0",
+		"mediawiki/mediawiki-codesniffer": "40.0.1",
 		"mediawiki/mediawiki-phan-config": "0.12.0",
 		"mediawiki/minus-x": "1.1.1",
 		"php-parallel-lint/php-console-highlighter": "1.0.0",
@@ -44,15 +55,16 @@
 		"test": [
 			"parallel-lint . --exclude vendor",
 			"phpunit",
-			"phpcs -sp",
+			"@phpcs",
 			"@phan",
 			"minus-x check ."
 		],
 		"cover": "phpunit --coverage-html coverage",
 		"fix": [
-			"phpcbf",
-			"minus-x fix ."
+			"minus-x fix .",
+			"phpcbf"
 		],
-		"phan": "phan --allow-polyfill-parser"
+		"phan": "phan --allow-polyfill-parser",
+		"phpcs": "phpcs -sp"
 	}
 }
