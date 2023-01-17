@@ -1,0 +1,11 @@
+@position: after;
+
+.foo:@{position} {
+    color: green;
+}
+
+.bar {
+    &:@{position} {
+        color: blue;
+    }
+}

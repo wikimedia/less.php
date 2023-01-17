@@ -1730,7 +1730,7 @@ $g = intval( $g );
 		$index = $this->pos;
 
 		$e = $this->matcher( [ '/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
-			'#*', '#&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#](?=@)/', 'parseEntitiesVariableCurly' ] );
+			'#*', '#&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#:](?=@)/', 'parseEntitiesVariableCurly' ] );
 
 		if ( $e === null ) {
 			$this->save();
