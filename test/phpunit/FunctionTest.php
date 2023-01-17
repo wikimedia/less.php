@@ -70,10 +70,10 @@ class phpunit_FunctionTest extends phpunit_bootstrap {
 		$css = trim( $parser->getCss() );
 
 		$expected = <<<CSS
-		.foo {
-		  color: 2;
-		}
-		CSS;
+.foo {
+  color: 2;
+}
+CSS;
 		$this->assertEquals( $expected, $css );
 	}
 }
