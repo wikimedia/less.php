@@ -746,7 +746,7 @@ $g = intval( $g );
 	 * Parse from a token, regexp or string, and move forward if match
 	 *
 	 * @param array $toks
-	 * @return array
+	 * @return null|string|array|Less_Tree
 	 */
 	private function matcher( $toks ) {
 		// The match is confirmed, add the match length to `this::pos`,
@@ -796,7 +796,12 @@ $g = intval( $g );
 		}
 	}
 
-	// Match a single character in the input,
+	/**
+	 * Match a single character in the input.
+	 *
+	 * @param string $tok
+	 * @see less-2.5.3.js#parserInput.$char
+	 */
 	private function MatchChar( $tok ) {
 		if ( ( $this->pos < $this->input_len ) && ( $this->input[$this->pos] === $tok ) ) {
 			$this->skipWhitespace( 1 );
@@ -837,6 +842,7 @@ $g = intval( $g );
 
 	/**
 	 * @param int $length
+	 * @see less-2.5.3.js#skipWhitespace
 	 */
 	public function skipWhitespace( $length ) {
 		$this->pos += $length;
@@ -922,6 +928,7 @@ $g = intval( $g );
 	// Only at one point is the primary rule not called from the
 	// block rule: at the root level.
 	//
+	// @see less-2.5.3.js#parsers.primary
 	private function parsePrimary() {
 		$root = [];
 
@@ -937,8 +944,16 @@ $g = intval( $g );
 				continue;
 			}
 
-			// $node = $this->MatchFuncs( array( 'parseMixinDefinition', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseDirective'));
-			$node = $this->MatchFuncs( [ 'parseMixinDefinition', 'parseNameValue', 'parseRule', 'parseRuleset', 'parseMixinCall', 'parseComment', 'parseRulesetCall', 'parseDirective' ] );
+			$node = $this->MatchFuncs( [
+				'parseMixinDefinition',
+				'parseNameValue',
+				'parseRule',
+				'parseRuleset',
+				'parseMixinCall',
+				'parseComment',
+				'parseRulesetCall',
+				'parseDirective'
+			] );
 
 			if ( $node ) {
 				$root[] = $node;
@@ -1209,7 +1224,7 @@ $g = intval( $g );
 
 		$this->expectChar( ')' );
 
-		// @phan-suppress-next-line PhanTypeExpectedObjectPropAccess
+		// @phan-suppress-next-line PhanUndeclaredProperty
 		if ( isset( $value->value ) || $value instanceof Less_Tree_Variable ) {
 			return $this->NewObj( 'Less_Tree_Url', [ $value, $this->env->currentFileInfo ] );
 		}
@@ -1353,10 +1368,11 @@ $g = intval( $g );
 		$index = $this->pos;
 		$extendList = [];
 
-		if ( !$this->MatchReg( $isRule ? '/\\G&:extend\(/' : '/\\G:extend\(/' ) ) { return;
+		if ( !$this->MatchReg( $isRule ? '/\\G&:extend\(/' : '/\\G:extend\(/' ) ) {
+			return;
 		}
 
-		do{
+		do {
 			$option = null;
 			$elements = [];
 			while ( true ) {
@@ -1364,7 +1380,8 @@ $g = intval( $g );
 				if ( $option ) { break;
 				}
 				$e = $this->parseElement();
-				if ( !$e ) { break;
+				if ( !$e ) {
+					break;
 				}
 				$elements[] = $e;
 			}
@@ -1375,7 +1392,7 @@ $g = intval( $g );
 
 			$extendList[] = $this->NewObj( 'Less_Tree_Extend', [ $this->NewObj( 'Less_Tree_Selector', [ $elements ] ), $option, $index ] );
 
-		}while ( $this->MatchChar( "," ) );
+		} while ( $this->MatchChar( "," ) );
 
 		$this->expect( '/\\G\)/' );
 
@@ -1693,18 +1710,21 @@ $g = intval( $g );
 		return $this->NewObj( 'Less_Tree_Alpha', [ $value ] );
 	}
 
-	//
-	// A Selector Element
-	//
-	//	 div
-	//	 + h1
-	//	 #socks
-	//	 input[type="text"]
-	//
-	// Elements are the building blocks for Selectors,
-	// they are made out of a `Combinator` (see combinator rule),
-	// and an element name, such as a tag a class, or `*`.
-	//
+	/**
+	 * A Selector Element
+	 *
+	 *	 div
+	 *	 + h1
+	 *	 #socks
+	 *	 input[type="text"]
+	 *
+	 * Elements are the building blocks for Selectors,
+	 * they are made out of a `Combinator` (see combinator rule),
+	 * and an element name, such as a tag a class, or `*`.
+	 *
+	 * @return Less_Tree_Element|null
+	 * @see less-2.5.3.js#parsers.element
+	 */
 	private function parseElement() {
 		$c = $this->parseCombinator();
 		$index = $this->pos;
@@ -1761,22 +1781,28 @@ $g = intval( $g );
 		}
 	}
 
-	//
-	// A CSS selector (see selector below)
-	// with less extensions e.g. the ability to extend and guard
-	//
+	/**
+	 * A CSS selector (see selector below)
+	 * with less extensions e.g. the ability to extend and guard
+	 *
+	 * @return Less_Tree_Selector|null
+	 * @see less-2.5.3.js#parsers.lessSelector
+	 */
 	private function parseLessSelector() {
 		return $this->parseSelector( true );
 	}
 
-	//
-	// A CSS Selector
-	//
-	//	 .class > div + h1
-	//	 li a:hover
-	//
-	// Selectors are made out of one or more Elements, see above.
-	//
+	/**
+	 * A CSS Selector
+	 *
+	 *	 .class > div + h1
+	 *	 li a:hover
+	 *
+	 * Selectors are made out of one or more Elements, see ::parseElement.
+	 *
+	 * @return Less_Tree_Selector|null
+	 * @see less-2.5.3.js#parsers.selector
+	 */
 	private function parseSelector( $isLess = false ) {
 		$elements = [];
 		$extendList = [];
@@ -1805,7 +1831,8 @@ $g = intval( $g );
 				$e = null;
 			}
 
-			if ( $c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')' ) { break;
+			if ( $c === '{' || $c === '}' || $c === ';' || $c === ',' || $c === ')' ) {
+				break;
 			}
 		}
 
@@ -1874,9 +1901,15 @@ $g = intval( $g );
 		}
 	}
 
-	//
-	// div, .class, body > p {...}
-	//
+	/**
+	 * Ruleset such as:
+	 *
+	 *     div, .class, body > p {
+	 *     }
+	 *
+	 * @return Less_Tree_Ruleset|null
+	 * @see less-2.5.3.js#parsers.ruleset
+	 */
 	private function parseRuleset() {
 		$selectors = [];
 
