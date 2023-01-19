@@ -37,6 +37,11 @@ class Less_Tree_Media extends Less_Tree {
 		Less_Tree::outputRuleset( $output, $this->rules );
 	}
 
+	/**
+	 * @param Less_Environment $env
+	 * @return Less_Tree_Media|Less_Tree_Ruleset
+	 * @see less-2.5.3.js#Media.prototype.eval
+	 */
 	public function compile( $env ) {
 		$media = new Less_Tree_Media( [], [], $this->index, $this->currentFileInfo );
 

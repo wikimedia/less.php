@@ -19,9 +19,18 @@ class Less_Tree_Variable extends Less_Tree {
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
+	/**
+	 * @param Less_Environment $env
+	 * @return Less_Tree
+	 * @see less-2.5.3.js#Ruleset.prototype.eval
+	 */
 	public function compile( $env ) {
 		if ( $this->name[1] === '@' ) {
 			$v = new Less_Tree_Variable( substr( $this->name, 1 ), $this->index + 1, $this->currentFileInfo );
+			// While some Less_Tree nodes have no 'value', we know these can't ocurr after a variable
+			// assignment (would have been a ParseError).
+			// TODO: Solve better (https://phabricator.wikimedia.org/T327082).
+			// @phan-suppress-next-line PhanUndeclaredProperty
 			$name = '@' . $v->compile( $env )->value;
 		} else {
 			$name = $this->name;

@@ -836,7 +836,6 @@ $g = intval( $g );
 	 * @param string $tok
 	 */
 	public function PeekChar( $tok ) {
-		// return ($this->input[$this->pos] === $tok );
 		return ( $this->pos < $this->input_len ) && ( $this->input[$this->pos] === $tok );
 	}
 
@@ -1625,6 +1624,7 @@ $g = intval( $g );
 		$cond = null;
 
 		$char = $this->input[$this->pos];
+		// TODO: Less.js doesn't limit this to $char == '{'.
 		if ( ( $char !== '.' && $char !== '#' ) || ( $char === '{' && $this->PeekReg( '/\\G[^{]*\}/' ) ) ) {
 			return;
 		}
@@ -1729,8 +1729,17 @@ $g = intval( $g );
 		$c = $this->parseCombinator();
 		$index = $this->pos;
 
-		$e = $this->matcher( [ '/\\G(?:\d+\.\d+|\d+)%/', '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
-			'#*', '#&', 'parseAttribute', '/\\G\([^()@]+\)/', '/\\G[\.#:](?=@)/', 'parseEntitiesVariableCurly' ] );
+		// TODO: Speed up by calling MatchChar directly, like less.js does
+		$e = $this->matcher( [
+			'/\\G(?:\d+\.\d+|\d+)%/',
+			'/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
+			'#*',
+			'#&',
+			'parseAttribute',
+			'/\\G\([^()@]+\)/',
+			'/\\G[\.#:](?=@)/',
+			'parseEntitiesVariableCurly'
+		] );
 
 		if ( $e === null ) {
 			$this->save();
@@ -1759,9 +1768,11 @@ $g = intval( $g );
 	// as it's an empty space. We have to check the previous character
 	// in the input, to see if it's a ` ` character.
 	//
+	// @see less-2.5.3.js#parsers.combinator
 	private function parseCombinator() {
 		if ( $this->pos < $this->input_len ) {
 			$c = $this->input[$this->pos];
+			// TODO: Figure out why less.js also handles '/' here, and implement with regression test.
 			if ( $c === '>' || $c === '+' || $c === '~' || $c === '|' || $c === '^' ) {
 
 				$this->pos++;
@@ -1870,10 +1881,13 @@ $g = intval( $g );
 		return $this->NewObj( 'Less_Tree_Attribute', [ $key, $op === null ? null : $op[0], $val ] );
 	}
 
-	//
-	// The `block` rule is used by `ruleset` and `mixin.definition`.
-	// It's a wrapper around the `primary` rule, with added `{}`.
-	//
+	/**
+	 * The `block` rule is used by `ruleset` and `mixin.definition`.
+	 * It's a wrapper around the `primary` rule, with added `{}`.
+	 *
+	 * @return array<Less_Tree>|null
+	 * @see less-2.5.3.js#parsers.block
+	 */
 	private function parseBlock() {
 		if ( $this->MatchChar( '{' ) ) {
 			$content = $this->parsePrimary();
@@ -1959,7 +1973,6 @@ $g = intval( $g );
 		$index = $this->pos;
 		$this->save();
 
-		// $match = $this->MatchReg('/\\G([a-zA-Z\-]+)\s*:\s*((?:\'")?[a-zA-Z0-9\-% \.,!]+?(?:\'")?)\s*([;}])/');
 		$match = $this->MatchReg( '/\\G([a-zA-Z\-]+)\s*:\s*([\'"]?[#a-zA-Z0-9\-%\.,]+?[\'"]?) *(! *important)?\s*([;}])/' );
 		if ( $match ) {
 
@@ -1977,20 +1990,20 @@ $g = intval( $g );
 		$this->restore();
 	}
 
+	// @see less-2.5.3.js#parsers.rule
 	private function parseRule( $tryAnonymous = null ) {
 		$merge = false;
 		$startOfRule = $this->pos;
-
 		$c = $this->input[$this->pos];
+		// TODO: Figure out why less.js also handles ':' here, and implement with regression test.
 		if ( $c === '.' || $c === '#' || $c === '&' ) {
 			return;
 		}
 
 		$this->save();
-		$name = $this->MatchFuncs( [ 'parseVariable','parseRuleProperty' ] );
+		$name = $this->MatchFuncs( [ 'parseVariable', 'parseRuleProperty' ] );
 
 		if ( $name ) {
-
 			$isVariable = is_string( $name );
 
 			$value = null;
@@ -2199,7 +2212,10 @@ $g = intval( $g );
 		$hasExpression = false;
 		$hasUnknown = false;
 
-		$value = $this->MatchFuncs( [ 'parseImport','parseMedia' ] );
+		$value = $this->MatchFuncs( [
+			'parseImport',
+			'parseMedia'
+		] );
 		if ( $value ) {
 			return $value;
 		}

@@ -7,6 +7,9 @@ class Less_Tree_Value extends Less_Tree {
 	public $type = 'Value';
 	public $value;
 
+	/**
+	 * @param array<Less_Tree> $value
+	 */
 	public function __construct( $value ) {
 		$this->value = $value;
 	}

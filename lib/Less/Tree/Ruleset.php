@@ -38,6 +38,11 @@ class Less_Tree_Ruleset extends Less_Tree {
 		}
 	}
 
+	/**
+	 * @param null|Less_Tree_Selector[] $selectors
+	 * @param Less_Tree[] $rules
+	 * @param null|bool $strictImports
+	 */
 	public function __construct( $selectors, $rules, $strictImports = null ) {
 		$this->selectors = $selectors;
 		$this->rules = $rules;
@@ -61,6 +66,11 @@ class Less_Tree_Ruleset extends Less_Tree {
 		}
 	}
 
+	/**
+	 * @param Less_Environment $env
+	 * @return Less_Tree_Ruleset
+	 * @see less-2.5.3.js#Ruleset.prototype.eval
+	 */
 	public function compile( $env ) {
 		$ruleset = $this->PrepareRuleset( $env );
 
@@ -68,15 +78,13 @@ class Less_Tree_Ruleset extends Less_Tree {
 		// so they can be evaluated like closures when the time comes.
 		$rsRuleCnt = count( $ruleset->rules );
 		for ( $i = 0; $i < $rsRuleCnt; $i++ ) {
+			// These checks are the equivalent of the rule.evalFirst property in less.js
 			if ( $ruleset->rules[$i] instanceof Less_Tree_Mixin_Definition || $ruleset->rules[$i] instanceof Less_Tree_DetachedRuleset ) {
 				$ruleset->rules[$i] = $ruleset->rules[$i]->compile( $env );
 			}
 		}
 
-		$mediaBlockCount = 0;
-		if ( $env instanceof Less_Environment ) {
-			$mediaBlockCount = count( $env->mediaBlocks );
-		}
+		$mediaBlockCount = count( $env->mediaBlocks );
 
 		// Evaluate mixin calls.
 		$this->EvalMixinCalls( $ruleset, $env, $rsRuleCnt );
@@ -180,6 +188,9 @@ class Less_Tree_Ruleset extends Less_Tree {
 
 	/**
 	 * Compile the selectors and create a new ruleset object for the compile() method
+	 *
+	 * @param Less_Environment $env
+	 * @return Less_Tree_Ruleset
 	 */
 	private function PrepareRuleset( $env ) {
 		$hasOnePassingSelector = false;
@@ -201,6 +212,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 		}
 
 		if ( $this->rules && $hasOnePassingSelector ) {
+			// Copy the array (no need for slice in PHP)
 			$rules = $this->rules;
 		} else {
 			$rules = [];
@@ -209,7 +221,6 @@ class Less_Tree_Ruleset extends Less_Tree {
 		$ruleset = new Less_Tree_Ruleset( $selectors, $rules, $this->strictImports );
 
 		$ruleset->originalRuleset = $this->ruleset_id;
-
 		$ruleset->root = $this->root;
 		$ruleset->firstRoot = $this->firstRoot;
 		$ruleset->allowImports = $this->allowImports;
@@ -291,6 +302,10 @@ class Less_Tree_Ruleset extends Less_Tree {
 		}
 	}
 
+	/**
+	 * @param string $name
+	 * @return Less_Tree_Rule|null
+	 */
 	public function variable( $name ) {
 		if ( $this->_variables === null ) {
 			$this->variables();
@@ -358,7 +373,12 @@ class Less_Tree_Ruleset extends Less_Tree {
 		foreach ( $this->rules as $rule ) {
 
 			$class = get_class( $rule );
-			if ( ( $class === 'Less_Tree_Media' ) || ( $class === 'Less_Tree_Directive' ) || ( $this->root && $class === 'Less_Tree_Comment' ) || ( $class === 'Less_Tree_Ruleset' && $rule->rules ) ) {
+			if (
+				( $class === 'Less_Tree_Media' ) ||
+				( $class === 'Less_Tree_Directive' ) ||
+				( $this->root && $class === 'Less_Tree_Comment' ) ||
+				( $rule instanceof Less_Tree_Ruleset && $rule->rules )
+			) {
 				$rulesetNodes[] = $rule;
 			} else {
 				$ruleNodes[] = $rule;
@@ -439,6 +459,11 @@ class Less_Tree_Ruleset extends Less_Tree {
 		}
 	}
 
+	/**
+	 * @param Less_Tree_Selector[][] $context
+	 * @param Less_Tree_Selector[]|null $selectors
+	 * @return Less_Tree_Selector[][]
+	 */
 	public function joinSelectors( $context, $selectors ) {
 		$paths = [];
 		if ( is_array( $selectors ) ) {
@@ -592,7 +617,6 @@ class Less_Tree_Ruleset extends Less_Tree {
 		}
 
 		foreach ( $selectors as &$sel ) {
-
 			// if the previous thing in sel is a parent this needs to join on to it
 			if ( $sel ) {
 				$last = count( $sel ) - 1;

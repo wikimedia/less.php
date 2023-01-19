@@ -5,6 +5,7 @@
 class Less_Tree_Rule extends Less_Tree {
 
 	public $name;
+	/** @var Less_Tree_Value|Less_Tree_Ruleset $value */
 	public $value;
 	public $important;
 	public $merge;
@@ -19,7 +20,9 @@ class Less_Tree_Rule extends Less_Tree {
 	 */
 	public function __construct( $name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null, $inline = false ) {
 		$this->name = $name;
-		$this->value = ( $value instanceof Less_Tree_Value || $value instanceof Less_Tree_Ruleset ) ? $value : new Less_Tree_Value( [ $value ] );
+		$this->value = ( $value instanceof Less_Tree_Value || $value instanceof Less_Tree_Ruleset )
+			? $value
+			: new Less_Tree_Value( [ $value ] );
 		$this->important = $important ? ' ' . trim( $important ) : '';
 		$this->merge = $merge;
 		$this->index = $index;
@@ -48,6 +51,10 @@ class Less_Tree_Rule extends Less_Tree {
 		$output->add( $this->important . ( ( $this->inline || ( Less_Environment::$lastRule && Less_Parser::$options['compress'] ) ) ? "" : ";" ), $this->currentFileInfo, $this->index );
 	}
 
+	/**
+	 * @param Less_Environment $env
+	 * @return Less_Tree_Rule
+	 */
 	public function compile( $env ) {
 		$name = $this->name;
 		if ( is_array( $name ) ) {
@@ -80,7 +87,7 @@ class Less_Tree_Rule extends Less_Tree {
 				$return = $this;
 			}
 
-		}catch ( Less_Exception_Parser $e ) {
+		} catch ( Less_Exception_Parser $e ) {
 			if ( !is_numeric( $e->index ) ) {
 				$e->index = $this->index;
 				$e->currentFile = $this->currentFileInfo;

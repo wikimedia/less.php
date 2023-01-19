@@ -167,6 +167,11 @@ class Less_Visitor_processExtends extends Less_Visitor {
 		}
 	}
 
+	/**
+	 * @param Less_Tree_Extend $extend
+	 * @param Less_Tree_Selector[] $haystackSelectorPath
+	 * @return false|array<array{index:int,initialCombinator:string}>
+	 */
 	private function findMatch( $extend, $haystackSelectorPath ) {
 		if ( !$this->HasMatches( $extend, $haystackSelectorPath ) ) {
 			return false;
