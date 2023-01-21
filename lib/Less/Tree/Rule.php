@@ -5,7 +5,7 @@
 class Less_Tree_Rule extends Less_Tree {
 
 	public $name;
-	/** @var Less_Tree_Value|Less_Tree_Ruleset $value */
+	/** @var Less_Tree $value */
 	public $value;
 	public $important;
 	public $merge;
@@ -20,7 +20,7 @@ class Less_Tree_Rule extends Less_Tree {
 	 */
 	public function __construct( $name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null, $inline = false ) {
 		$this->name = $name;
-		$this->value = ( $value instanceof Less_Tree_Value || $value instanceof Less_Tree_Ruleset )
+		$this->value = ( $value instanceof Less_Tree )
 			? $value
 			: new Less_Tree_Value( [ $value ] );
 		$this->important = $important ? ' ' . trim( $important ) : '';

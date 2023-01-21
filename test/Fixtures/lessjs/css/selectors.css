@@ -102,16 +102,16 @@ p a span {
   background: amber;
 }
 .other ::fnord {
-  color: #ff0000;
+  color: red;
 }
 .other::fnord {
-  color: #ff0000;
+  color: red;
 }
 .other ::bnord {
-  color: #ff0000;
+  color: red;
 }
 .other::bnord {
-  color: #ff0000;
+  color: red;
 }
 .blood {
   color: red;
@@ -119,10 +119,13 @@ p a span {
 .bloodred {
   color: green;
 }
-#blood.blood.red.black {
+#blood.blood.red.black:blood {
   color: black;
 }
 :nth-child(3) {
+  selector: interpolated;
+}
+.test:nth-child(3) {
   selector: interpolated;
 }
 .test:nth-child(odd):not(:nth-child(3)) {
@@ -150,4 +153,13 @@ blank blank blank blank blank blank blank blank blank blank blank blank blank bl
 */
 .blood {
   color: red;
+}
+.foo:not(.tst.only-nested .level2:hover) {
+  test: only-nested;
+}
+.foo.nestend-and-non-nested:not(.tst.nestend-and-non-nested:hover) {
+  test: nestend-and-non-nested;
+}
+.selector:not(:hover) {
+  test: global scope;
 }

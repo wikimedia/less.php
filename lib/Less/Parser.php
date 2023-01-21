@@ -171,7 +171,7 @@ class Less_Parser {
 		setlocale( LC_NUMERIC, "C" );
 
 		try {
-			$root = new Less_Tree_Ruleset( [], $this->rules );
+			$root = new Less_Tree_Ruleset( null, $this->rules );
 			$root->root = true;
 			$root->firstRoot = true;
 
@@ -452,7 +452,7 @@ $g = intval( $g );
 
 		if ( $returnRoot ) {
 			$rules = $this->GetRules( $filename );
-			$return = new Less_Tree_Ruleset( [], $rules );
+			$return = new Less_Tree_Ruleset( null, $rules );
 		} else {
 			$this->_parse( $filename );
 			$return = $this;
@@ -724,6 +724,9 @@ $g = intval( $g );
 	}
 
 	private function restore() {
+		if ( $this->pos > $this->furthest ) {
+			$this->furthest = $this->pos;
+		}
 		$this->pos = array_pop( $this->saveStack );
 	}
 
@@ -1645,7 +1648,6 @@ $g = intval( $g );
 			// .mixincall(@a: {rule: set;});
 			// so we have to be nice and restore
 			if ( !$this->MatchChar( ')' ) ) {
-				$this->furthest = $this->pos;
 				$this->restore();
 				return;
 			}
@@ -1658,7 +1660,7 @@ $g = intval( $g );
 
 			$ruleset = $this->parseBlock();
 
-			if ( is_array( $ruleset ) ) {
+			if ( $ruleset !== null ) {
 				$this->forget();
 				return $this->NewObj( 'Less_Tree_Mixin_Definition', [ $name, $params, $ruleset, $cond, $variadic ] );
 			}
@@ -1736,7 +1738,7 @@ $g = intval( $g );
 			'#*',
 			'#&',
 			'parseAttribute',
-			'/\\G\([^()@]+\)/',
+			'/\\G\([^&()@]+\)/',
 			'/\\G[\.#:](?=@)/',
 			'parseEntitiesVariableCurly'
 		] );
@@ -1961,7 +1963,6 @@ $g = intval( $g );
 		}
 
 		// Backtrack
-		$this->furthest = $this->pos;
 		$this->restore();
 	}
 
@@ -1992,9 +1993,12 @@ $g = intval( $g );
 
 	// @see less-2.5.3.js#parsers.rule
 	private function parseRule( $tryAnonymous = null ) {
-		$merge = false;
+		$value = null;
 		$startOfRule = $this->pos;
 		$c = $this->input[$this->pos];
+		$important = null;
+		$merge = false;
+
 		// TODO: Figure out why less.js also handles ':' here, and implement with regression test.
 		if ( $c === '.' || $c === '#' || $c === '&' ) {
 			return;
@@ -2006,41 +2010,43 @@ $g = intval( $g );
 		if ( $name ) {
 			$isVariable = is_string( $name );
 
-			$value = null;
 			if ( $isVariable ) {
 				$value = $this->parseDetachedRuleset();
 			}
 
-			$important = null;
 			if ( !$value ) {
-
-				// prefer to try to parse first if its a variable or we are compressing
-				// but always fallback on the other one
-				//if( !$tryAnonymous && is_string($name) && $name[0] === '@' ){
-				if ( !$tryAnonymous && ( self::$options['compress'] || $isVariable ) ) {
-					$value = $this->MatchFuncs( [ 'parseValue','parseAnonymousValue' ] );
-				} else {
-					$value = $this->MatchFuncs( [ 'parseAnonymousValue','parseValue' ] );
-				}
-
-				$important = $this->parseImportant();
-
 				// a name returned by this.ruleProperty() is always an array of the form:
 				// [string-1, ..., string-n, ""] or [string-1, ..., string-n, "+"]
 				// where each item is a tree.Keyword or tree.Variable
-				if ( !$isVariable && is_array( $name ) ) {
-					$nm = array_pop( $name );
-					if ( $nm->value ) {
-						$merge = $nm->value;
+				if ( !$isVariable && count( $name ) > 1 ) {
+					$merge = array_pop( $name )->value;
+				}
+
+				// prefer to try to parse first if its a variable or we are compressing
+				// but always fallback on the other one
+				$tryValueFirst = ( !$tryAnonymous && ( self::$options['compress'] || $isVariable ) );
+				if ( $tryValueFirst ) {
+					$value = $this->parseValue();
+				}
+				if ( !$value ) {
+					$value = $this->parseAnonymousValue();
+					if ( $value ) {
+						$this->forget();
+						// anonymous values absorb the end ';' which is required for them to work
+						return $this->NewObj( 'Less_Tree_Rule', [ $name, $value, false, $merge, $startOfRule, $this->env->currentFileInfo ] );
 					}
 				}
+				if ( !$tryValueFirst && !$value ) {
+					$value = $this->parseValue();
+				}
+
+				$important = $this->parseImportant();
 			}
 
 			if ( $value && $this->parseEnd() ) {
 				$this->forget();
 				return $this->NewObj( 'Less_Tree_Rule', [ $name, $value, $important, $merge, $startOfRule, $this->env->currentFileInfo ] );
 			} else {
-				$this->furthest = $this->pos;
 				$this->restore();
 				if ( $value && !$tryAnonymous ) {
 					return $this->parseRule( true );
@@ -2052,8 +2058,8 @@ $g = intval( $g );
 	}
 
 	function parseAnonymousValue() {
-		if ( preg_match( '/\\G([^@+\/\'"*`(;{}-]*);/', $this->input, $match, 0, $this->pos ) ) {
-			$this->pos += strlen( $match[1] );
+		$match = $this->MatchReg( '/\\G([^@+\/\'"*`(;{}-]*);/' );
+		if ( $match ) {
 			return $this->NewObj( 'Less_Tree_Anonymous', [ $match[1] ] );
 		}
 	}
@@ -2186,12 +2192,18 @@ $g = intval( $g );
 
 	private function parseMedia() {
 		if ( $this->MatchReg( '/\\G@media/' ) ) {
+			$this->save();
+
 			$features = $this->parseMediaFeatures();
 			$rules = $this->parseBlock();
 
-			if ( is_array( $rules ) ) {
-				return $this->NewObj( 'Less_Tree_Media', [ $rules, $features, $this->pos, $this->env->currentFileInfo ] );
+			if ( $rules === null ) {
+				$this->restore();
+				return;
 			}
+
+			$this->forget();
+			return $this->NewObj( 'Less_Tree_Media', [ $rules, $features, $this->pos, $this->env->currentFileInfo ] );
 		}
 	}
 
@@ -2548,25 +2560,32 @@ $g = intval( $g );
 	 * Parse a rule property
 	 * eg: 'color', 'width', 'height', etc
 	 *
-	 * @return array
+	 * @return array<Less_Tree_Keyword|Less_Tree_Variable>
 	 */
 	private function parseRuleProperty() {
-		$offset = $this->pos;
 		$name = [];
 		$index = [];
-		$length = 0;
 
-		$this->rulePropertyMatch( '/\\G(\*?)/', $offset, $length, $index, $name );
+		$this->save();
+
+		$simpleProperty = $this->MatchReg( '/\\G([_a-zA-Z0-9-]+)\s*:/' );
+		if ( $simpleProperty ) {
+			$name[] = $this->NewObj( 'Less_Tree_Keyword', [ $simpleProperty[1] ] );
+			$this->forget();
+			return $name;
+		}
+
+		$this->rulePropertyMatch( '/\\G(\*?)/', $index, $name );
 
 		// Consume!
 		// @phan-suppress-next-line PhanPluginEmptyStatementWhileLoop
-		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $offset, $length, $index, $name ) );
+		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $index, $name ) );
 
-		if ( ( count( $name ) > 1 ) && $this->rulePropertyMatch( '/\\G\s*((?:\+_|\+)?)\s*:/', $offset, $length, $index, $name ) ) {
+		if ( ( count( $name ) > 1 ) && $this->rulePropertyMatch( '/\\G\s*((?:\+_|\+)?)\s*:/', $index, $name ) ) {
+			$this->forget();
+
 			// at last, we have the complete match now. move forward,
 			// convert name particles to tree objects and return:
-			$this->skipWhitespace( $length );
-
 			if ( $name[0] === '' ) {
 				array_shift( $name );
 				array_shift( $index );
@@ -2579,16 +2598,17 @@ $g = intval( $g );
 				}
 			}
 			return $name;
+		} else {
+			$this->restore();
 		}
 	}
 
-	private function rulePropertyMatch( $re, &$offset, &$length, &$index, &$name ) {
-		preg_match( $re, $this->input, $a, 0, $offset );
-		if ( $a ) {
-			$index[] = $this->pos + $length;
-			$length += strlen( $a[0] );
-			$offset += strlen( $a[0] );
-			$name[] = $a[1];
+	private function rulePropertyMatch( $re, &$index, &$name ) {
+		$i = $this->pos;
+		$chunk = $this->MatchReg( $re );
+		if ( $chunk ) {
+			$index[] = $i;
+			$name[] = $chunk[1];
 			return true;
 		}
 	}

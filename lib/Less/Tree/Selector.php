@@ -63,6 +63,7 @@ class Less_Tree_Selector extends Less_Tree {
 			$this->isReferenced
 		);
 		$newSelector->evaldCondition = $evaldCondition ?: $this->evaldCondition;
+		$newSelector->mediaEmpty = $this->mediaEmpty;
 		return $newSelector;
 	}
 

@@ -271,7 +271,7 @@ class Less_Tree_Import extends Less_Tree {
 		$parser = new Less_Parser( $import_env );
 		$root = $parser->parseFile( $full_path, $uri, true );
 
-		$ruleset = new Less_Tree_Ruleset( [], $root->rules );
+		$ruleset = new Less_Tree_Ruleset( null, $root->rules );
 		$ruleset->evalImports( $import_env );
 
 		return $this->features ? new Less_Tree_Media( $ruleset->rules, $this->features->value ) : $ruleset->rules;
