@@ -770,24 +770,10 @@ $g = intval( $g );
 	}
 
 	/**
-	 * @param string[] $toks
-	 * @return null|string|array|Less_Tree
-	 */
-	private function MatchFuncs( $toks ) {
-		if ( $this->pos < $this->input_len ) {
-			foreach ( $toks as $tok ) {
-				$match = $this->$tok();
-				if ( $match ) {
-					return $match;
-				}
-			}
-		}
-	}
-
-	/**
 	 * Match a single character in the input.
 	 *
 	 * @param string $tok
+	 * @return string|null
 	 * @see less-2.5.3.js#parserInput.$char
 	 */
 	private function MatchChar( $tok ) {
@@ -807,6 +793,39 @@ $g = intval( $g );
 			$this->skipWhitespace( strlen( $match[0] ) );
 			return $match;
 		}
+	}
+
+	/**
+	 * @return null|string
+	 * @see less-2.5.3.js#parserInput.$quoted
+	 */
+	private function MatchQuoted() {
+		$startChar = $this->input[$this->pos] ?? null;
+		if ( $startChar !== "'" && $startChar !== '"' ) {
+			return;
+		}
+
+		$i = 1;
+		while ( $this->pos + $i < $this->input_len ) {
+			$nextChar = $this->input[$this->pos + $i];
+			switch ( $nextChar ) {
+			case "\\":
+				$i++;
+				break;
+			case "\r":
+			case "\n":
+				return;
+			case $startChar:
+				$i++;
+				$matched = substr( $this->input, $this->pos, $i );
+				$this->skipWhitespace( $i );
+				return $matched;
+			}
+
+			$i++;
+		}
+
+		return null;
 	}
 
 	/**
@@ -931,16 +950,15 @@ $g = intval( $g );
 				continue;
 			}
 
-			$node = $this->MatchFuncs( [
-				'parseMixinDefinition',
-				'parseNameValue',
-				'parseRule',
-				'parseRuleset',
-				'parseMixinCall',
-				'parseComment',
-				'parseRulesetCall',
-				'parseDirective'
-			] );
+			$node = $this->parseMixinDefinition()
+				// Optimisation: NameValue is specific to less.php
+				?? $this->parseNameValue()
+				?? $this->parseRule()
+				?? $this->parseRuleset()
+				?? $this->parseMixinCall()
+				?? $this->parseComment()
+				?? $this->parseRulesetCall()
+				?? $this->parseDirective();
 
 			if ( $node ) {
 				$root[] = $node;
@@ -960,11 +978,13 @@ $g = intval( $g );
 	// but keep the LeSS comments `//` silent, by just skipping
 	// over them.
 	private function parseComment() {
-		if ( $this->input[$this->pos] !== '/' ) {
+		$char = $this->input[$this->pos] ?? null;
+		if ( $char !== '/' ) {
 			return;
 		}
 
-		if ( $this->input[$this->pos + 1] === '/' ) {
+		$nextChar = $this->input[$this->pos + 1] ?? null;
+		if ( $nextChar === '/' ) {
 			$match = $this->MatchReg( '/\\G\/\/.*/' );
 			return new Less_Tree_Comment( $match[0], true, $this->pos, $this->env->currentFileInfo );
 		}
@@ -997,69 +1017,23 @@ $g = intval( $g );
 	 *	 "milky way" 'he\'s the one!'
 	 *
 	 * @return Less_Tree_Quoted|null
+	 * @see less-2.5.3.js#entities.quoted
 	 */
 	private function parseEntitiesQuoted() {
-		$j = $this->pos;
-		$e = false;
 		$index = $this->pos;
 
-		if ( $this->input[$this->pos] === '~' ) {
-			$j++;
-			$e = true; // Escaped strings
-		}
+		$this->save();
 
-		$char = $this->input[$j];
-		if ( $char !== '"' && $char !== "'" ) {
+		$isEscaped = $this->MatchChar( '~' ) !== null;
+		$str = $this->MatchQuoted();
+		if ( $str === null ) {
+			$this->restore();
 			return;
 		}
 
-		if ( $e ) {
-			$this->MatchChar( '~' );
-		}
+		$this->forget();
 
-		$matched = $this->MatchQuoted( $char, $j + 1 );
-		if ( $matched === false ) {
-			return;
-		}
-
-		$quoted = $char . $matched . $char;
-		return new Less_Tree_Quoted( $quoted, $matched, $e, $index, $this->env->currentFileInfo );
-	}
-
-	/**
-	 * When PCRE JIT is enabled in php, regular expressions don't work for matching quoted strings
-	 *
-	 *	$regex	= '/\\G\'((?:[^\'\\\\\r\n]|\\\\.|\\\\\r\n|\\\\[\n\r\f])*)\'/';
-	 *	$regex	= '/\\G"((?:[^"\\\\\r\n]|\\\\.|\\\\\r\n|\\\\[\n\r\f])*)"/';
-	 *
-	 */
-	private function MatchQuoted( $quote_char, $i ) {
-		$matched = '';
-		while ( $i < $this->input_len ) {
-			$c = $this->input[$i];
-
-			// escaped character
-			if ( $c === '\\' ) {
-				$matched .= $c . $this->input[$i + 1];
-				$i += 2;
-				continue;
-			}
-
-			if ( $c === $quote_char ) {
-				$this->pos = $i + 1;
-				$this->skipWhitespace( 0 );
-				return $matched;
-			}
-
-			if ( $c === "\r" || $c === "\n" ) {
-				return false;
-			}
-
-			$i++;
-			$matched .= $c;
-		}
-
-		return false;
+		return new Less_Tree_Quoted( $str[0], substr( $str, 1, -1 ), $isEscaped, $index, $this->env->currentFileInfo );
 	}
 
 	/**
@@ -1149,7 +1123,7 @@ $g = intval( $g );
 	private function parseEntitiesArguments() {
 		$args = [];
 		while ( true ) {
-			$arg = $this->MatchFuncs( [ 'parseEntitiesAssignment', 'parseExpression' ] );
+			$arg = $this->parseEntitiesAssignment() ?? $this->parseExpression();
 			if ( !$arg ) {
 				break;
 			}
@@ -1164,7 +1138,7 @@ $g = intval( $g );
 
 	/** @return Less_Tree_Dimension|Less_Tree_Color|Less_Tree_Quoted|Less_Tree_UnicodeDescriptor|null */
 	private function parseEntitiesLiteral() {
-		return $this->MatchFuncs( [ 'parseEntitiesDimension','parseEntitiesColor','parseEntitiesQuoted','parseUnicodeDescriptor' ] );
+		return $this->parseEntitiesDimension() ?? $this->parseEntitiesColor() ?? $this->parseEntitiesQuoted() ?? $this->parseUnicodeDescriptor();
 	}
 
 	/**
@@ -1200,7 +1174,9 @@ $g = intval( $g );
 	// to be enclosed within a string, so it can't be parsed as an Expression.
 	//
 	private function parseEntitiesUrl() {
-		if ( $this->input[$this->pos] !== 'u' || !$this->matchReg( '/\\Gurl\(/' ) ) {
+		$char = $this->input[$this->pos] ?? null;
+		// Optimisation: 'u' check is specific to less.php
+		if ( $char !== 'u' || !$this->matchReg( '/\\Gurl\(/' ) ) {
 			return;
 		}
 
@@ -1302,28 +1278,31 @@ $g = intval( $g );
 		}
 	}
 
-	//
-	// JavaScript code to be evaluated
-	//
-	//	 `window.location.href`
-	//
+	/**
+	 * JavaScript code to be evaluated
+	 *
+	 *	 `window.location.href`
+	 *
+	 * @return Less_Tree_Javascript|null
+	 * @see less-2.5.3.js#parsers.entities.javascript
+	 */
 	private function parseEntitiesJavascript() {
-		$e = false;
-		$j = $this->pos;
-		if ( $this->input[$j] === '~' ) {
-			$j++;
-			$e = true;
-		}
-		if ( $this->input[$j] !== '`' ) {
+		$index = $this->pos;
+
+		$this->save();
+
+		$isEscaped = $this->MatchChar( '~' ) !== null;
+		$jsQuote = $this->MatchChar( '`' ) !== null;
+		if ( !$jsQuote ) {
+			$this->restore();
 			return;
 		}
-		if ( $e ) {
-			$this->MatchChar( '~' );
+		$js = $this->MatchReg( '/\\G[^`]*`/' );
+		if ( $js ) {
+			$this->forget();
+			return new Less_Tree_Javascript( substr( $js[0], 0, -1 ), $index, $isEscaped );
 		}
-		$str = $this->MatchReg( '/\\G`([^`]*)`/' );
-		if ( $str ) {
-			return new Less_Tree_Javascript( $str[1], $this->pos, $e );
-		}
+		$this->restore();
 	}
 
 	//
@@ -1331,6 +1310,7 @@ $g = intval( $g );
 	//
 	//	 @fink:
 	//
+	// @see less-2.5.3.js#parsers.variable
 	private function parseVariable() {
 		if ( $this->PeekChar( '@' ) && ( $name = $this->MatchReg( '/\\G(@[\w-]+)\s*:/' ) ) ) {
 			return $name[1];
@@ -1342,8 +1322,9 @@ $g = intval( $g );
 	//
 	// @fink();
 	//
+	// @see less-2.5.3.js#parsers.rulesetCall
 	private function parseRulesetCall() {
-		if ( $this->input[$this->pos] === '@' && ( $name = $this->MatchReg( '/\\G(@[\w-]+)\s*\(\s*\)\s*;/' ) ) ) {
+		if ( $this->PeekChar( '@' ) && ( $name = $this->MatchReg( '/\\G(@[\w-]+)\s*\(\s*\)\s*;/' ) ) ) {
 			return new Less_Tree_RulesetCall( $name[1] );
 		}
 	}
@@ -1402,7 +1383,7 @@ $g = intval( $g );
 	// selector for now.
 	//
 	private function parseMixinCall() {
-		$char = $this->input[$this->pos];
+		$char = $this->input[$this->pos] ?? null;
 		if ( $char !== '.' && $char !== '#' ) {
 			return;
 		}
@@ -1466,7 +1447,7 @@ $g = intval( $g );
 
 		while ( true ) {
 			if ( $isCall ) {
-				$arg = $this->MatchFuncs( [ 'parseDetachedRuleset', 'parseExpression' ] );
+				$arg = $this->parseDetachedRuleset() ?? $this->parseExpression();
 			} else {
 				$this->parseComments();
 				if ( $this->input[ $this->pos ] === '.' && $this->MatchReg( '/\\G\.{3}/' ) ) {
@@ -1482,9 +1463,8 @@ $g = intval( $g );
 					}
 					break;
 				}
-				$arg = $this->MatchFuncs( [ 'parseEntitiesVariable', 'parseEntitiesLiteral', 'parseEntitiesKeyword' ] );
+				$arg = $this->parseEntitiesVariable() ?? $this->parseEntitiesLiteral() ?? $this->parseEntitiesKeyword();
 			}
-			'@phan-var Less_Tree_DetachedRuleset|Less_Tree_Expression|Less_Tree_Variable|Less_Tree_Dimension|Less_Tree_Color|Less_Tree_Quoted|Less_Tree_UnicodeDescriptor|Less_Tree_Keyword|null $arg';
 
 			if ( !$arg ) {
 				break;
@@ -1611,7 +1591,7 @@ $g = intval( $g );
 	private function parseMixinDefinition() {
 		$cond = null;
 
-		$char = $this->input[$this->pos];
+		$char = $this->input[$this->pos] ?? null;
 		// TODO: Less.js doesn't limit this to $char == '{'.
 		if ( ( $char !== '.' && $char !== '#' ) || ( $char === '{' && $this->PeekReg( '/\\G[^{]*\}/' ) ) ) {
 			return;
@@ -1661,7 +1641,7 @@ $g = intval( $g );
 	// and can be found inside a rule's value.
 	//
 	private function parseEntity() {
-		return $this->MatchFuncs( [ 'parseEntitiesLiteral','parseEntitiesVariable','parseEntitiesUrl','parseEntitiesCall','parseEntitiesKeyword','parseEntitiesJavascript','parseComment' ] );
+		return $this->parseEntitiesLiteral() ?? $this->parseEntitiesVariable() ?? $this->parseEntitiesUrl() ?? $this->parseEntitiesCall() ?? $this->parseEntitiesKeyword() ?? $this->parseEntitiesJavascript() ?? $this->parseComment();
 	}
 
 	//
@@ -1980,7 +1960,7 @@ $g = intval( $g );
 	private function parseRule( $tryAnonymous = null ) {
 		$value = null;
 		$startOfRule = $this->pos;
-		$c = $this->input[$this->pos];
+		$c = $this->input[$this->pos] ?? null;
 		$important = null;
 		$merge = false;
 
@@ -1990,7 +1970,7 @@ $g = intval( $g );
 		}
 
 		$this->save();
-		$name = $this->MatchFuncs( [ 'parseVariable', 'parseRuleProperty' ] );
+		$name = $this->parseVariable() ?? $this->parseRuleProperty();
 
 		if ( $name ) {
 			$isVariable = is_string( $name );
@@ -2066,7 +2046,7 @@ $g = intval( $g );
 
 		if ( $dir ) {
 			$options = $this->parseImportOptions();
-			$path = $this->MatchFuncs( [ 'parseEntitiesQuoted','parseEntitiesUrl' ] );
+			$path = $this->parseEntitiesQuoted() ?? $this->parseEntitiesUrl();
 
 			if ( $path ) {
 				$features = $this->parseMediaFeatures();
@@ -2125,7 +2105,7 @@ $g = intval( $g );
 		$nodes = [];
 
 		do{
-			$e = $this->MatchFuncs( [ 'parseEntitiesKeyword','parseEntitiesVariable' ] );
+			$e = $this->parseEntitiesKeyword() ?? $this->parseEntitiesVariable();
 			if ( $e ) {
 				$nodes[] = $e;
 			} elseif ( $this->MatchChar( '(' ) ) {
@@ -2209,10 +2189,7 @@ $g = intval( $g );
 		$hasExpression = false;
 		$hasUnknown = false;
 
-		$value = $this->MatchFuncs( [
-			'parseImport',
-			'parseMedia'
-		] );
+		$value = $this->parseImport() ?? $this->parseMedia();
 		if ( $value ) {
 			return $value;
 		}
@@ -2454,12 +2431,12 @@ $g = intval( $g );
 			$negate = true;
 		}
 		$this->expectChar( '(' );
-		$a = $this->MatchFuncs( [ 'parseAddition','parseEntitiesKeyword','parseEntitiesQuoted' ] );
+		$a = $this->parseAddition() ?? $this->parseEntitiesKeyword() ?? $this->parseEntitiesQuoted();
 
 		if ( $a ) {
 			$op = $this->MatchReg( '/\\G(?:>=|<=|=<|[<=>])/' );
 			if ( $op ) {
-				$b = $this->MatchFuncs( [ 'parseAddition','parseEntitiesKeyword','parseEntitiesQuoted' ] );
+				$b = $this->parseAddition() ?? $this->parseEntitiesKeyword() ?? $this->parseEntitiesQuoted();
 				if ( $b ) {
 					$c = new Less_Tree_Condition( $op[0], $a, $b, $index, $negate );
 				} else {
@@ -2490,7 +2467,7 @@ $g = intval( $g );
 			$negate = $this->MatchChar( '-' );
 		}
 
-		$o = $this->MatchFuncs( [ 'parseSub','parseEntitiesDimension','parseEntitiesColor','parseEntitiesVariable','parseEntitiesCall' ] );
+		$o = $this->parseSub() ?? $this->parseEntitiesDimension() ?? $this->parseEntitiesColor() ?? $this->parseEntitiesVariable() ?? $this->parseEntitiesCall();
 
 		if ( $negate ) {
 			$o->parensInOp = true;
@@ -2510,7 +2487,7 @@ $g = intval( $g );
 		$entities = [];
 
 		do {
-			$e = $this->MatchFuncs( [ 'parseAddition','parseEntity' ] );
+			$e = $this->parseAddition() ?? $this->parseEntity();
 			if ( $e ) {
 				$entities[] = $e;
 				// operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here

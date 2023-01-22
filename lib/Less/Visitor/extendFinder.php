@@ -65,9 +65,9 @@ class Less_Visitor_extendFinder extends Less_Visitor {
 		$this->contexts[] = $rulesetNode->selectors;
 	}
 
-	public function allExtendsStackPush( $rulesetNode, $selectorPath, $extend, &$j ) {
+	public function allExtendsStackPush( $rulesetNode, $selectorPath, Less_Tree_Extend $extend, &$j ) {
 		$this->foundExtends = true;
-		$extend = clone $extend;
+		$extend = $extend->clone();
 		$extend->findSelfSelectors( $selectorPath );
 		$extend->ruleset = $rulesetNode;
 		if ( $j === 0 ) {
