@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.2.1
+
+* [All changes](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+log/v3.2.1)
+* Tree_Ruleset: Fix support for nested parent selectors (Timo Tijhof) [T204816](https://phabricator.wikimedia.org/T204816)
+* Fix ParseError when interpolating variable after colon in selector (Timo Tijhof) [T327163](https://phabricator.wikimedia.org/T327163)
+* Functions: Fix "Undefined property" warning on bad minmax arg
+* Tree_Call: Include previous exception when catching functions (Robert Frunzke)
+
 ## 3.2.0
 
 * [All changes](https://github.com/wikimedia/less.php/compare/v3.1.0...v3.2.0)
