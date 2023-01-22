@@ -20,20 +20,6 @@ on:
 
 jobs:
 
-  # Lint-only for basic assurance until next major version
-  php72:
-    name: PHP 7.2
-    # Includes php7.1 - 8.0 and composer 2
-    # https://github.com/actions/runner-images/blob/ubuntu18/20210318.0/images/linux/Ubuntu1804-README.md#php
-    runs-on: ubuntu-18.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use PHP 7.2
-        run: sudo update-alternatives --set php /usr/bin/php7.2
-      - run: rm composer.json
-      - run: composer require --dev php-parallel-lint/php-parallel-lint=1.3.2
-      - run: composer exec -- parallel-lint . --exclude external --exclude vendor
-
   php:
     name: PHP ${{ matrix.php }}
 

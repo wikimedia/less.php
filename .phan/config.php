@@ -1,7 +1,7 @@
 <?php
 return [
 
-	'target_php_version' => '7.2',
+	'target_php_version' => '7.4',
 
 	// A list of directories that should be parsed for class and
 	// method information. After excluding the directories
