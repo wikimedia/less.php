@@ -19,7 +19,7 @@ class Less_Parser {
 		'import_dirs'			=> [],
 		'import_callback'		=> null,
 		'cache_dir'				=> null,
-		'cache_method'			=> 'php', 			// false, 'serialize', 'php', 'var_export', 'callback';
+		'cache_method'			=> 'serialize',     // false, 'serialize', 'callback';
 		'cache_callback_get'	=> null,
 		'cache_callback_set'	=> null,
 
@@ -600,7 +600,6 @@ $g = intval( $g );
 				switch ( self::$options['cache_method'] ) {
 
 					// Using serialize
-					// Faster but uses more memory
 					case 'serialize':
 						$cache = unserialize( file_get_contents( $cache_file ) );
 						if ( $cache ) {
@@ -609,12 +608,6 @@ $g = intval( $g );
 							return $cache;
 						}
 						break;
-
-						// Using generated php code
-					case 'var_export':
-					case 'php':
-						$this->UnsetInput();
-						return include $cache_file;
 				}
 			}
 		}
@@ -641,14 +634,6 @@ $g = intval( $g );
 				switch ( self::$options['cache_method'] ) {
 					case 'serialize':
 						file_put_contents( $cache_file, serialize( $rules ) );
-						break;
-					case 'php':
-						// Mask PHP open tag to avoid breaking Doxygen
-						file_put_contents( $cache_file, '<' . '?php return ' . self::ArgString( $rules ) . '; ?>' );
-						break;
-					case 'var_export':
-						// Requires __set_state()
-						file_put_contents( $cache_file, '<' . '?php return ' . var_export( $rules, true ) . '; ?>' );
 						break;
 				}
 
