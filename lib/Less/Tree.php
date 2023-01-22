@@ -11,7 +11,6 @@
  */
 class Less_Tree {
 
-	public $cache_string;
 	public $parensInOp = false;
 	public $extendOnEveryPath;
 	public $allExtends;

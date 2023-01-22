@@ -587,7 +587,7 @@ function obj( $mixed, $objects = [] ) {
 	static $level = 0;
 	$output = '';
 
-	$exclude_keys = [ 'originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','cache_string','elements_len',
+	$exclude_keys = [ 'originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','elements_len',
 					'_oelements','_oelements_assoc','first_oelements','_oelements_len','cacheable', ]; // 'variable','combinator'
 	//$exclude_keys = array();
 

@@ -7,6 +7,7 @@ class Less_Tree_Rule extends Less_Tree {
 	public $name;
 	/** @var Less_Tree $value */
 	public $value;
+	/** @var string $important */
 	public $important;
 	public $merge;
 	public $index;
@@ -16,7 +17,13 @@ class Less_Tree_Rule extends Less_Tree {
 	public $type = 'Rule';
 
 	/**
-	 * @param string $important
+	 * @param string|array<Less_Tree_Keyword|Less_Tree_Variable> $name
+	 * @param mixed $value
+	 * @param null|false|string $important
+	 * @param null|false|string $merge
+	 * @param int|null $index
+	 * @param array|null $currentFileInfo
+	 * @param bool $inline
 	 */
 	public function __construct( $name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null, $inline = false ) {
 		$this->name = $name;
