@@ -2,7 +2,7 @@ wikimedia/less.php. https://gerrit.wikimedia.org/g/mediawiki/libs/less.php
 
 Copyright Matt Agar <https://github.com/agar>
 Copyright Martin Jantošovič <https://github.com/Mordred>
-Copyright Josh Schmidt <roan.kattouw@gmail.com>
+Copyright Josh Schmidt <https://github.com/oyejorge>
 Copyright Timo Tijhof <https://timotijhof.net>
 
 Licensed under the Apache License, Version 2.0 (the "License");
