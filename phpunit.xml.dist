@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
 	processIsolation="false"
 	stopOnFailure="false"
 	stopOnError="false"
 	stopOnIncomplete="false"
 	stopOnSkipped="false"
 	bootstrap="test/phpunit/bootstrap.php"
+	cacheResultFile=".phpunit.cache/test-results"
+	executionOrder="depends,defects"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutTodoAnnotatedTests="true"
+	convertDeprecationsToExceptions="true"
+	failOnRisky="true"
+	failOnWarning="true"
+	verbose="true"
 >
 	<testsuites>
 		<testsuite name="Tests">
@@ -13,15 +23,15 @@
 		</testsuite>
 	</testsuites>
 	<coverage
+		cacheDirectory=".phpunit.cache/code-coverage"
 		includeUncoveredFiles="true"
 		processUncoveredFiles="true"
 		pathCoverage="false"
 		ignoreDeprecatedCodeUnits="true"
 		disableCodeCoverageIgnore="true">
-		<exclude>
+		<include>
 			<directory suffix=".php">lib/</directory>
 			<file>lessc.inc.php</file>
-		</exclude>
+		</include>
 	</coverage>
 </phpunit>
-
