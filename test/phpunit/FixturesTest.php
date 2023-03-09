@@ -80,4 +80,34 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		$css = trim( $css );
 		$this->assertEquals( $expectedCSS, $css, "Using cache" );
 	}
+
+	public function testOptionRootpath() {
+		// When CSS refers to a URL that is only a hash fragment, it is a
+		// dynamic reference to something in the current DOM, thus it must
+		// not be remapped. https://phabricator.wikimedia.org/T331649
+		$lessCode = '
+			div {
+				--a10: url("./images/icon.svg");
+				--a11: url("./images/icon.svg#myid");
+				--a20: url(icon.svg);
+				--a21: url(icon.svg#myid);
+				--a30: url(#myid);
+			}
+		';
+
+		$parser = new Less_Parser();
+		$parser->parse( $lessCode, '/x/fake.css' );
+		$css = trim( $parser->getCss() );
+
+		$expected = <<<CSS
+div {
+  --a10: url("/x/images/icon.svg");
+  --a11: url("/x/images/icon.svg#myid");
+  --a20: url(/x/icon.svg);
+  --a21: url(/x/icon.svg#myid);
+  --a30: url(#myid);
+}
+CSS;
+		$this->assertEquals( $expected, $css );
+	}
 }
