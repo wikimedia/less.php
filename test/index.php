@@ -491,7 +491,7 @@ class ParserTest {
 	 * Error Handling
 	 *
 	 */
-	static function showError( $errno, $errmsg, $filename, $linenum, $vars ) {
+	static function showError( $errno, $errmsg, $filename, $linenum ) {
 		static $reported = [];
 
 		// readable types
