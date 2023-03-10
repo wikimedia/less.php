@@ -72,6 +72,7 @@ class Less_Tree_Dimension extends Less_Tree {
 
 	/**
 	 * @param string $op
+	 * @param Less_Tree_Dimension $other
 	 */
 	public function operate( $op, $other ) {
 		$value = Less_Functions::operate( $op, $this->value, $other->value );

@@ -1,0 +1,10 @@
+@border-width-base: 1px;
+@padding-highlight: 8px;
+@half: 0.5;
+
+.highlight {
+	width: calc( 100% - 2px );
+	height: calc( percentage( @half ) - 2*@border-width-base );
+	padding-left: @padding-highlight + @border-width-base;
+	padding-right: calc( @padding-highlight + @border-width-base );
+}
