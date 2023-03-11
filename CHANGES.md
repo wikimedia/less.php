@@ -2,7 +2,7 @@
 
 ## 4.0.0
 
-* [All changes](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+log/v3.2.2)
+* [All changes](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+log/v4.0.0)
 * Remove support for PHP 7.2 and 7.3. Raise requirement to PHP 7.4+.
 * Remove support for `cache_method=php` and `cache_method=var_export`, only the faster and more secure `cache_method=serialize` is now available. The built-in cache remains disabled by default.
 * Fix `url(#myid)` to be treated as absolute URL. [T331649](https://phabricator.wikimedia.org/T331688)
