@@ -98,6 +98,7 @@ class Less_Tree_Color extends Less_Tree {
 
 	/**
 	 * @param string $op
+	 * @param Less_Tree_Color $other
 	 */
 	public function operate( $op, $other ) {
 		$rgb = [];

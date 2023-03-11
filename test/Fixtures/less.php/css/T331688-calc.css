@@ -1,0 +1,6 @@
+.highlight {
+  width: calc(100% - 2px);
+  height: calc(50% - 2*1px);
+  padding-left: 9px;
+  padding-right: calc(8px + 1px);
+}
