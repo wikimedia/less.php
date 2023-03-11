@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.0.0
+
+* [All changes](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+log/v3.2.2)
+* Remove support for PHP 7.2 and 7.3. Raise requirement to PHP 7.4+.
+* Remove support for `cache_method=php` and `cache_method=var_export`, only the faster and more secure `cache_method=serialize` is now available. The built-in cache remains disabled by default.
+* Fix `url(#myid)` to be treated as absolute URL. [T331649](https://phabricator.wikimedia.org/T331688)
+* Fix "Undefined property" PHP 8.1 warning when `calc()` is used with CSS `var()`. [T331688](https://phabricator.wikimedia.org/T331688)
+* Less_Parser: Improve performance by removing MatchFuncs and NewObj overhead. (Timo Tijhof)
+
 ## 3.2.1
 
 * [All changes](https://gerrit.wikimedia.org/g/mediawiki/libs/less.php/+log/v3.2.1)

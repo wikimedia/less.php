@@ -4,3 +4,6 @@
   padding-left: 9px;
   padding-right: calc(8px + 1px);
 }
+.myvar {
+  height: calc(100% - var(--margin-top) - var(--margin-bottom));
+}
