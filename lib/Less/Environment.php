@@ -106,8 +106,13 @@ class Less_Environment {
 		return !Less_Parser::$options['strictMath'] || self::$parensStack;
 	}
 
+	/**
+	 * @param string $path
+	 * @return bool
+	 * @see less-2.5.3.js#Eval.isPathRelative
+	 */
 	public static function isPathRelative( $path ) {
-		return !preg_match( '/^(?:[a-z-]+:|\/)/', $path );
+		return !preg_match( '/^(?:[a-z-]+:|\/|#)/', $path );
 	}
 
 	/**
