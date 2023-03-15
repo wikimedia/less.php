@@ -80,7 +80,7 @@ class Less_Cache {
 				$compiled_name = self::CompiledName( $list, $hash );
 
 				// if $cached_name is the same as the $compiled name, don't regenerate
-				if ( !$cached_name || $cached_name === $compiled_name ) {
+				if ( !$cached_name || $cached_name !== $compiled_name ) {
 
 					$output_file = self::OutputFile( $compiled_name, $parser_options );
 
