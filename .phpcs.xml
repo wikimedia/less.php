@@ -7,8 +7,6 @@
 		<exclude name="Generic.NamingConventions.UpperCaseConstantName.ConstantNotUpperCase" />
 		<exclude name="Generic.PHP.NoSilencedErrors.Discouraged" />
 		<exclude name="Generic.PHP.SAPIUsage.FunctionFound" />
-		<!-- RedundantVarName: https://phabricator.wikimedia.org/T278474 -->
-		<exclude name="MediaWiki.Commenting.RedundantVarName.Found"/>
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic" />
@@ -39,6 +37,10 @@
 		<exclude name="Squiz.Operators.ValidLogicalOperators.NotAllowed" />
 		<exclude name="Squiz.Scope.MemberVarScope.Missing" />
 		<exclude name="Squiz.Scope.MethodScope.Missing" />
+	</rule>
+	<!-- RedundantVarName: https://phabricator.wikimedia.org/T278474 -->
+	<rule ref="MediaWiki.Commenting.RedundantVarName.Found">
+		<severity>0</severity>
 	</rule>
 	<rule ref="Generic.Classes.DuplicateClassName.Found">
 		<exclude-pattern>.phan/stubs/Less_Tree_Selector.php</exclude-pattern>
