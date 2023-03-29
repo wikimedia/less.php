@@ -542,7 +542,15 @@ $g = intval( $g );
 	/**
 	 * Set a list of directories or callbacks the parser should use for determining import paths
 	 *
-	 * @param array $dirs
+	 * Import closures are called with a `$path` argument containing the unquoted `@import` string
+	 * from an input LESS file as-is, except for a statically appended ".less" suffix if the
+	 * basename does not yet contain a dot. If a dot is present in the filename, you are
+	 * responsible for the choice between "foo.bar" and "foo.bar.less".
+	 *
+	 * @param array<string|callable> $dirs The key should be a server directory from which LESS
+	 * files may be imported. The value is an optional public URL or URL base path that corresponds to
+	 * the same directory (use empty string otherwise). The value may also be a closure, in
+	 * which case the key is ignored.
 	 */
 	public function SetImportDirs( $dirs ) {
 		self::$options['import_dirs'] = [];
