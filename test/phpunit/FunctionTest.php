@@ -3,8 +3,8 @@
 class phpunit_FunctionTest extends phpunit_bootstrap {
 
 	public function testFunction() {
-		$lessFile = $this->fixtures_dir . '/functions/less/f1.less';
-		$expected = file_get_contents( $this->fixtures_dir . '/functions/css/f1.css' );
+		$lessFile = __DIR__ . '/data/f1.less';
+		$expected = file_get_contents( __DIR__ . '/data/f1.css' );
 
 		$parser = new Less_Parser();
 		$parser->registerFunction( 'myfunc-reverse', [ __CLASS__, 'reverse' ] );
