@@ -29,6 +29,8 @@ class phpunit_ImportDirsTest extends phpunit_bootstrap {
 			[
 				__DIR__ . '/data/importdir-somevars/' => '',
 				static function ( $path ) {
+					// Backwards compatibility with how people used
+					// less.php 4.0.0 and earlier.
 					if ( $path === '@wikimedia/example.less' ) {
 						return [
 							Less_Environment::normalizePath( __DIR__ . '/data/importdir-somevars/callme.less' ),
@@ -48,10 +50,9 @@ class phpunit_ImportDirsTest extends phpunit_bootstrap {
 					if ( $path === '@wikimedia/example.less' ) {
 						return [
 							__DIR__ . '/data/importdir-somevars/callme.less',
-							dirname( $path )
+							null
 						];
 					}
-					return [ null, null ];
 				}
 			],
 			'div{font-family:Call Me Maybe}'

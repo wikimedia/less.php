@@ -542,10 +542,22 @@ $g = intval( $g );
 	/**
 	 * Set a list of directories or callbacks the parser should use for determining import paths
 	 *
-	 * Import closures are called with a `$path` argument containing the unquoted `@import` string
-	 * from an input LESS file as-is, except for a statically appended ".less" suffix if the
-	 * basename does not yet contain a dot. If a dot is present in the filename, you are
-	 * responsible for the choice between "foo.bar" and "foo.bar.less".
+	 * Import closures are called with a single `$path` argument containing the unquoted `@import`
+	 * string an input LESS file. The string is unchanged, except for a statically appended ".less"
+	 * suffix if the basename does not yet contain a dot. If a dot is present in the filename, you
+	 * are responsible for choosing whether to expand "foo.bar" to "foo.bar.less". If your callback
+	 * can handle this import statement, return an array with an absolute file path and an optional
+	 * URI path, or return void/null to indicate that your callback does not handle this import
+	 * statement.
+	 *
+	 * Example:
+	 *
+	 *     function ( $path ) {
+	 *         if ( $path === 'virtual/something.less' ) {
+	 *             return [ '/srv/elsewhere/thing.less', null ];
+	 *         }
+	 *     }
+	 *
 	 *
 	 * @param array<string|callable> $dirs The key should be a server directory from which LESS
 	 * files may be imported. The value is an optional public URL or URL base path that corresponds to

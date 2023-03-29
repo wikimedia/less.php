@@ -227,23 +227,26 @@ class Less_Tree_Import extends Less_Tree {
 
 			foreach ( $import_dirs as $rootpath => $rooturi ) {
 				if ( is_callable( $rooturi ) ) {
-					list( $path, $uri ) = call_user_func( $rooturi, $evald_path );
-					if ( is_string( $path ) ) {
-						$full_path = $path;
-						return [ $full_path, $uri ];
+					$res = $rooturi( $evald_path );
+					if ( $res && is_string( $res[0] ) ) {
+						return [
+							Less_Environment::normalizePath( $res[0] ),
+							Less_Environment::normalizePath( $res[1] ?? dirname( $evald_path ) )
+						];
 					}
 				} elseif ( !empty( $rootpath ) ) {
-
 					$path = rtrim( $rootpath, '/\\' ) . '/' . ltrim( $evald_path, '/\\' );
-
 					if ( file_exists( $path ) ) {
-						$full_path = Less_Environment::normalizePath( $path );
-						$uri = Less_Environment::normalizePath( dirname( $rooturi . $evald_path ) );
-						return [ $full_path, $uri ];
-					} elseif ( file_exists( $path . '.less' ) ) {
-						$full_path = Less_Environment::normalizePath( $path . '.less' );
-						$uri = Less_Environment::normalizePath( dirname( $rooturi . $evald_path . '.less' ) );
-						return [ $full_path, $uri ];
+						return [
+							Less_Environment::normalizePath( $path ),
+							Less_Environment::normalizePath( dirname( $rooturi . $evald_path ) )
+						];
+					}
+					if ( file_exists( $path . '.less' ) ) {
+						return [
+							Less_Environment::normalizePath( $path . '.less' ),
+							Less_Environment::normalizePath( dirname( $rooturi . $evald_path . '.less' ) )
+						];
 					}
 				}
 			}
