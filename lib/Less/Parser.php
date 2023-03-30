@@ -2188,6 +2188,7 @@ $g = intval( $g );
 		$hasIdentifier = false;
 		$hasExpression = false;
 		$hasUnknown = false;
+		$isRooted = true;
 
 		$value = $this->parseImport() ?? $this->parseMedia();
 		if ( $value ) {
@@ -2230,6 +2231,7 @@ $g = intval( $g );
 			case "@right-middle":
 			case "@right-bottom":
 			hasBlock = true;
+			isRooted = true;
 			break;
 			*/
 			case "@charset":
@@ -2245,9 +2247,12 @@ $g = intval( $g );
 				break;
 			case "@host":
 			case "@page":
+				$hasUnknown = true;
+				break;
 			case "@document":
 			case "@supports":
 				$hasUnknown = true;
+				$isRooted = false;
 				break;
 		}
 
@@ -2275,7 +2280,7 @@ $g = intval( $g );
 
 		if ( $rules || ( !$hasBlock && $value && $this->MatchChar( ';' ) ) ) {
 			$this->forget();
-			return new Less_Tree_Directive( $name, $value, $rules, $index, $this->env->currentFileInfo );
+			return new Less_Tree_Directive( $name, $value, $rules, $index, $isRooted, $this->env->currentFileInfo );
 		}
 
 		$this->restore();
