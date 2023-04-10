@@ -51,5 +51,4 @@
 	<arg name="encoding" value="UTF-8"/>
 	<arg name="extensions" value="php"/>
 	<exclude-pattern>doc/html</exclude-pattern>
-	<exclude-pattern>test/php-diff</exclude-pattern>
 </ruleset>

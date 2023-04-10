@@ -13,10 +13,6 @@ $dir = dirname( __DIR__ );
 // Use standalone mode (without Composer)
 require_once $dir . '/lessc.inc.php';
 
-require_once $dir . '/test/php-diff/lib/Diff.php';
-require_once $dir . '/test/php-diff/lib/Diff/Renderer/Html/SideBySide.php';
-require_once $dir . '/test/php-diff/lib/Diff/Renderer/Html/Inline.php';
-
 class ParserTest {
 
 	// options
@@ -221,7 +217,6 @@ class ParserTest {
 			$matched = $this->CompareFiles( $generated_map, $file_sourcemap, $expected_map );
 
 			if ( isset( $_GET['file'] ) ) {
-				$this->PHPDiff( $generated_map, $file_sourcemap, true );
 				$this->ObjBuffer();
 			}
 
@@ -259,7 +254,6 @@ class ParserTest {
 		}
 
 		if ( isset( $_GET['file'] ) ) {
-			$this->PHPDiff( $compiled, $css );
 			echo '<table><tr><td>less.php';
 			echo '<textarea id="lessphp_textarea" rows="20" autocomplete="off">' . htmlspecialchars( $compiled ) . '</textarea>';
 			echo '</td><td>less.js output';
@@ -292,20 +286,6 @@ class ParserTest {
 
 		$line_diff = $this->LineDiff( $generated, $lessjs );
 		echo ' <b>' . $line_diff . ' lines mismatched</b>';
-
-		// check agains expected results
-		// if ( $expected ) {
-		// 	$expected = trim( $expected );
-		// 	if ( $generated == $expected ) {
-		// 		echo '<span>Expected Matched</span>';
-		// 	} else {
-		// 		$line_diff = $this->LineDiff( $generated, $expected );
-		// 		echo ' <b>'.$line_diff.' lines mismatched</b>';
-		// 	}
-
-		// } else {
-		// 	echo '<span>file doesn\'t exist</span>';
-		// }
 
 		return false;
 	}
@@ -376,41 +356,6 @@ class ParserTest {
 		return max( count( $diff1 ), count( $diff2 ) );
 	}
 
-	/**
-	 * Show diff using php (optional)
-	 *
-	 */
-	function PHPDiff( $compiled, $css, $force = false ) {
-		if ( !$force && isset( $_COOKIE['phpdiff'] ) && $_COOKIE['phpdiff'] == 0 ) {
-			return;
-		}
-
-		$compiled = explode( "\n", $compiled );
-		$css = explode( "\n", $css );
-
-		$options = [];
-		$diff = new Diff( $compiled, $css, $options );
-		$renderer = new Diff_Renderer_Html_SideBySide();
-		// $renderer = new Diff_Renderer_Html_Inline();
-		echo $diff->Render( $renderer );
-
-		// show the full contents
-		/*
-		if( isset($_GET['file']) ){
-			echo '</table>';
-			echo '<table style="width:100%"><tr><td>';
-			echo '<pre>';
-			echo implode("\n",$compiled);
-			echo '</pre>';
-			echo '</td><td>';
-			echo '<pre>';
-			echo implode("\n",$css);
-			echo '</pre>';
-			echo '</td></tr></table>';
-		}
-		*/
-	}
-
 	function Links() {
 		echo '<ul id="links">';
 		foreach ( $this->test_dirs as $dir ) {
@@ -472,18 +417,6 @@ class ParserTest {
 		echo '<a href="' . str_replace( '&&', '&', $request . '&XDEBUG_PROFILE' ) . '">Debug Profile</a>';
 		echo ' - ';
 		echo '<a href="' . str_replace( '&&', '&', $request . '&XDEBUG_TRACE' ) . '">Debug Trace</a>';
-		echo '</div>';
-
-		// options
-		echo '<div id="options">';
-		echo '<b>Options</b>';
-
-		$checked = 'checked="checked"';
-		if ( isset( $_COOKIE['phpdiff'] ) && $_COOKIE['phpdiff'] == 0 ) {
-			$checked = '';
-		}
-		echo '<label><input type="checkbox" name="phpdiff" value="phpdiff" ' . $checked . ' autocomplete="off"/><span>Show PHP Diff</span></label>';
-
 		echo '</div>';
 	}
 
@@ -711,7 +644,6 @@ $content = ob_get_clean();
 <html><head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<title>Less.php Tests</title>
-	<link rel="stylesheet" href="php-diff/styles.css" type="text/css" />
 	<?php echo $test_obj->head ?>
 	<link rel="stylesheet" type="text/css" href="assets/style.css" />
 	<link rel="stylesheet" type="text/css" href="assets/jsdiff.css" />
