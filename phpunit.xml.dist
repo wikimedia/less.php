@@ -27,8 +27,7 @@
 		includeUncoveredFiles="true"
 		processUncoveredFiles="true"
 		pathCoverage="false"
-		ignoreDeprecatedCodeUnits="true"
-		disableCodeCoverageIgnore="true">
+		ignoreDeprecatedCodeUnits="true">
 		<include>
 			<directory suffix=".php">lib/</directory>
 			<file>lessc.inc.php</file>
