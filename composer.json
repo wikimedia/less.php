@@ -59,6 +59,7 @@
 			"@phan",
 			"minus-x check ."
 		],
+		"bench": "@php -d opcache.enable=1 -d opcache.enable_cli=1 test/bench.php",
 		"cover": "phpunit --coverage-html coverage",
 		"fix": [
 			"minus-x fix .",
