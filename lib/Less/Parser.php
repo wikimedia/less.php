@@ -827,7 +827,10 @@ $g = intval( $g );
 
 		$i = 1;
 		while ( $this->pos + $i < $this->input_len ) {
+			// Optimization: Skip over irrelevant chars without slow loop
+			$i += strcspn( $this->input, "\n\r$startChar\\", $this->pos + $i );
 			$nextChar = $this->input[$this->pos + $i];
+			$i++;
 			switch ( $nextChar ) {
 			case "\\":
 				$i++;
@@ -836,13 +839,10 @@ $g = intval( $g );
 			case "\n":
 				return;
 			case $startChar:
-				$i++;
 				$matched = substr( $this->input, $this->pos, $i );
 				$this->skipWhitespace( $i );
 				return $matched;
 			}
-
-			$i++;
 		}
 
 		return null;
