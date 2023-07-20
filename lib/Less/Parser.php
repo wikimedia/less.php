@@ -1288,6 +1288,12 @@ $g = intval( $g );
 	 * @return Less_Tree_UnicodeDescriptor|null
 	 */
 	function parseUnicodeDescriptor() {
+		// Optimization: Hardcode first char, to avoid MatchReg() cost for common case
+		$char = $this->input[$this->pos] ?? null;
+		if ( $char !== 'U' ) {
+			return;
+		}
+
 		$ud = $this->MatchReg( '/\\G(U\+[0-9a-fA-F?]+)(\-[0-9a-fA-F?]+)?/' );
 		if ( $ud ) {
 			return new Less_Tree_UnicodeDescriptor( $ud[0] );
@@ -1303,16 +1309,27 @@ $g = intval( $g );
 	 * @see less-2.5.3.js#parsers.entities.javascript
 	 */
 	private function parseEntitiesJavascript() {
-		$index = $this->pos;
-
-		$this->save();
-
-		$isEscaped = $this->MatchChar( '~' ) !== null;
-		$jsQuote = $this->MatchChar( '`' ) !== null;
-		if ( !$jsQuote ) {
-			$this->restore();
+		// Optimization: Hardcode first char, to avoid save()/restore() overhead
+		// Optimization: Inline MatchChar(), with skipWhitespace(1) below
+		$char = $this->input[$this->pos] ?? null;
+		$isEscaped = $char === '~';
+		if ( !$isEscaped && $char !== '`' ) {
 			return;
 		}
+
+		$index = $this->pos;
+		$this->save();
+
+		if ( $isEscaped ) {
+			$this->skipWhitespace( 1 );
+			$char = $this->input[$this->pos] ?? null;
+			if ( $char !== '`' ) {
+				$this->restore();
+				return;
+			}
+		}
+
+		$this->skipWhitespace( 1 );
 		$js = $this->MatchReg( '/\\G[^`]*`/' );
 		if ( $js ) {
 			$this->forget();
