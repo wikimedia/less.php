@@ -105,10 +105,10 @@ class Less_Tree_Import extends Less_Tree {
 			$path = $this->path->value;
 			$path = ( isset( $this->css ) || preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $path ) ) ? $path : $path . '.less';
 
-		// During the first pass, Less_Tree_URL may contain a Less_Tree_Variable (not yet expanded),
+		// During the first pass, Less_Tree_Url may contain a Less_Tree_Variable (not yet expanded),
 		// and thus has no value property defined yet. Return null until we reach the next phase.
 		// https://github.com/wikimedia/less.php/issues/29
-		} elseif ( $this->path instanceof Less_Tree_URL && !( $this->path->value instanceof Less_Tree_Variable ) ) {
+		} elseif ( $this->path instanceof Less_Tree_Url && !( $this->path->value instanceof Less_Tree_Variable ) ) {
 			$path = $this->path->value->value;
 		} else {
 			return null;
@@ -129,7 +129,7 @@ class Less_Tree_Import extends Less_Tree {
 			$rootpath = $this->currentFileInfo['rootpath'];
 		}
 
-		if ( !( $path instanceof Less_Tree_URL ) ) {
+		if ( !( $path instanceof Less_Tree_Url ) ) {
 			if ( $rootpath ) {
 				$pathValue = $path->value;
 				// Add the base path if the import is relative
