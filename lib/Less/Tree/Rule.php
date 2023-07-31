@@ -5,9 +5,9 @@
 class Less_Tree_Rule extends Less_Tree {
 
 	public $name;
-	/** @var Less_Tree $value */
+	/** @var Less_Tree */
 	public $value;
-	/** @var string $important */
+	/** @var string */
 	public $important;
 	public $merge;
 	public $index;

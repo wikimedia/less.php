@@ -39,8 +39,8 @@ class Less_Tree_Quoted extends Less_Tree {
 	public function compile( $env ) {
 		$value = $this->value;
 		if ( preg_match_all( '/`([^`]+)`/', $this->value, $matches ) ) {
-			foreach ( $matches as $i => $match ) {
-				$js = new Less_Tree_JavaScript( $matches[1], $this->index, true );
+			foreach ( $matches[1] as $i => $match ) {
+				$js = new Less_Tree_JavaScript( $match, $this->index, true );
 				$js = $js->compile( $env )->value;
 				$value = str_replace( $matches[0][$i], $js, $value );
 			}

@@ -52,7 +52,7 @@ class Less_Output_Mapped extends Less_Output {
 	 * @param string $chunk
 	 * @param array|null $fileInfo
 	 * @param int $index
-	 * @param mixed $mapLines
+	 * @param bool|null $mapLines
 	 */
 	public function add( $chunk, $fileInfo = null, $index = 0, $mapLines = null ) {
 		// ignore adding empty strings

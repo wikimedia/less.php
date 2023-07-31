@@ -11,7 +11,9 @@ class Less_Tree_Anonymous extends Less_Tree {
 	public $type = 'Anonymous';
 
 	/**
-	 * @param int $index
+	 * @param string $value
+	 * @param int|null $index
+	 * @param array|null $currentFileInfo
 	 * @param bool|null $mapLines
 	 */
 	public function __construct( $value, $index = null, $currentFileInfo = null, $mapLines = null ) {

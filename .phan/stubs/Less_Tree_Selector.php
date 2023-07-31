@@ -1,7 +1,5 @@
 <?php
-/**
- * @method mach($other)
- */
+
 class Less_Tree_Selector extends Less_Tree {
 	public $elements;
 	public $condition;
@@ -28,8 +26,8 @@ class Less_Tree_Selector extends Less_Tree {
 	public function createDerived( $elements, $extendList = null, $evaldCondition = null ) {
 	}
 
-	// https://github.com/phan/phan/issues/4751
-	// public function match( $other ) {}
+	public function match( $other ) {
+	}
 
 	public function CacheElements() {
 	}

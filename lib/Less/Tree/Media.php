@@ -112,7 +112,7 @@ class Less_Tree_Media extends Less_Tree {
 	 */
 	public function compileNested( $env ) {
 		$path = array_merge( $env->mediaPath, [ $this ] );
-		'@phan-var array<Less_Tree_Media> $path';
+		'@phan-var self[] $path';
 
 		// Extract the media-query conditions separated with `,` (OR).
 		foreach ( $path as $key => $p ) {
@@ -130,6 +130,7 @@ class Less_Tree_Media extends Less_Tree {
 		//	b and c and e
 
 		$permuted = $this->permute( $path );
+		'@phan-var (Less_Tree|string)[][] $permuted';
 		$expressions = [];
 		foreach ( $permuted as $path ) {
 

@@ -15,7 +15,6 @@ require_once $dir . '/lessc.inc.php';
 
 class ParserTest {
 
-	// options
 	var $compress = false;
 	var $dir;
 	var $test_dirs = [ 'lessjs','bootstrap3' ];

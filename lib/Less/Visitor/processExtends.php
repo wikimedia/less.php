@@ -264,6 +264,9 @@ class Less_Visitor_processExtends extends Less_Visitor {
 	}
 
 	/**
+	 * @param array $potentialMatch
+	 * @param Less_Tree_Element[] $needleElements
+	 * @param Less_Tree_Element $haystackElement
 	 * @param int $hackstackElementIndex
 	 */
 	private function PotentialMatch( $potentialMatch, $needleElements, $haystackElement, $hackstackElementIndex ) {
@@ -395,7 +398,12 @@ class Less_Visitor_processExtends extends Less_Visitor {
 			}
 
 			$newElements = array_merge(
-				array_slice( $selector->elements, $currentSelectorPathElementIndex, ( $match['index'] - $currentSelectorPathElementIndex ) ), // last parameter of array_slice is different than the last parameter of javascript's slice
+				array_slice(
+					$selector->elements,
+					$currentSelectorPathElementIndex,
+					// last parameter of array_slice is different than the last parameter of javascript's slice
+					$match['index'] - $currentSelectorPathElementIndex
+				),
 				 [ $firstElement ],
 				 array_slice( $replacementSelector->elements, 1 )
 				);

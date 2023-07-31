@@ -10,7 +10,8 @@ class Less_Tree_Javascript extends Less_Tree {
 	public $index;
 
 	/**
-	 * @param bool $index
+	 * @param string $string
+	 * @param int $index
 	 * @param bool $escaped
 	 */
 	public function __construct( $string, $index, $escaped ) {

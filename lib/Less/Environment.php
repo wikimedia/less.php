@@ -9,11 +9,11 @@ class Less_Environment {
 	 *
 	 * - rootpath: rootpath to append to URLs
 	 *
-	 * @var array|null $currentFileInfo
+	 * @var array|null
 	 */
 	public $currentFileInfo;
 
-	/* Whether we are currently importing multiple copies */
+	/** @var bool Whether we are currently importing multiple copies */
 	public $importMultiple = false;
 
 	/**
@@ -21,14 +21,9 @@ class Less_Environment {
 	 */
 	public $frames = [];
 
-	/**
-	 * @var array
-	 */
+	/** @var Less_Tree_Media[] */
 	public $mediaBlocks = [];
-
-	/**
-	 * @var array
-	 */
+	/** @var Less_Tree_Media[] */
 	public $mediaPath = [];
 
 	public static $parensStack = 0;

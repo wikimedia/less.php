@@ -7,6 +7,7 @@ class Less_Parser {
 
 	/**
 	 * Default parser options
+	 * @var array<string,mixed>
 	 */
 	public static $default_options = [
 		'compress'				=> false,			// option - whether to compress
@@ -1674,7 +1675,13 @@ $g = intval( $g );
 	// and can be found inside a rule's value.
 	//
 	private function parseEntity() {
-		return $this->parseEntitiesLiteral() ?? $this->parseEntitiesVariable() ?? $this->parseEntitiesUrl() ?? $this->parseEntitiesCall() ?? $this->parseEntitiesKeyword() ?? $this->parseEntitiesJavascript() ?? $this->parseComment();
+		return $this->parseEntitiesLiteral() ??
+			$this->parseEntitiesVariable() ??
+			$this->parseEntitiesUrl() ??
+			$this->parseEntitiesCall() ??
+			$this->parseEntitiesKeyword() ??
+			$this->parseEntitiesJavascript() ??
+			$this->parseComment();
 	}
 
 	//
@@ -1856,7 +1863,7 @@ $g = intval( $g );
 	}
 
 	private function parseTag() {
-		return ( $tag = $this->MatchReg( '/\\G[A-Za-z][A-Za-z-]*[0-9]?/' ) ) ? $tag : $this->MatchChar( '*' );
+		return $this->MatchReg( '/\\G[A-Za-z][A-Za-z-]*[0-9]?/' ) ?: $this->MatchChar( '*' );
 	}
 
 	private function parseAttribute() {

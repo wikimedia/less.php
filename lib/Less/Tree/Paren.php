@@ -4,7 +4,7 @@
  */
 class Less_Tree_Paren extends Less_Tree {
 
-	/** @var Less_Tree $value */
+	/** @var Less_Tree */
 	public $value;
 	public $type = 'Paren';
 

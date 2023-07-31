@@ -20,7 +20,9 @@ class Less_Tree_Ruleset extends Less_Tree {
 	public $multiMedia;
 	public $allExtends;
 
+	/** @var int */
 	public $ruleset_id;
+	/** @var int */
 	public $originalRuleset;
 
 	public $first_oelements;
@@ -137,7 +139,8 @@ class Less_Tree_Ruleset extends Less_Tree {
 	 * Compile Less_Tree_Mixin_Call objects
 	 *
 	 * @param Less_Tree_Ruleset $ruleset
-	 * @param int $rsRuleCnt
+	 * @param Less_Environment $env
+	 * @param int &$rsRuleCnt
 	 */
 	private function EvalMixinCalls( $ruleset, $env, &$rsRuleCnt ) {
 		for ( $i = 0; $i < $rsRuleCnt; $i++ ) {

@@ -18,6 +18,8 @@ class Less_Tree_Extend extends Less_Tree {
 	public $parent_ids = [];
 
 	/**
+	 * @param Less_Tree_Selector $selector
+	 * @param string $option
 	 * @param int $index
 	 */
 	public function __construct( $selector, $option, $index ) {
