@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.1.1
+
+* Less_Parser: Faster `MatchQuoted` by using native `strcspn`. (Thiemo Kreuz)
+* Less_Parser: Faster `parseEntitiesQuoted` by inlining `MatchQuoted`. (Thiemo Kreuz)
+* Less_Parser: Faster `parseUnicodeDescriptor` and `parseEntitiesJavascript` by first-char checks. (Thiemo Kreuz)
+* Less_Tree_Mixin_Call: Include mixin name in error message (Jeremy P)
+* Fix mismatched casing in class names to fix autoloading on case-sensitive filesystems (Jeremy P)
+
 ## 4.1.0
 
 * Add support for `@supports` blocks. (Anne Tomasevich) [T332923](http://phabricator.wikimedia.org/T332923)
