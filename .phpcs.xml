@@ -4,7 +4,6 @@
 		<exclude name="Generic.CodeAnalysis.JumbledIncrementer.Found" />
 		<exclude name="Generic.Files.LineLength.TooLong" />
 		<exclude name="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase" />
-		<exclude name="Generic.NamingConventions.UpperCaseConstantName.ConstantNotUpperCase" />
 		<exclude name="Generic.PHP.NoSilencedErrors.Discouraged" />
 		<exclude name="Generic.PHP.SAPIUsage.FunctionFound" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate" />
