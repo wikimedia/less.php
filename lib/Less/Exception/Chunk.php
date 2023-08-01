@@ -43,6 +43,7 @@ class Less_Exception_Chunk extends Less_Exception_Parser {
 		$lastMultiComment = null;
 		$lastParen = null;
 
+		// phpcs:ignore Generic.CodeAnalysis.JumbledIncrementer
 		for ( $this->parserCurrentIndex = 0; $this->parserCurrentIndex < $this->input_len; $this->parserCurrentIndex++ ) {
 			$cc = $this->CharCode( $this->parserCurrentIndex );
 			if ( ( ( $cc >= 97 ) && ( $cc <= 122 ) ) || ( $cc < 34 ) ) {
