@@ -9,7 +9,6 @@ class Less_Tree_Media extends Less_Tree {
 	public $index;
 	public $currentFileInfo;
 	public $isReferenced;
-	public $type = 'Media';
 
 	public function __construct( $value = [], $features = [], $index = null, $currentFileInfo = null ) {
 		$this->index = $index;

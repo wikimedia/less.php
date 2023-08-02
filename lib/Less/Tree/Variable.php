@@ -8,7 +8,6 @@ class Less_Tree_Variable extends Less_Tree {
 	public $index;
 	public $currentFileInfo;
 	public $evaluating = false;
-	public $type = 'Variable';
 
 	/**
 	 * @param string $name

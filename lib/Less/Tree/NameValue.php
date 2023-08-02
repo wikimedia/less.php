@@ -16,7 +16,6 @@ class Less_Tree_NameValue extends Less_Tree {
 	public $value;
 	public $index;
 	public $currentFileInfo;
-	public $type = 'NameValue';
 	public $important = '';
 
 	public function __construct( $name, $value = null, $index = null, $currentFileInfo = null ) {

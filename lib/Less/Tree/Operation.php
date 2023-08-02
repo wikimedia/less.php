@@ -7,7 +7,6 @@ class Less_Tree_Operation extends Less_Tree {
 	public $op;
 	public $operands;
 	public $isSpaced;
-	public $type = 'Operation';
 
 	/**
 	 * @param string $op

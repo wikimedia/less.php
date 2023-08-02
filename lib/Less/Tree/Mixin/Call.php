@@ -10,7 +10,6 @@ class Less_Tree_Mixin_Call extends Less_Tree {
 	public $currentFileInfo;
 
 	public $important;
-	public $type = 'MixinCall';
 
 	/**
 	 * less.js: tree.mixin.Call

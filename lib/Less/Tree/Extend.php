@@ -11,7 +11,6 @@ class Less_Tree_Extend extends Less_Tree {
 	public $allowBefore;
 	public $allowAfter;
 	public $firstExtendOnThisSelectorPath;
-	public $type = 'Extend';
 	public $ruleset;
 
 	public $object_id;

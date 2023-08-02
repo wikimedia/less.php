@@ -12,7 +12,6 @@ class Less_Tree_Directive extends Less_Tree {
 	public $isRooted;
 	public $currentFileInfo;
 	public $debugInfo;
-	public $type = 'Directive';
 
 	public function __construct( $name, $value = null, $rules = null, $index = null, $isRooted = false, $currentFileInfo = null, $debugInfo = null ) {
 		$this->name = $name;

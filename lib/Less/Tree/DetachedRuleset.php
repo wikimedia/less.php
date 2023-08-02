@@ -6,7 +6,6 @@ class Less_Tree_DetachedRuleset extends Less_Tree {
 
 	public $ruleset;
 	public $frames;
-	public $type = 'DetachedRuleset';
 
 	public function __construct( $ruleset, $frames = null ) {
 		$this->ruleset = $ruleset;

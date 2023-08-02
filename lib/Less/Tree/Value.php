@@ -4,7 +4,6 @@
  */
 class Less_Tree_Value extends Less_Tree {
 
-	public $type = 'Value';
 	public $value;
 
 	/**

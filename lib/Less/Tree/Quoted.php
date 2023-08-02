@@ -8,7 +8,6 @@ class Less_Tree_Quoted extends Less_Tree {
 	public $quote;
 	public $index;
 	public $currentFileInfo;
-	public $type = 'Quoted';
 
 	/**
 	 * @param string $str

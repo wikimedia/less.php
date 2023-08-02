@@ -12,7 +12,6 @@ class Less_Tree_Element extends Less_Tree {
 	public $value;
 	public $index;
 	public $currentFileInfo;
-	public $type = 'Element';
 
 	public $value_is_object = false;
 

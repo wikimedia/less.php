@@ -14,7 +14,6 @@ class Less_Tree_Rule extends Less_Tree {
 	public $inline;
 	public $variable;
 	public $currentFileInfo;
-	public $type = 'Rule';
 
 	/**
 	 * @param string|array<Less_Tree_Keyword|Less_Tree_Variable> $name
@@ -82,7 +81,7 @@ class Less_Tree_Rule extends Less_Tree {
 		try {
 			$evaldValue = $this->value->compile( $env );
 
-			if ( !$this->variable && $evaldValue->type === "DetachedRuleset" ) {
+			if ( !$this->variable && $evaldValue instanceof Less_Tree_DetachedRuleset ) {
 				throw new Less_Exception_Compiler( "Rulesets cannot be evaluated on a property.", null, $this->index, $this->currentFileInfo );
 			}
 

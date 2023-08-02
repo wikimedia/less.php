@@ -10,7 +10,6 @@ class Less_Tree_Selector extends Less_Tree {
 	public $_css;
 	public $index;
 	public $evaldCondition = false;
-	public $type = 'Selector';
 	public $currentFileInfo = [];
 	public $isReferenced;
 	public $mediaEmpty;

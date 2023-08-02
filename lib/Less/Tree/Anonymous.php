@@ -8,7 +8,6 @@ class Less_Tree_Anonymous extends Less_Tree {
 	public $index;
 	public $mapLines;
 	public $currentFileInfo;
-	public $type = 'Anonymous';
 
 	/**
 	 * @param string $value

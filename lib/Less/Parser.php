@@ -239,23 +239,23 @@ class Less_Parser {
 		$variables = [];
 
 		$not_variable_type = [
-			'Comment',   // this include less comments ( // ) and css comments (/* */)
-			'Import',    // do not search variables in included files @import
-			'Ruleset',   // selectors (.someclass, #someid, …)
-			'Operation', //
+			Less_Tree_Comment::class,   // this include less comments ( // ) and css comments (/* */)
+			Less_Tree_Import::class,    // do not search variables in included files @import
+			Less_Tree_Ruleset::class,   // selectors (.someclass, #someid, …)
+			Less_Tree_Operation::class,
 		];
 
 		// @TODO run compilation if not runned yet
 		foreach ( $this->rules as $key => $rule ) {
-			if ( in_array( $rule->type, $not_variable_type ) ) {
+			if ( in_array( get_class( $rule ), $not_variable_type ) ) {
 				continue;
 			}
 
-			// Note: it seems rule->type is always Rule when variable = true
-			if ( $rule->type == 'Rule' && $rule->variable ) {
+			// Note: it seems $rule is always Less_Tree_Rule when variable = true
+			if ( $rule instanceof Less_Tree_Rule && $rule->variable ) {
 				$variables[$rule->name] = $this->getVariableValue( $rule );
 			} else {
-				if ( $rule->type == 'Comment' ) {
+				if ( $rule instanceof Less_Tree_Comment ) {
 					$variables[] = $this->getVariableValue( $rule );
 				}
 			}
@@ -322,7 +322,7 @@ class Less_Parser {
 			case Less_Tree_Import::class:
 			case Less_Tree_Ruleset::class:
 			default:
-				throw new Exception( "type missing in switch/case getVariableValue for " . $var->type );
+				throw new Exception( "type missing in switch/case getVariableValue for " . get_class( $var ) );
 		}
 	}
 

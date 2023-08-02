@@ -531,11 +531,7 @@ function obj( $mixed, $objects = [] ) {
 			}
 
 			$objects[] = $mixed;
-			$type = 'object';
-
-			if ( property_exists( $mixed, 'type' ) ) {
-				$type .= ' ' . $mixed->type;
-			}
+			$type = 'object ' . get_class( $mixed );
 
 			// $type = get_class($mixed).' object';
 			//$output = $type.'(...)'."\n"; //recursive object references creates an infinite loop

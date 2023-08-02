@@ -16,7 +16,6 @@ class Less_Tree_Ruleset extends Less_Tree {
 	public $allowImports;
 	public $paths;
 	public $firstRoot;
-	public $type = 'Ruleset';
 	public $multiMedia;
 	public $allExtends;
 
@@ -379,12 +378,9 @@ class Less_Tree_Ruleset extends Less_Tree {
 		$ruleNodes = [];
 		$rulesetNodes = [];
 		foreach ( $this->rules as $rule ) {
-
-			$class = get_class( $rule );
-			if (
-				( $class === 'Less_Tree_Media' ) ||
-				( $class === 'Less_Tree_Directive' ) ||
-				( $this->root && $class === 'Less_Tree_Comment' ) ||
+			if ( $rule instanceof Less_Tree_Media ||
+				$rule instanceof Less_Tree_Directive ||
+				( $this->root && $rule instanceof Less_Tree_Comment ) ||
 				( $rule instanceof Less_Tree_Ruleset && $rule->rules )
 			) {
 				$rulesetNodes[] = $rule;

@@ -7,7 +7,6 @@ class Less_Tree_Attribute extends Less_Tree {
 	public $key;
 	public $op;
 	public $value;
-	public $type = 'Attribute';
 
 	public function __construct( $key, $op, $value ) {
 		$this->key = $key;

@@ -8,7 +8,6 @@ class Less_Tree_Comment extends Less_Tree {
 	public $silent;
 	public $isReferenced;
 	public $currentFileInfo;
-	public $type = 'Comment';
 
 	public function __construct( $value, $silent, $index = null, $currentFileInfo = null ) {
 		$this->value = $value;

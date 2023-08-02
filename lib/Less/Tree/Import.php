@@ -23,7 +23,6 @@ class Less_Tree_Import extends Less_Tree {
 	public $css;
 	public $skip;
 	public $root;
-	public $type = 'Import';
 
 	public function __construct( $path, $features, $options, $index, $currentFileInfo = null ) {
 		$this->options = $options;

@@ -9,7 +9,6 @@ class Less_Tree_Condition extends Less_Tree {
 	public $rvalue;
 	public $index;
 	public $negate;
-	public $type = 'Condition';
 
 	public function __construct( $op, $l, $r, $i = 0, $negate = false ) {
 		$this->op = trim( $op );

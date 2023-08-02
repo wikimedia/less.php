@@ -8,7 +8,6 @@ class Less_Tree_Url extends Less_Tree {
 	public $value;
 	public $currentFileInfo;
 	public $isEvald;
-	public $type = 'Url';
 
 	/**
 	 * @param Less_Tree_Variable|Less_Tree_Quoted|Less_Tree_Anonymous $value
