@@ -332,7 +332,7 @@ class Less_Parser {
 		}
 
 		$r = intval( $r );
-$g = intval( $g );
+		$g = intval( $g );
 		$b = intval( $b );
 
 		$r = dechex( $r < 0 ? 0 : ( $r > 255 ? 255 : $r ) );
@@ -1379,7 +1379,8 @@ $g = intval( $g );
 			$elements = [];
 			while ( true ) {
 				$option = $this->MatchReg( '/\\G(all)(?=\s*(\)|,))/' );
-				if ( $option ) { break;
+				if ( $option ) {
+					break;
 				}
 				$e = $this->parseElement();
 				if ( !$e ) {
@@ -2126,7 +2127,8 @@ $g = intval( $g );
 						break;
 				}
 				$options[$optionName] = $value;
-				if ( !$this->MatchChar( ',' ) ) { break;
+				if ( !$this->MatchChar( ',' ) ) {
+					break;
 				}
 			}
 		}while ( $optionName );
@@ -2394,7 +2396,8 @@ $g = intval( $g );
 
 				$a = $this->parseOperand();
 
-				if ( !$a ) { break;
+				if ( !$a ) {
+					break;
 				}
 
 				$m->parensInOp = true;

@@ -86,7 +86,8 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		$argIndex = 0;
 		foreach ( $params as $i => $param ) {
 
-			if ( isset( $evaldArguments[$i] ) ) { continue;
+			if ( isset( $evaldArguments[$i] ) ) {
+				continue;
 			}
 
 			$arg = null;

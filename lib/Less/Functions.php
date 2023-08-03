@@ -931,7 +931,8 @@ class Less_Functions {
 
 			$charset = Less_Mime::charsets_lookup( $mimetype );
 			$useBase64 = !in_array( $charset, [ 'US-ASCII', 'UTF-8' ] );
-			if ( $useBase64 ) { $mimetype .= ';base64';
+			if ( $useBase64 ) {
+				$mimetype .= ';base64';
 			}
 
 		} else {
