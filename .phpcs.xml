@@ -17,13 +17,9 @@
 		<exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch" />
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
-		<exclude name="PSR2.Classes.PropertyDeclaration.ScopeMissing" />
 		<exclude name="PSR2.Classes.PropertyDeclaration.Underscore" />
-		<exclude name="PSR2.Classes.PropertyDeclaration.VarUsed" />
 		<exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
 		<exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
-		<exclude name="Squiz.Scope.MemberVarScope.Missing" />
-		<exclude name="Squiz.Scope.MethodScope.Missing" />
 	</rule>
 	<rule ref="Generic.Files.LineLength">
 		<properties>

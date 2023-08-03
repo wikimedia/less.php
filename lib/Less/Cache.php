@@ -264,7 +264,7 @@ class Less_Cache {
 	/**
 	 * Get the list of less files and generated css file from a list file
 	 */
-	static function ListFiles( $list_file, &$list, &$css_file_name ) {
+	public static function ListFiles( $list_file, &$list, &$css_file_name ) {
 		$list = explode( "\n", file_get_contents( $list_file ) );
 
 		// pop the cached name that should match $compiled_name

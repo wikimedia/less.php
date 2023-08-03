@@ -15,15 +15,15 @@ require_once $dir . '/lessc.inc.php';
 
 class ParserTest {
 
-	var $compress = false;
-	var $dir;
-	var $test_dirs = [ 'lessjs','bootstrap3' ];
-	var $cache_dir;
-	var $head;
-	var $files_tested = 0;
-	var $matched_count = 0;
+	public $compress = false;
+	public $dir;
+	public $test_dirs = [ 'lessjs','bootstrap3' ];
+	public $cache_dir;
+	public $head;
+	public $files_tested = 0;
+	public $matched_count = 0;
 
-	function __construct() {
+	public function __construct() {
 		$this->cache_dir = __DIR__ . '/_cache';
 
 		if ( !is_writable( $this->cache_dir ) || !is_dir( $this->cache_dir ) ) {
@@ -265,12 +265,12 @@ class ParserTest {
 		return $matched;
 	}
 
-	function LessLink( $less ) {
+	public function LessLink( $less ) {
 		$less = $this->AbsoluteToRelative( $less );
 		$this->head .= '<link rel="stylesheet/less" type="text/css" href="' . $less . '" />';
 	}
 
-	function CompareFiles( $generated, $lessjs, $expected ) {
+	public function CompareFiles( $generated, $lessjs, $expected ) {
 		$generated = trim( $generated );
 		$lessjs = trim( $lessjs );
 
@@ -294,7 +294,7 @@ class ParserTest {
 	 * The contents of these files are used by phpunit tests
 	 *
 	 */
-	function SaveExpected( $file_expected, $compiled ) {
+	public function SaveExpected( $file_expected, $compiled ) {
 		$name = basename( $file_expected );
 		$dir = dirname( $file_expected );
 		if ( !is_dir( $dir ) ) {
@@ -313,14 +313,14 @@ class ParserTest {
 	 * eg: /Fixtures/less.js/css/filename.css -> /Fixtures/less.js/less/filename.less
 	 *
 	 */
-	function TranslateFile( $file_css, $dir = 'less', $type = 'less' ) {
+	public function TranslateFile( $file_css, $dir = 'less', $type = 'less' ) {
 		$filename = basename( $file_css );
 		$filename = substr( $filename, 0, -4 );
 
 		return dirname( dirname( $file_css ) ) . '/' . $dir . '/' . $filename . '.' . $type;
 	}
 
-	function ObjBuffer() {
+	public function ObjBuffer() {
 		global $obj_buffer;
 
 		if ( !empty( $obj_buffer ) ) {
@@ -331,21 +331,21 @@ class ParserTest {
 		echo '<div id="diffoutput"></div>';
 	}
 
-	function AbsoluteToRelative( $path ) {
+	public function AbsoluteToRelative( $path ) {
 		if ( strpos( $path, $_SERVER['DOCUMENT_ROOT'] ) === 0 ) {
 			$path = substr( $path, strlen( $_SERVER['DOCUMENT_ROOT'] ) );
 		}
 		return $path;
 	}
 
-	function ComparableSourceMap( $file ) {
+	public function ComparableSourceMap( $file ) {
 		$content = file_get_contents( $file );
 		$array = json_decode( $content, true );
 		$array['mappings'] = explode( ';', $array['mappings'] );
 		return pre( $array );
 	}
 
-	function LineDiff( $compiled, $css ) {
+	public function LineDiff( $compiled, $css ) {
 		$compiled	= explode( "\n", $compiled );
 		$css		= explode( "\n", $css );
 
@@ -355,7 +355,7 @@ class ParserTest {
 		return max( count( $diff1 ), count( $diff2 ) );
 	}
 
-	function Links() {
+	public function Links() {
 		echo '<ul id="links">';
 		foreach ( $this->test_dirs as $dir ) {
 			$class = '';
@@ -367,7 +367,7 @@ class ParserTest {
 		echo '</ul>';
 	}
 
-	function Summary() {
+	public function Summary() {
 		if ( !$this->files_tested ) {
 			return;
 		}
@@ -392,7 +392,7 @@ class ParserTest {
 		echo '</div>';
 	}
 
-	function microtime_diff( $a, $b = false, $eff = 6 ) {
+	public function microtime_diff( $a, $b = false, $eff = 6 ) {
 		if ( !$b ) {
 			$b = microtime();
 		}
@@ -401,14 +401,14 @@ class ParserTest {
 		return sprintf( '%0.' . $eff . 'f', $b - $a );
 	}
 
-	static function FormatBytes( $size, $precision = 2 ) {
+	public static function FormatBytes( $size, $precision = 2 ) {
 		$base = log( $size ) / log( 1024 );
 		$suffixes = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
 		$floor = max( 0, floor( $base ) );
 		return round( pow( 1024, $base - $floor ), $precision ) . ' ' . $suffixes[$floor];
 	}
 
-	static function Options() {
+	public static function Options() {
 		// debugging
 		$request = str_replace( [ 'XDEBUG_PROFILE','XDEBUG_TRACE' ], '', $_SERVER['REQUEST_URI'] );
 		echo '<div style="float:right">';
@@ -423,7 +423,7 @@ class ParserTest {
 	 * Error Handling
 	 *
 	 */
-	static function showError( $errno, $errmsg, $filename, $linenum ) {
+	public static function showError( $errno, $errmsg, $filename, $linenum ) {
 		static $reported = [];
 
 		// readable types

@@ -710,22 +710,22 @@ class Less_Parser {
 		}
 	}
 
-	static function AddParsedFile( $file ) {
+	public static function AddParsedFile( $file ) {
 		self::$imports[] = $file;
 	}
 
-	static function AllParsedFiles() {
+	public static function AllParsedFiles() {
 		return self::$imports;
 	}
 
 	/**
 	 * @param string $file
 	 */
-	static function FileParsed( $file ) {
+	public static function FileParsed( $file ) {
 		return in_array( $file, self::$imports );
 	}
 
-	function save() {
+	public function save() {
 		$this->saveStack[] = $this->pos;
 	}
 
@@ -1288,7 +1288,7 @@ class Less_Parser {
 	 *
 	 * @return Less_Tree_UnicodeDescriptor|null
 	 */
-	function parseUnicodeDescriptor() {
+	public function parseUnicodeDescriptor() {
 		// Optimization: Hardcode first char, to avoid MatchReg() cost for common case
 		$char = $this->input[$this->pos] ?? null;
 		if ( $char !== 'U' ) {
@@ -1366,7 +1366,7 @@ class Less_Parser {
 	//
 	// extend syntax - used to extend selectors
 	//
-	function parseExtend( $isRule = false ) {
+	public function parseExtend( $isRule = false ) {
 		$index = $this->pos;
 		$extendList = [];
 
@@ -2063,7 +2063,7 @@ class Less_Parser {
 		}
 	}
 
-	function parseAnonymousValue() {
+	public function parseAnonymousValue() {
 		$match = $this->MatchReg( '/\\G([^@+\/\'"*`(;{}-]*);/' );
 		if ( $match ) {
 			return new Less_Tree_Anonymous( $match[1] );
@@ -2375,7 +2375,7 @@ class Less_Parser {
 	 *
 	 * @return Less_Tree_Operation|null
 	 */
-	function parseMultiplication() {
+	public function parseMultiplication() {
 		$return = $m = $this->parseOperand();
 		if ( $return ) {
 			while ( true ) {
