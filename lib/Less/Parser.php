@@ -840,14 +840,8 @@ class Less_Parser {
 	 */
 	public function skipWhitespace( $length ) {
 		$this->pos += $length;
-
-		for ( ; $this->pos < $this->input_len; $this->pos++ ) {
-			$c = $this->input[$this->pos];
-
-			if ( ( $c !== "\n" ) && ( $c !== "\r" ) && ( $c !== "\t" ) && ( $c !== ' ' ) ) {
-				break;
-			}
-		}
+		// Optimization: Skip over irrelevant chars without slow loop
+		$this->pos += strspn( $this->input, "\n\r\t ", $this->pos );
 	}
 
 	/**
