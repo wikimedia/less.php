@@ -41,7 +41,7 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 
 	public function testAllParsedFiles() {
 		$parser = new Less_Parser();
-		$baseDir = realpath( $this->fixtures_dir . '/less.php/less' );
+		$baseDir = Less_Parser::WinPath( realpath( $this->fixtures_dir . '/less.php/less' ) );
 		$parser->parseFile( $baseDir . '/imports.less' );
 		$parser->getCss();
 
