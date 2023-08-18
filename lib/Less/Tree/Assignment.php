@@ -2,7 +2,7 @@
 /**
  * @private
  */
-class Less_Tree_Assignment extends Less_Tree {
+class Less_Tree_Assignment extends Less_Tree implements Less_Tree_HasValueProperty {
 
 	public $key;
 	public $value;

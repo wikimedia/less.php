@@ -2,7 +2,7 @@
 /**
  * @private
  */
-class Less_Tree_Expression extends Less_Tree {
+class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProperty {
 	/** @var array */
 	public $value = [];
 	public $parens = false;

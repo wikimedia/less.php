@@ -2,7 +2,7 @@
 /**
  * @private
  */
-class Less_Tree_Alpha extends Less_Tree {
+class Less_Tree_Alpha extends Less_Tree implements Less_Tree_HasValueProperty {
 	public $value;
 
 	public function __construct( $val ) {

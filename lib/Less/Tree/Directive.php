@@ -2,7 +2,7 @@
 /**
  * @private
  */
-class Less_Tree_Directive extends Less_Tree {
+class Less_Tree_Directive extends Less_Tree implements Less_Tree_HasValueProperty {
 
 	public $name;
 	public $value;

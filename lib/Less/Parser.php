@@ -1508,7 +1508,7 @@ class Less_Parser {
 
 			if ( $isCall ) {
 				// Variable
-				if ( property_exists( $arg, 'value' ) && count( $arg->value ) == 1 ) {
+				if ( $value instanceof Less_Tree_HasValueProperty && count( $arg->value ) == 1 ) {
 					$val = $arg->value[0];
 				}
 			} else {

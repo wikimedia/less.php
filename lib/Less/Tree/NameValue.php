@@ -10,7 +10,7 @@
  *
  * @private
  */
-class Less_Tree_NameValue extends Less_Tree {
+class Less_Tree_NameValue extends Less_Tree implements Less_Tree_HasValueProperty {
 
 	public $name;
 	public $value;

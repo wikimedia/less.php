@@ -2,12 +2,6 @@
 
 /**
  * Tree
- *
- * TODO: Callers often use `property_exists(, 'value')` to distinguish
- * tree nodes that are considerd value-holding. Refactor this to move
- * the 'value' property that most subclasses implement to there, and use
- * something else (special value, method, or intermediate class?) to
- * signal whether a subclass is considered value-holding.
  */
 class Less_Tree {
 

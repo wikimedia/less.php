@@ -99,7 +99,7 @@ class Less_Tree_Selector extends Less_Tree {
 				continue;
 			}
 
-			if ( !property_exists( $v->value, 'value' ) || !is_string( $v->value->value ) ) {
+			if ( !( $v->value instanceof Less_Tree_HasValueProperty ) || !is_string( $v->value->value ) ) {
 				$this->cacheable = false;
 				return;
 			}

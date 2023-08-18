@@ -2,7 +2,7 @@
 /**
  * @private
  */
-class Less_Tree_Element extends Less_Tree {
+class Less_Tree_Element extends Less_Tree implements Less_Tree_HasValueProperty {
 
 	/** @var string */
 	public $combinator;

@@ -3,7 +3,7 @@
  * @private
  * @see less.tree.Call in less.js 3.0.0 https://github.com/less/less.js/blob/v3.0.0/dist/less.js#L6336
  */
-class Less_Tree_Call extends Less_Tree {
+class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 	public $value;
 
 	public $name;

@@ -697,9 +697,7 @@ class Less_Functions {
 		for ( $i = 0; $i < $arg_count; $i++ ) {
 			$current = $args[$i];
 			if ( !( $current instanceof Less_Tree_Dimension ) ) {
-				// @phan-suppress-next-line PhanUndeclaredProperty Checked Less_Tree->value
-				if ( property_exists( $args[$i], 'value' ) && is_array( $args[$i]->value ) ) {
-					// @phan-suppress-next-line PhanUndeclaredProperty Checked Less_Tree->value
+				if ( $args[$i] instanceof Less_Tree_HasValueProperty && is_array( $args[$i]->value ) ) {
 					$args[] = $args[$i]->value;
 				}
 				continue;
@@ -842,8 +840,7 @@ class Less_Functions {
 	 * @param Less_Tree|string $unit
 	 */
 	public function isunit( $n, $unit ) {
-		if ( is_object( $unit ) && property_exists( $unit, 'value' ) ) {
-			// @phan-suppress-next-line PhanUndeclaredProperty Checked Less_Tree->value
+		if ( $unit instanceof Less_Tree_HasValueProperty ) {
 			$unit = $unit->value;
 		}
 
@@ -870,7 +867,7 @@ class Less_Functions {
 		$index = (int)$index->value - 1; // (1-based index)
 		// handle non-array values as an array of length 1
 		// return 'undefined' if index is invalid
-		if ( property_exists( $values, 'value' ) && is_array( $values->value ) ) {
+		if ( $values instanceof Less_Tree_HasValueProperty && is_array( $values->value ) ) {
 			if ( isset( $values->value[$index] ) ) {
 				return $values->value[$index];
 			}
@@ -884,7 +881,8 @@ class Less_Functions {
 	}
 
 	public function length( $values ) {
-		$n = ( property_exists( $values, 'value' ) && is_array( $values->value ) ) ? count( $values->value ) : 1;
+		$n = ( $values instanceof Less_Tree_HasValueProperty && is_array( $values->value ) ) ?
+			count( $values->value ) : 1;
 		return new Less_Tree_Dimension( $n );
 	}
 
@@ -1005,7 +1003,7 @@ class Less_Functions {
 			'<' . $gradientType . 'Gradient id="gradient" gradientUnits="userSpaceOnUse" ' . $gradientDirectionSvg . '>';
 
 		for ( $i = 0; $i < count( $stops ); $i++ ) {
-			if ( is_object( $stops[$i] ) && property_exists( $stops[$i], 'value' ) ) {
+			if ( $stops[$i] instanceof Less_Tree_HasValueProperty ) {
 				$color = $stops[$i]->value[0];
 				$position = $stops[$i]->value[1];
 			} else {

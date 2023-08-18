@@ -2,7 +2,7 @@
 /**
  * @private
  */
-class Less_Tree_Quoted extends Less_Tree {
+class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 	public $escaped;
 	public $value;
 	public $quote;
