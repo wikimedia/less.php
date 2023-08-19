@@ -14,7 +14,7 @@ class Less_Tree_Url extends Less_Tree implements Less_Tree_HasValueProperty {
 	 * @param array|null $currentFileInfo
 	 * @param bool|null $isEvald
 	 */
-	public function __construct( $value, $currentFileInfo = null, $isEvald = null ) {
+	public function __construct( Less_Tree $value, $currentFileInfo = null, $isEvald = null ) {
 		$this->value = $value;
 		$this->currentFileInfo = $currentFileInfo;
 		$this->isEvald = $isEvald;

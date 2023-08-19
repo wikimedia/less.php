@@ -1198,8 +1198,7 @@ class Less_Parser {
 
 		$this->expectChar( ')' );
 
-		// @phan-suppress-next-line PhanUndeclaredProperty
-		if ( isset( $value->value ) || $value instanceof Less_Tree_Variable ) {
+		if ( $value instanceof Less_Tree_Quoted || $value instanceof Less_Tree_Variable ) {
 			return new Less_Tree_Url( $value, $this->env->currentFileInfo );
 		}
 
