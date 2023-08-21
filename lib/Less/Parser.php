@@ -394,7 +394,7 @@ class Less_Parser {
 	 * @throws Less_Exception_Parser If the compiler encounters invalid syntax
 	 * @param string $str The string to convert
 	 * @param string|null $file_uri The url of the file
-	 * @return Less_Parser
+	 * @return $this
 	 */
 	public function parse( $str, $file_uri = null ) {
 		if ( !$file_uri ) {
@@ -427,7 +427,7 @@ class Less_Parser {
 	 * @param string $filename The file to parse
 	 * @param string $uri_root The url of the file
 	 * @param bool $returnRoot Indicates whether the return value should be a css string a root node
-	 * @return Less_Tree_Ruleset|Less_Parser
+	 * @return Less_Tree_Ruleset|$this
 	 */
 	public function parseFile( $filename, $uri_root = '', $returnRoot = false ) {
 		if ( !file_exists( $filename ) ) {
@@ -469,7 +469,7 @@ class Less_Parser {
 	/**
 	 * Allows a user to set variables values
 	 * @param array $vars
-	 * @return Less_Parser
+	 * @return $this
 	 */
 	public function ModifyVars( $vars ) {
 		$this->input = self::serializeVars( $vars );

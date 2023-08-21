@@ -97,7 +97,7 @@ class Less_Tree_Color extends Less_Tree {
 
 	/**
 	 * @param string $op
-	 * @param Less_Tree_Color $other
+	 * @param self $other
 	 */
 	public function operate( $op, $other ) {
 		$rgb = [];
@@ -105,7 +105,7 @@ class Less_Tree_Color extends Less_Tree {
 		for ( $c = 0; $c < 3; $c++ ) {
 			$rgb[$c] = Less_Functions::operate( $op, $this->rgb[$c], $other->rgb[$c] );
 		}
-		return new Less_Tree_Color( $rgb, $alpha );
+		return new self( $rgb, $alpha );
 	}
 
 	public function toRGB() {
@@ -217,11 +217,11 @@ class Less_Tree_Color extends Less_Tree {
 
 		if ( Less_Colors::hasOwnProperty( $keyword ) ) {
 			// detect named color
-			return new Less_Tree_Color( substr( Less_Colors::color( $keyword ), 1 ) );
+			return new self( substr( Less_Colors::color( $keyword ), 1 ) );
 		}
 
 		if ( $keyword === 'transparent' ) {
-			return new Less_Tree_Color( [ 0, 0, 0 ], 0, true );
+			return new self( [ 0, 0, 0 ], 0, true );
 		}
 	}
 

@@ -25,7 +25,7 @@ class Less_Tree_Variable extends Less_Tree {
 	 */
 	public function compile( $env ) {
 		if ( $this->name[1] === '@' ) {
-			$v = new Less_Tree_Variable( substr( $this->name, 1 ), $this->index + 1, $this->currentFileInfo );
+			$v = new self( substr( $this->name, 1 ), $this->index + 1, $this->currentFileInfo );
 			// While some Less_Tree nodes have no 'value', we know these can't ocurr after a variable
 			// assignment (would have been a ParseError).
 			// TODO: Solve better (https://phabricator.wikimedia.org/T327082).

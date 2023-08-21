@@ -24,7 +24,7 @@ class Less_Tree_Value extends Less_Tree implements Less_Tree_HasValueProperty {
 			$ret[] = $v->compile( $env );
 		}
 		if ( $i > 0 ) {
-			return new Less_Tree_Value( $ret );
+			return new self( $ret );
 		}
 		return $ret[0];
 	}

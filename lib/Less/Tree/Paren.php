@@ -28,7 +28,7 @@ class Less_Tree_Paren extends Less_Tree implements Less_Tree_HasValueProperty {
 	}
 
 	public function compile( $env ) {
-		return new Less_Tree_Paren( $this->value->compile( $env ) );
+		return new self( $this->value->compile( $env ) );
 	}
 
 }

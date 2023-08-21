@@ -89,7 +89,7 @@ class Less_Tree_Directive extends Less_Tree implements Less_Tree_HasValuePropert
 		$env->mediaPath = $mediaPathBackup;
 		$env->mediaBlocks = $mediaPBlocksBackup;
 
-		return new Less_Tree_Directive( $this->name, $value, $rules, $this->index, $this->isRooted, $this->currentFileInfo, $this->debugInfo );
+		return new self( $this->name, $value, $rules, $this->index, $this->isRooted, $this->currentFileInfo, $this->debugInfo );
 	}
 
 	public function variable( $name ) {

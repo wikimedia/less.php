@@ -40,7 +40,7 @@ class Less_Tree_Element extends Less_Tree implements Less_Tree_HasValueProperty 
 	}
 
 	public function compile( $env ) {
-		return new Less_Tree_Element(
+		return new self(
 			$this->combinator,
 			( $this->value_is_object ? $this->value->compile( $env ) : $this->value ),
 			$this->index,

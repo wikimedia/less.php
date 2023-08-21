@@ -47,7 +47,7 @@ class Less_Tree_Operation extends Less_Tree {
 			}
 		}
 
-		return new Less_Tree_Operation( $this->op, [ $a, $b ], $this->isSpaced );
+		return new self( $this->op, [ $a, $b ], $this->isSpaced );
 	}
 
 	/**

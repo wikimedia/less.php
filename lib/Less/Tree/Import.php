@@ -118,7 +118,7 @@ class Less_Tree_Import extends Less_Tree {
 	}
 
 	public function compileForImport( $env ) {
-		return new Less_Tree_Import( $this->path->compile( $env ), $this->features, $this->options, $this->index, $this->currentFileInfo );
+		return new self( $this->path->compile( $env ), $this->features, $this->options, $this->index, $this->currentFileInfo );
 	}
 
 	public function compilePath( $env ) {
@@ -187,7 +187,7 @@ class Less_Tree_Import extends Less_Tree {
 		// css ?
 		if ( $evald->css ) {
 			$features = ( $evald->features ? $evald->features->compile( $env ) : null );
-			return new Less_Tree_Import( $this->compilePath( $env ), $features, $this->options, $this->index );
+			return new self( $this->compilePath( $env ), $features, $this->options, $this->index );
 		}
 
 		return $this->ParseImport( $full_path, $uri, $env );

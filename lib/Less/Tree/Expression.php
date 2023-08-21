@@ -34,11 +34,11 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 				foreach ( $this->value as $e ) {
 					$ret[] = $e->compile( $env );
 				}
-				$returnValue = new Less_Tree_Expression( $ret );
+				$returnValue = new self( $ret );
 
 			} else {
 
-				if ( ( $this->value[0] instanceof Less_Tree_Expression ) && $this->value[0]->parens && !$this->value[0]->parensInOp ) {
+				if ( ( $this->value[0] instanceof self ) && $this->value[0]->parens && !$this->value[0]->parensInOp ) {
 					$doubleParen = true;
 				}
 

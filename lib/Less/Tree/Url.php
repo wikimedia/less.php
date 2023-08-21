@@ -70,7 +70,7 @@ class Less_Tree_Url extends Less_Tree implements Less_Tree_HasValueProperty {
 			}
 		}
 
-		return new Less_Tree_Url( $val, $this->currentFileInfo, true );
+		return new self( $val, $this->currentFileInfo, true );
 	}
 
 }

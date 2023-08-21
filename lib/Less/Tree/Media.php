@@ -38,11 +38,11 @@ class Less_Tree_Media extends Less_Tree {
 
 	/**
 	 * @param Less_Environment $env
-	 * @return Less_Tree_Media|Less_Tree_Ruleset
+	 * @return self|Less_Tree_Ruleset
 	 * @see less-2.5.3.js#Media.prototype.eval
 	 */
 	public function compile( $env ) {
-		$media = new Less_Tree_Media( [], [], $this->index, $this->currentFileInfo );
+		$media = new self( [], [], $this->index, $this->currentFileInfo );
 
 		$strictMathBypass = false;
 		if ( Less_Parser::$options['strictMath'] === false ) {

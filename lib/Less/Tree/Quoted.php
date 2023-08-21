@@ -49,12 +49,12 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 			foreach ( $matches[1] as $i => $match ) {
 				$v = new Less_Tree_Variable( '@' . $match, $this->index, $this->currentFileInfo );
 				$v = $v->compile( $env );
-				$v = ( $v instanceof Less_Tree_Quoted ) ? $v->value : $v->toCSS();
+				$v = ( $v instanceof self ) ? $v->value : $v->toCSS();
 				$value = str_replace( $matches[0][$i], $v, $value );
 			}
 		}
 
-		return new Less_Tree_Quoted( $this->quote . $value . $this->quote, $value, $this->escaped, $this->index, $this->currentFileInfo );
+		return new self( $this->quote . $value . $this->quote, $value, $this->escaped, $this->index, $this->currentFileInfo );
 	}
 
 	public function compare( $x ) {

@@ -142,9 +142,9 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 
 	public function compile( $env ) {
 		if ( $this->frames ) {
-			return new Less_Tree_Mixin_Definition( $this->name, $this->params, $this->rules, $this->condition, $this->variadic, $this->frames );
+			return new self( $this->name, $this->params, $this->rules, $this->condition, $this->variadic, $this->frames );
 		}
-		return new Less_Tree_Mixin_Definition( $this->name, $this->params, $this->rules, $this->condition, $this->variadic, $env->frames );
+		return new self( $this->name, $this->params, $this->rules, $this->condition, $this->variadic, $env->frames );
 	}
 
 	public function evalCall( $env, $args = null, $important = null ) {

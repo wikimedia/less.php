@@ -75,7 +75,7 @@ class Less_Functions {
 
 	public function rgba( $r = null, $g = null, $b = null, $a = null ) {
 		$rgb = [ $r, $g, $b ];
-		$rgb = array_map( [ 'Less_Functions','scaled' ], $rgb );
+		$rgb = array_map( [ __CLASS__, 'scaled' ], $rgb );
 
 		$a = self::number( $a );
 		return new Less_Tree_Color( $rgb, $a );

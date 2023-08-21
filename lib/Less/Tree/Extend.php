@@ -55,11 +55,11 @@ class Less_Tree_Extend extends Less_Tree {
 		Less_Parser::$has_extends = true;
 		$this->selector = $this->selector->compile( $env );
 		return $this;
-		// return new Less_Tree_Extend( $this->selector->compile($env), $this->option, $this->index);
+		// return new self( $this->selector->compile($env), $this->option, $this->index);
 	}
 
 	public function clone() {
-		return new Less_Tree_Extend( $this->selector, $this->option, $this->index );
+		return new self( $this->selector, $this->option, $this->index );
 	}
 
 	public function findSelfSelectors( $selectors ) {

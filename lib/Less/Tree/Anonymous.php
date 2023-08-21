@@ -23,7 +23,7 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 	}
 
 	public function compile( $env ) {
-		return new Less_Tree_Anonymous( $this->value, $this->index, $this->currentFileInfo, $this->mapLines );
+		return new self( $this->value, $this->index, $this->currentFileInfo, $this->mapLines );
 	}
 
 	public function compare( $x ) {

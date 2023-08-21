@@ -17,7 +17,7 @@ class Less_Tree_Assignment extends Less_Tree implements Less_Tree_HasValueProper
 	}
 
 	public function compile( $env ) {
-		return new Less_Tree_Assignment( $this->key, $this->value->compile( $env ) );
+		return new self( $this->key, $this->value->compile( $env ) );
 	}
 
 	/**

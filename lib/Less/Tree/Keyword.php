@@ -25,7 +25,7 @@ class Less_Tree_Keyword extends Less_Tree implements Less_Tree_HasValueProperty 
 	}
 
 	public function compare( $other ) {
-		if ( $other instanceof Less_Tree_Keyword ) {
+		if ( $other instanceof self ) {
 			return $other->value === $this->value ? 0 : 1;
 		} else {
 			return -1;

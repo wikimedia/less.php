@@ -69,7 +69,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 
 	/**
 	 * @param Less_Environment $env
-	 * @return Less_Tree_Ruleset
+	 * @return self
 	 * @see less-2.5.3.js#Ruleset.prototype.eval
 	 */
 	public function compile( $env ) {
@@ -102,7 +102,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 			$rule = $ruleset->rules[$i];
 
 			// for rulesets, check if it is a css guard and can be removed
-			if ( $rule instanceof Less_Tree_Ruleset && $rule->selectors && count( $rule->selectors ) === 1 ) {
+			if ( $rule instanceof self && $rule->selectors && count( $rule->selectors ) === 1 ) {
 
 				// check if it can be folded in (e.g. & where)
 				if ( $rule->selectors[0]->isJustParentSelector() ) {
@@ -137,7 +137,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 	/**
 	 * Compile Less_Tree_Mixin_Call objects
 	 *
-	 * @param Less_Tree_Ruleset $ruleset
+	 * @param self $ruleset
 	 * @param Less_Environment $env
 	 * @param int &$rsRuleCnt
 	 */
@@ -192,7 +192,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 	 * Compile the selectors and create a new ruleset object for the compile() method
 	 *
 	 * @param Less_Environment $env
-	 * @return Less_Tree_Ruleset
+	 * @return self
 	 */
 	private function PrepareRuleset( $env ) {
 		// NOTE: Preserve distinction between null and empty array when compiling
@@ -225,7 +225,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 			$rules = [];
 		}
 
-		$ruleset = new Less_Tree_Ruleset( $selectors, $rules, $this->strictImports );
+		$ruleset = new self( $selectors, $rules, $this->strictImports );
 
 		$ruleset->originalRuleset = $this->ruleset_id;
 		$ruleset->root = $this->root;
@@ -267,14 +267,14 @@ class Less_Tree_Ruleset extends Less_Tree {
 	public function makeImportant() {
 		$important_rules = [];
 		foreach ( $this->rules as $rule ) {
-			if ( $rule instanceof Less_Tree_Rule || $rule instanceof Less_Tree_Ruleset || $rule instanceof Less_Tree_NameValue ) {
+			if ( $rule instanceof Less_Tree_Rule || $rule instanceof self || $rule instanceof Less_Tree_NameValue ) {
 				$important_rules[] = $rule->makeImportant();
 			} else {
 				$important_rules[] = $rule;
 			}
 		}
 
-		return new Less_Tree_Ruleset( $this->selectors, $important_rules, $this->strictImports );
+		return new self( $this->selectors, $important_rules, $this->strictImports );
 	}
 
 	public function matchArgs( $args, $env = null ) {
@@ -334,7 +334,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 			$first_oelement = $selector->_oelements[0];
 
 			foreach ( $this->rules as $rule ) {
-				if ( $rule instanceof Less_Tree_Ruleset && $rule->ruleset_id != $self ) {
+				if ( $rule instanceof self && $rule->ruleset_id != $self ) {
 
 					if ( isset( $rule->first_oelements[$first_oelement] ) ) {
 
@@ -381,7 +381,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 			if ( $rule instanceof Less_Tree_Media ||
 				$rule instanceof Less_Tree_Directive ||
 				( $this->root && $rule instanceof Less_Tree_Comment ) ||
-				( $rule instanceof Less_Tree_Ruleset && $rule->rules )
+				( $rule instanceof self && $rule->rules )
 			) {
 				$rulesetNodes[] = $rule;
 			} else {

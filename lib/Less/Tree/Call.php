@@ -98,7 +98,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 			return $result;
 		}
 
-		return new Less_Tree_Call( $this->name, $args, $this->index, $this->currentFileInfo );
+		return new self( $this->name, $args, $this->index, $this->currentFileInfo );
 	}
 
 	/**

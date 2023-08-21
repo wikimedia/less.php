@@ -59,7 +59,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 
 	/**
 	 * @param Less_Environment $env
-	 * @return Less_Tree_Rule
+	 * @return self
 	 */
 	public function compile( $env ) {
 		$name = $this->name;
@@ -86,7 +86,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 			}
 
 			if ( Less_Environment::$mixin_stack ) {
-				$return = new Less_Tree_Rule( $name, $evaldValue, $this->important, $this->merge, $this->index, $this->currentFileInfo, $this->inline );
+				$return = new self( $name, $evaldValue, $this->important, $this->merge, $this->index, $this->currentFileInfo, $this->inline );
 			} else {
 				$this->name = $name;
 				$this->value = $evaldValue;
@@ -115,7 +115,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 	}
 
 	public function makeImportant() {
-		return new Less_Tree_Rule( $this->name, $this->value, '!important', $this->merge, $this->index, $this->currentFileInfo, $this->inline );
+		return new self( $this->name, $this->value, '!important', $this->merge, $this->index, $this->currentFileInfo, $this->inline );
 	}
 
 }

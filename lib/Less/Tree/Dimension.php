@@ -71,7 +71,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 
 	/**
 	 * @param string $op
-	 * @param Less_Tree_Dimension $other
+	 * @param self $other
 	 */
 	public function operate( $op, $other ) {
 		$value = Less_Functions::operate( $op, $this->value, $other->value );
@@ -106,11 +106,11 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 			sort( $unit->denominator );
 			$unit->cancel();
 		}
-		return new Less_Tree_Dimension( $value, $unit );
+		return new self( $value, $unit );
 	}
 
 	public function compare( $other ) {
-		if ( $other instanceof Less_Tree_Dimension ) {
+		if ( $other instanceof self ) {
 
 			if ( $this->unit->isEmpty() || $other->unit->isEmpty() ) {
 				$a = $this;
@@ -185,6 +185,6 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 
 		$unit->cancel();
 
-		return new Less_Tree_Dimension( $value, $unit );
+		return new self( $value, $unit );
 	}
 }

@@ -40,7 +40,7 @@ class Less_Tree_NameValue extends Less_Tree implements Less_Tree_HasValuePropert
 	}
 
 	public function makeImportant() {
-		$new = new Less_Tree_NameValue( $this->name, $this->value, $this->index, $this->currentFileInfo );
+		$new = new self( $this->name, $this->value, $this->index, $this->currentFileInfo );
 		$new->important = ' !important';
 		return $new;
 	}

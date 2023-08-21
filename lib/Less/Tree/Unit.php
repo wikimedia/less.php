@@ -44,7 +44,7 @@ class Less_Tree_Unit extends Less_Tree {
 	}
 
 	/**
-	 * @param Less_Tree_Unit $other
+	 * @param self $other
 	 */
 	public function compare( $other ) {
 		return $this->is( $other->toString() ) ? 0 : -1;

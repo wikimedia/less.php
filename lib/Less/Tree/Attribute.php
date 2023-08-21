@@ -22,7 +22,7 @@ class Less_Tree_Attribute extends Less_Tree implements Less_Tree_HasValuePropert
 			return $this;
 		}
 
-		return new Less_Tree_Attribute(
+		return new self(
 			$key_obj ? $this->key->compile( $env ) : $this->key,
 			$this->op,
 			$val_obj ? $this->value->compile( $env ) : $this->value );
