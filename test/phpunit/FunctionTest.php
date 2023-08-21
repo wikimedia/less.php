@@ -15,7 +15,7 @@ class phpunit_FunctionTest extends phpunit_bootstrap {
 	}
 
 	public static function reverse( $arg ) {
-		if ( is_a( $arg, 'Less_Tree_Quoted' ) ) {
+		if ( $arg instanceof Less_Tree_Quoted ) {
 			$arg->value = strrev( $arg->value );
 			return $arg;
 		}

@@ -72,7 +72,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 			$result = Less_Tree_DefaultFunc::compile();
 		} else {
 			$func = null;
-			if ( method_exists( 'Less_Functions', $nameLC ) ) {
+			if ( method_exists( Less_Functions::class, $nameLC ) ) {
 				$functions = new Less_Functions( $env, $this->currentFileInfo );
 				$func = [ $functions, $nameLC ];
 			} elseif ( isset( $env->functions[$nameLC] ) && is_callable( $env->functions[$nameLC] ) ) {

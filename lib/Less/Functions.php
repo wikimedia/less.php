@@ -570,7 +570,7 @@ class Less_Functions {
 			$fraction = $f->value;
 		}
 
-		return $this->_math( 'Less_Parser::round', null, $n, $fraction );
+		return $this->_math( [ Less_Parser::class, 'round' ], null, $n, $fraction );
 	}
 
 	public function pi() {
@@ -778,23 +778,23 @@ class Less_Functions {
 	}
 
 	public function iscolor( $n ) {
-		return $this->_isa( $n, 'Less_Tree_Color' );
+		return new Less_Tree_Keyword( $n instanceof Less_Tree_Color ? 'true' : 'false' );
 	}
 
 	public function isnumber( $n ) {
-		return $this->_isa( $n, 'Less_Tree_Dimension' );
+		return new Less_Tree_Keyword( $n instanceof Less_Tree_Dimension ? 'true' : 'false' );
 	}
 
 	public function isstring( $n ) {
-		return $this->_isa( $n, 'Less_Tree_Quoted' );
+		return new Less_Tree_Keyword( $n instanceof Less_Tree_Quoted ? 'true' : 'false' );
 	}
 
 	public function iskeyword( $n ) {
-		return $this->_isa( $n, 'Less_Tree_Keyword' );
+		return new Less_Tree_Keyword( $n instanceof Less_Tree_Keyword ? 'true' : 'false' );
 	}
 
 	public function isurl( $n ) {
-		return $this->_isa( $n, 'Less_Tree_Url' );
+		return new Less_Tree_Keyword( $n instanceof Less_Tree_Url ? 'true' : 'false' );
 	}
 
 	public function ispixel( $n ) {
@@ -818,15 +818,7 @@ class Less_Functions {
 			$unit = $unit->value;
 		}
 
-		return ( $n instanceof Less_Tree_Dimension ) && $n->unit->is( $unit ) ? new Less_Tree_Keyword( 'true' ) : new Less_Tree_Keyword( 'false' );
-	}
-
-	/**
-	 * @param Less_Tree $n
-	 * @param string $type
-	 */
-	private function _isa( $n, $type ) {
-		return is_a( $n, $type ) ? new Less_Tree_Keyword( 'true' ) : new Less_Tree_Keyword( 'false' );
+		return new Less_Tree_Keyword( $n instanceof Less_Tree_Dimension && $n->unit->is( $unit ) ? 'true' : 'false' );
 	}
 
 	public function tint( $color, $amount = null ) {
