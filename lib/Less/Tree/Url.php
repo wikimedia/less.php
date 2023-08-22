@@ -34,10 +34,10 @@ class Less_Tree_Url extends Less_Tree implements Less_Tree_HasValueProperty {
 	}
 
 	/**
-	 * @param Less_Environment $ctx
+	 * @param Less_Environment $env
 	 */
-	public function compile( $ctx ) {
-		$val = $this->value->compile( $ctx );
+	public function compile( $env ) {
+		$val = $this->value->compile( $env );
 
 		if ( !$this->isEvald ) {
 			// Add the base path if the URL is relative

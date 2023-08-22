@@ -196,7 +196,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 					}
 
 					$ruleCSS = $rule->toCSS();
-					if ( array_search( $ruleCSS, $ruleList ) !== false ) {
+					if ( in_array( $ruleCSS, $ruleList ) ) {
 						array_splice( $rules, $i, 1 );
 					} else {
 						$ruleList[] = $ruleCSS;

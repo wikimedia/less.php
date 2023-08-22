@@ -10,7 +10,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 	public function __construct( $value, $unit = null ) {
 		$this->value = floatval( $value );
 
-		if ( $unit && ( $unit instanceof Less_Tree_Unit ) ) {
+		if ( $unit instanceof Less_Tree_Unit ) {
 			$this->unit = $unit;
 		} elseif ( $unit ) {
 			$this->unit = new Less_Tree_Unit( [ $unit ] );

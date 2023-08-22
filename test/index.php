@@ -561,7 +561,7 @@ function obj( $mixed, $objects = [] ) {
 			$output .= str_repeat( '    ', $level ) . ')';
 			break;
 		case 'string':
-			$output = '(string:' . strlen( $mixed ) . ')' . htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false ) . '';
+			$output = '(string:' . strlen( $mixed ) . ')' . htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false );
 			break;
 
 		case 'integer':
@@ -577,7 +577,7 @@ function obj( $mixed, $objects = [] ) {
 			}
 			// fall-through
 		default:
-			$output = '(' . $type . ')' . htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false ) . '';
+			$output = '(' . $type . ')' . htmlspecialchars( $mixed, ENT_COMPAT, 'UTF-8', false );
 			break;
 	}
 

@@ -524,22 +524,7 @@ class Less_Functions {
 	}
 
 	public static function replace_flags( $flags ) {
-		$flags = str_split( $flags, 1 );
-		$new_flags = '';
-
-		foreach ( $flags as $flag ) {
-			switch ( $flag ) {
-				case 'e':
-				case 'g':
-					break;
-
-				default:
-				$new_flags .= $flag;
-					break;
-			}
-		}
-
-		return $new_flags;
+		return str_replace( [ 'e', 'g' ], '', $flags );
 	}
 
 	public function _percent( $string, ...$args ) {
