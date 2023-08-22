@@ -81,7 +81,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 			// If the function name isn't known to LESS, output it unchanged as CSS.
 			if ( $func ) {
 				try {
-					$result = call_user_func_array( $func, $args );
+					$result = $func( ...$args );
 				} catch ( Exception $e ) {
 					// Preserve original trace, especially from custom functions.
 					// https://github.com/wikimedia/less.php/issues/38

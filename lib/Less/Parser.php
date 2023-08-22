@@ -605,11 +605,9 @@ class Less_Parser {
 		$cache_file = $this->CacheFile( $file_path );
 		if ( $cache_file ) {
 			if ( self::$options['cache_method'] == 'callback' ) {
-				if ( is_callable( self::$options['cache_callback_get'] ) ) {
-					$cache = call_user_func_array(
-						self::$options['cache_callback_get'],
-						[ $this, $file_path, $cache_file ]
-					);
+				$callback = self::$options['cache_callback_get'];
+				if ( is_callable( $callback ) ) {
+					$cache = $callback( $this, $file_path, $cache_file );
 
 					if ( $cache ) {
 						$this->UnsetInput();
@@ -644,13 +642,10 @@ class Less_Parser {
 		// save the cache
 		if ( $cache_file ) {
 			if ( self::$options['cache_method'] == 'callback' ) {
-				if ( is_callable( self::$options['cache_callback_set'] ) ) {
-					call_user_func_array(
-						self::$options['cache_callback_set'],
-						[ $this, $file_path, $cache_file, $rules ]
-					);
+				$callback = self::$options['cache_callback_set'];
+				if ( is_callable( $callback ) ) {
+					$callback( $this, $file_path, $cache_file, $rules );
 				}
-
 			} else {
 				switch ( self::$options['cache_method'] ) {
 					case 'serialize':

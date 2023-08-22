@@ -146,10 +146,8 @@ class Less_Tree_Import extends Less_Tree {
 		$evald = $this->compileForImport( $env );
 
 		// get path & uri
-		$path_and_uri = null;
-		if ( is_callable( Less_Parser::$options['import_callback'] ) ) {
-			$path_and_uri = call_user_func( Less_Parser::$options['import_callback'], $evald );
-		}
+		$callback = Less_Parser::$options['import_callback'];
+		$path_and_uri = is_callable( $callback ) ? $callback( $evald ) : null;
 
 		if ( !$path_and_uri ) {
 			$path_and_uri = $evald->PathAndUri();

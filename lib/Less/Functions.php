@@ -656,9 +656,9 @@ class Less_Functions {
 				$args[0] = $args[0]->unify();
 			}
 			$args[0] = (float)$args[0]->value;
-			return new Less_Tree_Dimension( call_user_func_array( $fn, $args ), $unit );
+			return new Less_Tree_Dimension( $fn( ...$args ), $unit );
 		} elseif ( is_numeric( $args[0] ) ) {
-			return call_user_func_array( $fn, $args );
+			return $fn( ...$args );
 		} else {
 			throw new Less_Exception_Compiler( "math functions take numbers as parameters" );
 		}
@@ -1047,7 +1047,7 @@ class Less_Functions {
 		for ( $i = 0; $i < 3; $i++ ) {
 			$cb = $color1->rgb[$i] / 255;
 			$cs = $color2->rgb[$i] / 255;
-			$cr = call_user_func( $mode, $cb, $cs );
+			$cr = $mode( $cb, $cs );
 			if ( $ar ) {
 				$cr = ( $as * $cs + $ab * ( $cb - $as * ( $cb + $cs - $cr ) ) ) / $ar;
 			}
