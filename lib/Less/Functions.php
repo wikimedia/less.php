@@ -542,11 +542,7 @@ class Less_Functions {
 		return $new_flags;
 	}
 
-	public function _percent() {
-		$string = func_get_arg( 0 );
-
-		$args = func_get_args();
-		array_shift( $args );
+	public function _percent( $string, ...$args ) {
 		$result = $string->value;
 
 		foreach ( $args as $arg ) {
@@ -652,13 +648,8 @@ class Less_Functions {
 		return $this->_math( 'acos', 'rad', $n );
 	}
 
-	private function _math() {
-		$args = func_get_args();
-		$fn = array_shift( $args );
-		$unit = array_shift( $args );
-
+	private function _math( $fn, $unit, ...$args ) {
 		if ( $args[0] instanceof Less_Tree_Dimension ) {
-
 			if ( $unit === null ) {
 				$unit = $args[0]->unit;
 			} else {
@@ -761,13 +752,11 @@ class Less_Functions {
 		return new Less_Tree_Anonymous( ( $isMin ? 'min(' : 'max(' ) . implode( Less_Environment::$_outputMap[','], $args ) . ')' );
 	}
 
-	public function min() {
-		$args = func_get_args();
+	public function min( ...$args ) {
 		return $this->_minmax( true, $args );
 	}
 
-	public function max() {
-		$args = func_get_args();
+	public function max( ...$args ) {
 		return $this->_minmax( false, $args );
 	}
 
@@ -961,15 +950,13 @@ class Less_Functions {
 	}
 
 	// svg-gradient
-	public function svggradient( $direction ) {
+	public function svggradient( $direction, ...$stops ) {
 		$throw_message = 'svg-gradient expects direction, start_color [start_position], [color position,]..., end_color [end_position]';
-		$arguments = func_get_args();
 
-		if ( count( $arguments ) < 3 ) {
+		if ( count( $stops ) < 2 ) {
 			throw new Less_Exception_Compiler( $throw_message );
 		}
 
-		$stops = array_slice( $arguments, 1 );
 		$gradientType = 'linear';
 		$rectangleDimension = 'x="0" y="0" width="1" height="1"';
 		$useBase64 = true;
