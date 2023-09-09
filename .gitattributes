@@ -7,5 +7,5 @@
 /phpunit.xml.dist export-ignore
 
 # Exclude when determining a repo's main language
-/test/assets/ linguist-vendored
-/test/Fixtures/ linguist-vendored
+/test/assets/** linguist-vendored
+/test/Fixtures/** linguist-vendored
