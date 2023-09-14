@@ -50,7 +50,6 @@ class LessPhpBenchmark {
 		$name = sprintf( $name, count( $files ) );
 		$total = 0;
 		$max = -INF;
-		$i = 0;
 		for ( $i = 1; $i <= $iterations; $i++ ) {
 			$start = microtime( true );
 			foreach ( $files as $lessFile ) {

@@ -27,7 +27,6 @@ class Less_Tree_Unit extends Less_Tree {
 			$output->add( $this->denominator[0] );
 		} elseif ( !Less_Parser::$options['strictUnits'] && $this->backupUnit ) {
 			$output->add( $this->backupUnit );
-			return;
 		}
 	}
 

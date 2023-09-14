@@ -46,9 +46,7 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 		$parser->getCss();
 
 		$files = $parser->AllParsedFiles();
-		$files = array_map( static function ( $file ) use ( $baseDir ) {
-			return str_replace( $baseDir, '', $file );
-		}, $files );
+		$files = array_map( fn ( $file ) => str_replace( $baseDir, '', $file ), $files );
 
 		$this->assertEqualsCanonicalizing(
 			[

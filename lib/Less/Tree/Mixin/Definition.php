@@ -63,21 +63,19 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 					$isNamedFound = false;
 
 					foreach ( $params as $j => $param ) {
-						if ( !isset( $evaldArguments[$j] ) && $arg['name'] === $params[$j]['name'] ) {
+						if ( !isset( $evaldArguments[$j] ) && $arg['name'] === $param['name'] ) {
 							$evaldArguments[$j] = $arg['value']->compile( $env );
 							array_unshift( $frame->rules, new Less_Tree_Rule( $arg['name'], $arg['value']->compile( $env ) ) );
 							$isNamedFound = true;
 							break;
 						}
 					}
-					if ( $isNamedFound ) {
-						array_splice( $args, $i, 1 );
-						$i--;
-						$argsLength--;
-						continue;
-					} else {
+					if ( !$isNamedFound ) {
 						throw new Less_Exception_Compiler( "Named argument for " . $this->name . ' ' . $args[$i]['name'] . ' not found' );
 					}
+					array_splice( $args, $i, 1 );
+					$i--;
+					$argsLength--;
 				}
 			}
 		}

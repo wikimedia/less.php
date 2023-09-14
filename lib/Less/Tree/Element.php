@@ -62,7 +62,7 @@ class Less_Tree_Element extends Less_Tree implements Less_Tree_HasValueProperty 
 			$value = $this->value;
 		}
 
-		if ( $value === '' && $this->combinator && $this->combinator === '&' ) {
+		if ( $value === '' && $this->combinator === '&' ) {
 			return '';
 		}
 

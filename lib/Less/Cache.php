@@ -149,7 +149,7 @@ class Less_Cache {
 
 		$compiled = $parser->getCss();
 
-		$less_files = $parser->allParsedFiles();
+		$less_files = $parser->AllParsedFiles();
 
 		return $compiled;
 	}
