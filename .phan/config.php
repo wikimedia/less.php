@@ -53,9 +53,6 @@ return [
 	],
 
 	'suppress_issue_types' => [
-		'PhanPluginDuplicateExpressionAssignmentOperation',
-		'PhanTypeMismatchDimFetch',
-		'PhanTypePossiblyInvalidDimOffset',
 		'PhanTypeArraySuspiciousNullable',
 	],
 ];

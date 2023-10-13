@@ -137,7 +137,7 @@ class Less_Functions {
 		$v = self::number( $v );
 		$a = self::number( $a );
 
-		$i = floor( (int)( $h / 60 ) % 6 );
+		$i = (int)floor( (int)( $h / 60 ) % 6 );
 		$f = ( $h / 60 ) - $i;
 
 		$vs = [

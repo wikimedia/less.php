@@ -165,7 +165,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 					continue;
 				}
 
-				$value = $value * ( $group[$atomicUnit] / $group[$targetUnit] );
+				$value *= $group[$atomicUnit] / $group[$targetUnit];
 
 				$unit->numerator[$i] = $targetUnit;
 			}
@@ -177,7 +177,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 					continue;
 				}
 
-				$value = $value / ( $group[$atomicUnit] / $group[$targetUnit] );
+				$value /= $group[$atomicUnit] / $group[$targetUnit];
 
 				$unit->denominator[$i] = $targetUnit;
 			}
