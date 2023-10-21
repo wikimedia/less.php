@@ -1,0 +1,4 @@
+div[class^=nonquoted],
+.test {
+  font-weight: normal;
+}
