@@ -362,10 +362,17 @@ class Less_Visitor_processExtends extends Less_Visitor {
 			return true;
 		}
 
-		// @phan-suppress-next-line PhanUndeclaredProperty https://phabricator.wikimedia.org/T327082
-		$elementValue1 = ( $elementValue1->value->value ?: $elementValue1->value );
-		// @phan-suppress-next-line PhanUndeclaredProperty https://phabricator.wikimedia.org/T327082
-		$elementValue2 = ( $elementValue2->value->value ?: $elementValue2->value );
+		$elementValue1 = $elementValue1->value;
+
+		if ( $elementValue1 instanceof Less_Tree_Quoted ) {
+			$elementValue1 = $elementValue1->value;
+		}
+
+		$elementValue2 = $elementValue2->value;
+
+		if ( $elementValue2 instanceof Less_Tree_Quoted ) {
+			$elementValue2 = $elementValue2->value;
+		}
 
 		return $elementValue1 === $elementValue2;
 	}
