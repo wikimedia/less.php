@@ -31,14 +31,8 @@
 		<exclude-pattern>\.phan/stubs/</exclude-pattern>
 		<exclude-pattern>Less/Tree/Selector\.php</exclude-pattern>
 	</rule>
-	<rule ref="MediaWiki.NamingConventions.PrefixedGlobalFunctions">
-		<exclude-pattern>test/index\.php</exclude-pattern>
-	</rule>
-	<rule ref="MediaWiki.NamingConventions.ValidGlobalName">
-		<exclude-pattern>test/index\.php</exclude-pattern>
-	</rule>
-	<rule ref="MediaWiki.Usage.SuperGlobalsUsage">
-		<exclude-pattern>test/index\.php</exclude-pattern>
+	<rule ref="MediaWiki.Usage.ForbiddenFunctions">
+		<exclude-pattern>test/</exclude-pattern>
 	</rule>
 
 	<file>.</file>
