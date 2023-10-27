@@ -4,6 +4,7 @@
  */
 class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 	public $escaped;
+	/** @var string */
 	public $value;
 	public $quote;
 	public $index;

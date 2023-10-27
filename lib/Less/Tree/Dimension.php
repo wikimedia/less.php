@@ -4,6 +4,7 @@
  */
 class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValueProperty {
 
+	/** @var float */
 	public $value;
 	public $unit;
 
