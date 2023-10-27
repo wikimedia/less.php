@@ -135,6 +135,7 @@
   percent: true;
   em: true;
   cat: true;
+  no-unit-is-empty: true;
 }
 #alpha {
   alpha: rgba(153, 94, 51, 0.6);

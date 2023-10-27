@@ -814,7 +814,7 @@ class Less_Functions {
 	 * @param Less_Tree|string $unit
 	 */
 	public function isunit( $n, $unit ) {
-		if ( $unit instanceof Less_Tree_HasValueProperty ) {
+		if ( $unit instanceof Less_Tree_Keyword || $unit instanceof Less_Tree_Quoted ) {
 			$unit = $unit->value;
 		}
 
@@ -833,7 +833,7 @@ class Less_Functions {
 		$index = (int)$index->value - 1; // (1-based index)
 		// handle non-array values as an array of length 1
 		// return 'undefined' if index is invalid
-		if ( $values instanceof Less_Tree_HasValueProperty && is_array( $values->value ) ) {
+		if ( !( $values instanceof Less_Tree_Color ) && is_array( $values->value ) ) {
 			if ( isset( $values->value[$index] ) ) {
 				return $values->value[$index];
 			}
