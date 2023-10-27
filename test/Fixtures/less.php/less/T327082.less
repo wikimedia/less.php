@@ -1,0 +1,9 @@
+.myfunc(@x) {
+	font-family: '@{x}';
+}
+div.one {
+	.myfunc(@x: 'Arial');
+}
+div.two {
+	.myfunc(@x: { content: 'Test'; });
+}

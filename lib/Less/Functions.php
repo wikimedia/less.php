@@ -967,7 +967,8 @@ class Less_Functions {
 			'<' . $gradientType . 'Gradient id="gradient" gradientUnits="userSpaceOnUse" ' . $gradientDirectionSvg . '>';
 
 		for ( $i = 0; $i < count( $stops ); $i++ ) {
-			if ( $stops[$i] instanceof Less_Tree_HasValueProperty ) {
+
+			if ( $stops[$i] instanceof Less_Tree_Expression ) {
 				$color = $stops[$i]->value[0];
 				$position = $stops[$i]->value[1];
 			} else {
