@@ -1283,7 +1283,7 @@ class Less_Parser {
 	 *
 	 *	 `window.location.href`
 	 *
-	 * @return Less_Tree_Javascript|null
+	 * @return Less_Tree_JavaScript|null
 	 * @see less-2.5.3.js#parsers.entities.javascript
 	 */
 	private function parseEntitiesJavascript() {
@@ -1311,7 +1311,7 @@ class Less_Parser {
 		$js = $this->MatchReg( '/\\G[^`]*`/' );
 		if ( $js ) {
 			$this->forget();
-			return new Less_Tree_Javascript( substr( $js[0], 0, -1 ), $index, $isEscaped );
+			return new Less_Tree_JavaScript( substr( $js[0], 0, -1 ), $index, $isEscaped );
 		}
 		$this->restore();
 	}

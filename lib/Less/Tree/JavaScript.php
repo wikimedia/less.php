@@ -2,7 +2,7 @@
 /**
  * @private
  */
-class Less_Tree_Javascript extends Less_Tree {
+class Less_Tree_JavaScript extends Less_Tree {
 
 	public $escaped;
 	public $expression;
