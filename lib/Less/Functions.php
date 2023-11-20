@@ -847,7 +847,7 @@ class Less_Functions {
 	}
 
 	public function length( $values ) {
-		$n = ( $values instanceof Less_Tree_HasValueProperty && is_array( $values->value ) ) ?
+		$n = ( $values instanceof Less_Tree_Expression || $values instanceof Less_Tree_Value ) ?
 			count( $values->value ) : 1;
 		return new Less_Tree_Dimension( $n );
 	}
