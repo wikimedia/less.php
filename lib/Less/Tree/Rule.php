@@ -97,6 +97,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 			if ( !is_numeric( $e->index ) ) {
 				$e->index = $this->index;
 				$e->currentFile = $this->currentFileInfo;
+				$e->genMessage();
 			}
 			throw $e;
 		}
