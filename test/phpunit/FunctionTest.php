@@ -22,14 +22,10 @@ class phpunit_FunctionTest extends phpunit_bootstrap {
 	}
 
 	public function testException() {
-		$lessCode = '
-		.foo {
-			content: number("x");
-		}
-		';
+		$lessFile = __DIR__ . '/data/exception/f1.less';
 
 		$parser = new Less_Parser();
-		$parser->parse( $lessCode );
+		$parser->parseFile( $lessFile );
 
 		try {
 			$parser->getCss();

@@ -57,4 +57,44 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 			$files
 		);
 	}
+
+	public function testOperationException() {
+		$lessFile = __DIR__ . '/data/exception/f2.less';
+
+		$parser = new Less_Parser();
+		$parser->parseFile( $lessFile );
+
+		try {
+			$parser->getCss();
+		} catch ( Exception $e ) {
+			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
+			$this->assertEquals(
+"Operation on an invalid type in f2.less on line 4, column 2
+2| @bar: 'world';
+3| div {
+4|  content: (@foo) * @bar;
+5| }",
+								$e->getMessage()
+							);
+		}
+
+		$lessFile = __DIR__ . '/data/exception/f3.less';
+
+		$parser = new Less_Parser();
+		$parser->parseFile( $lessFile );
+
+		try {
+			$parser->getCss();
+		} catch ( Exception $e ) {
+			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
+			$this->assertEquals(
+"Operation on an invalid type in f3.less on line 5, column 2
+3| 
+4| div {
+5|  content: @foo * @bar;
+6| }",
+				$e->getMessage()
+			);
+		}
+	}
 }
