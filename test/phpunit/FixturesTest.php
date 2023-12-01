@@ -15,6 +15,80 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// <less.php> @charset 'UTF-8';
 			'280' => true,
 		],
+
+		'lessjs-2.5.3' => [
+			// Permanently disabled: not supported.
+			'plugin' => true,
+			'javascript' => true,
+
+			// Temporary disabled; Bug logged here T352829
+			'mixins' => true,
+
+			// Temporary disabled; Bug logged here T352830
+			'variables' => true,
+			'functions' => true, // resolved if T352830 is fixed;
+
+			// Temporary disabled; Bug logged here T352859
+			'selectors' => true,
+
+			// Temporary disabled; If T352866 is fixed, this is resolved
+			'mixins-guards-default-func' => true,
+			'extract-and-length' => true,
+			'css-escapes' => true,
+			'scope' => true,
+			'import-once' => true,
+			// This should also be fixed or might need further investigation
+			'import-inline' => true,
+
+			// Temporary disabled; Bug logged here T352867
+			'mixins-guards' => true,
+
+			// Temporary disabled; Bug logged here T352897
+			'mixin-args' => true,
+
+			// Temporary disabled; Bug logged here T352862
+			'css-3' => true,
+			'import-reference' => true,
+
+			// Temporary disabled; Bug logged T353133
+			'strings' => true,
+			'import-interpolation' => true,
+
+			// Temporary disabled; Bug logged here T352897
+			'mixins-args' => true,
+
+			// Temporary disabled: Bug logged here T352911
+			'whitespace' => true,
+
+			// Temporary disabled: After fixing T352911 & T352866
+			// This might be resolved
+			'css' => true,
+
+			 // Temporary disabled: Bug logged here T353146
+			'import' => true,
+
+			// Temporary disabled:Bug logged here T353147
+			'urls' => true,
+
+			// Temporary disabled; Bug logged T353131 & T353132
+			'comments' => true,
+			'comments2' => true,
+
+			// Temporary disabled; Bug logged T353144
+			'css-guards' => true,
+
+			// We moved this to Less.php parens.less test case because
+			// our current version of Less.php suports Less.js v3.x parens
+			// behaviour of doing maths in parentheses by default
+			'parens' => true,
+
+			// Temporary disabled; Bug logged T353141
+			'mixins-important' => true,
+			// Temporary disabled; Bug logged T353142
+			'mixins-interpolated' => true,
+			// Temporary disabled; Bug logged T353143
+			'detached-rulesets' => true,
+		]
 	];
 
 	public static function provideFixtures() {
@@ -22,6 +96,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'lessjs' => 'expected',
 			'less.php' => 'css',
 			'bug-reports' => 'css',
+			'lessjs-2.5.3' => 'expected'
 		] as $group => $expectedSubdir ) {
 			$expectedDir = self::getFixtureDir() . "/$group/$expectedSubdir";
 			if ( !is_dir( $expectedDir ) ) {
