@@ -25,8 +25,11 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'mixins' => true,
 
 			// Temporary disabled; Bug logged here T352830
+			// If T352866 is fixed, this is should also be resolved
 			'variables' => true,
-			'functions' => true, // resolved if T352830 is fixed;
+
+			// Temporary disabled; Bug logged here T353289
+			'functions' => true,
 
 			// Temporary disabled; Bug logged here T352859
 			'selectors' => true,

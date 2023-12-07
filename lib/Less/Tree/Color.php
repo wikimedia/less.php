@@ -6,6 +6,7 @@ class Less_Tree_Color extends Less_Tree {
 	public $rgb;
 	public $alpha;
 	public $isTransparentKeyword;
+	public $value;
 
 	public function __construct( $rgb, $a = 1, $isTransparentKeyword = null ) {
 		if ( $isTransparentKeyword ) {
@@ -213,15 +214,20 @@ class Less_Tree_Color extends Less_Tree {
 	 * @param string $keyword
 	 */
 	public static function fromKeyword( $keyword ) {
-		$keyword = strtolower( $keyword );
+		$c = $keyword = strtolower( $keyword );
 
 		if ( Less_Colors::hasOwnProperty( $keyword ) ) {
 			// detect named color
-			return new self( substr( Less_Colors::color( $keyword ), 1 ) );
+			$c = new self( substr( Less_Colors::color( $keyword ), 1 ) );
 		}
 
 		if ( $keyword === 'transparent' ) {
-			return new self( [ 0, 0, 0 ], 0, true );
+			$c = new self( [ 0, 0, 0 ], 0, true );
+		}
+
+		if ( isset( $c ) && is_object( $c ) ) {
+			$c->value = $keyword;
+			return $c;
 		}
 	}
 

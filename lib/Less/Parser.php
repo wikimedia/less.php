@@ -1053,15 +1053,20 @@ class Less_Parser {
 
 	// duplicate of Less_Tree_Color::FromKeyword
 	private function FromKeyword( $keyword ) {
-		$keyword = strtolower( $keyword );
+		$c = $keyword = strtolower( $keyword );
 
 		if ( Less_Colors::hasOwnProperty( $keyword ) ) {
 			// detect named color
-			return new Less_Tree_Color( substr( Less_Colors::color( $keyword ), 1 ) );
+			$c = new Less_Tree_Color( substr( Less_Colors::color( $keyword ), 1 ) );
 		}
 
 		if ( $keyword === 'transparent' ) {
-			return new Less_Tree_Color( [ 0, 0, 0 ], 0, true );
+			$c = new Less_Tree_Color( [ 0, 0, 0 ], 0, true );
+		}
+
+		if ( isset( $c ) && is_object( $c ) ) {
+			$c->value = $keyword;
+			return $c;
 		}
 	}
 
