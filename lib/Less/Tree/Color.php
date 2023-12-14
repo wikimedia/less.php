@@ -8,12 +8,15 @@ class Less_Tree_Color extends Less_Tree {
 	public $isTransparentKeyword;
 	public $value;
 
-	public function __construct( $rgb, $a = 1, $isTransparentKeyword = null ) {
+	public function __construct( $rgb, $a = 1, $isTransparentKeyword = null, $originalForm = null ) {
 		if ( $isTransparentKeyword ) {
 			$this->rgb = $rgb;
 			$this->alpha = $a;
 			$this->isTransparentKeyword = true;
 			return;
+		}
+		if ( isset( $originalForm ) ) {
+			$this->value = $originalForm;
 		}
 
 		$this->rgb = [];
@@ -53,7 +56,9 @@ class Less_Tree_Color extends Less_Tree {
 	public function toCSS( $doNotCompress = false ) {
 		$compress = Less_Parser::$options['compress'] && !$doNotCompress;
 		$alpha = Less_Functions::fround( $this->alpha );
-
+		if ( $this->value ) {
+			return $this->value;
+		}
 		//
 		// If we have some transparency, the only way to represent it
 		// is via `rgba`. Otherwise, we use the hex representation,

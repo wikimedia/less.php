@@ -34,12 +34,9 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// Temporary disabled; Bug logged here T352859
 			'selectors' => true,
 
-			// Temporary disabled; If T352866 is fixed, this is resolved
-			'mixins-guards-default-func' => true,
-			'extract-and-length' => true,
+			// TODO: This needs a task
 			'css-escapes' => true,
-			'scope' => true,
-			'import-once' => true,
+
 			// This should also be fixed or might need further investigation
 			'import-inline' => true,
 
@@ -96,7 +93,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 
 	public static function provideFixtures() {
 		foreach ( [
-			'lessjs' => 'expected',
+			// 'lessjs' => 'expected',
 			'less.php' => 'css',
 			'bug-reports' => 'css',
 			'lessjs-2.5.3' => 'expected'

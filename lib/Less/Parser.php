@@ -1235,7 +1235,7 @@ class Less_Parser {
 	 */
 	private function parseEntitiesColor() {
 		if ( $this->PeekChar( '#' ) && ( $rgb = $this->MatchReg( '/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/' ) ) ) {
-			return new Less_Tree_Color( $rgb[1] );
+			return new Less_Tree_Color( $rgb[1], 1, null, $rgb[0] );
 		}
 	}
 
