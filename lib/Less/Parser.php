@@ -1043,30 +1043,11 @@ class Less_Parser {
 		$k = $this->MatchReg( '/\\G%|\\G[_A-Za-z-][_A-Za-z0-9-]*/' );
 		if ( $k ) {
 			$k = $k[0];
-			$color = $this->fromKeyword( $k );
+			$color = Less_Tree_Color::fromKeyword( $k );
 			if ( $color ) {
 				return $color;
 			}
 			return new Less_Tree_Keyword( $k );
-		}
-	}
-
-	// duplicate of Less_Tree_Color::FromKeyword
-	private function FromKeyword( $keyword ) {
-		$c = $keyword = strtolower( $keyword );
-
-		if ( Less_Colors::hasOwnProperty( $keyword ) ) {
-			// detect named color
-			$c = new Less_Tree_Color( substr( Less_Colors::color( $keyword ), 1 ) );
-		}
-
-		if ( $keyword === 'transparent' ) {
-			$c = new Less_Tree_Color( [ 0, 0, 0 ], 0, true );
-		}
-
-		if ( isset( $c ) && is_object( $c ) ) {
-			$c->value = $keyword;
-			return $c;
 		}
 	}
 
