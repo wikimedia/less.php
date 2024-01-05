@@ -14,7 +14,6 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 	public $condition;
 	public $variadic;
 
-	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition
 	public function __construct( $name, $params, $rules, $condition, $variadic = false, $frames = [] ) {
 		$this->name = $name;
 		$this->selectors = [ new Less_Tree_Selector( [ new Less_Tree_Element( null, $name ) ] ) ];
@@ -37,17 +36,13 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		$this->SetRulesetIndex();
 	}
 
-	// function accept( $visitor ){
-	//	$this->params = $visitor->visit($this->params);
-	//	$this->rules = $visitor->visit($this->rules);
-	//	$this->condition = $visitor->visit($this->condition);
-	//}
-
 	public function toCSS() {
 		return '';
 	}
 
-	// less.js : /lib/less/tree/mixin.js : tree.mixin.Definition.evalParams
+	/**
+	 * @see less-2.5.3.js#Definition.prototype.evalParams
+	 */
 	public function compileParams( $env, $mixinFrames, $args = [], &$evaldArguments = [] ) {
 		$frame = new Less_Tree_Ruleset( null, [] );
 		$params = $this->params;
@@ -70,37 +65,34 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 							break;
 						}
 					}
-					if ( !$isNamedFound ) {
+					if ( $isNamedFound ) {
+						array_splice( $args, $i, 1 );
+						$i--;
+						$argsLength--;
+					} else {
 						throw new Less_Exception_Compiler( "Named argument for " . $this->name . ' ' . $args[$i]['name'] . ' not found' );
 					}
-					array_splice( $args, $i, 1 );
-					$i--;
-					$argsLength--;
 				}
 			}
 		}
 
 		$argIndex = 0;
 		foreach ( $params as $i => $param ) {
-
 			if ( isset( $evaldArguments[$i] ) ) {
 				continue;
 			}
 
-			$arg = null;
-			if ( isset( $args[$argIndex] ) ) {
-				$arg = $args[$argIndex];
-			}
+			$arg = $args[$argIndex] ?? null;
 
-			if ( isset( $param['name'] ) && $param['name'] ) {
-
+			$name = $param['name'] ?? null;
+			if ( $name ) {
 				if ( isset( $param['variadic'] ) ) {
 					$varargs = [];
 					for ( $j = $argIndex; $j < $argsLength; $j++ ) {
 						$varargs[] = $args[$j]['value']->compile( $env );
 					}
 					$expression = new Less_Tree_Expression( $varargs );
-					array_unshift( $frame->rules, new Less_Tree_Rule( $param['name'], $expression->compile( $env ) ) );
+					array_unshift( $frame->rules, new Less_Tree_Rule( $name, $expression->compile( $env ) ) );
 				} else {
 					$val = ( $arg && $arg['value'] ) ? $arg['value'] : false;
 
@@ -119,7 +111,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 						throw new Less_Exception_Compiler( "Wrong number of arguments for " . $this->name . " (" . $argsLength . ' for ' . $this->arity . ")" );
 					}
 
-					array_unshift( $frame->rules, new Less_Tree_Rule( $param['name'], $val ) );
+					array_unshift( $frame->rules, new Less_Tree_Rule( $name, $val ) );
 					$evaldArguments[$i] = $val;
 				}
 			}
