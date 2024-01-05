@@ -85,6 +85,9 @@ class Less_Tree_Selector extends Less_Tree {
 		return $other->_oelements_len; // return number of matched elements
 	}
 
+	/**
+	 * @see less-2.5.3.js#Selector.prototype.CacheElements
+	 */
 	public function CacheElements() {
 		$this->_oelements = [];
 		$this->_oelements_assoc = [];
@@ -108,7 +111,7 @@ class Less_Tree_Selector extends Less_Tree {
 			$css .= $v->value->value;
 		}
 
-		$this->_oelements_len = preg_match_all( '/[,&#\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches );
+		$this->_oelements_len = preg_match_all( '/[,&#\*\.\w-](?:[\w-]|(?:\\\\.))*/', $css, $matches );
 		if ( $this->_oelements_len ) {
 			$this->_oelements = $matches[0];
 

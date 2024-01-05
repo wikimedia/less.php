@@ -109,8 +109,9 @@ class Less_Tree_Mixin_Call extends Less_Tree {
 					try{
 						$mixin = $candidates[$m]['mixin'];
 						if ( !( $mixin instanceof Less_Tree_Mixin_Definition ) ) {
+							$originalRuleset = $mixin instanceof Less_Tree_Ruleset ? $mixin->originalRuleset : $mixin;
 							$mixin = new Less_Tree_Mixin_Definition( '', [], $mixin->rules, null, false );
-							$mixin->originalRuleset = $mixins[$m]->originalRuleset;
+							$mixin->originalRuleset = $originalRuleset;
 						}
 						$rules = array_merge( $rules, $mixin->evalCall( $env, $args, $this->important )->rules );
 					} catch ( Exception $e ) {

@@ -21,9 +21,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'plugin' => true,
 			'javascript' => true,
 
-			// Temporary disabled; Bug logged here T352829
-			'mixins' => true,
-
 			// Temporary disabled; Bug logged here T352830
 			// If T352866 is fixed, this is should also be resolved
 			'variables' => true,
