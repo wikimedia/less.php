@@ -761,20 +761,24 @@ class Less_Functions {
 		return new Less_Tree_Dimension( $n->value * 100, '%' );
 	}
 
-	public function color( $n ) {
-		if ( $n instanceof Less_Tree_Quoted ) {
-			$colorCandidate = $n->value;
-			$returnColor = Less_Tree_Color::fromKeyword( $colorCandidate );
-			if ( $returnColor ) {
-				return $returnColor;
-			}
-			if ( preg_match( '/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/', $colorCandidate ) ) {
-				return new Less_Tree_Color( substr( $colorCandidate, 1 ) );
-			}
-			throw new Less_Exception_Compiler( "argument must be a color keyword or 3/6 digit hex e.g. #FFF" );
-		} else {
-			throw new Less_Exception_Compiler( "argument must be a string" );
+	/**
+	 * @see less-2.5.3.js#colorFunctions.color
+	 * @param Less_Tree_Quoted|Less_Tree_Color|Less_Tree_Keyword $c
+	 * @return Less_Tree_Color
+	 */
+	public function color( $c ) {
+		if ( ( $c instanceof Less_Tree_Quoted ) &&
+			preg_match( '/^#([a-f0-9]{6}|[a-f0-9]{3})/', $c->value )
+		) {
+			return new Less_Tree_Color( substr( $c->value, 1 ) );
 		}
+
+		if ( ( $c instanceof Less_Tree_Color ) || ( $c = Less_Tree_Color::fromKeyword( $c->value ) ) ) {
+			$c->value = null;
+			return $c;
+		}
+
+		throw new Less_Exception_Compiler( "argument must be a color keyword or 3/6 digit hex e.g. #FFF" );
 	}
 
 	public function iscolor( $n ) {
