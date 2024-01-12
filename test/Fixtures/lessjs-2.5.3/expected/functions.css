@@ -27,7 +27,7 @@
   luma-green: 71.52%;
   luma-blue: 7.22%;
   luma-yellow: 92.78%;
-  luma-cyan: 78.74%;
+  luma-cyan: 78.73999999999999%;
   luma-differs-from-luminance: 23.89833349%;
   luminance-white: 100%;
   luminance-black: 0%;
@@ -96,12 +96,12 @@
   pi: 3.14159265;
   mod: 2m;
   abs: 4%;
-  tan: 0.90040404;
-  sin: 0.17364818;
+  tan: 0.90040415;
+  sin: 0.17364819;
   cos: 0.84385396;
   atan: 0.1rad;
   atan: 34deg;
-  atan: 45deg;
+  atan: 44.9999964deg;
   pow: 64px;
   pow: 64;
   pow: 27;

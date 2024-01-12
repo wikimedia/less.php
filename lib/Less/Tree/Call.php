@@ -46,6 +46,17 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 			$args[] = $a->compile( $env );
 		}
 
+		foreach ( $args as $key => $arg ) {
+			if ( $arg instanceof Less_Tree_Expression ) {
+				$arg->throwAwayComments();
+
+				if ( count( $arg->value ) === 1 ) {
+					$subNode = $arg->value[0];
+					array_splice( $args, $key, 1, [ $subNode ] );
+				}
+			}
+		}
+
 		Less_Environment::$mathOn = $currentMathContext;
 
 		$nameLC = strtolower( $this->name );

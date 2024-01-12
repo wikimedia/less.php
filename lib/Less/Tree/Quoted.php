@@ -13,7 +13,7 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 	/**
 	 * @param string $str
 	 */
-	public function __construct( $str, $content = '', $escaped = false, $index = false, $currentFileInfo = null ) {
+	public function __construct( $str, $content = '', $escaped = true, $index = false, $currentFileInfo = null ) {
 		$this->escaped = $escaped;
 		$this->value = $content;
 		if ( $str ) {

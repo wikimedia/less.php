@@ -25,9 +25,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// If T352866 is fixed, this is should also be resolved
 			'variables' => true,
 
-			// Temporary disabled; Bug logged here T353289
-			'functions' => true,
-
 			// Temporary disabled; Bug logged here T352859
 			'selectors' => true,
 
@@ -122,6 +119,9 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		// Check with standard parser
 		$parser = new Less_Parser();
 		try {
+			$parser->registerFunction( '_color', [ __CLASS__, 'FnColor' ] );
+			$parser->registerFunction( 'add', [ __CLASS__, 'FnAdd' ] );
+			$parser->registerFunction( 'increment', [ __CLASS__, 'FnIncrement' ] );
 			$parser->parseFile( $lessFile );
 			$css = $parser->getCss();
 		} catch ( Less_Exception_Parser $e ) {
@@ -131,7 +131,10 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		$this->assertSame( $expectedCSS, $css, "Standard compiler" );
 
 		// Check with cache
-		$options = [ 'cache_dir' => $this->cache_dir ];
+		$options = [ 'cache_dir' => $this->cache_dir,
+					 'functions' => [ '_color' => [ __CLASS__, 'FnColor' ],
+									  'add' => [ __CLASS__, 'FnAdd' ],
+									  'increment' => [ __CLASS__, 'FnIncrement' ] ] ];
 		$files = [ $lessFile => '' ];
 		try {
 			$cacheFile = Less_Cache::Regen( $files, $options );
@@ -152,4 +155,19 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		$css = trim( $css );
 		$this->assertEquals( $expectedCSS, $css, "Using cache" );
 	}
+
+	public static function FnColor( $str ) {
+		if ( $str->value === "evil red" ) {
+			return new Less_Tree_Color( "600" );
+		}
+	}
+
+	public static function FnAdd( $a, $b ) {
+		return new Less_Tree_Dimension( $a->value + $b->value );
+	}
+
+	public static function FnIncrement( $a ) {
+		return new Less_Tree_Dimension( $a->value + 1 );
+	}
+
 }

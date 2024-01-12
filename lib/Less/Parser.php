@@ -1241,7 +1241,7 @@ class Less_Parser {
 			return;
 		}
 
-		$value = $this->MatchReg( '/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/' );
+		$value = $this->MatchReg( '/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/i' );
 		if ( $value ) {
 			if ( isset( $value[2] ) ) {
 				return new Less_Tree_Dimension( $value[1], $value[2] );

@@ -50,7 +50,7 @@ class Less_Tree_Unit extends Less_Tree {
 	}
 
 	public function is( $unitString ) {
-		return $this->toString() === $unitString;
+		return strtoupper( $this->toString() ) === strtoupper( $unitString );
 	}
 
 	public function isLength() {

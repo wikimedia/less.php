@@ -4,14 +4,14 @@ body .color-channels {
   --saturation: 50%;
   --lightness: 40%;
   --hsvhue: 210;
-  --hsvsaturation: 67%;
+  --hsvsaturation: 66.66666667%;
   --hsvvalue: 60%;
   --red: 51;
   --green: 102;
   --blue: 153;
   --alpha: 0.9;
-  --luma: 11%;
-  --luminance: 33%;
+  --luma: 11.25581169%;
+  --luminance: 33.4728%;
 }
 body .color-definitions .rgb {
   color: #336699;
@@ -29,10 +29,10 @@ body .color-definitions .hsla {
   color: rgba(51, 102, 153, 0.9);
 }
 body .color-definitions .hsv {
-  color: #326699;
+  color: #336699;
 }
 body .color-definitions .hsva {
-  color: rgba(50, 102, 153, 0.9);
+  color: rgba(51, 102, 153, 0.9);
 }
 body .css-filters .saturate {
   color: saturate(200%);

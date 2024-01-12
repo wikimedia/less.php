@@ -170,7 +170,7 @@ class Less_Functions {
 		}
 
 		$c = $color->toHSL();
-		return new Less_Tree_Dimension( Less_Parser::round( $c['h'] ) );
+		return new Less_Tree_Dimension( $c['h'] );
 	}
 
 	public function saturation( $color = null ) {
@@ -179,7 +179,7 @@ class Less_Functions {
 		}
 
 		$c = $color->toHSL();
-		return new Less_Tree_Dimension( Less_Parser::round( $c['s'] * 100 ), '%' );
+		return new Less_Tree_Dimension( $c['s'] * 100, '%' );
 	}
 
 	public function lightness( $color = null ) {
@@ -188,7 +188,7 @@ class Less_Functions {
 		}
 
 		$c = $color->toHSL();
-		return new Less_Tree_Dimension( Less_Parser::round( $c['l'] * 100 ), '%' );
+		return new Less_Tree_Dimension( $c['l'] * 100, '%' );
 	}
 
 	public function hsvhue( $color = null ) {
@@ -197,7 +197,7 @@ class Less_Functions {
 		}
 
 		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( Less_Parser::round( $hsv['h'] ) );
+		return new Less_Tree_Dimension( $hsv['h'] );
 	}
 
 	public function hsvsaturation( $color = null ) {
@@ -206,7 +206,7 @@ class Less_Functions {
 		}
 
 		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( Less_Parser::round( $hsv['s'] * 100 ), '%' );
+		return new Less_Tree_Dimension( $hsv['s'] * 100, '%' );
 	}
 
 	public function hsvvalue( $color = null ) {
@@ -215,7 +215,7 @@ class Less_Functions {
 		}
 
 		$hsv = $color->toHSV();
-		return new Less_Tree_Dimension( Less_Parser::round( $hsv['v'] * 100 ), '%' );
+		return new Less_Tree_Dimension( $hsv['v'] * 100, '%' );
 	}
 
 	public function red( $color = null ) {
@@ -256,7 +256,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The first argument to luma must be a color' . ( $color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return new Less_Tree_Dimension( Less_Parser::round( $color->luma() * $color->alpha * 100 ), '%' );
+		return new Less_Tree_Dimension( $color->luma() * $color->alpha * 100, '%' );
 	}
 
 	public function luminance( $color = null ) {
@@ -269,10 +269,10 @@ class Less_Functions {
 		  + ( 0.7152 * $color->rgb[1] / 255 )
 		  + ( 0.0722 * $color->rgb[2] / 255 );
 
-		return new Less_Tree_Dimension( Less_Parser::round( $luminance * $color->alpha * 100 ), '%' );
+		return new Less_Tree_Dimension( $luminance * $color->alpha * 100, '%' );
 	}
 
-	public function saturate( $color = null, $amount = null ) {
+	public function saturate( $color = null, $amount = null, $method = null ) {
 		// filter: saturate(3.2);
 		// should be kept as is, so check for color
 		if ( $color instanceof Less_Tree_Dimension ) {
@@ -288,8 +288,11 @@ class Less_Functions {
 
 		$hsl = $color->toHSL();
 
-		$hsl['s'] += $amount->value / 100;
-		$hsl['s'] = self::clamp( $hsl['s'] );
+		if ( isset( $method ) && $method->value === "relative" ) {
+			$hsl['s'] += $hsl['s'] * $amount->value / 100;
+		} else {
+			$hsl['s'] += $amount->value / 100;
+		}		$hsl['s'] = self::clamp( $hsl['s'] );
 
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
@@ -298,7 +301,7 @@ class Less_Functions {
 	 * @param Less_Tree_Color|null $color
 	 * @param Less_Tree_Dimension|null $amount
 	 */
-	public function desaturate( $color = null, $amount = null ) {
+	public function desaturate( $color = null, $amount = null, $method = null ) {
 		if ( !$color instanceof Less_Tree_Color ) {
 			throw new Less_Exception_Compiler( 'The first argument to desaturate must be a color' . ( $color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
@@ -307,13 +310,19 @@ class Less_Functions {
 		}
 
 		$hsl = $color->toHSL();
-		$hsl['s'] -= $amount->value / 100;
+
+		if ( isset( $method ) && $method->value === "relative" ) {
+			$hsl['s'] -= $hsl['s'] * $amount->value / 100;
+		} else {
+			$hsl['s'] -= $amount->value / 100;
+		}
+
 		$hsl['s'] = self::clamp( $hsl['s'] );
 
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
 
-	public function lighten( $color = null, $amount = null ) {
+	public function lighten( $color = null, $amount = null, $method = null ) {
 		if ( !$color instanceof Less_Tree_Color ) {
 			throw new Less_Exception_Compiler( 'The first argument to lighten must be a color' . ( $color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
@@ -323,13 +332,18 @@ class Less_Functions {
 
 		$hsl = $color->toHSL();
 
-		$hsl['l'] += $amount->value / 100;
+		if ( isset( $method ) && $method->value === "relative" ) {
+			$hsl['l'] += $hsl['l'] * $amount->value / 100;
+		} else {
+			$hsl['l'] += $amount->value / 100;
+		}
+
 		$hsl['l'] = self::clamp( $hsl['l'] );
 
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
 
-	public function darken( $color = null, $amount = null ) {
+	public function darken( $color = null, $amount = null, $method = null ) {
 		if ( !$color instanceof Less_Tree_Color ) {
 			throw new Less_Exception_Compiler( 'The first argument to darken must be a color' . ( $color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
@@ -338,13 +352,17 @@ class Less_Functions {
 		}
 
 		$hsl = $color->toHSL();
-		$hsl['l'] -= $amount->value / 100;
+		if ( isset( $method ) && $method->value === "relative" ) {
+			$hsl['l'] -= $hsl['l'] * $amount->value / 100;
+		} else {
+			$hsl['l'] -= $amount->value / 100;
+		}
 		$hsl['l'] = self::clamp( $hsl['l'] );
 
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
 
-	public function fadein( $color = null, $amount = null ) {
+	public function fadein( $color = null, $amount = null, $method = null ) {
 		if ( !$color instanceof Less_Tree_Color ) {
 			throw new Less_Exception_Compiler( 'The first argument to fadein must be a color' . ( $color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
@@ -353,12 +371,18 @@ class Less_Functions {
 		}
 
 		$hsl = $color->toHSL();
-		$hsl['a'] += $amount->value / 100;
+
+		if ( isset( $method ) && $method->value === "relative" ) {
+			$hsl['a'] += $hsl['a'] * $amount->value / 100;
+		} else {
+			$hsl['a'] += $amount->value / 100;
+		}
+
 		$hsl['a'] = self::clamp( $hsl['a'] );
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
 
-	public function fadeout( $color = null, $amount = null ) {
+	public function fadeout( $color = null, $amount = null, $method = null ) {
 		if ( !$color instanceof Less_Tree_Color ) {
 			throw new Less_Exception_Compiler( 'The first argument to fadeout must be a color' . ( $color instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
@@ -367,7 +391,13 @@ class Less_Functions {
 		}
 
 		$hsl = $color->toHSL();
-		$hsl['a'] -= $amount->value / 100;
+
+		if ( isset( $method ) && $method->value === "relative" ) {
+			$hsl['a'] -= $hsl['a'] * $amount->value / 100;
+		} else {
+			$hsl['a'] -= $amount->value / 100;
+		}
+
 		$hsl['a'] = self::clamp( $hsl['a'] );
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
@@ -514,10 +544,16 @@ class Less_Functions {
 		if ( $flags && $flags->value ) {
 			$expr .= self::replace_flags( $flags->value );
 		}
+		$replacement = ( $replacement instanceof Less_Tree_Quoted ) ?
+			$replacement->value : $replacement->toCSS();
 
-		$result = preg_replace( $expr, $replacement->value, $result );
+		$result = preg_replace( $expr, $replacement, $result, 1 );
 
-		if ( property_exists( $string, 'quote' ) ) {
+		if ( $flags && $flags->value && preg_match( '/g/', $flags->value ) ) {
+			$result = preg_replace( $expr, $replacement, $result );
+		}
+
+		if ( $string instanceof Less_Tree_Quoted ) {
 			return new Less_Tree_Quoted( $string->quote, $result, $string->escaped );
 		}
 		return new Less_Tree_Quoted( '', $result );
@@ -533,14 +569,19 @@ class Less_Functions {
 		foreach ( $args as $arg ) {
 			if ( preg_match( '/%[sda]/i', $result, $token ) ) {
 				$token = $token[0];
-				$value = stristr( $token, 's' ) ? $arg->value : $arg->toCSS();
+				$value = ( ( $arg instanceof Less_Tree_Quoted ) &&
+					stristr( $token, 's' ) ? $arg->value : $arg->toCSS() );
+
 				$value = preg_match( '/[A-Z]$/', $token ) ? urlencode( $value ) : $value;
 				$result = preg_replace( '/%[sda]/i', $value, $result, 1 );
 			}
 		}
 		$result = str_replace( '%%', '%', $result );
 
-		return new Less_Tree_Quoted( $string->quote, $result, $string->escaped );
+		 if ( $string instanceof Less_Tree_Quoted ) {
+			 return new Less_Tree_Quoted( $string->quote, $result, $string->escaped );
+		 }
+		return new Less_Tree_Quoted( '', $result );
 	}
 
 	public function unit( $val, $unit = null ) {
@@ -779,6 +820,10 @@ class Less_Functions {
 		}
 
 		throw new Less_Exception_Compiler( "argument must be a color keyword or 3/6 digit hex e.g. #FFF" );
+	}
+
+	public function isruleset( $n ) {
+		return new Less_Tree_Keyword( $n instanceof Less_Tree_DetachedRuleset ? 'true' : 'false' );
 	}
 
 	public function iscolor( $n ) {
