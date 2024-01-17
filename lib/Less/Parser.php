@@ -32,6 +32,7 @@ class Less_Parser {
 		'indentation' 			=> '  ',
 
 		'plugins'				=> [],
+		'functions'             => [],
 
 	];
 
@@ -132,6 +133,11 @@ class Less_Parser {
 				if ( is_string( $value ) ) {
 					Less_Cache::SetCacheDir( $value );
 					Less_Cache::CheckCacheDir();
+				}
+				return;
+			case 'functions':
+				foreach ( $value as $key => $function ) {
+					$this->registerFunction( $key, $function );
 				}
 				return;
 		}

@@ -182,4 +182,68 @@ div {
 CSS;
 		$this->assertEquals( $expected, $css );
 	}
+
+	public function testOptionFunctions() {
+		// Add options
+		$lessCode = '
+		#test{
+			border-width: add(7, 6);
+		  }
+		';
+
+		$options = [ 'functions' => [ 'add' => [ __CLASS__, 'fooBar2' ] ] ];
+		$parser = new Less_Parser( $options );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$expected = <<<CSS
+#test {
+  border-width: 13;
+}
+CSS;
+		$this->assertSame( $expected, $css );
+
+		// test with directly with registerFunction()
+		$parser = new Less_Parser();
+		$parser->registerFunction( 'add', [ __CLASS__, 'fooBar2' ] );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$this->assertSame( $expected, $css );
+
+		// test with both passing options and using registerFunction()
+		$lessCode = '
+		#test{
+			border-width: add(2, 3);
+			border-color: _color("evil red");
+			width: increment(15);
+		  }
+		';
+
+		$options = [ 'functions' => [ '_color' => [ __CLASS__, 'fooBar1' ], 'add' => [ __CLASS__, 'fooBar2' ] ] ];
+		$parser = new Less_Parser( $options );
+		$parser->registerFunction( 'increment', [ __CLASS__, 'fooBar3' ] );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$expected = <<<CSS
+#test {
+  border-width: 5;
+  border-color: #660000;
+  width: 16;
+}
+CSS;
+		$this->assertSame( $expected, $css );
+	}
+
+	public static function fooBar1( $str ) {
+		if ( $str->value === "evil red" ) {
+			return new Less_Tree_Color( "600" );
+		}
+	}
+
+	public static function fooBar2( $a, $b ) {
+		return new Less_Tree_Dimension( $a->value + $b->value );
+	}
+
+	public static function fooBar3( $a ) {
+		return new Less_Tree_Dimension( $a->value + 1 );
+	}
 }
