@@ -202,6 +202,18 @@ CSS;
 CSS;
 		$this->assertSame( $expected, $css );
 
+		// test with closure
+		$parser = new Less_Parser( [
+			'functions' => [
+				'add' => static function ( $a, $b ) {
+					return new Less_Tree_Dimension( $a->value + $b->value );
+				}
+			]
+		] );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$this->assertSame( $expected, $css );
+
 		// test with directly with registerFunction()
 		$parser = new Less_Parser();
 		$parser->registerFunction( 'add', [ __CLASS__, 'fooBar2' ] );
