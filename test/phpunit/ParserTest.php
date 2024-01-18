@@ -97,4 +97,101 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 			);
 		}
 	}
+
+	public function testOptionRootpath() {
+		// When CSS refers to a URL that is only a hash fragment, it is a
+		// dynamic reference to something in the current DOM, thus it must
+		// not be remapped. https://phabricator.wikimedia.org/T331649
+		$lessCode = '
+			div {
+				--a10: url("./images/icon.svg");
+				--a11: url("./images/icon.svg#myid");
+				--a20: url(icon.svg);
+				--a21: url(icon.svg#myid);
+				--a30: url(#myid);
+			}
+		';
+
+		$parser = new Less_Parser();
+		$parser->parse( $lessCode, '/x/fake.css' );
+		$css = trim( $parser->getCss() );
+
+		$expected = <<<CSS
+div {
+  --a10: url("/x/images/icon.svg");
+  --a11: url("/x/images/icon.svg#myid");
+  --a20: url(/x/icon.svg);
+  --a21: url(/x/icon.svg#myid);
+  --a30: url(#myid);
+}
+CSS;
+		$this->assertEquals( $expected, $css );
+	}
+
+	public function testOptionFunctions() {
+		$lessCode = <<<CSS
+			#test {
+			  border-width: add(7, 6);
+			}
+		CSS;
+		$expected = <<<CSS
+			#test {
+			  border-width: 13;
+			}
+			CSS;
+
+		// test with static callback
+		$options = [ 'functions' => [ 'add' => [ __CLASS__, 'fnAdd' ] ] ];
+		$parser = new Less_Parser( $options );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$this->assertSame( $expected, $css, 'static callback' );
+
+		// test with closure
+		$parser = new Less_Parser( [
+			'functions' => [
+				'add' => static function ( $a, $b ) {
+					return new Less_Tree_Dimension( $a->value + $b->value );
+				}
+			]
+		] );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$this->assertSame( $expected, $css, 'closure' );
+
+		// test directly with registerFunction()
+		$parser = new Less_Parser();
+		$parser->registerFunction( 'add', [ __CLASS__, 'fnAdd' ] );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$this->assertSame( $expected, $css, 'registerFunction' );
+
+		// test with both passing options and using registerFunction()
+		$lessCode = <<<CSS
+			#test{
+			  border-width: add(2, 3);
+			  width: increment(15);
+			}
+			CSS;
+		$expected = <<<CSS
+			#test {
+			  border-width: 5;
+			  width: 16;
+			}
+			CSS;
+		$options = [ 'functions' => [ 'add' => [ __CLASS__, 'fnAdd' ] ] ];
+		$parser = new Less_Parser( $options );
+		$parser->registerFunction( 'increment', [ __CLASS__, 'fnIncrement' ] );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$this->assertSame( $expected, $css, 'both' );
+	}
+
+	public static function fnAdd( $a, $b ) {
+		return new Less_Tree_Dimension( $a->value + $b->value );
+	}
+
+	public static function fnIncrement( $a ) {
+		return new Less_Tree_Dimension( $a->value + 1 );
+	}
 }
