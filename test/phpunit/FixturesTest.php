@@ -76,8 +76,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// behaviour of doing maths in parentheses by default
 			'parens' => true,
 
-			// Temporary disabled; Bug logged T353141
-			'mixins-important' => true,
 			// Temporary disabled; Bug logged T353142
 			'mixins-interpolated' => true,
 			// Temporary disabled; Bug logged T353143

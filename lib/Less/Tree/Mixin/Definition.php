@@ -194,6 +194,18 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		return (bool)$this->condition->compile( $compile_env );
 	}
 
+	 public function makeImportant() {
+		$important_rules = [];
+		foreach ( $this->rules as $rule ) {
+			if ( $rule instanceof Less_Tree_Rule || $rule instanceof self || $rule instanceof Less_Tree_NameValue ) {
+				$important_rules[] = $rule->makeImportant();
+			} else {
+				$important_rules[] = $rule;
+			}
+		}
+		return new self( $this->name, $this->params, $important_rules, $this->condition, $this->variadic, $this->frames );
+	 }
+
 	public function matchArgs( $args, $env = null ) {
 		$argsLength = count( $args );
 
