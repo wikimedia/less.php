@@ -45,17 +45,20 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 				$value = str_replace( $matches[0][$i], $js, $value );
 			}
 		}
-
-		if ( preg_match_all( '/@\{([\w-]+)\}/', $value, $matches ) ) {
-			foreach ( $matches[1] as $i => $match ) {
-				$v = new Less_Tree_Variable( '@' . $match, $this->index, $this->currentFileInfo );
-				$v = $v->compile( $env );
-				$v = ( $v instanceof self ) ? $v->value : $v->toCSS();
-				$value = str_replace( $matches[0][$i], $v, $value );
+		$r = $value;
+		do{
+			$value = $r;
+			if ( preg_match_all( '/@\{([\w-]+)\}/', $value, $matches ) ) {
+				foreach ( $matches[1] as $i => $match ) {
+					$v = new Less_Tree_Variable( '@' . $match, $this->index, $this->currentFileInfo );
+					$v = $v->compile( $env );
+					$v = ( $v instanceof self ) ? $v->value : $v->toCSS();
+					$r = str_replace( $matches[0][$i], $v, $r );
+				}
 			}
-		}
+		}while ( $r != $value );
 
-		return new self( $this->quote . $value . $this->quote, $value, $this->escaped, $this->index, $this->currentFileInfo );
+		return new self( $this->quote . $r . $this->quote, $r, $this->escaped, $this->index, $this->currentFileInfo );
 	}
 
 	public function compare( $x ) {

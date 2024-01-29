@@ -41,8 +41,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'css-3' => true,
 			'import-reference' => true,
 
-			// Temporary disabled; Bug logged T353133
-			'strings' => true,
+			// TODO; Create Task for import-interpolation
 			'import-interpolation' => true,
 
 			// Temporary disabled; Bug logged here T352897
@@ -73,8 +72,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// behaviour of doing maths in parentheses by default
 			'parens' => true,
 
-			// Temporary disabled; Bug logged T353142
-			'mixins-interpolated' => true,
 			// Temporary disabled; Bug logged T353143
 			'detached-rulesets' => true,
 		]
