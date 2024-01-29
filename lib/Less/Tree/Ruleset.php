@@ -604,9 +604,9 @@ class Less_Tree_Ruleset extends Less_Tree {
 		foreach ( $newSelectors as &$sel ) {
 			$length = count( $sel );
 			if ( $length ) {
-				$paths[] = $sel;
 				$lastSelector = $sel[$length - 1];
 				$sel[$length - 1] = $lastSelector->createDerived( $lastSelector->elements, $inSelector->extendList );
+				$paths[] = $sel;
 			}
 		}
 

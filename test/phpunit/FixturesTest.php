@@ -25,9 +25,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// If T352866 is fixed, this is should also be resolved
 			'variables' => true,
 
-			// Temporary disabled; Bug logged here T352859
-			'selectors' => true,
-
 			// TODO: This needs a task
 			'css-escapes' => true,
 
