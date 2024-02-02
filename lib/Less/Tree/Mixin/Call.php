@@ -106,7 +106,7 @@ class Less_Tree_Mixin_Call extends Less_Tree {
 			for ( $m = 0; $m < $candidates_length; $m++ ) {
 				$candidate = $candidates[$m]['group'];
 				if ( ( $candidate === $defNone ) || ( $candidate === $defaultResult ) ) {
-					try{
+					try {
 						$mixin = $candidates[$m]['mixin'];
 						if ( !( $mixin instanceof Less_Tree_Mixin_Definition ) ) {
 							$originalRuleset = $mixin instanceof Less_Tree_Ruleset ? $mixin->originalRuleset : $mixin;

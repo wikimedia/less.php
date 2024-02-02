@@ -154,7 +154,7 @@ class Less_Tree_Import extends Less_Tree {
 		}
 
 		if ( $path_and_uri ) {
-			list( $full_path, $uri ) = $path_and_uri;
+			[ $full_path, $uri ] = $path_and_uri;
 		} else {
 			$full_path = $uri = $evald->getPath();
 		}

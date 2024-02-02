@@ -46,10 +46,10 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 	 */
 	public function genCSS( $output ) {
 		$output->add( $this->name . Less_Environment::$_outputMap[': '], $this->currentFileInfo, $this->index );
-		try{
+		try {
 			$this->value->genCSS( $output );
 
-		}catch ( Less_Exception_Parser $e ) {
+		} catch ( Less_Exception_Parser $e ) {
 			$e->index = $this->index;
 			$e->currentFile = $this->currentFileInfo;
 			throw $e;

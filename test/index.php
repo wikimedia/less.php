@@ -5,7 +5,7 @@ define( 'PHPLESS_START_TIME', microtime() );
 error_reporting( E_ALL );
 ini_set( 'display_errors', 1 );
 
-set_error_handler( [ 'ParserTest','showError' ], E_ALL | E_STRICT );
+set_error_handler( [ 'ParserTest', 'showError' ], E_ALL | E_STRICT );
 set_time_limit( 60 );
 
 $dir = dirname( __DIR__ );
@@ -17,7 +17,7 @@ class ParserTest {
 
 	public $compress = false;
 	public $dir;
-	public $test_dirs = [ 'lessjs','bootstrap3' ];
+	public $test_dirs = [ 'lessjs', 'bootstrap3' ];
 	public $cache_dir;
 	public $head;
 	public $files_tested = 0;
@@ -66,7 +66,7 @@ class ParserTest {
 			if ( file_exists( $full_css ) ) {
 				$less = '/less/' . $_GET['file'] . '.less';
 				$css = '/css/' . $_GET['file'] . '.css';
-				return [ [ $less,$css ] ];
+				return [ [ $less, $css ] ];
 			}
 
 			// compare single sourcemap
@@ -74,7 +74,7 @@ class ParserTest {
 			if ( file_exists( $full_css ) ) {
 				$less = '/less/' . $_GET['file'] . '.less';
 				$map = '/css/' . $_GET['file'] . '.map';
-				return [ [ $less,false, $map ] ];
+				return [ [ $less, false, $map ] ];
 			}
 
 		}
@@ -89,7 +89,7 @@ class ParserTest {
 			if ( $type == 'css' ) {
 				$pairs[] = [ '/less/' . str_replace( '.css', '.less', $file ), '/css/' . $file ];
 			} elseif ( $type == 'map' ) {
-				$pairs[] = [ '/less/' . str_replace( '.map', '.less', $file ), false,'/css/' . $file ];
+				$pairs[] = [ '/less/' . str_replace( '.map', '.less', $file ), false, '/css/' . $file ];
 			}
 
 		}
@@ -103,7 +103,7 @@ class ParserTest {
 		$match_list = $diff = [];
 		foreach ( $pairs as $files ) {
 
-			$files += [ false,false,false ];
+			$files += [ false, false, false ];
 
 			ob_start();
 			echo '<div class="row">';
@@ -410,7 +410,7 @@ class ParserTest {
 
 	public static function Options() {
 		// debugging
-		$request = str_replace( [ 'XDEBUG_PROFILE','XDEBUG_TRACE' ], '', $_SERVER['REQUEST_URI'] );
+		$request = str_replace( [ 'XDEBUG_PROFILE', 'XDEBUG_TRACE' ], '', $_SERVER['REQUEST_URI'] );
 		echo '<div style="float:right">';
 		echo 'XDEBUG: ';
 		echo '<a href="' . str_replace( '&&', '&', $request . '&XDEBUG_PROFILE' ) . '">Debug Profile</a>';
@@ -519,8 +519,8 @@ function obj( $mixed, $objects = [] ) {
 	static $level = 0;
 	$output = '';
 
-	$exclude_keys = [ 'originalRuleset','currentFileInfo','lookups','index','ruleset_id','type','_rulesets','_variables','allowImports','_css','elements_len',
-					'_oelements','_oelements_assoc','first_oelements','_oelements_len','cacheable', ]; // 'variable','combinator'
+	$exclude_keys = [ 'originalRuleset', 'currentFileInfo', 'lookups', 'index', 'ruleset_id', 'type', '_rulesets', '_variables', 'allowImports', '_css', 'elements_len',
+					'_oelements', '_oelements_assoc', 'first_oelements', '_oelements_len', 'cacheable', ]; // 'variable','combinator'
 	//$exclude_keys = array();
 
 	$type = gettype( $mixed );
@@ -656,10 +656,10 @@ $content = ob_get_clean();
 	<script src="assets/x_moz-sourcemap/base64-vlq.js"></script>
 	*/
 
-		if ( isset( $_GET['file'] ) ) {
-			echo '<script src="assets/lessjs-config.js"></script>';
-			echo '<script src="assets/less-2.5.3.js"></script>';
-		}
+	if ( isset( $_GET['file'] ) ) {
+		echo '<script src="assets/lessjs-config.js"></script>';
+		echo '<script src="assets/less-2.5.3.js"></script>';
+	}
 	?>
 </head>
 <body>

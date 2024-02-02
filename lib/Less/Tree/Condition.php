@@ -47,15 +47,15 @@ class Less_Tree_Condition extends Less_Tree {
 
 				switch ( $result ) {
 					case -1:
-					$result = $this->op === '<' || $this->op === '=<' || $this->op === '<=';
+						$result = $this->op === '<' || $this->op === '=<' || $this->op === '<=';
 						break;
 
 					case 0:
-					$result = $this->op === '=' || $this->op === '>=' || $this->op === '=<' || $this->op === '<=';
+						$result = $this->op === '=' || $this->op === '>=' || $this->op === '=<' || $this->op === '<=';
 						break;
 
 					case 1:
-					$result = $this->op === '>' || $this->op === '>=';
+						$result = $this->op === '>' || $this->op === '>=';
 						break;
 				}
 				break;

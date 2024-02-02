@@ -184,8 +184,8 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 
 		$compile_env = new Less_Environment();
 		$compile_env->frames = array_merge(
-				[ $frame ],		// the parameter variables
-				 $this->frames,		// the parent namespace/mixin frames
+				[ $frame ], // the parameter variables
+				 $this->frames, // the parent namespace/mixin frames
 				 $env->frames		// the current environment frames
 			);
 
@@ -194,7 +194,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		return (bool)$this->condition->compile( $compile_env );
 	}
 
-	 public function makeImportant() {
+	public function makeImportant() {
 		$important_rules = [];
 		foreach ( $this->rules as $rule ) {
 			if ( $rule instanceof Less_Tree_Rule || $rule instanceof self || $rule instanceof Less_Tree_NameValue ) {
@@ -204,7 +204,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 			}
 		}
 		return new self( $this->name, $this->params, $important_rules, $this->condition, $this->variadic, $this->frames );
-	 }
+	}
 
 	public function matchArgs( $args, $env = null ) {
 		$argsLength = count( $args );

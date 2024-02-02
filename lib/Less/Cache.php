@@ -216,7 +216,7 @@ class Less_Cache {
 
 		// only remove files with extensions created by less.php
 		// css files removed based on the list files
-		$remove_types = [ 'lesscache' => 1,'list' => 1,'less' => 1,'map' => 1 ];
+		$remove_types = [ 'lesscache' => 1, 'list' => 1, 'less' => 1, 'map' => 1 ];
 
 		$files = scandir( self::$cache_dir );
 		if ( !$files ) {

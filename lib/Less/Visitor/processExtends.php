@@ -98,10 +98,10 @@ class Less_Visitor_processExtends extends Less_Visitor {
 			// may no longer be needed.			$this->extendChainCount++;
 			if ( $iterationCount > 100 ) {
 
-				try{
+				try {
 					$selectorOne = $extendsToAdd[0]->selfSelectors[0]->toCSS();
 					$selectorTwo = $extendsToAdd[0]->selector->toCSS();
-				}catch ( Exception $e ) {
+				} catch ( Exception $e ) {
 					$selectorOne = "{unable to calculate}";
 					$selectorTwo = "{unable to calculate}";
 				}

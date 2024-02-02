@@ -46,7 +46,7 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 			}
 		}
 		$r = $value;
-		do{
+		do {
 			$value = $r;
 			if ( preg_match_all( '/@\{([\w-]+)\}/', $value, $matches ) ) {
 				foreach ( $matches[1] as $i => $match ) {
@@ -56,7 +56,7 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 					$r = str_replace( $matches[0][$i], $v, $r );
 				}
 			}
-		}while ( $r != $value );
+		} while ( $r != $value );
 
 		return new self( $this->quote . $r . $this->quote, $r, $this->escaped, $this->index, $this->currentFileInfo );
 	}

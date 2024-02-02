@@ -10,21 +10,21 @@ class Less_Parser {
 	 * @var array<string,mixed>
 	 */
 	public static $default_options = [
-		'compress'				=> false,			// option - whether to compress
-		'strictUnits'			=> false,			// whether units need to evaluate correctly
-		'strictMath'			=> false,			// whether math has to be within parenthesis
-		'relativeUrls'			=> true,			// option - whether to adjust URL's to be relative
-		'urlArgs'				=> '',				// whether to add args into url tokens
+		'compress'				=> false, // option - whether to compress
+		'strictUnits'			=> false, // whether units need to evaluate correctly
+		'strictMath'			=> false, // whether math has to be within parenthesis
+		'relativeUrls'			=> true, // option - whether to adjust URL's to be relative
+		'urlArgs'				=> '', // whether to add args into url tokens
 		'numPrecision'			=> 8,
 
 		'import_dirs'			=> [],
 		'import_callback'		=> null,
 		'cache_dir'				=> null,
-		'cache_method'			=> 'serialize',     // false, 'serialize', 'callback';
+		'cache_method'			=> 'serialize', // false, 'serialize', 'callback';
 		'cache_callback_get'	=> null,
 		'cache_callback_set'	=> null,
 
-		'sourceMap'				=> false,			// whether to output a source map
+		'sourceMap'				=> false, // whether to output a source map
 		'sourceMapBasepath'		=> null,
 		'sourceMapWriteTo'		=> null,
 		'sourceMapURL'			=> null,
@@ -245,9 +245,9 @@ class Less_Parser {
 		$variables = [];
 
 		$not_variable_type = [
-			Less_Tree_Comment::class,   // this include less comments ( // ) and css comments (/* */)
-			Less_Tree_Import::class,    // do not search variables in included files @import
-			Less_Tree_Ruleset::class,   // selectors (.someclass, #someid, …)
+			Less_Tree_Comment::class, // this include less comments ( // ) and css comments (/* */)
+			Less_Tree_Import::class, // do not search variables in included files @import
+			Less_Tree_Ruleset::class, // selectors (.someclass, #someid, …)
 			Less_Tree_Operation::class,
 		];
 
@@ -334,7 +334,7 @@ class Less_Parser {
 
 	private function rgb2html( $r, $g = -1, $b = -1 ) {
 		if ( is_array( $r ) && count( $r ) == 3 ) {
-			list( $r, $g, $b ) = $r;
+			[ $r, $g, $b ] = $r;
 		}
 
 		return sprintf( '#%02x%02x%02x', $r, $g, $b );
@@ -1167,7 +1167,7 @@ class Less_Parser {
 			return;
 		}
 
-		$value = $this->matcher( [ 'parseEntitiesQuoted','parseEntitiesVariable','/\\Gdata\:.*?[^\)]+/','/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/' ] );
+		$value = $this->matcher( [ 'parseEntitiesQuoted', 'parseEntitiesVariable', '/\\Gdata\:.*?[^\)]+/', '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/' ] );
 		if ( !$value ) {
 			$value = '';
 		}
@@ -1850,7 +1850,7 @@ class Less_Parser {
 
 		$op = $this->MatchReg( '/\\G[|~*$^]?=/' );
 		if ( $op ) {
-			$val = $this->matcher( [ 'parseEntitiesQuoted','/\\G[0-9]+%/','/\\G[\w-]+/','parseEntitiesVariableCurly' ] );
+			$val = $this->matcher( [ 'parseEntitiesQuoted', '/\\G[0-9]+%/', '/\\G[\w-]+/', 'parseEntitiesVariableCurly' ] );
 		}
 
 		$this->expectChar( ']' );
@@ -2081,7 +2081,7 @@ class Less_Parser {
 		if ( !$this->MatchChar( '(' ) ) {
 			return $options;
 		}
-		do{
+		do {
 			$optionName = $this->parseImportOption();
 			if ( $optionName ) {
 				$value = true;
@@ -2100,7 +2100,7 @@ class Less_Parser {
 					break;
 				}
 			}
-		}while ( $optionName );
+		} while ( $optionName );
 		$this->expectChar( ')' );
 		return $options;
 	}
@@ -2115,7 +2115,7 @@ class Less_Parser {
 	private function parseMediaFeature() {
 		$nodes = [];
 
-		do{
+		do {
 			$e = $this->parseEntitiesKeyword() ?? $this->parseEntitiesVariable();
 			if ( $e ) {
 				$nodes[] = $e;
@@ -2308,7 +2308,7 @@ class Less_Parser {
 	private function parseValue() {
 		$expressions = [];
 
-		do{
+		do {
 			$e = $this->parseExpression();
 			if ( $e ) {
 				$expressions[] = $e;
@@ -2394,7 +2394,7 @@ class Less_Parser {
 					$op = $op[0];
 				} else {
 					if ( !$isSpaced ) {
-						$op = $this->matcher( [ '#+','#-' ] );
+						$op = $this->matcher( [ '#+', '#-' ] );
 					}
 					if ( !$op ) {
 						break;

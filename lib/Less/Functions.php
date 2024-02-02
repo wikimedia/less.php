@@ -528,7 +528,7 @@ class Less_Functions {
 	}
 
 	public function escape( $str ) {
-		$revert = [ '%21' => '!', '%2A' => '*', '%27' => "'",'%3F' => '?','%26' => '&','%2C' => ',','%2F' => '/','%40' => '@','%2B' => '+','%24' => '$' ];
+		$revert = [ '%21' => '!', '%2A' => '*', '%27' => "'", '%3F' => '?', '%26' => '&', '%2C' => ',', '%2F' => '/', '%40' => '@', '%2B' => '+', '%24' => '$' ];
 
 		return new Less_Tree_Anonymous( strtr( rawurlencode( $str->value ), $revert ) );
 	}
@@ -578,9 +578,9 @@ class Less_Functions {
 		}
 		$result = str_replace( '%%', '%', $result );
 
-		 if ( $string instanceof Less_Tree_Quoted ) {
-			 return new Less_Tree_Quoted( $string->quote, $result, $string->escaped );
-		 }
+		if ( $string instanceof Less_Tree_Quoted ) {
+			return new Less_Tree_Quoted( $string->quote, $result, $string->escaped );
+		}
 		return new Less_Tree_Quoted( '', $result );
 	}
 
@@ -639,7 +639,7 @@ class Less_Functions {
 	}
 
 	public function floor( $n ) {
-	return $this->_math( 'floor', null, $n );
+		return $this->_math( 'floor', null, $n );
 	}
 
 	public function sqrt( $n ) {
@@ -1092,7 +1092,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to multiply must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendMultiply' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendMultiply' ], $color1, $color2 );
 	}
 
 	private function colorBlendMultiply( $cb, $cs ) {
@@ -1107,7 +1107,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to screen must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendScreen' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendScreen' ], $color1, $color2 );
 	}
 
 	private function colorBlendScreen( $cb, $cs ) {
@@ -1122,7 +1122,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to overlay must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendOverlay' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendOverlay' ], $color1, $color2 );
 	}
 
 	private function colorBlendOverlay( $cb, $cs ) {
@@ -1140,7 +1140,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to softlight must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendSoftlight' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendSoftlight' ], $color1, $color2 );
 	}
 
 	private function colorBlendSoftlight( $cb, $cs ) {
@@ -1162,7 +1162,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to hardlight must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendHardlight' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendHardlight' ], $color1, $color2 );
 	}
 
 	private function colorBlendHardlight( $cb, $cs ) {
@@ -1177,7 +1177,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to difference must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendDifference' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendDifference' ], $color1, $color2 );
 	}
 
 	private function colorBlendDifference( $cb, $cs ) {
@@ -1192,7 +1192,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to exclusion must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendExclusion' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendExclusion' ], $color1, $color2 );
 	}
 
 	private function colorBlendExclusion( $cb, $cs ) {
@@ -1207,7 +1207,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to average must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendAverage' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendAverage' ], $color1, $color2 );
 	}
 
 	// non-w3c functions:
@@ -1223,7 +1223,7 @@ class Less_Functions {
 			throw new Less_Exception_Compiler( 'The second argument to negation must be a color' . ( $color2 instanceof Less_Tree_Expression ? ' (did you forgot commas?)' : '' ) );
 		}
 
-		return $this->colorBlend( [ $this,'colorBlendNegation' ],  $color1, $color2 );
+		return $this->colorBlend( [ $this, 'colorBlendNegation' ], $color1, $color2 );
 	}
 
 	public function colorBlendNegation( $cb, $cs ) {

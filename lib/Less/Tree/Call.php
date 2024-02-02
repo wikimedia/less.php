@@ -62,19 +62,19 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 		$nameLC = strtolower( $this->name );
 		switch ( $nameLC ) {
 			case '%':
-			$nameLC = '_percent';
+				$nameLC = '_percent';
 				break;
 
 			case 'get-unit':
-			$nameLC = 'getunit';
+				$nameLC = 'getunit';
 				break;
 
 			case 'data-uri':
-			$nameLC = 'datauri';
+				$nameLC = 'datauri';
 				break;
 
 			case 'svg-gradient':
-			$nameLC = 'svggradient';
+				$nameLC = 'svggradient';
 				break;
 		}
 
