@@ -142,6 +142,10 @@ class Less_Tree_Import extends Less_Tree {
 		return $path;
 	}
 
+	/**
+	 * @param Less_Environment $env
+	 * @see less-2.5.3.js#Import.prototype.eval
+	 */
 	public function compile( $env ) {
 		$evald = $this->compileForImport( $env );
 
@@ -166,11 +170,8 @@ class Less_Tree_Import extends Less_Tree {
 		'@phan-var string $full_path';
 
 		if ( $this->options['inline'] ) {
-			// todo needs to reference css file not import
-			//$contents = new Less_Tree_Anonymous($this->root, 0, array('filename'=>$this->importedFilename), true );
-
 			Less_Parser::AddParsedFile( $full_path );
-			$contents = new Less_Tree_Anonymous( file_get_contents( $full_path ), 0, [], true );
+			$contents = new Less_Tree_Anonymous( file_get_contents( $full_path ), 0, [], true, true );
 
 			if ( $this->features ) {
 				return new Less_Tree_Media( [ $contents ], $this->features->value );

@@ -1,9 +1,9 @@
 <?php
 /**
  * @private
+ * @see less-2.5.3.js#Anonymous.prototype
  */
 class Less_Tree_Directive extends Less_Tree implements Less_Tree_HasValueProperty {
-
 	public $name;
 	public $value;
 	public $rules;
@@ -43,6 +43,14 @@ class Less_Tree_Directive extends Less_Tree implements Less_Tree_HasValuePropert
 		if ( $this->value ) {
 			$this->value = $visitor->visitObj( $this->value );
 		}
+	}
+
+	public function isRulesetLike() {
+		return $this->rules || !$this->isCharset();
+	}
+
+	public function isCharset() {
+		return $this->name === "@charset";
 	}
 
 	/**
@@ -103,8 +111,6 @@ class Less_Tree_Directive extends Less_Tree implements Less_Tree_HasValuePropert
 			return $this->rules[0]->find( $selector, $this );
 		}
 	}
-
-	// rulesets: function () { if (this.rules) return tree.Ruleset.prototype.rulesets.apply(this.rules); },
 
 	public function markReferenced() {
 		$this->isReferenced = true;

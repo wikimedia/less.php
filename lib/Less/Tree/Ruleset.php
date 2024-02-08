@@ -357,8 +357,23 @@ class Less_Tree_Ruleset extends Less_Tree {
 		return $this->lookups[$key];
 	}
 
+	private function isRulesetLikeNode( $rule ) {
+		// if it has nested rules, then it should be treated like a ruleset
+		// medias and comments do not have nested rules, but should be treated like rulesets anyway
+		// some directives and anonymous nodes are ruleset like, others are not
+		if ( $rule instanceof Less_Tree_Media || $rule instanceof Less_Tree_Ruleset ) {
+			return true;
+		} elseif ( $rule instanceof Less_Tree_Anonymous || $rule instanceof Less_Tree_Directive ) {
+			return $rule->isRulesetLike();
+		}
+
+		// anything else is assumed to be a rule
+		return false;
+	}
+
 	/**
-	 * @see Less_Tree::genCSS
+	 * @param Less_Output $output
+	 * @see less-2.5.3.js#Ruleset.prototype.genCSS
 	 */
 	public function genCSS( $output ) {
 		if ( !$this->root ) {
@@ -376,14 +391,21 @@ class Less_Tree_Ruleset extends Less_Tree {
 		}
 
 		$ruleNodes = [];
-		$rulesetNodes = [];
-		foreach ( $this->rules as $rule ) {
-			if ( $rule instanceof Less_Tree_Media ||
-				$rule instanceof Less_Tree_Directive ||
-				( $this->root && $rule instanceof Less_Tree_Comment ) ||
-				( $rule instanceof self && $rule->rules )
-			) {
-				$rulesetNodes[] = $rule;
+		$charsetNodeIndex = 0;
+		$importNodeIndex = 0;
+		foreach ( $this->rules as $i => $rule ) {
+			if ( $rule instanceof Less_Tree_Comment ) {
+				if ( $importNodeIndex === $i ) {
+					$importNodeIndex++;
+				}
+				$ruleNodes[] = $rule;
+			} elseif ( $rule instanceof Less_Tree_Directive && $rule->isCharset() ) {
+				array_splice( $ruleNodes, $charsetNodeIndex, 0, [ $rule ] );
+				$charsetNodeIndex++;
+				$importNodeIndex++;
+			} elseif ( $rule instanceof Less_Tree_Import ) {
+				array_splice( $ruleNodes, $importNodeIndex, 0, [ $rule ] );
+				$importNodeIndex++;
 			} else {
 				$ruleNodes[] = $rule;
 			}
@@ -392,18 +414,25 @@ class Less_Tree_Ruleset extends Less_Tree {
 		// If this is the root node, we don't render
 		// a selector, or {}.
 		if ( !$this->root ) {
-			$paths_len = count( $this->paths );
-			for ( $i = 0; $i < $paths_len; $i++ ) {
-				$path = $this->paths[$i];
-				$firstSelector = true;
 
-				foreach ( $path as $p ) {
-					$p->genCSS( $output, $firstSelector );
-					$firstSelector = false;
+			$sep = ',' . $tabSetStr;
+			// TODO: Move to Env object
+			// TODO: Inject Env object to toCSS() and genCSS()
+			$firstSelector = false;
+
+			foreach ( $this->paths as $i => $path ) {
+				$pathSubCnt = count( $path );
+				if ( !$pathSubCnt ) {
+					continue;
 				}
-
-				if ( $i + 1 < $paths_len ) {
-					$output->add( ',' . $tabSetStr );
+				if ( $i > 0 ) {
+					$output->add( $sep );
+				}
+				$firstSelector = true;
+				$path[0]->genCSS( $output, $firstSelector );
+				$firstSelector = false;
+				for ( $j = 1; $j < $pathSubCnt; $j++ ) {
+					$path[$j]->genCSS( $output, $firstSelector );
 				}
 			}
 
@@ -411,18 +440,20 @@ class Less_Tree_Ruleset extends Less_Tree {
 		}
 
 		// Compile rules and rulesets
-		$ruleNodes_len = count( $ruleNodes );
-		$rulesetNodes_len = count( $rulesetNodes );
-		for ( $i = 0; $i < $ruleNodes_len; $i++ ) {
-			$rule = $ruleNodes[$i];
+		foreach ( $ruleNodes as $i => $rule ) {
 
-			// @page{ directive ends up with root elements inside it, a mix of rules and rulesets
-			// In this instance we do not know whether it is the last property
-			if ( $i + 1 === $ruleNodes_len && ( !$this->root || $rulesetNodes_len === 0 || $this->firstRoot ) ) {
+			if ( $i + 1 === count( $ruleNodes ) ) {
 				Less_Environment::$lastRule = true;
+			}
+			$currentLastRule = Less_Environment::$lastRule;
+
+			if ( $this->isRulesetLikeNode( $rule ) ) {
+				Less_Environment::$lastRule = false;
 			}
 
 			$rule->genCSS( $output );
+
+			Less_Environment::$lastRule = $currentLastRule;
 
 			if ( !Less_Environment::$lastRule ) {
 				$output->add( $tabRuleStr );
@@ -434,19 +465,6 @@ class Less_Tree_Ruleset extends Less_Tree {
 		if ( !$this->root ) {
 			$output->add( $tabSetStr . '}' );
 			Less_Environment::$tabLevel--;
-		}
-
-		$firstRuleset = true;
-		$space = ( $this->root ? $tabRuleStr : $tabSetStr );
-		for ( $i = 0; $i < $rulesetNodes_len; $i++ ) {
-
-			if ( $ruleNodes_len && $firstRuleset ) {
-				$output->add( $space );
-			} elseif ( !$firstRuleset ) {
-				$output->add( $space );
-			}
-			$firstRuleset = false;
-			$rulesetNodes[$i]->genCSS( $output );
 		}
 
 		if ( !Less_Parser::$options['compress'] && $this->firstRoot ) {

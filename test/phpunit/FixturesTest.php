@@ -28,9 +28,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// TODO: This needs a task
 			'css-escapes' => true,
 
-			// This should also be fixed or might need further investigation
-			'import-inline' => true,
-
 			// Temporary disabled; Bug logged here T352867
 			'mixins-guards' => true,
 
