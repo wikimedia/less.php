@@ -191,15 +191,20 @@ class Less_Tree_Color extends Less_Tree {
 		return $this->toHex( $argb );
 	}
 
+	/**
+	 * @param mixed $x
+	 * @return int|null
+	 * @see less-2.5.3.js#Color.prototype.compare
+	 */
 	public function compare( $x ) {
-		if ( !property_exists( $x, 'rgb' ) ) {
+		if ( !$x instanceof self ) {
 			return -1;
 		}
 
 		return ( $x->rgb[0] === $this->rgb[0] &&
 			$x->rgb[1] === $this->rgb[1] &&
 			$x->rgb[2] === $this->rgb[2] &&
-			$x->alpha === $this->alpha ) ? 0 : -1;
+			$x->alpha === $this->alpha ) ? 0 : null;
 	}
 
 	public function toHex( $v ) {

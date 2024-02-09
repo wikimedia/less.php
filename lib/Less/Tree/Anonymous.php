@@ -26,19 +26,13 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 		return new self( $this->value, $this->index, $this->currentFileInfo, $this->mapLines );
 	}
 
+	/**
+	 * @param Less_Tree|mixed $x
+	 * @return int|null
+	 * @see less-2.5.3.js#Anonymous.prototype.compare
+	 */
 	public function compare( $x ) {
-		if ( !is_object( $x ) ) {
-			return -1;
-		}
-
-		$left = $this->toCSS();
-		$right = $x->toCSS();
-
-		if ( $left === $right ) {
-			return 0;
-		}
-
-		return $left < $right ? -1 : 1;
+		return ( is_object( $x ) && $this->toCSS() === $x->toCSS() ) ? 0 : null;
 	}
 
 	/**
