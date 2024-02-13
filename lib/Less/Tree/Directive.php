@@ -17,7 +17,7 @@ class Less_Tree_Directive extends Less_Tree implements Less_Tree_HasValuePropert
 		$this->name = $name;
 		$this->value = $value;
 
-		if ( $rules ) {
+		if ( $rules !== null ) {
 			if ( is_array( $rules ) ) {
 				$this->rules = $rules;
 			} else {
@@ -57,14 +57,12 @@ class Less_Tree_Directive extends Less_Tree implements Less_Tree_HasValuePropert
 	 * @see Less_Tree::genCSS
 	 */
 	public function genCSS( $output ) {
-		$value = $this->value;
-		$rules = $this->rules;
 		$output->add( $this->name, $this->currentFileInfo, $this->index );
 		if ( $this->value ) {
 			$output->add( ' ' );
 			$this->value->genCSS( $output );
 		}
-		if ( $this->rules ) {
+		if ( $this->rules !== null ) {
 			Less_Tree::outputRuleset( $output, $this->rules );
 		} else {
 			$output->add( ';' );

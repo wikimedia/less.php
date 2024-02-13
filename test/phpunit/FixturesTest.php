@@ -35,7 +35,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'mixin-args' => true,
 
 			// Temporary disabled; Bug logged here T352862
-			'css-3' => true,
 			'import-reference' => true,
 
 			// TODO; Create Task for import-interpolation
