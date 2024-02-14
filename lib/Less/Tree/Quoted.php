@@ -61,18 +61,19 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 		return new self( $this->quote . $r . $this->quote, $r, $this->escaped, $this->index, $this->currentFileInfo );
 	}
 
-	public function compare( $x ) {
-		if ( !Less_Parser::is_method( $x, 'toCSS' ) ) {
-			return -1;
+	/**
+	 * @param mixed $other
+	 * @return int|null
+	 * @see less-2.5.3.js#Quoted.prototype.compare
+	 */
+	public function compare( $other ) {
+		if ( $other instanceof self && !$this->escaped && !$other->escaped ) {
+			return Less_Tree::numericCompare( $this->value, $other->value );
+		} else {
+			return (
+				Less_Parser::is_method( $other, 'toCSS' )
+				&& $this->toCSS() === $other->toCSS()
+			) ? 0 : null;
 		}
-
-		$left = $this->toCSS();
-		$right = $x->toCSS();
-
-		if ( $left === $right ) {
-			return 0;
-		}
-
-		return $left < $right ? -1 : 1;
 	}
 }

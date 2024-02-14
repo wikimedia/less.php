@@ -1,0 +1,14 @@
+.test-mixin(@value) when (@value = "test") {
+  background: red;
+}
+
+.test-mixin(@value) when (@value = 'test') {
+  background: blue;
+}
+
+double {
+  .test-mixin("test")
+}
+single {
+  .test-mixin('test')
+}

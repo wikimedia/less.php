@@ -64,6 +64,63 @@ class Less_Tree {
 	public function accept( $visitor ) {
 	}
 
+	/**
+	 * @param Less_Tree $a
+	 * @param Less_Tree $b
+	 * @return int|null
+	 * @see less-2.5.3.js#Node.compare
+	 */
+	public static function nodeCompare( $a, $b ) {
+		// Less_Tree subclasses that implement compare() are:
+		// Anonymous, Color, Dimension, Keyword, Quoted, Unit
+		if ( $b instanceof Less_Tree_Quoted || $b instanceof Less_Tree_Anonymous ) {
+			// for "symmetric results" force toCSS-based comparison via b.compare()
+			// of Quoted or Anonymous if either value is one of those
+			return -$b->compare( $a );
+		} elseif ( $a instanceof Less_Tree_Anonymous || $a instanceof Less_Tree_Color
+			|| $a instanceof Less_Tree_Dimension || $a instanceof Less_Tree_Keyword
+			|| $a instanceof Less_Tree_Quoted || $a instanceof Less_Tree_Unit
+		) {
+			return $a->compare( $b );
+		} elseif ( get_class( $a ) !== get_class( $b ) ) {
+			return null;
+		}
+
+		// Less_Tree subclasses that have an array value: Less_Tree_Expression, Less_Tree_Value
+		// @phan-suppress-next-line PhanUndeclaredProperty
+		$aval = $a->value ?? [];
+		// @phan-suppress-next-line PhanUndeclaredProperty
+		$bval = $b->value ?? [];
+		if ( !( $a instanceof Less_Tree_Expression || $a instanceof Less_Tree_Value ) ) {
+			return $aval === $bval ? 0 : null;
+		}
+		if ( count( $aval ) !== count( $bval ) ) {
+			return null;
+		}
+		foreach ( $aval as $i => $item ) {
+			if ( self::nodeCompare( $item, $bval[$i] ) !== 0 ) {
+				return null;
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * @param string|float|int $a
+	 * @param string|float|int $b
+	 * @return int|null
+	 * @see less-2.5.3.js#Node.numericCompare
+	 */
+	public static function numericCompare( $a, $b ) {
+		return $a < $b ? -1
+			: ( $a === $b ? 0
+				: ( $a > $b ? 1
+					// NAN is not greater, less, or equal
+					: null
+				)
+			);
+	}
+
 	public static function ReferencedArray( $rules ) {
 		foreach ( $rules as $rule ) {
 			if ( method_exists( $rule, 'markReferenced' ) ) {

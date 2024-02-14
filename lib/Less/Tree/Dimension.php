@@ -110,32 +110,28 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 		return new self( $value, $unit );
 	}
 
+	/**
+	 * @param Less_Tree $other
+	 * @return int|null
+	 * @see less-2.5.3.js#Dimension.prototype.compare
+	 */
 	public function compare( $other ) {
-		if ( $other instanceof self ) {
-
-			if ( $this->unit->isEmpty() || $other->unit->isEmpty() ) {
-				$a = $this;
-				$b = $other;
-			} else {
-				$a = $this->unify();
-				$b = $other->unify();
-				if ( $a->unit->compare( $b->unit ) !== 0 ) {
-					return -1;
-				}
-			}
-			$aValue = $a->value;
-			$bValue = $b->value;
-
-			if ( $bValue > $aValue ) {
-				return -1;
-			} elseif ( $bValue < $aValue ) {
-				return 1;
-			} else {
-				return 0;
-			}
-		} else {
-			return -1;
+		if ( !$other instanceof self ) {
+			return null;
 		}
+
+		if ( $this->unit->isEmpty() || $other->unit->isEmpty() ) {
+			$a = $this;
+			$b = $other;
+		} else {
+			$a = $this->unify();
+			$b = $other->unify();
+			if ( $a->unit->compare( $b->unit ) !== 0 ) {
+				return null;
+			}
+		}
+
+		return Less_Tree::numericCompare( $a->value, $b->value );
 	}
 
 	public function unify() {
