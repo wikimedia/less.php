@@ -62,11 +62,12 @@ class Less_Tree_Element extends Less_Tree implements Less_Tree_HasValueProperty 
 			$value = $this->value;
 		}
 
-		if ( $value === '' && $this->combinator === '&' ) {
-			return '';
+		$spaceOrEmpty = ' ';
+		if ( Less_Parser::$options['compress'] || ( isset( Less_Environment::$_noSpaceCombinators[$this->combinator] ) && Less_Environment::$_noSpaceCombinators[$this->combinator] ) ) {
+			$spaceOrEmpty = '';
 		}
 
-		return Less_Environment::$_outputMap[$this->combinator] . $value;
+		return $spaceOrEmpty . $this->combinator . $spaceOrEmpty . $value;
 	}
 
 }

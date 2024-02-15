@@ -922,13 +922,13 @@ class Less_Parser {
 				continue;
 			}
 
-			$node = $this->parseMixinDefinition()
+			$node = $this->parseComment()
+				?? $this->parseMixinDefinition()
 				// Optimisation: NameValue is specific to less.php
 				?? $this->parseNameValue()
 				?? $this->parseRule()
 				?? $this->parseRuleset()
 				?? $this->parseMixinCall()
-				?? $this->parseComment()
 				?? $this->parseRulesetCall()
 				?? $this->parseDirective();
 
@@ -1749,11 +1749,21 @@ class Less_Parser {
 	private function parseCombinator() {
 		if ( $this->pos < $this->input_len ) {
 			$c = $this->input[$this->pos];
+			if ( $c === '/' ) {
+				$this->save();
+				$slashedCombinator = $this->matcher( [ '/\/[a-z]+\//i' ] );
+				if ( $slashedCombinator ) {
+					$this->forget();
+					return $slashedCombinator;
+				}
+				$this->restore();
+			}
+
 			// TODO: Figure out why less.js also handles '/' here, and implement with regression test.
 			if ( $c === '>' || $c === '+' || $c === '~' || $c === '|' || $c === '^' ) {
 
 				$this->pos++;
-				if ( $this->input[$this->pos] === '^' ) {
+				if ( $c === '^' && $this->input[$this->pos] === '^' ) {
 					$c = '^^';
 					$this->pos++;
 				}
@@ -2245,6 +2255,9 @@ class Less_Parser {
 			isRooted = true;
 			break;
 			*/
+			case "@counter-style":
+				$hasIdentifier = true;
+				break;
 			case "@charset":
 				$hasIdentifier = true;
 				$hasBlock = false;
@@ -2354,11 +2367,13 @@ class Less_Parser {
 				if ( $this->PeekReg( '/\\G\/[*\/]/' ) ) {
 					break;
 				}
+				$this->save();
 
 				$op = $this->MatchChar( '/' );
 				if ( !$op ) {
 					$op = $this->MatchChar( '*' );
 					if ( !$op ) {
+						$this->forget();
 						break;
 					}
 				}
@@ -2366,6 +2381,7 @@ class Less_Parser {
 				$a = $this->parseOperand();
 
 				if ( !$a ) {
+					$this->restore();
 					break;
 				}
 
