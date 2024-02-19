@@ -28,7 +28,7 @@ class Less_Tree_NameValue extends Less_Tree implements Less_Tree_HasValuePropert
 	public function genCSS( $output ) {
 		$output->add(
 			$this->name
-			. Less_Environment::$_outputMap[': ']
+			. ( Less_Parser::$options['compress'] ? ':' : ': ' )
 			. $this->value
 			. $this->important
 			. ( ( ( Less_Environment::$lastRule && Less_Parser::$options['compress'] ) ) ? "" : ";" ),

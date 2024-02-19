@@ -31,14 +31,14 @@ class Less_Tree_Value extends Less_Tree implements Less_Tree_HasValueProperty {
 	}
 
 	/**
-	 * @see Less_Tree::genCSS
+	 * @see less-2.5.3.js#Value.prototype.genCSS
 	 */
 	public function genCSS( $output ) {
 		$len = count( $this->value );
 		for ( $i = 0; $i < $len; $i++ ) {
 			$this->value[$i]->genCSS( $output );
 			if ( $i + 1 < $len ) {
-				$output->add( Less_Environment::$_outputMap[','] );
+				$output->add( Less_Parser::$options['compress'] ? ',' : ', ' );
 			}
 		}
 	}

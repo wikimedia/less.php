@@ -42,10 +42,10 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 	}
 
 	/**
-	 * @see Less_Tree::genCSS
+	 * @see less-2.5.3.js#Rule.prototype.genCSS
 	 */
 	public function genCSS( $output ) {
-		$output->add( $this->name . Less_Environment::$_outputMap[': '], $this->currentFileInfo, $this->index );
+		$output->add( $this->name . ( Less_Parser::$options['compress'] ? ':' : ': ' ), $this->currentFileInfo, $this->index );
 		try {
 			$this->value->genCSS( $output );
 
