@@ -170,7 +170,7 @@ class Less_Tree_Import extends Less_Tree {
 		'@phan-var string $full_path';
 
 		if ( $this->options['inline'] ) {
-			Less_Parser::AddParsedFile( $full_path );
+			$env->addParsedFile( $full_path );
 			$contents = new Less_Tree_Anonymous( file_get_contents( $full_path ), 0, [], true, true );
 
 			if ( $this->features ) {
@@ -260,7 +260,11 @@ class Less_Tree_Import extends Less_Tree {
 	 * @return Less_Tree_Media|array
 	 */
 	public function ParseImport( $full_path, $uri, $env ) {
+		// Most of the env changes during importing temporary, so make a copy.
+		// Except the imports list, which needs to be merged into the main env.
+		// Set it by-ref, to match JavaScript behaviour.
 		$import_env = clone $env;
+		$import_env->imports =& $env->imports;
 		if ( ( isset( $this->options['reference'] ) && $this->options['reference'] ) || isset( $this->currentFileInfo['reference'] ) ) {
 			$import_env->currentFileInfo['reference'] = true;
 		}
@@ -288,7 +292,7 @@ class Less_Tree_Import extends Less_Tree {
 	private function skip( $path, $env ) {
 		$path = Less_Parser::AbsPath( $path, true );
 
-		if ( $path && Less_Parser::FileParsed( $path ) ) {
+		if ( $path && $env->isFileParsed( $path ) ) {
 
 			if ( isset( $this->currentFileInfo['reference'] ) ) {
 				return true;

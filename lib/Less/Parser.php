@@ -36,8 +36,11 @@ class Less_Parser {
 
 	];
 
-	/** @var array{compress:bool,strictUnits:bool,strictMath:bool,numPrecision:int,import_dirs:array,import_callback:null|callable,indentation:string} */
+	/** @var array{compress:bool,strictUnits:bool,strictMath:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,import_callback:null|callable,indentation:string} */
 	public static $options = [];
+
+	/** @var Less_Environment */
+	private static $envCompat;
 
 	private $input;					// Less input string
 	private $input_len;				// input string length
@@ -52,8 +55,6 @@ class Less_Parser {
 	private $env;
 
 	protected $rules = [];
-
-	private static $imports = [];
 
 	public static $has_extends = false;
 
@@ -74,8 +75,8 @@ class Less_Parser {
 		// which will then be passed around by reference.
 		if ( $env instanceof Less_Environment ) {
 			$this->env = $env;
+			self::$envCompat = $this->env;
 		} else {
-			$this->SetOptions( self::$default_options );
 			$this->Reset( $env );
 		}
 
@@ -93,16 +94,15 @@ class Less_Parser {
 	 */
 	public function Reset( $options = null ) {
 		$this->rules = [];
-		self::$imports = [];
 		self::$has_extends = false;
-		self::$imports = [];
 		self::$contentsMap = [];
 
 		$this->env = new Less_Environment();
+		self::$envCompat = $this->env;
 
 		// set new options
+		$this->SetOptions( self::$default_options );
 		if ( is_array( $options ) ) {
-			$this->SetOptions( self::$default_options );
 			$this->SetOptions( $options );
 		}
 
@@ -124,6 +124,10 @@ class Less_Parser {
 	 */
 	public function SetOption( $option, $value ) {
 		switch ( $option ) {
+			case 'strictMath':
+				$this->env->strictMath = (bool)$value;
+				self::$options[$option] = $value;
+				return;
 
 			case 'import_dirs':
 				$this->SetImportDirs( $value );
@@ -444,7 +448,7 @@ class Less_Parser {
 
 		$this->SetFileInfo( $filename, $uri_root );
 
-		self::AddParsedFile( $filename );
+		$this->env->addParsedFile( $filename );
 
 		if ( $returnRoot ) {
 			$rules = $this->GetRules( $filename );
@@ -706,22 +710,19 @@ class Less_Parser {
 	}
 
 	/**
-	 * @internal For use by Less_Tree_Import
+	 * @deprecated since 4.3.0 Use $parser->getParsedFiles() instead.
+	 * @return string[]
 	 */
-	public static function AddParsedFile( $file ) {
-		self::$imports[] = $file;
-	}
-
 	public static function AllParsedFiles() {
-		return self::$imports;
+		return self::$envCompat->imports;
 	}
 
 	/**
-	 * @internal For use by Less_Tree_Import
-	 * @param string $file
+	 * @since 4.3.0
+	 * @return string[]
 	 */
-	public static function FileParsed( $file ) {
-		return in_array( $file, self::$imports );
+	public function getParsedFiles() {
+		return $this->env->imports;
 	}
 
 	/**

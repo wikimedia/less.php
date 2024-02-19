@@ -54,7 +54,7 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 			if ( !$this->parensInOp ) {
 				Less_Environment::$parensStack--;
 
-			} elseif ( !Less_Environment::isMathOn() && !$doubleParen ) {
+			} elseif ( !$env->isMathOn() && !$doubleParen ) {
 				$returnValue = new Less_Tree_Paren( $returnValue );
 
 			}

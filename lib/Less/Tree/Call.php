@@ -36,10 +36,10 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 	// like: `saturate(@mycolor)`.
 	// The function should receive the value, not the variable.
 	//
-	public function compile( $env = null ) {
+	public function compile( $env ) {
 		// Turn off math for calc(). https://phabricator.wikimedia.org/T331688
-		$currentMathContext = Less_Environment::$mathOn;
-		Less_Environment::$mathOn = $this->mathOn;
+		$currentMathContext = $env->strictMath;
+		$env->strictMath = !$this->mathOn;
 
 		$args = [];
 		foreach ( $this->args as $a ) {
@@ -57,7 +57,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 			}
 		}
 
-		Less_Environment::$mathOn = $currentMathContext;
+		$env->strictMath = $currentMathContext;
 
 		$nameLC = strtolower( $this->name );
 		switch ( $nameLC ) {
@@ -127,9 +127,5 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 
 		$output->add( ')' );
 	}
-
-	// public function toCSS(){
-	//    return $this->compile()->toCSS();
-	//}
 
 }

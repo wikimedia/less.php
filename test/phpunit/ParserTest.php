@@ -39,22 +39,28 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 		);
 	}
 
-	public function testAllParsedFiles() {
+	public function testGetParsedFiles() {
 		$parser = new Less_Parser();
 		$baseDir = Less_Parser::WinPath( realpath( $this->fixtures_dir . '/less.php/less' ) );
 		$parser->parseFile( $baseDir . '/imports.less' );
 		$parser->getCss();
 
-		$files = $parser->AllParsedFiles();
-		$files = array_map( fn ( $file ) => str_replace( $baseDir, '', $file ), $files );
+		$files = $parser->getParsedFiles();
 
+		$normalFiles = array_map( fn ( $file ) => str_replace( $baseDir, '', $file ), $files );
 		$this->assertEqualsCanonicalizing(
 			[
 				'/imports.less',
 				'/imports/b.less',
 				'/imports/a.less'
 			],
-			$files
+			$normalFiles
+		);
+
+		$this->assertEquals(
+			$files,
+			Less_Parser::AllParsedFiles(),
+			'AllParsedFiles compatibility'
 		);
 	}
 

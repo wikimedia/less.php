@@ -58,6 +58,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 	}
 
 	/**
+	 * @see less-2.5.3.js#Rule.prototype.eval
 	 * @param Less_Environment $env
 	 * @return self
 	 */
@@ -73,9 +74,10 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 			}
 		}
 
-		$strictMathBypass = Less_Parser::$options['strictMath'];
-		if ( $name === "font" && !Less_Parser::$options['strictMath'] ) {
-			Less_Parser::$options['strictMath'] = true;
+		$strictMathBypass = false;
+		if ( $name === "font" && !$env->strictMath ) {
+			$strictMathBypass = true;
+			$env->strictMath = true;
 		}
 
 		try {
@@ -102,7 +104,9 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 			throw $e;
 		}
 
-		Less_Parser::$options['strictMath'] = $strictMathBypass;
+		if ( $strictMathBypass ) {
+			$env->strictMath = false;
+		}
 
 		return $return;
 	}
