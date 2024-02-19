@@ -25,9 +25,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// If T352866 is fixed, this is should also be resolved
 			'variables' => true,
 
-			// TODO: This needs a task
-			'css-escapes' => true,
-
 			// Temporary disabled; Bug logged here T352867
 			'mixins-guards' => true,
 
@@ -42,9 +39,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 
 			// Temporary disabled; Bug logged here T352897
 			'mixins-args' => true,
-
-			// Temporary disabled: Bug logged here T352911
-			'whitespace' => true,
 
 			// Temporary disabled: After fixing T352911 & T352866
 			// This might be resolved

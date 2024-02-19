@@ -1959,15 +1959,16 @@ class Less_Parser {
 		$index = $this->pos;
 		$this->save();
 
-		$match = $this->MatchReg( '/\\G([a-zA-Z\-]+)\s*:\s*([\'"]?[#a-zA-Z0-9\-%\.,]+?[\'"]?) *(! *important)?\s*([;}])/' );
+		$match = $this->MatchReg( '/\\G([a-zA-Z\-]+)\s*:\s*([\'"]?[#a-zA-Z0-9\-%\.,]+?[\'"]?\s*) *(! *important)?\s*([;}])/' );
 		if ( $match ) {
 
 			if ( $match[4] == '}' ) {
 				$this->pos = $index + strlen( $match[0] ) - 1;
+				$match[2] = rtrim( $match[2] );
 			}
 
 			if ( $match[3] ) {
-				$match[2] .= ' !important';
+				$match[2] .= $match[3];
 			}
 
 			return new Less_Tree_NameValue( $match[1], $match[2], $index, $this->env->currentFileInfo );
