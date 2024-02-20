@@ -656,9 +656,10 @@ class Less_Parser {
 	}
 
 	/**
-	 * Set up the input buffer
+	 * @internal since 4.3.0 No longer a public API.
 	 */
 	public function SetInput( $file_path ) {
+		// Set up the input buffer
 		if ( $file_path ) {
 			$this->input = file_get_contents( $file_path );
 		}
@@ -676,13 +677,17 @@ class Less_Parser {
 	}
 
 	/**
-	 * Free up some memory
+	 * @internal since 4.3.0 No longer a public API.
 	 */
 	public function UnsetInput() {
+		// Free up some memory
 		$this->input = $this->pos = $this->input_len = $this->furthest = null;
 		$this->saveStack = [];
 	}
 
+	/**
+	 * @internal since 4.3.0 Use Less_Cache instead.
+	 */
 	public function CacheFile( $file_path ) {
 		if ( $file_path && $this->CacheEnabled() ) {
 
@@ -700,6 +705,9 @@ class Less_Parser {
 		}
 	}
 
+	/**
+	 * @internal For use by Less_Tree_Import
+	 */
 	public static function AddParsedFile( $file ) {
 		self::$imports[] = $file;
 	}
@@ -709,12 +717,16 @@ class Less_Parser {
 	}
 
 	/**
+	 * @internal For use by Less_Tree_Import
 	 * @param string $file
 	 */
 	public static function FileParsed( $file ) {
 		return in_array( $file, self::$imports );
 	}
 
+	/**
+	 * @internal since 4.3.0 No longer a public API.
+	 */
 	public function save() {
 		$this->saveStack[] = $this->pos;
 	}
@@ -813,14 +825,14 @@ class Less_Parser {
 	 * @param string $tok
 	 * @return int|false
 	 */
-	public function PeekReg( $tok ) {
+	private function PeekReg( $tok ) {
 		return preg_match( $tok, $this->input, $match, 0, $this->pos );
 	}
 
 	/**
 	 * @param string $tok
 	 */
-	public function PeekChar( $tok ) {
+	private function PeekChar( $tok ) {
 		return ( $this->pos < $this->input_len ) && ( $this->input[$this->pos] === $tok );
 	}
 
@@ -828,7 +840,7 @@ class Less_Parser {
 	 * @param int $length
 	 * @see less-2.5.3.js#skipWhitespace
 	 */
-	public function skipWhitespace( $length ) {
+	private function skipWhitespace( $length ) {
 		$this->pos += $length;
 		// Optimization: Skip over irrelevant chars without slow loop
 		$this->pos += strspn( $this->input, "\n\r\t ", $this->pos );
@@ -838,7 +850,7 @@ class Less_Parser {
 	 * @param string $tok
 	 * @param string|null $msg
 	 */
-	public function expect( $tok, $msg = null ) {
+	private function expect( $tok, $msg = null ) {
 		$result = $this->matcher( [ $tok ] );
 		if ( !$result ) {
 			$this->Error( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
@@ -851,7 +863,7 @@ class Less_Parser {
 	 * @param string $tok
 	 * @param string|null $msg
 	 */
-	public function expectChar( $tok, $msg = null ) {
+	private function expectChar( $tok, $msg = null ) {
 		$result = $this->MatchChar( $tok );
 		if ( !$result ) {
 			$msg = $msg ?: "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'";
@@ -1257,7 +1269,7 @@ class Less_Parser {
 	 *
 	 * @return Less_Tree_UnicodeDescriptor|null
 	 */
-	public function parseUnicodeDescriptor() {
+	private function parseUnicodeDescriptor() {
 		// Optimization: Hardcode first char, to avoid MatchReg() cost for common case
 		$char = $this->input[$this->pos] ?? null;
 		if ( $char !== 'U' ) {
@@ -1335,7 +1347,7 @@ class Less_Parser {
 	//
 	// extend syntax - used to extend selectors
 	//
-	public function parseExtend( $isRule = false ) {
+	private function parseExtend( $isRule = false ) {
 		$index = $this->pos;
 		$extendList = [];
 
@@ -2043,7 +2055,7 @@ class Less_Parser {
 		}
 	}
 
-	public function parseAnonymousValue() {
+	private function parseAnonymousValue() {
 		$match = $this->MatchReg( '/\\G([^@+\/\'"*`(;{}-]*);/' );
 		if ( $match ) {
 			return new Less_Tree_Anonymous( $match[1] );
@@ -2358,7 +2370,7 @@ class Less_Parser {
 	 *
 	 * @return Less_Tree_Operation|null
 	 */
-	public function parseMultiplication() {
+	private function parseMultiplication() {
 		$return = $m = $this->parseOperand();
 		if ( $return ) {
 			while ( true ) {
