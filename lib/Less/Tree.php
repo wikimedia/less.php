@@ -76,7 +76,11 @@ class Less_Tree {
 		if ( $b instanceof Less_Tree_Quoted || $b instanceof Less_Tree_Anonymous ) {
 			// for "symmetric results" force toCSS-based comparison via b.compare()
 			// of Quoted or Anonymous if either value is one of those
-			return -$b->compare( $a );
+			// In JS, `-undefined` produces NAN, which, just like undefined
+			// will enter the the default/false branch of Less_Tree_Condition#compile.
+			// In PHP, `-null` is 0. To ensure parity, preserve the null.
+			$res = $b->compare( $a );
+			return $res !== null ? -$res : null;
 		} elseif ( $a instanceof Less_Tree_Anonymous || $a instanceof Less_Tree_Color
 			|| $a instanceof Less_Tree_Dimension || $a instanceof Less_Tree_Keyword
 			|| $a instanceof Less_Tree_Quoted || $a instanceof Less_Tree_Unit

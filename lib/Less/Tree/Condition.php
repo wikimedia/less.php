@@ -42,20 +42,19 @@ class Less_Tree_Condition extends Less_Tree {
 				break;
 
 			default:
-				switch ( Less_Tree::nodeCompare( $a, $b ) ) {
-					case -1:
-						$result = $this->op === '<' || $this->op === '=<' || $this->op === '<=';
-						break;
-					case 0:
-						$result = $this->op === '=' || $this->op === '>=' || $this->op === '=<' || $this->op === '<=';
-						break;
-					case 1:
-						$result = $this->op === '>' || $this->op === '>=';
-						break;
-					default:
-						$result = false;
+				$res = Less_Tree::nodeCompare( $a, $b );
+				// In JS, switch(undefined) with -1,0,-1,defaults goes to `default`.
+				// In PHP, switch(null) would go to case 0. Use if/else instead.
+				if ( $res === -1 ) {
+					$result = $this->op === '<' || $this->op === '=<' || $this->op === '<=';
+				} elseif ( $res === 0 ) {
+					$result = $this->op === '=' || $this->op === '>=' || $this->op === '=<' || $this->op === '<=';
+				} elseif ( $res === 1 ) {
+					$result = $this->op === '>' || $this->op === '>=';
+				} else {
+					// null, NAN
+					$result = false;
 				}
-				break;
 		}
 
 		return $this->negate ? !$result : $result;

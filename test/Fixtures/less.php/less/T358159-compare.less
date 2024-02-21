@@ -1,0 +1,9 @@
+.example(@x) when not (@x = false) and not (@x = '') {
+  @fontSize: unit(@x, rem);
+}
+
+.example(42);
+
+body {
+  font-size: @fontSize;
+}
