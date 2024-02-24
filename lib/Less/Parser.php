@@ -2385,6 +2385,7 @@ class Less_Parser {
 					$this->restore();
 					break;
 				}
+				$this->forget();
 
 				$m->parensInOp = true;
 				$a->parensInOp = true;

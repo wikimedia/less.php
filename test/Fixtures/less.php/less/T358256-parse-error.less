@@ -1,0 +1,9 @@
+@example: 24px;
+
+.myfunc(@something) {
+	font-weight: normal;
+}
+
+div {
+	.myfunc(@something: @example/2);
+}
