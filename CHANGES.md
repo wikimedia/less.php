@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.2.1
+
+Added:
+* Add support for `/deep/` selectors (Hannah Okwelum) [T352862](https://phabricator.wikimedia.org/T352862)
+
+Fixed:
+* Fix ParseError in some division expressions (Hannah Okwelum) [T358256](https://phabricator.wikimedia.org/T358256)
+* Fix `when()` matching between string and non-string (Timo Tijhof) [T358159](https://phabricator.wikimedia.org/T358159)
+* Preserve whitespace before `;` or `!` in simple rules (Hannah Okwelum) [T352911](https://phabricator.wikimedia.org/T352911)
+
 ## 4.2.0
 
 Added:
