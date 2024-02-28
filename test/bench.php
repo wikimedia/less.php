@@ -7,24 +7,17 @@ class LessPhpBenchmark {
 		'strings' => [
 			'count' => 500,
 			'files' => [
-				__DIR__ . '/Fixtures/codex-icons/*.less',
-				__DIR__ . '/Fixtures/lessjs/less/strings.less',
+				__DIR__ . '/Fixtures/bench-strings/*.less',
 			],
 		],
-		'%s_fixtures' => [
+		'bootstrap-3.0.3' => [
 			'count' => 50,
 			'files' => [
 				__DIR__ . '/Fixtures/bootstrap-3.0.3/less/bootstrap.less',
-				__DIR__ . '/Fixtures/lessjs/less/*.less',
-				__DIR__ . '/Fixtures/less.php/less/*.less',
-				__DIR__ . '/Fixtures/bug-reports/less/*.less',
 			],
 		],
 	];
 	private const FIXTURES_FAIL = [
-		__DIR__ . '/Fixtures/bug-reports/less/109.less',
-		__DIR__ . '/Fixtures/bug-reports/less/129.less',
-		__DIR__ . '/Fixtures/bug-reports/less/259.less',
 	];
 
 	public function run() {

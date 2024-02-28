@@ -17,53 +17,28 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		],
 
 		'lessjs-2.5.3' => [
-			// Permanently disabled: not supported.
-			'plugin' => true,
-			'javascript' => true,
-
-			// Temporary disabled; Bug logged here T352830
-			// If T352866 is fixed, this is should also be resolved
-			'variables' => true,
-
-			// Temporary disabled; Bug logged here T352867
-			'mixins-guards' => true,
-
-			// Temporary disabled; Bug logged here T352897
-			'mixin-args' => true,
-
-			// Temporary disabled; Bug logged here T352862
-			'import-reference' => true,
-
-			// TODO; Create Task for import-interpolation
-			'import-interpolation' => true,
-
-			// Temporary disabled; Bug logged here T352897
-			'mixins-args' => true,
-
-			// Temporary disabled: After fixing T352911 & T352866
-			// This might be resolved
-			'css' => true,
-
-			 // Temporary disabled: Bug logged here T353146
-			'import' => true,
-
-			// Temporary disabled:Bug logged here T353147
-			'urls' => true,
-
-			// Temporary disabled; Bug logged T353131 & T353132
-			'comments' => true,
-			'comments2' => true,
-
-			// Temporary disabled; Bug logged T353144
-			'css-guards' => true,
-
+			// Permanently disabled
+			'plugin' => true, // Not supported.
+			'javascript' => true, // Not supported.
 			// We moved this to Less.php parens.less test case because
 			// our current version of Less.php suports Less.js v3.x parens
 			// behaviour of doing maths in parentheses by default
 			'parens' => true,
 
-			// Temporary disabled; Bug logged T353143
-			'detached-rulesets' => true,
+			// Temporary disabled
+			'comments' => true, // T353131 & T353132
+			'comments2' => true, // T353131 & T353132
+			'css' => true, // T352911 & T352866
+			'css-guards' => true, // T353144
+			'detached-rulesets' => true, // T353143
+			'import' => true, // T353146
+			'import-interpolation' => true, // TODO
+			'import-reference' => true, // T352862
+			'mixin-args' => true, // T352897
+			'mixins-args' => true, // T352897
+			'mixins-guards' => true, // T352867
+			'urls' => true, // T353147
+			'variables' => true, // T352830, T352866
 		]
 	];
 
