@@ -69,21 +69,27 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 
 	public static function provideFixtures() {
 		foreach ( [
-			// 'lessjs' => 'expected',
-			'less.php' => 'css',
-			'bug-reports' => 'css',
-			'lessjs-2.5.3' => 'expected'
-		] as $group => $expectedSubdir ) {
-			$expectedDir = self::getFixtureDir() . "/$group/$expectedSubdir";
-			if ( !is_dir( $expectedDir ) ) {
+			'less.php',
+			'bug-reports',
+			'lessjs-2.5.3',
+		] as $group ) {
+			$outputDir = self::getFixtureDir() . "/$group/css";
+			if ( !is_dir( $outputDir ) ) {
 				// Check because glob() tolerances non-existence
-				throw new RuntimeException( "Directory missing: $expectedDir" );
+				throw new RuntimeException( "Directory missing: $outputDir" );
 			}
-			foreach ( glob( "$expectedDir/*.css" ) as $cssFile ) {
+			foreach ( glob( "$outputDir/*.css" ) as $cssFile ) {
+				$name = basename( $cssFile, '.css' );
 				// From /Fixtures/lessjs/css/something.css
 				// into /Fixtures/lessjs/less/name.less
-				$name = basename( $cssFile, '.css' );
 				$lessFile = dirname( dirname( $cssFile ) ) . '/less/' . $name . '.less';
+				$overrideFile = dirname( dirname( $cssFile ) ) . '/override/' . $name . '.css';
+				if ( file_exists( $overrideFile ) ) {
+					if ( file_get_contents( $overrideFile ) === file_get_contents( $cssFile ) ) {
+						print "WARNING: Redundant override for $overrideFile\n";
+					}
+					$cssFile = $overrideFile;
+				}
 				if ( self::KNOWN_FAILURE[ $group ][ $name ] ?? false ) {
 					continue;
 				}
