@@ -1,0 +1,9 @@
+.one {
+  content: '(foo) (bar) (baz)';
+}
+.two {
+  content: 'begin foo end begin bar end begin baz end ';
+}
+.two:not( :lang(foo) ):not( :lang(bar) ):not( :lang(baz) ) {
+  filter: invert(1);
+}

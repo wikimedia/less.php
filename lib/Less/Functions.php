@@ -547,10 +547,10 @@ class Less_Functions {
 		$replacement = ( $replacement instanceof Less_Tree_Quoted ) ?
 			$replacement->value : $replacement->toCSS();
 
-		$result = preg_replace( $expr, $replacement, $result, 1 );
-
 		if ( $flags && $flags->value && preg_match( '/g/', $flags->value ) ) {
 			$result = preg_replace( $expr, $replacement, $result );
+		} else {
+			$result = preg_replace( $expr, $replacement, $result, 1 );
 		}
 
 		if ( $string instanceof Less_Tree_Quoted ) {

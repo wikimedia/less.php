@@ -1,0 +1,15 @@
+@input: 'foo bar baz';
+@withParens: replace( @input, '([^ ]+)', '($1)', 'g');
+@wordify: replace( @input, '(^| )([^ ]+)', 'begin $2 end ', 'g');
+@selector: e( replace( @input, '(^| )([^ ]+)', ':not( :lang($2) )', 'g' ) );
+
+.one {
+	content: '@{withParens}';
+}
+.two {
+	content: '@{wordify}';
+
+	&@{selector} {
+		filter: invert(1);
+	}
+}
