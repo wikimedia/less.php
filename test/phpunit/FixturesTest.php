@@ -32,7 +32,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'css-guards' => true, // T353144
 			'detached-rulesets' => true, // T353143
 			'import' => true, // T353146
-			'import-interpolation' => true, // TODO
 			'import-reference' => true, // T352862
 			'mixin-args' => true, // T352897
 			'mixins-args' => true, // T352897

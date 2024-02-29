@@ -186,6 +186,9 @@ class Less_Parser {
 			$root->root = true;
 			$root->firstRoot = true;
 
+			$importVisitor = new Less_ImportVisitor( $this->env );
+			$importVisitor->run( $root );
+
 			$this->PreVisitors( $root );
 
 			self::$has_extends = false;

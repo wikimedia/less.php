@@ -12,6 +12,7 @@
  * the file has been fetched, and parsed.
  *
  * @private
+ * @see less-2.5.3.js#Import.prototype
  */
 class Less_Tree_Import extends Less_Tree {
 
@@ -115,6 +116,17 @@ class Less_Tree_Import extends Less_Tree {
 
 		// remove query string and fragment
 		return preg_replace( '/[\?#][^\?]*$/', '', $path );
+	}
+
+	public function isVariableImport() {
+		$path = $this->path;
+		if ( $path instanceof Less_Tree_Url ) {
+			$path = $path->value;
+		}
+		if ( $path instanceof Less_Tree_Quoted ) {
+			return $path->containsVariables();
+		}
+		return true;
 	}
 
 	public function compileForImport( $env ) {
@@ -277,6 +289,7 @@ class Less_Tree_Import extends Less_Tree {
 		$root = $parser->parseFile( $full_path, $uri, true );
 
 		$ruleset = new Less_Tree_Ruleset( null, $root->rules );
+		$this->root = $ruleset;
 		$ruleset->evalImports( $import_env );
 
 		return $this->features ? new Less_Tree_Media( $ruleset->rules, $this->features->value ) : $ruleset->rules;
@@ -289,7 +302,7 @@ class Less_Tree_Import extends Less_Tree {
 	 * @param Less_Environment $env
 	 * @return bool|null
 	 */
-	private function skip( $path, $env ) {
+	public function skip( $path, $env ) {
 		$path = Less_Parser::AbsPath( $path, true );
 
 		if ( $path && $env->isFileParsed( $path ) ) {

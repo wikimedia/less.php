@@ -306,7 +306,18 @@ class Less_Tree_Ruleset extends Less_Tree {
 			if ( $r instanceof Less_Tree_Rule && $r->variable === true ) {
 				$this->_variables[$r->name] = $r;
 			}
+			// when evaluating variables in an import statement, imports have not been eval'd
+			// so we need to go inside import statements.
+			if ( $r instanceof Less_Tree_Import && $r->root ) {
+				$vars = $r->root->variables();
+				foreach ( $vars as $key => $name ) {
+					if ( !empty( $key ) ) {
+						$this->_variables[$key] = $name;
+					}
+				}
+			}
 		}
+		return $this->_variables;
 	}
 
 	/**
