@@ -12,6 +12,8 @@ Options:
                 subdirectory, and compare it to an eponymous file in the
                 "css/" subdirectory.
 
+                - {{FIXTURE_DIR}}
+
                 Default: test/Fixtures/lessjs-2.5.3/
 
     --override  By default, the compare tool validates the full upstream
@@ -32,6 +34,8 @@ Options:
 
 TEXT;
 
+define( 'FIXTURES', require __DIR__ . '/fixtures.php' );
+
 class LessFixtureDiff {
 	private int $summaryOK = 0;
 	private array $summaryFail = [];
@@ -44,15 +48,12 @@ class LessFixtureDiff {
 			if ( $arg === '--override' ) {
 				$useOverride = true;
 			} elseif ( strpos( $arg, '--' ) === 0 ) {
-				print "Error: Invalid option $arg\n\n";
-				print USAGE;
-				exit( 1 );
+				$this->error( "Invalid option $arg" );
 			} elseif ( $fixtureDir === null ) {
 				// First non-option argument
 				$fixtureDir = $arg;
 			} else {
-				print "Error: Unexpected argument $arg\n\n";
-				print USAGE;
+				$this->error( "Unexpected argument $arg" );
 			}
 		}
 
@@ -62,32 +63,55 @@ class LessFixtureDiff {
 		);
 	}
 
+	private function error( $message ) {
+		print "Error: $message\n\n";
+		print preg_replace_callback(
+			'/^(.*){{FIXTURE_DIR}}$/m',
+			static function ( $matches ) {
+				$prefix = $matches[1];
+				return $prefix . implode( "\n$prefix", array_keys( FIXTURES ) );
+			},
+			USAGE
+		);
+		exit( 1 );
+	}
+
+	/**
+	 * @param string $fixtureDir Fixture group name as defined in test/fixtures.php,
+	 *  or path to a fixture directory,
+	 *  or path to a fixture css/less subdirectory.
+	 * @return array|null
+	 */
+	private function getFixture( string $fixtureDir ): ?array {
+		foreach ( FIXTURES as $group => $fixture ) {
+			if ( $fixtureDir === $group
+				|| realpath( $fixtureDir ) === realpath( $fixture['cssDir'] )
+				|| realpath( $fixtureDir ) === realpath( $fixture['lessDir'] )
+				|| realpath( $fixtureDir ) === realpath( $fixture['cssDir'] . "/.." )
+			) {
+				return $fixture;
+			}
+		}
+		return null;
+	}
+
 	public function compare( string $fixtureDir, bool $useOverride ): void {
-		$fixtureDir = rtrim( $fixtureDir, '/' );
-		$cssDir = "$fixtureDir/css";
-		$overrideDir = "$fixtureDir/override";
-		if ( !is_dir( $cssDir ) ) {
-			// Check because glob() tolerances non-existence
-			print "Error: Missing directory $cssDir\n\n";
-			print USAGE;
-			exit( 1 );
+		$fixture = $this->getFixture( $fixtureDir );
+		if ( !$fixture ) {
+			$this->error( "Undefined fixture $fixtureDir" );
 		}
-		if ( $useOverride && !is_dir( $overrideDir ) ) {
-			print "Error: Missing directory $overrideDir\n\n";
-			print USAGE;
-			exit( 1 );
-		}
-		$group = basename( $fixtureDir );
+		$cssDir = $fixture['cssDir'];
+		$lessDir = $fixture['lessDir'];
+		$overrideDir = $useOverride ? ( $fixture['overrideDir'] ?? null ) : null;
+		$options = $fixture['options'] ?? [];
 		foreach ( glob( "$cssDir/*.css" ) as $cssFile ) {
-			// From /Fixtures/lessjs/css/something.css
-			// into /Fixtures/lessjs/less/name.less
 			$name = basename( $cssFile, '.css' );
-			$lessFile = dirname( dirname( $cssFile ) ) . '/less/' . $name . '.less';
-			$overrideFile = dirname( dirname( $cssFile ) ) . '/override/' . $name . '.css';
-			if ( $useOverride && file_exists( $overrideFile ) ) {
+			$lessFile = "$lessDir/$name.less";
+			$overrideFile = $overrideDir ? "$overrideDir/$name.css" : null;
+			if ( $overrideFile && file_exists( $overrideFile ) ) {
 				$cssFile = $overrideFile;
 			}
-			$this->handleFixture( $cssFile, $lessFile );
+			$this->handleFixture( $cssFile, $lessFile, $options );
 		}
 
 		// Create a simple to understand summary at the end,
@@ -105,11 +129,11 @@ class LessFixtureDiff {
 		$this->summary .= $line . "\n";
 	}
 
-	public function handleFixture( $cssFile, $lessFile ) {
+	public function handleFixture( $cssFile, $lessFile, $options ) {
 		$expectedCSS = trim( file_get_contents( $cssFile ) );
 
 		// Check with standard parser
-		$parser = new Less_Parser();
+		$parser = new Less_Parser( $options );
 		try {
 			$parser->parseFile( $lessFile );
 			$css = $parser->getCss();

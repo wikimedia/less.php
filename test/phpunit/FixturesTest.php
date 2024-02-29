@@ -39,27 +39,29 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'mixins-guards' => true, // T352867
 			'urls' => true, // T353147
 			'variables' => true, // T352830, T352866
-		]
+		],
+		'lessjs-2.5.3/include-path' => [
+			'include-path' => true, // T353147, data-uri()
+		],
 	];
 
 	public static function provideFixtures() {
-		foreach ( [
-			'less.php',
-			'bug-reports',
-			'lessjs-2.5.3',
-		] as $group ) {
-			$outputDir = self::getFixtureDir() . "/$group/css";
-			if ( !is_dir( $outputDir ) ) {
+		foreach ( (
+			require __DIR__ . '/../fixtures.php'
+		) as $group => $fixture ) {
+			$cssDir = $fixture['cssDir'];
+			$lessDir = $fixture['lessDir'];
+			$overrideDir = $fixture['overrideDir'] ?? null;
+			$options = $fixture['options'] ?? [];
+			if ( !is_dir( $cssDir ) ) {
 				// Check because glob() tolerances non-existence
-				throw new RuntimeException( "Directory missing: $outputDir" );
+				throw new RuntimeException( "Directory missing: $cssDir" );
 			}
-			foreach ( glob( "$outputDir/*.css" ) as $cssFile ) {
+			foreach ( glob( "$cssDir/*.css" ) as $cssFile ) {
 				$name = basename( $cssFile, '.css' );
-				// From /Fixtures/lessjs/css/something.css
-				// into /Fixtures/lessjs/less/name.less
-				$lessFile = dirname( dirname( $cssFile ) ) . '/less/' . $name . '.less';
-				$overrideFile = dirname( dirname( $cssFile ) ) . '/override/' . $name . '.css';
-				if ( file_exists( $overrideFile ) ) {
+				$lessFile = "$lessDir/$name.less";
+				$overrideFile = $overrideDir ? "$overrideDir/$name.css" : null;
+				if ( $overrideFile && file_exists( $overrideFile ) ) {
 					if ( file_get_contents( $overrideFile ) === file_get_contents( $cssFile ) ) {
 						print "WARNING: Redundant override for $overrideFile\n";
 					}
@@ -68,7 +70,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 				if ( self::KNOWN_FAILURE[ $group ][ $name ] ?? false ) {
 					continue;
 				}
-				yield "Fixtures/$group $name" => [ $cssFile, $lessFile ];
+				yield "Fixtures/$group $name" => [ $cssFile, $lessFile, $options ];
 			}
 		}
 	}
@@ -76,11 +78,11 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 	/**
 	 * @dataProvider provideFixtures
 	 */
-	public function testFixture( $cssFile, $lessFile ) {
+	public function testFixture( $cssFile, $lessFile, $options ) {
 		$expectedCSS = trim( file_get_contents( $cssFile ) );
 
 		// Check with standard parser
-		$parser = new Less_Parser();
+		$parser = new Less_Parser( $options );
 		try {
 			$parser->registerFunction( '_color', [ __CLASS__, 'FnColor' ] );
 			$parser->registerFunction( 'add', [ __CLASS__, 'FnAdd' ] );
@@ -94,13 +96,17 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		$this->assertSame( $expectedCSS, $css, "Standard compiler" );
 
 		// Check with cache
-		$options = [ 'cache_dir' => $this->cache_dir,
-					 'functions' => [ '_color' => [ __CLASS__, 'FnColor' ],
-									  'add' => [ __CLASS__, 'FnAdd' ],
-									  'increment' => [ __CLASS__, 'FnIncrement' ] ] ];
+		$optionsWithCache = $options + [
+			'cache_dir' => $this->cache_dir,
+			'functions' => [
+				'_color' => [ __CLASS__, 'FnColor' ],
+				'add' => [ __CLASS__, 'FnAdd' ],
+				'increment' => [ __CLASS__, 'FnIncrement' ],
+			],
+		];
 		$files = [ $lessFile => '' ];
 		try {
-			$cacheFile = Less_Cache::Regen( $files, $options );
+			$cacheFile = Less_Cache::Regen( $files, $optionsWithCache );
 			$css = file_get_contents( $this->cache_dir . '/' . $cacheFile );
 		} catch ( Less_Exception_Parser $e ) {
 			$css = $e->getMessage();
@@ -110,7 +116,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 
 		// Check using the cached data
 		try {
-			$cacheFile = Less_Cache::Get( $files, $options );
+			$cacheFile = Less_Cache::Get( $files, $optionsWithCache );
 			$css = file_get_contents( $this->cache_dir . '/' . $cacheFile );
 		} catch ( Less_Exception_Parser $e ) {
 			$css = $e->getMessage();
