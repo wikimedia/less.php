@@ -300,6 +300,9 @@ class Less_Tree_Ruleset extends Less_Tree {
 		$this->lookups = [];
 	}
 
+	/**
+	 * @see less-2.5.3.js#Ruleset.prototype.variables
+	 */
 	public function variables() {
 		$this->_variables = [];
 		foreach ( $this->rules as $r ) {
@@ -308,12 +311,11 @@ class Less_Tree_Ruleset extends Less_Tree {
 			}
 			// when evaluating variables in an import statement, imports have not been eval'd
 			// so we need to go inside import statements.
-			if ( $r instanceof Less_Tree_Import && $r->root ) {
+			// guard against root being a string (in the case of inlined less)
+			if ( $r instanceof Less_Tree_Import && $r->root instanceof Less_Tree_Ruleset ) {
 				$vars = $r->root->variables();
 				foreach ( $vars as $key => $name ) {
-					if ( !empty( $key ) ) {
-						$this->_variables[$key] = $name;
-					}
+					$this->_variables[$key] = $name;
 				}
 			}
 		}

@@ -29,6 +29,15 @@ class Less_Environment {
 	/** @var string[] */
 	public $imports = [];
 
+	/**
+	 * This is the equivalent of `importVisitor.onceFileDetectionMap`
+	 * as used by the dynamic `importNode.skip` function.
+	 *
+	 * @see less-2.5.3.js#ImportVisitor.prototype.onImported
+	 * @var array<string,true>
+	 */
+	public $importVisitorOnceMap = [];
+
 	public static $parensStack = 0;
 
 	public static $tabLevel = 0;
@@ -65,6 +74,14 @@ class Less_Environment {
 	 */
 	public function addParsedFile( $file ) {
 		$this->imports[] = $file;
+	}
+
+	public function clone() {
+		$new_env = clone $this;
+		// NOTE: Match JavaScript by-ref behaviour for arrays
+		$new_env->imports =& $this->imports;
+		$new_env->importVisitorOnceMap =& $this->importVisitorOnceMap;
+		return $new_env;
 	}
 
 	/**

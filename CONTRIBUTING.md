@@ -12,6 +12,10 @@ Less.js:
   * `Parser.parse` parses input into rules via `parsers.primary`
   * `Parser.parse` creates the "root" ruleset object
   * `Parser.parse` applies ImportVisitor
+    * `ImportVisitor` applies these steps to each `Import` node:
+      * `ImportVisitor#processImportNode`
+      * `Import#evalForImport`
+    * `ImportVisitor` ends with `ImporVisitor#tryRun` loop (async, after last call to `ImportVisitor#onImported`.
 * `less.render` callback
   * `ParseTree.prototype.toCSS`
     * `transformTree` applies pre-visitors, compiles all rules, and applies post-visitors.
@@ -26,6 +30,11 @@ Less.php
   * `Less_Parser->GetRules` parses input into rules via `Less_Parser->parsePrimary`
 * `Less_Parser->getCss`
   * `Less_Parser->getCss` creates the "root" ruleset object
+  * `Less_Parser->getCss` applies Less_ImportVisitor
+    * `Less_ImportVisitor` applies these steps to each `Import` node:
+      * `ImportVisitor->processImportNode`
+      * `Less_Tree_Import->compileForImport`
+    * `ImportVisitor` ends with `ImporVisitor#tryRun` loop (all sync, no async needed).
   * `Less_Parser->getCss` applies pre-visitors, compiles all rules, and applies post-visitors.
   * `Less_Parser->getCss` runs toCSS transform on the "root" ruleset.
 * CSS result ready!

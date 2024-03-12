@@ -22,29 +22,38 @@ class Less_Tree_Import extends Less_Tree {
 	public $features;
 	public $currentFileInfo;
 	public $css;
-	public $skip;
+	/** @var bool|null This is populated by Less_ImportVisitor */
+	public $doSkip = false;
+	/** @var string|null This is populated by Less_ImportVisitor */
+	public $importedFilename;
+	/**
+	 * This is populated by Less_ImportVisitor.
+	 *
+	 * For imports that use "inline", this holds a raw string.
+	 *
+	 * @var string|Less_Tree_Ruleset|null
+	 */
 	public $root;
 
-	public function __construct( $path, $features, $options, $index, $currentFileInfo = null ) {
-		$this->options = $options;
+	public function __construct( $path, $features, array $options, $index, $currentFileInfo = null ) {
+		$this->options = $options + [ 'inline' => false, 'optional' => false, 'multiple' => false ];
 		$this->index = $index;
 		$this->path = $path;
 		$this->features = $features;
 		$this->currentFileInfo = $currentFileInfo;
 
-		if ( is_array( $options ) ) {
-			$this->options += [ 'inline' => false ];
-
-			if ( isset( $this->options['less'] ) || $this->options['inline'] ) {
-				$this->css = !isset( $this->options['less'] ) || !$this->options['less'] || $this->options['inline'];
-			} else {
-				$pathValue = $this->getPath();
-				// Leave any ".css" file imports as literals for the browser.
-				// Also leave any remote HTTP resources as literals regardless of whether
-				// they contain ".css" in their filename.
-				if ( $pathValue && preg_match( '/^(https?:)?\/\/|\.css$/i', $pathValue ) ) {
-					$this->css = true;
-				}
+		if ( isset( $this->options['less'] ) || $this->options['inline'] ) {
+			$this->css = !isset( $this->options['less'] ) || !$this->options['less'] || $this->options['inline'];
+		} else {
+			$pathValue = $this->getPath();
+			// Leave any ".css" file imports as literals for the browser.
+			// Also leave any remote HTTP resources as literals regardless of whether
+			// they contain ".css" in their filename.
+			if ( $pathValue && (
+				preg_match( '/[#\.\&\?\/]css([\?;].*)?$/', $pathValue )
+				|| preg_match( '/^(https?:)?\/\//i', $pathValue )
+			) ) {
+				$this->css = true;
 			}
 		}
 	}
@@ -70,14 +79,11 @@ class Less_Tree_Import extends Less_Tree {
 		}
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
 	public function genCSS( $output ) {
+		// TODO: this.path.currentFileInfo.reference === undefined
+		// Related: T352862 (test/less-2.5.3/less/import-reference.less)
 		if ( $this->css ) {
-
 			$output->add( '@import ', $this->currentFileInfo, $this->index );
-
 			$this->path->genCSS( $output );
 			if ( $this->features ) {
 				$output->add( ' ' );
@@ -87,27 +93,21 @@ class Less_Tree_Import extends Less_Tree {
 		}
 	}
 
-	public function toCSS() {
-		$features = $this->features ? ' ' . $this->features->toCSS() : '';
-
-		if ( $this->css ) {
-			return "@import " . $this->path->toCSS() . $features . ";\n";
-		} else {
-			return "";
-		}
-	}
-
 	/**
 	 * @return string|null
 	 */
 	public function getPath() {
 		if ( $this->path instanceof Less_Tree_Quoted ) {
 			$path = $this->path->value;
+			// TODO: This should be moved to ImportVisitor using $tryAppendLessExtension
+			// to match upstream. However, to remove this from here we have to first
+			// fix differences with how/when 'import_callback' is executed.
 			$path = ( isset( $this->css ) || preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $path ) ) ? $path : $path . '.less';
 
 		// During the first pass, Less_Tree_Url may contain a Less_Tree_Variable (not yet expanded),
 		// and thus has no value property defined yet. Return null until we reach the next phase.
 		// https://github.com/wikimedia/less.php/issues/29
+		// TODO: Do we still need this now that we have ImportVisitor?
 		} elseif ( $this->path instanceof Less_Tree_Url && !( $this->path->value instanceof Less_Tree_Variable ) ) {
 			$path = $this->path->value->value;
 		} else {
@@ -130,22 +130,20 @@ class Less_Tree_Import extends Less_Tree {
 	}
 
 	public function compileForImport( $env ) {
+		// TODO: We might need upstream `if (path instanceof URL) { path = path.value; }`
 		return new self( $this->path->compile( $env ), $this->features, $this->options, $this->index, $this->currentFileInfo );
 	}
 
 	public function compilePath( $env ) {
 		$path = $this->path->compile( $env );
-		$rootpath = '';
-		if ( $this->currentFileInfo && $this->currentFileInfo['rootpath'] ) {
-			$rootpath = $this->currentFileInfo['rootpath'];
-		}
+		$rootpath = $this->currentFileInfo['rootpath'] ?? null;
 
 		if ( !( $path instanceof Less_Tree_Url ) ) {
 			if ( $rootpath ) {
 				$pathValue = $path->value;
 				// Add the base path if the import is relative
 				if ( $pathValue && Less_Environment::isPathRelative( $pathValue ) ) {
-					$path->value = $this->currentFileInfo['uri_root'] . $pathValue;
+					$path->value = $rootpath . $pathValue;
 				}
 			}
 			$path->value = Less_Environment::normalizePath( $path->value );
@@ -159,58 +157,68 @@ class Less_Tree_Import extends Less_Tree {
 	 * @see less-2.5.3.js#Import.prototype.eval
 	 */
 	public function compile( $env ) {
-		$evald = $this->compileForImport( $env );
+		$features = ( $this->features ? $this->features->compile( $env ) : null );
 
+		// TODO: Upstream doesn't do path resolution here. The reason we need it here is
+		// because skip() takes a $path_and_uri argument. Once the TODO in ImportVisitor
+		// about Less_Tree_Import::PathAndUri() is fixed, this can be removed by letting
+		// skip() call $this->PathAndUri() on its own.
 		// get path & uri
 		$callback = Less_Parser::$options['import_callback'];
-		$path_and_uri = is_callable( $callback ) ? $callback( $evald ) : null;
-
+		$path_and_uri = is_callable( $callback ) ? $callback( $this ) : null;
 		if ( !$path_and_uri ) {
-			$path_and_uri = $evald->PathAndUri();
+			$path_and_uri = $this->PathAndUri();
 		}
-
 		if ( $path_and_uri ) {
 			[ $full_path, $uri ] = $path_and_uri;
 		} else {
-			$full_path = $uri = $evald->getPath();
-		}
-
-		// import once
-		if ( $evald->skip( $full_path, $env ) ) {
-			return [];
+			$full_path = $uri = $this->getPath();
 		}
 		'@phan-var string $full_path';
 
-		if ( $this->options['inline'] ) {
-			$env->addParsedFile( $full_path );
-			$contents = new Less_Tree_Anonymous( file_get_contents( $full_path ), 0, [], true, true );
-
-			if ( $this->features ) {
-				return new Less_Tree_Media( [ $contents ], $this->features->value );
-			}
-
-			return [ $contents ];
-		}
-
-		// optional (need to be before "CSS" to support optional CSS imports. CSS should be checked only if empty($this->currentFileInfo))
-		if ( isset( $this->options['optional'] ) && $this->options['optional'] && !file_exists( $full_path ) && ( !$evald->css || !empty( $this->currentFileInfo ) ) ) {
+		// import once
+		if ( $this->skip( $full_path, $env ) ) {
 			return [];
 		}
 
-		// css ?
-		if ( $evald->css ) {
-			$features = ( $evald->features ? $evald->features->compile( $env ) : null );
-			return new self( $this->compilePath( $env ), $features, $this->options, $this->index );
-		}
+		if ( $this->options['inline'] ) {
+			$contents = new Less_Tree_Anonymous( $this->root, 0,
+				[
+					'filename' => $this->importedFilename,
+					'reference' => $this->currentFileInfo['reference'] ?? null,
+				],
+				true,
+				true
+				// TODO: We might need upstream's bool $referenced param to Anonymous
+			);
+			return $this->features
+				? new Less_Tree_Media( [ $contents ], $this->features->value )
+				: [ $contents ];
+		} elseif ( $this->css ) {
+			$newImport = new self( $this->compilePath( $env ), $features, $this->options, $this->index );
+			// TODO: We might need upstream's `if (!newImport.css && this.error) { throw this.error;`
+			return $newImport;
+		} else {
+			$ruleset = new Less_Tree_Ruleset( null, $this->root->rules );
 
-		return $this->ParseImport( $full_path, $uri, $env );
+			$ruleset->evalImports( $env );
+
+			return $this->features
+				? new Less_Tree_Media( $ruleset->rules, $this->features->value )
+				: $ruleset->rules;
+
+		}
 	}
 
 	/**
 	 * Using the import directories, get the full absolute path and uri of the import
+	 *
+	 * @see less-node/FileManager.getPath https://github.com/less/less.js/blob/v2.5.3/lib/less-node/file-manager.js#L70
 	 */
 	public function PathAndUri() {
 		$evald_path = $this->getPath();
+		// TODO: Move 'import_callback' and getPath() fallback logic from callers
+		//       to here so that PathAndUri() is equivalent to upstream fileManager.getPath()
 
 		if ( $evald_path ) {
 
@@ -264,38 +272,6 @@ class Less_Tree_Import extends Less_Tree {
 	}
 
 	/**
-	 * Parse the import url and return the rules
-	 *
-	 * @param string $full_path
-	 * @param string|null $uri
-	 * @param mixed $env
-	 * @return Less_Tree_Media|array
-	 */
-	public function ParseImport( $full_path, $uri, $env ) {
-		// Most of the env changes during importing temporary, so make a copy.
-		// Except the imports list, which needs to be merged into the main env.
-		// Set it by-ref, to match JavaScript behaviour.
-		$import_env = clone $env;
-		$import_env->imports =& $env->imports;
-		if ( ( isset( $this->options['reference'] ) && $this->options['reference'] ) || isset( $this->currentFileInfo['reference'] ) ) {
-			$import_env->currentFileInfo['reference'] = true;
-		}
-
-		if ( ( isset( $this->options['multiple'] ) && $this->options['multiple'] ) ) {
-			$import_env->importMultiple = true;
-		}
-
-		$parser = new Less_Parser( $import_env );
-		$root = $parser->parseFile( $full_path, $uri, true );
-
-		$ruleset = new Less_Tree_Ruleset( null, $root->rules );
-		$this->root = $ruleset;
-		$ruleset->evalImports( $import_env );
-
-		return $this->features ? new Less_Tree_Media( $ruleset->rules, $this->features->value ) : $ruleset->rules;
-	}
-
-	/**
 	 * Should the import be skipped?
 	 *
 	 * @param string|null $path
@@ -303,15 +279,16 @@ class Less_Tree_Import extends Less_Tree {
 	 * @return bool|null
 	 */
 	public function skip( $path, $env ) {
-		$path = Less_Parser::AbsPath( $path, true );
-
-		if ( $path && $env->isFileParsed( $path ) ) {
-
-			if ( isset( $this->currentFileInfo['reference'] ) ) {
-				return true;
-			}
-
-			return !isset( $this->options['multiple'] ) && !$env->importMultiple;
+		if ( $this->doSkip !== null ) {
+			return $this->doSkip;
 		}
+
+		// @see less-2.5.3.js#ImportVisitor.prototype.onImported
+		if ( isset( $env->importVisitorOnceMap[$path] ) ) {
+			return true;
+		}
+
+		$env->importVisitorOnceMap[$path] = true;
+		return false;
 	}
 }
