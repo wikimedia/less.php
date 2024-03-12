@@ -1516,13 +1516,7 @@ class Less_Parser {
 					// we do not support setting a ruleset as a default variable - it doesn't make sense
 					// However if we do want to add it, there is nothing blocking it, just don't error
 					// and remove isCall dependency below
-					$value = null;
-					if ( $isCall ) {
-						$value = $this->parseDetachedRuleset();
-					}
-					if ( !$value ) {
-						$value = $this->parseExpression();
-					}
+					$value = $this->parseDetachedRuleset() ?? $this->parseExpression();
 
 					if ( !$value ) {
 						if ( $isCall ) {
@@ -1899,12 +1893,9 @@ class Less_Parser {
 
 	private function parseBlockRuleset() {
 		$block = $this->parseBlock();
-
-		if ( $block ) {
-			$block = new Less_Tree_Ruleset( null, $block );
+		if ( $block !== null ) {
+			return new Less_Tree_Ruleset( null, $block );
 		}
-
-		return $block;
 	}
 
 	/** @return Less_Tree_DetachedRuleset|null */
@@ -1983,7 +1974,7 @@ class Less_Parser {
 			if ( $match[3] ) {
 				$match[2] .= $match[3];
 			}
-
+			$this->forget();
 			return new Less_Tree_NameValue( $match[1], $match[2], $index, $this->env->currentFileInfo );
 		}
 
