@@ -79,10 +79,11 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 		$unit = clone $this->unit;
 
 		if ( $op === '+' || $op === '-' ) {
-
 			if ( !$unit->numerator && !$unit->denominator ) {
-				$unit->numerator = $other->unit->numerator;
-				$unit->denominator = $other->unit->denominator;
+				$unit = clone $other->unit;
+				if ( $this->unit->backupUnit ) {
+					$unit->backupUnit = $this->unit->backupUnit;
+				}
 			} elseif ( !$other->unit->numerator && !$other->unit->denominator ) {
 				// do nothing
 			} else {
