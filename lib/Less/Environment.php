@@ -50,6 +50,8 @@ class Less_Environment {
 
 	public $strictMath = false;
 
+	public $importCallback = null;
+
 	/**
 	 * @var array
 	 */
@@ -113,6 +115,21 @@ class Less_Environment {
 	 */
 	public static function isPathRelative( $path ) {
 		return !preg_match( '/^(?:[a-z-]+:|\/|#)/', $path );
+	}
+
+	/**
+	 * Apply legacy 'import_callback' option.
+	 *
+	 * See Less_Parser::$default_options to learn more about the 'import_callback' option.
+	 * This option is deprecated in favour of Less_Parser::SetImportDirs.
+	 *
+	 * @param Less_Tree_Import $importNode
+	 * @return array{0:string,1:string|null}|null Array containing path and (optional) uri or null
+	 */
+	public function callImportCallback( Less_Tree_Import $importNode ) {
+		if ( is_callable( $this->importCallback ) ) {
+			return ( $this->importCallback )( $importNode );
+		}
 	}
 
 	/**

@@ -164,8 +164,7 @@ class Less_Tree_Import extends Less_Tree {
 		// about Less_Tree_Import::PathAndUri() is fixed, this can be removed by letting
 		// skip() call $this->PathAndUri() on its own.
 		// get path & uri
-		$callback = Less_Parser::$options['import_callback'];
-		$path_and_uri = is_callable( $callback ) ? $callback( $this ) : null;
+		$path_and_uri = $env->callImportCallback( $this );
 		if ( !$path_and_uri ) {
 			$path_and_uri = $this->PathAndUri();
 		}
@@ -217,7 +216,7 @@ class Less_Tree_Import extends Less_Tree {
 	 */
 	public function PathAndUri() {
 		$evald_path = $this->getPath();
-		// TODO: Move 'import_callback' and getPath() fallback logic from callers
+		// TODO: Move callImportCallback() and getPath() fallback logic from callers
 		//       to here so that PathAndUri() is equivalent to upstream fileManager.getPath()
 
 		if ( $evald_path ) {
