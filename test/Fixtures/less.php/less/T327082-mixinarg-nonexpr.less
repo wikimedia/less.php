@@ -1,0 +1,14 @@
+.myfunc(@x) {
+	font-family: '@{x}';
+}
+div.one {
+	.myfunc(@x: 'Arial');
+}
+div.two {
+	// Passing a non-expression as mixin argument must not cause a
+	// ParseError, because it is valid syntax for "detached ruleset".
+	//
+	// Most functions can't take that as an argument though, so in a string
+	// operation (for example) this becomes an empty string.
+	.myfunc(@x: { content: 'Test'; });
+}
