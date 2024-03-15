@@ -72,4 +72,27 @@ class phpunit_FunctionTest extends phpunit_bootstrap {
 CSS;
 		$this->assertEquals( $expected, $css );
 	}
+
+	public function testInvalidColor() {
+		$lessCode = '
+		@color-progressive: 42px;
+		.foo {
+			color: mix( #000, @color-progressive, 20% );
+		}
+		';
+
+		$parser = new Less_Parser();
+		$parser->parse( $lessCode );
+
+		try {
+			$parser->getCss();
+			$this->fail();
+		} catch ( Exception $e ) {
+			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
+			$this->assertStringContainsString(
+				'error evaluating function `mix` The second argument must be a color, Less_Tree_Dimension given',
+				$e->getMessage()
+			);
+		}
+	}
 }
