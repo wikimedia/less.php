@@ -13,6 +13,18 @@ return [
 		'lessDir' => "$fixtureDir/bug-reports/less",
 		'cssDir' => "$fixtureDir/bug-reports/css",
 	],
+	'bootstrap-3.0.3' => [
+		'lessDir' => "$fixtureDir/bootstrap-3.0.3/less",
+		'cssDir' => "$fixtureDir/bootstrap-3.0.3/css",
+	],
+	'bootstrap-3.1' => [
+		'lessDir' => "$fixtureDir/bootstrap-3.1/less",
+		'cssDir' => "$fixtureDir/bootstrap-3.1/css",
+	],
+	'bootstrap-3.2' => [
+		'lessDir' => "$fixtureDir/bootstrap-3.2/less",
+		'cssDir' => "$fixtureDir/bootstrap-3.2/css",
+	],
 
 	// Upstream fixtures and parser options are declared
 	// at https://github.com/less/less.js/blob/v2.5.3/test/index.js#L17

@@ -17,8 +17,6 @@ class LessPhpBenchmark {
 			],
 		],
 	];
-	private const FIXTURES_FAIL = [
-	];
 
 	public function run() {
 		echo sprintf( "\nwikimedia/less.php %s Benchmark on (PHP %s)\n\n",
@@ -30,9 +28,7 @@ class LessPhpBenchmark {
 			foreach ( $info['files'] as $pattern ) {
 				$files = array_merge(
 					$files,
-					array_values(
-						array_diff( glob( $pattern ), self::FIXTURES_FAIL )
-					)
+					glob( $pattern )
 				);
 			}
 			$this->bench( $name, $info['count'], $files );
