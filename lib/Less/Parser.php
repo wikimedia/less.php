@@ -2594,7 +2594,7 @@ class Less_Parser {
 		// @phan-suppress-next-line PhanPluginEmptyStatementWhileLoop
 		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $index, $name ) );
 
-		if ( ( count( $name ) > 1 ) && $this->rulePropertyMatch( '/\\G\s*((?:\+_|\+)?)\s*:/', $index, $name ) ) {
+		if ( ( count( $name ) > 1 ) && $this->rulePropertyMatch( '/\\G((?:\+_|\+)?)\s*:/', $index, $name ) ) {
 			$this->forget();
 
 			// at last, we have the complete match now. move forward,
