@@ -11,6 +11,7 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 	public $currentFileInfo;
 	/** @var bool */
 	public $rulesetLike;
+	// TODO: Do we need upstream's bool $referenced?
 
 	/**
 	 * @param string $value

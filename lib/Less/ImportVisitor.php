@@ -1,9 +1,10 @@
 <?php
 
-class Less_ImportVisitor extends Less_VisitorReplacing {
+class Less_ImportVisitor extends Less_Visitor {
 
 	public $env;
 	public $variableImports = [];
+	public $recursionDetector = [];
 
 	public $_currentDepth = 0;
 	public $importItem;
@@ -19,17 +20,17 @@ class Less_ImportVisitor extends Less_VisitorReplacing {
 		// NOTE: Upstream `ImportSequencer` logic is directly inside ImportVisitor for simplicity.
 	}
 
-	public function run( &$root ) {
-		$root = $this->visitObj( $root );
+	public function run( $root ) {
+		$this->visitObj( $root );
 		$this->tryRun();
 	}
 
-	public function visitImport( &$importNode, &$visitDeeper ) {
+	public function visitImport( $importNode, &$visitDeeper ) {
 		$inlineCSS = $importNode->options['inline'];
 
 		if ( !$importNode->css || $inlineCSS ) {
 
-			$env = clone $this->env;
+			$env = $this->env->clone();
 			$importParent = $env->frames[0];
 			if ( $importNode->isVariableImport() ) {
 				$this->addVariableImport( [
@@ -41,29 +42,18 @@ class Less_ImportVisitor extends Less_VisitorReplacing {
 			}
 		}
 		$visitDeeper = false;
-		return $importNode;
 	}
 
-	public function processImportNode( &$importNode, $env, &$importParent ) {
-		$evaldImportNode = $inlineCSS = $importNode->options['inline'];
+	public function processImportNode( $importNode, $env, &$importParent ) {
+		$inlineCSS = $importNode->options['inline'];
 
+		// TODO: We might need upstream's try-catch here
+		// try { … } catch ( e ) { importNode.css = true; importNode.error = e; }
 		$evaldImportNode = $importNode->compileForImport( $env );
-		// get path & uri
-		$callback = Less_Parser::$options['import_callback'];
-		$path_and_uri = is_callable( $callback ) ? $callback( $evaldImportNode ) : null;
-		if ( !$path_and_uri ) {
-			$path_and_uri = $evaldImportNode->PathAndUri();
-		}
-		if ( $path_and_uri ) {
-			[ $full_path, $uri ] = $path_and_uri;
-		} else {
-			$full_path = $uri = $evaldImportNode->getPath();
-		}
-		'@phan-var string $full_path';
 
 		if ( $evaldImportNode && ( !$evaldImportNode->css || $inlineCSS ) ) {
 
-			if ( ( isset( $importNode->options['multiple'] ) && $importNode->options['multiple'] ) ) {
+			if ( $importNode->options['multiple'] ) {
 				$env->importMultiple = true;
 			}
 
@@ -74,32 +64,130 @@ class Less_ImportVisitor extends Less_VisitorReplacing {
 				}
 			}
 
-			if ( $evaldImportNode->options['inline'] ) {
-				$env->addParsedFile( $full_path );
-				$contents = new Less_Tree_Anonymous( file_get_contents( $full_path ), 0, [], true, true );
-
-				if ( $evaldImportNode->features ) {
-					return new Less_Tree_Media( [ $contents ], $evaldImportNode->features->value );
-				}
-
-				return [ $contents ];
-			}
-
-			// optional (need to be before "CSS" to support optional CSS imports. CSS should be checked only if empty($this->currentFileInfo))
-			if ( isset( $evaldImportNode->options['optional'] ) && $evaldImportNode->options['optional'] && !file_exists( $full_path )
-			&& ( !$evaldImportNode->css || !empty( $evaldImportNode->currentFileInfo ) ) ) {
-				return [];
-			}
-
-			// css ?
-			if ( $evaldImportNode->css ) {
-				$features = ( $evaldImportNode->features ? $evaldImportNode->features->compile( $env ) : null );
-				return new Less_Tree_Import( $evaldImportNode->compilePath( $env ), $features, $evaldImportNode->options, $evaldImportNode->index );
-			}
-
-			$evaldImportNode->ParseImport( $full_path, $uri, $env );
+			// Rename $evaldImportNode to $importNode here so that we avoid avoid mistaken use
+			// of not-yet-compiled $importNode after this point, which upstream's code doesn't
+			// have access to after this point, either.
 			$importNode = $evaldImportNode;
-			return $importNode;
+			unset( $evaldImportNode );
+
+			// NOTE: Upstream Less.js's ImportVisitor puts the rest of the processImportNode logic
+			// into a separate ImportVisitor.prototype.onImported function, because file loading
+			// is async there. They implement and call:
+			//
+			// - ImportSequencer.prototype.addImport:
+			//   remembers what processImportNode() was doing, and will call onImported
+			//   once the async file load is finished.
+			// - ImportManager.prototype.push:
+			//   resolves the import path to full path and uri,
+			//   then parses the file content into a root Ruleset for that file.
+			// - ImportVisitor.prototype.onImported:
+			//   marks the file as parsed (for skipping duplicates, to avoid recursion),
+			//   and calls tryRun() if this is the last remaining import.
+			//
+			// In PHP we load files synchronously, so we can put a simpler version of this
+			// logic directly here.
+
+			// @see less-2.5.3.js#ImportManager.prototype.push
+
+			// NOTE: This is the equivalent to upstream `newFileInfo` and `fileManager.getPath()`
+			// TODO: Move this into Less_Tree_Import->PathAndUri along with the rest of the
+			// import dirs resolution logic.
+			// TODO: We might need upstream's `tryAppendLessExtension` logic here.
+			//       We currenlty do do this in getPath instead.
+			$callback = Less_Parser::$options['import_callback'];
+			$path_and_uri = is_callable( $callback ) ? $callback( $importNode ) : null;
+			if ( !$path_and_uri ) {
+				$path_and_uri = $importNode->PathAndUri();
+			}
+			if ( $path_and_uri ) {
+				[ $full_path, $uri ] = $path_and_uri;
+			} else {
+				$full_path = $uri = $importNode->getPath();
+			}
+			'@phan-var string $full_path';
+
+			// @see less-2.5.3.js#ImportManager.prototype.push/loadFileCallback
+
+			// NOTE: Upstream creates the next `currentFileInfo` here as `newFileInfo`
+			// We instead let Less_Parser::SetFileInfo() do that later via Less_Parser::parseFile().
+			// This means that instead of setting `newFileInfo.reference` we modify the $env,
+			// and Less_Parser::SetFileInfo will inherit that.
+			if ( $importNode->options['reference'] ?? false ) {
+				$env->currentFileInfo['reference'] = true;
+			}
+
+			$e = null;
+			try {
+				if ( $importNode->options['inline'] ) {
+					if ( !file_exists( $full_path ) ) {
+						throw new Less_Exception_Parser(
+							sprintf( 'File `%s` not found.', $full_path ),
+							null,
+							$importNode->index,
+							$importNode->currentFileInfo
+						);
+					}
+					$root = file_get_contents( $full_path );
+				} else {
+					$parser = new Less_Parser( $env );
+					// NOTE: Upstream sets `env->processImports = false` here to avoid
+					// running ImportVisitor again (infinite loop). We instead separate
+					// Less_Parser->parseFile() from Less_Parser->getCss(),
+					// and only getCss() runs ImportVisitor.
+					$root = $parser->parseFile( $full_path, $uri, true );
+				}
+			} catch ( Less_Exception_Parser $err ) {
+				$e = $err;
+			}
+
+			// @see less-2.5.3.js#ImportManager.prototype.push/fileParsedFunc
+
+			if ( $importNode->options['optional'] && $e ) {
+				$e = null;
+				$root = new Less_Tree_Ruleset( null, [] );
+				$full_path = null;
+			}
+
+			// @see less-2.5.3.js#ImportVisitor.prototype.onImported
+
+			if ( $e instanceof Less_Exception_Parser ) {
+				if ( !is_numeric( $e->index ) ) {
+					$e->index = $importNode->index;
+					$e->currentFile = $importNode->currentFileInfo;
+					$e->genMessage();
+				}
+				throw $e;
+			}
+
+			$duplicateImport = isset( $this->recursionDetector[$full_path] );
+
+			if ( !$env->importMultiple ) {
+				if ( $duplicateImport ) {
+					$importNode->doSkip = true;
+				} else {
+					// NOTE: Upstream implements skip() as dynamic function.
+					// We instead have a regular Less_Tree_Import::skip() method,
+					// and in cases where skip() would be re-defined here we set doSkip=null.
+					$importNode->doSkip = null;
+				}
+			}
+
+			if ( !$full_path && $importNode->options['optional'] ) {
+				$importNode->doSkip = true;
+			}
+
+			if ( $root ) {
+				$importNode->root = $root;
+				$importNode->importedFilename = $full_path;
+
+				if ( !$inlineCSS && ( $env->importMultiple || !$duplicateImport ) && $full_path ) {
+					$this->recursionDetector[$full_path] = true;
+					$oldContext = $this->env;
+					$this->env = $env;
+					$this->visitObj( $root );
+					$this->env = $oldContext;
+				}
+			}
 		} else {
 			$this->tryRun();
 		}
@@ -111,6 +199,11 @@ class Less_ImportVisitor extends Less_VisitorReplacing {
 
 	public function tryRun() {
 		while ( true ) {
+			// NOTE: Upstream keeps a `this.imports` queue here that resumes
+			// processImportNode() logic by calling onImported() after a file
+			// is finished loading. We don't need that since we load and parse
+			// synchronously within processImportNode() instead.
+
 			if ( count( $this->variableImports ) === 0 ) {
 				break;
 			}
@@ -123,14 +216,16 @@ class Less_ImportVisitor extends Less_VisitorReplacing {
 		}
 	}
 
-	public function visitRule( $ruleNode, &$visitDeeper ) {
+	public function visitRule( $ruleNode, $visitDeeper ) {
+		// TODO: We might need upstream's `if (… DetachedRuleset) { this.context.frames.unshift(ruleNode); }`
 		$visitDeeper = false;
-		return $ruleNode;
 	}
+
+	// TODO: We might need upstream's visitRuleOut()
+	// if (… DetachedRuleset) { this.context.frames.shift(); }
 
 	public function visitDirective( $directiveNode, $visitArgs ) {
 		array_unshift( $this->env->frames, $directiveNode );
-		return $directiveNode;
 	}
 
 	public function visitDirectiveOut( $directiveNode ) {
@@ -139,7 +234,6 @@ class Less_ImportVisitor extends Less_VisitorReplacing {
 
 	public function visitMixinDefinition( $mixinDefinitionNode, $visitArgs ) {
 		array_unshift( $this->env->frames, $mixinDefinitionNode );
-		return $mixinDefinitionNode;
 	}
 
 	public function visitMixinDefinitionOut( $mixinDefinitionNode ) {
@@ -148,20 +242,19 @@ class Less_ImportVisitor extends Less_VisitorReplacing {
 
 	public function visitRuleset( $rulesetNode, $visitArgs ) {
 		array_unshift( $this->env->frames, $rulesetNode );
-		return $rulesetNode;
 	}
 
 	public function visitRulesetOut( $rulesetNode ) {
 		array_shift( $this->env->frames );
 	}
 
-	public function visitMedia( &$mediaNode, $visitArgs ) {
+	public function visitMedia( $mediaNode, $visitArgs ) {
+		// TODO: Upsteam does not modify $mediaNode here. Why do we?
 		$mediaNode->allExtends = [];
 		array_unshift( $this->env->frames, $mediaNode->allExtends );
-		return $mediaNode;
 	}
 
-	public function visitMediaOut( &$mediaNode ) {
+	public function visitMediaOut( $mediaNode ) {
 		array_shift( $this->env->frames );
 	}
 

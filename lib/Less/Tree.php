@@ -9,6 +9,9 @@ class Less_Tree {
 	public $extendOnEveryPath;
 	public $allExtends;
 
+	/**
+	 * @see less-2.5.3.js#Node.prototype.toCSS
+	 */
 	public function toCSS() {
 		$output = new Less_Output();
 		$this->genCSS( $output );
