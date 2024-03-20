@@ -30,6 +30,12 @@ return [
 			'compress' => true,
 		],
 	],
+	'lessjs-2.5.3/legacy' => [
+		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/legacy",
+		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/legacy",
+		'options' => [
+		],
+	],
 	'lessjs-2.5.3/strict-units' => [
 		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/strict-units",
 		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/strict-units",
