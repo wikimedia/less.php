@@ -54,4 +54,35 @@ return [
 			],
 		],
 	],
+	'lessjs-3.13.1' => [
+		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/_main",
+		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/_main",
+		// 'overrideDir' => "$fixtureDir/lessjs-3.13.1/override",
+	],
+	'lessjs-3.13.1/compression' => [
+		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/compression",
+		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/compression",
+		// 'overrideDir' => "$fixtureDir/lessjs-3.13.1/override/compression",
+		'options' => [
+			'compress' => true,
+		],
+	],
+	'lessjs-3.13.1/strict-units' => [
+		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/strict-units",
+		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/strict-units",
+		'options' => [
+			'strictUnits' => true,
+		],
+	],
+	'lessjs-3.13.1/include-path' => [
+		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/include-path",
+		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/include-path",
+		// 'overrideDir' => "$fixtureDir/lessjs-3.13.1/override/include-path",
+		'options' => [
+			'import_dirs' => [
+				"$fixtureDir/lessjs-3.13.1/data" => '',
+				"$fixtureDir/lessjs-3.13.1/less/import" => '',
+			],
+		],
+	],
 ];
