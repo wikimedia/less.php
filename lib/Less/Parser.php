@@ -823,6 +823,24 @@ class Less_Parser {
 	}
 
 	/**
+	 * Match an exact string of characters.
+	 *
+	 * @param string $tok
+	 * @return string|null
+	 * @see less-2.5.3.js#parserInput.$str
+	 */
+	private function matchStr( $tok ) {
+		$tokLength = strlen( $tok );
+		if (
+			( $this->pos < $this->input_len ) &&
+			substr( $this->input, $this->pos, $tokLength ) === $tok
+		) {
+			$this->skipWhitespace( $tokLength );
+			return $tok;
+		}
+	}
+
+	/**
 	 * Same as match(), but don't change the state of the parser,
 	 * just return the match.
 	 *
@@ -1351,11 +1369,12 @@ class Less_Parser {
 	//
 	// extend syntax - used to extend selectors
 	//
+	// @see less-2.5.3.js#parsers.extend
 	private function parseExtend( $isRule = false ) {
 		$index = $this->pos;
 		$extendList = [];
 
-		if ( !$this->MatchReg( $isRule ? '/\\G&:extend\(/' : '/\\G:extend\(/' ) ) {
+		if ( !$this->matchStr( $isRule ? '&:extend(' : ':extend(' ) ) {
 			return;
 		}
 
@@ -1453,6 +1472,7 @@ class Less_Parser {
 
 	/**
 	 * @param bool $isCall
+	 * @see less-2.5.3.js#parsers.mixin.args
 	 */
 	private function parseMixinArgs( $isCall ) {
 		$expressions = [];
@@ -1470,7 +1490,7 @@ class Less_Parser {
 				$arg = $this->parseDetachedRuleset() ?? $this->parseExpression();
 			} else {
 				$this->parseComments();
-				if ( $this->input[ $this->pos ] === '.' && $this->MatchReg( '/\\G\.{3}/' ) ) {
+				if ( $this->input[ $this->pos ] === '.' && $this->matchStr( '...' ) ) {
 					$returner['variadic'] = true;
 					if ( $this->matchChar( ";" ) && !$isSemiColonSeperated ) {
 						$isSemiColonSeperated = true;
@@ -1532,7 +1552,7 @@ class Less_Parser {
 					}
 
 					$nameLoop = ( $name = $val->name );
-				} elseif ( !$isCall && $this->MatchReg( '/\\G\.{3}/' ) ) {
+				} elseif ( !$isCall && $this->matchStr( '...' ) ) {
 					$returner['variadic'] = true;
 					if ( $this->matchChar( ";" ) && !$isSemiColonSeperated ) {
 						$isSemiColonSeperated = true;
@@ -1602,6 +1622,7 @@ class Less_Parser {
 	// Once we've got our params list, and a closing `)`, we parse
 	// the `{...}` block.
 	//
+	// @see less-2.5.3.js#parsers.mixin.definition
 	private function parseMixinDefinition() {
 		$cond = null;
 
@@ -1633,7 +1654,7 @@ class Less_Parser {
 
 			$this->parseComments();
 
-			if ( $this->MatchReg( '/\\Gwhen/' ) ) { // Guard
+			if ( $this->matchStr( 'when' ) ) { // Guard
 				$cond = $this->expect( 'parseConditions', 'Expected conditions' );
 			}
 
@@ -1821,7 +1842,7 @@ class Less_Parser {
 		$c = null;
 		$index = $this->pos;
 
-		while ( ( $isLess && ( $extend = $this->parseExtend() ) ) || ( $isLess && ( $when = $this->matchReg( '/\\Gwhen/' ) ) ) || ( $e = $this->parseElement() ) ) {
+		while ( ( $isLess && ( $extend = $this->parseExtend() ) ) || ( $isLess && ( $when = $this->matchStr( 'when' ) ) ) || ( $e = $this->parseElement() ) ) {
 			if ( $when ) {
 				$condition = $this->expect( 'parseConditions', 'expected condition' );
 			} elseif ( $condition ) {
@@ -2184,8 +2205,11 @@ class Less_Parser {
 		return $features ?: null;
 	}
 
+	/**
+	 * @see less-2.5.3.js#parsers.media
+	 */
 	private function parseMedia() {
-		if ( $this->matchReg( '/\\G@media/' ) ) {
+		if ( $this->matchStr( '@media' ) ) {
 			$this->save();
 
 			$features = $this->parseMediaFeatures();
@@ -2464,12 +2488,15 @@ class Less_Parser {
 		}
 	}
 
+	/**
+	 * @see less-2.5.3.js#parsers.condition
+	 */
 	private function parseCondition() {
 		$index = $this->pos;
 		$negate = false;
 		$c = null;
 
-		if ( $this->matchReg( '/\\Gnot/' ) ) {
+		if ( $this->matchStr( 'not' ) ) {
 			$negate = true;
 		}
 		$this->expectChar( '(' );
@@ -2490,7 +2517,7 @@ class Less_Parser {
 			}
 			$this->expectChar( ')' );
 			// @phan-suppress-next-line PhanPossiblyInfiniteRecursionSameParams
-			return $this->matchReg( '/\\Gand/' ) ? new Less_Tree_Condition( 'and', $c, $this->parseCondition() ) : $c;
+			return $this->matchStr( 'and' ) ? new Less_Tree_Condition( 'and', $c, $this->parseCondition() ) : $c;
 		}
 	}
 
