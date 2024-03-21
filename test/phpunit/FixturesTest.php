@@ -30,7 +30,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'comments2' => true, // T353131 & T353132
 			'css' => true, // T352911 & T352866
 			'css-guards' => true, // T353144
-			'detached-rulesets' => true, // T353143
 			'import' => true, // T353146
 			'import-reference' => true, // T352862
 			'mixin-args' => true, // T352897
