@@ -1101,20 +1101,24 @@ class Less_Parser {
 	//
 	// The arguments are parsed with the `entities.arguments` parser.
 	//
+	// @see less-2.5.3.js#parsers.entities.call
 	private function parseEntitiesCall() {
 		$index = $this->pos;
 
-		if ( !preg_match( '/\\G([\w-]+|%|progid:[\w\.]+)\(/', $this->input, $name, 0, $this->pos ) ) {
+		if ( $this->peekReg( '/\\Gurl\(/i' ) ) {
 			return;
 		}
-		$name = $name[1];
-		$nameLC = strtolower( $name );
 
-		if ( $nameLC === 'url' ) {
-			return null;
+		$this->save();
+
+		$name = $this->matchReg( '/\\G([\w-]+|%|progid:[\w\.]+)\(/' );
+		if ( !$name ) {
+			$this->forget();
+			return;
 		}
 
-		$this->pos += strlen( $name );
+		$name = $name[1];
+		$nameLC = strtolower( $name );
 
 		if ( $nameLC === 'alpha' ) {
 			$alpha_ret = $this->parseAlpha();
@@ -1123,17 +1127,15 @@ class Less_Parser {
 			}
 		}
 
-		$this->matchChar( '(' ); // Parse the '(' and consume whitespace.
-
 		$args = $this->parseEntitiesArguments();
 
 		if ( !$this->matchChar( ')' ) ) {
+			$this->restore();
 			return;
 		}
 
-		if ( $name ) {
-			return new Less_Tree_Call( $name, $args, $index, $this->env->currentFileInfo );
-		}
+		$this->forget();
+		return new Less_Tree_Call( $name, $args, $index, $this->env->currentFileInfo );
 	}
 
 	/**
@@ -1699,19 +1701,15 @@ class Less_Parser {
 	//
 	//	 alpha(opacity=88)
 	//
+	// @see less-2.5.3.js#parsers.alpha
 	private function parseAlpha() {
-		if ( !$this->matchReg( '/\\G\(opacity=/i' ) ) {
+		if ( !$this->matchReg( '/\\Gopacity=/i' ) ) {
 			return;
 		}
 
-		$value = $this->matchReg( '/\\G[0-9]+/' );
-		if ( $value ) {
-			$value = $value[0];
-		} else {
-			$value = $this->parseEntitiesVariable();
-			if ( !$value ) {
-				return;
-			}
+		$value = $this->matchReg( '/\\G[0-9]+/' )[0] ?? null;
+		if ( !$value ) {
+			$value = $this->expect( 'parseEntitiesVariable', 'Could not parse alpha' );
 		}
 
 		$this->expectChar( ')' );
