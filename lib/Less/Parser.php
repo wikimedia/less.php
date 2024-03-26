@@ -758,44 +758,6 @@ class Less_Parser {
 	}
 
 	/**
-	 * Parse from a token, regexp or string, and move forward if match
-	 *
-	 * @param array $toks
-	 * @return null|string|array|Less_Tree
-	 */
-	private function matcher( $toks ) {
-		// The match is confirmed, add the match length to `this::pos`,
-		// and consume any extra white-space characters (' ' || '\n')
-		// which come after that. The reason for this is that LeSS's
-		// grammar is mostly white-space insensitive.
-		//
-
-		foreach ( $toks as $tok ) {
-
-			$char = $tok[0];
-
-			if ( $char === '/' ) {
-				$match = $this->matchReg( $tok );
-				if ( $match !== null ) {
-					return $match;
-				}
-
-			} elseif ( $char === '#' ) {
-				$match = $this->matchChar( $tok[1] );
-
-			} else {
-				// Non-terminal, match using a function call
-				$match = $this->$tok();
-
-			}
-
-			if ( $match ) {
-				return $match;
-			}
-		}
-	}
-
-	/**
 	 * Match a single character in the input.
 	 *
 	 * @param string $tok
@@ -869,16 +831,22 @@ class Less_Parser {
 	}
 
 	/**
+	 * Parse a token from a regexp or method name string
+	 *
 	 * @param string $tok
 	 * @param string|null $msg
+	 * @see less-2.5.3.js#Parser.expect
 	 */
 	private function expect( $tok, $msg = null ) {
-		$result = $this->matcher( [ $tok ] );
-		if ( !$result ) {
-			$this->Error( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+		if ( $tok[0] === '/' ) {
+			$result = $this->matchReg( $tok );
 		} else {
+			$result = $this->$tok();
+		}
+		if ( $result !== null ) {
 			return $result;
 		}
+		$this->Error( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
 	}
 
 	/**
@@ -1203,7 +1171,7 @@ class Less_Parser {
 			return;
 		}
 
-		$value = $this->matcher( [ 'parseEntitiesQuoted', 'parseEntitiesVariable', '/\\Gdata\:.*?[^\)]+/', '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/' ] );
+		$value = $this->parseEntitiesQuoted() ?? $this->parseEntitiesVariable() ?? $this->matchReg( '/\\Gdata\:.*?[^\)]+/' ) ?? $this->matchReg( '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/' ) ?? null;
 		if ( !$value ) {
 			$value = '';
 		}
@@ -1736,17 +1704,14 @@ class Less_Parser {
 		$c = $this->parseCombinator();
 		$index = $this->pos;
 
-		// TODO: Speed up by calling matchChar directly, like less.js does
-		$e = $this->matcher( [
-			'/\\G(?:\d+\.\d+|\d+)%/',
-			'/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/',
-			'#*',
-			'#&',
-			'parseAttribute',
-			'/\\G\([^&()@]+\)/',
-			'/\\G[\.#:](?=@)/',
-			'parseEntitiesVariableCurly'
-		] );
+		$e = $this->matchReg( '/\\G(?:\d+\.\d+|\d+)%/' )
+			?? $this->matchReg( '/\\G(?:[.#]?|:*)(?:[\w-]|[^\x00-\x9f]|\\\\(?:[A-Fa-f0-9]{1,6} ?|[^A-Fa-f0-9]))+/' )
+			?? $this->matchChar( '*' )
+			?? $this->matchChar( '&' )
+			?? $this->parseAttribute()
+			?? $this->matchReg( '/\\G\([^&()@]+\)/' )
+			?? $this->matchReg( '/\\G[\.#:](?=@)/' )
+			?? $this->parseEntitiesVariableCurly();
 
 		if ( $e === null ) {
 			$this->save();
@@ -1781,7 +1746,7 @@ class Less_Parser {
 			$c = $this->input[$this->pos];
 			if ( $c === '/' ) {
 				$this->save();
-				$slashedCombinator = $this->matcher( [ '/\/[a-z]+\//i' ] );
+				$slashedCombinator = $this->matchReg( '/\\G\/[a-z]+\//i' );
 				if ( $slashedCombinator ) {
 					$this->forget();
 					return $slashedCombinator;
@@ -1890,7 +1855,7 @@ class Less_Parser {
 
 		$op = $this->matchReg( '/\\G[|~*$^]?=/' );
 		if ( $op ) {
-			$val = $this->matcher( [ 'parseEntitiesQuoted', '/\\G[0-9]+%/', '/\\G[\w-]+/', 'parseEntitiesVariableCurly' ] );
+			$val = $this->parseEntitiesQuoted() ?? $this->matchReg( '/\\G[0-9]+%/' ) ?? $this->matchReg( '/\\G[\w-]+/' ) ?? $this->parseEntitiesVariableCurly();
 		}
 
 		$this->expectChar( ']' );
@@ -2440,7 +2405,7 @@ class Less_Parser {
 				$op = $this->matchReg( '/\\G[-+]\s+/' );
 				if ( !$op ) {
 					if ( !$isSpaced ) {
-						$op = $this->matcher( [ '#+', '#-' ] );
+						$op = $this->matchChar( '+' ) ?? $this->matchChar( '-' );
 					}
 					if ( !$op ) {
 						break;
