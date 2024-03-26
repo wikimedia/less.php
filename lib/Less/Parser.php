@@ -776,9 +776,8 @@ class Less_Parser {
 
 			if ( $char === '/' ) {
 				$match = $this->matchReg( $tok );
-
-				if ( $match ) {
-					return count( $match ) === 1 ? $match[0] : $match;
+				if ( $match !== null ) {
+					return $match;
 				}
 
 			} elseif ( $char === '#' ) {
@@ -813,12 +812,13 @@ class Less_Parser {
 	/**
 	 * Match a regexp from the current start point
 	 *
-	 * @return array|null
+	 * @return string|array|null
+	 * @see less-2.5.3.js#parserInput.$re
 	 */
 	private function matchReg( $tok ) {
 		if ( preg_match( $tok, $this->input, $match, 0, $this->pos ) ) {
 			$this->skipWhitespace( strlen( $match[0] ) );
-			return $match;
+			return count( $match ) === 1 ? $match[0] : $match;
 		}
 	}
 
@@ -992,13 +992,13 @@ class Less_Parser {
 		$nextChar = $this->input[$this->pos + 1] ?? null;
 		if ( $nextChar === '/' ) {
 			$match = $this->matchReg( '/\\G\/\/.*/' );
-			return new Less_Tree_Comment( $match[0], true, $this->pos, $this->env->currentFileInfo );
+			return new Less_Tree_Comment( $match, true, $this->pos, $this->env->currentFileInfo );
 		}
 
 		// $comment = $this->matchReg('/\\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/');
 		$comment = $this->matchReg( '/\\G\/\*(?s).*?\*+\/\n?/' );// not the same as less.js to prevent fatal errors
 		if ( $comment ) {
-			return new Less_Tree_Comment( $comment[0], false, $this->pos, $this->env->currentFileInfo );
+			return new Less_Tree_Comment( $comment, false, $this->pos, $this->env->currentFileInfo );
 		}
 	}
 
@@ -1082,7 +1082,6 @@ class Less_Parser {
 		// $k = $this->matchReg('/\\G[_A-Za-z-][_A-Za-z0-9-]*/');
 		$k = $this->matchReg( '/\\G%|\\G[_A-Za-z-][_A-Za-z0-9-]*/' );
 		if ( $k ) {
-			$k = $k[0];
 			$color = Less_Tree_Color::fromKeyword( $k );
 			if ( $color ) {
 				return $color;
@@ -1172,6 +1171,7 @@ class Less_Parser {
 	 *	 filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
 	 *
 	 * @return Less_Tree_Assignment|null
+	 * @see less-2.5.3.js#parsers.entities.assignment
 	 */
 	private function parseEntitiesAssignment() {
 		$key = $this->matchReg( '/\\G\w+(?=\s?=)/' );
@@ -1185,7 +1185,7 @@ class Less_Parser {
 
 		$value = $this->parseEntity();
 		if ( $value ) {
-			return new Less_Tree_Assignment( $key[0], $value );
+			return new Less_Tree_Assignment( $key, $value );
 		}
 	}
 
@@ -1226,11 +1226,12 @@ class Less_Parser {
 	 * see `parsers.variable`.
 	 *
 	 * @return Less_Tree_Variable|null
+	 * @see less-2.5.3.js#parsers.entities.variable
 	 */
 	private function parseEntitiesVariable() {
 		$index = $this->pos;
 		if ( $this->peekChar( '@' ) && ( $name = $this->matchReg( '/\\G@@?[\w-]+/' ) ) ) {
-			return new Less_Tree_Variable( $name[0], $index, $this->env->currentFileInfo );
+			return new Less_Tree_Variable( $name, $index, $this->env->currentFileInfo );
 		}
 	}
 
@@ -1339,7 +1340,7 @@ class Less_Parser {
 		$js = $this->matchReg( '/\\G[^`]*`/' );
 		if ( $js ) {
 			$this->forget();
-			return new Less_Tree_JavaScript( substr( $js[0], 0, -1 ), $index, $isEscaped );
+			return new Less_Tree_JavaScript( substr( $js, 0, -1 ), $index, $isEscaped );
 		}
 		$this->restore();
 	}
@@ -1465,7 +1466,7 @@ class Less_Parser {
 			if ( !$e ) {
 				break;
 			}
-			$elements[] = new Less_Tree_Element( $c, $e[0], $elemIndex, $this->env->currentFileInfo );
+			$elements[] = new Less_Tree_Element( $c, $e, $elemIndex, $this->env->currentFileInfo );
 			$c = $this->matchChar( '>' );
 		}
 
@@ -1707,7 +1708,7 @@ class Less_Parser {
 			return;
 		}
 
-		$value = $this->matchReg( '/\\G[0-9]+/' )[0] ?? null;
+		$value = $this->matchReg( '/\\G[0-9]+/' );
 		if ( !$value ) {
 			$value = $this->expect( 'parseEntitiesVariable', 'Could not parse alpha' );
 		}
@@ -1871,10 +1872,10 @@ class Less_Parser {
 		}
 	}
 
-	private function parseTag() {
-		return $this->matchReg( '/\\G[A-Za-z][A-Za-z-]*[0-9]?/' ) ?: $this->matchChar( '*' );
-	}
-
+	/**
+	 * @return Less_Tree_Attribute|null
+	 * @see less-2.5.3.js#parsers.block
+	 */
 	private function parseAttribute() {
 		$val = null;
 
@@ -1894,7 +1895,7 @@ class Less_Parser {
 
 		$this->expectChar( ']' );
 
-		return new Less_Tree_Attribute( $key, $op === null ? null : $op[0], $val );
+		return new Less_Tree_Attribute( $key, $op, $val );
 	}
 
 	/**
@@ -2228,6 +2229,7 @@ class Less_Parser {
 	//
 	// @charset "utf-8";
 	//
+	// @see less-2.5.3.js#parsers.directive
 	private function parseDirective() {
 		if ( !$this->peekChar( '@' ) ) {
 			return;
@@ -2253,7 +2255,6 @@ class Less_Parser {
 		if ( !$name ) {
 			return;
 		}
-		$name = $name[0];
 
 		$nonVendorSpecificName = $name;
 		$pos = strpos( $name, '-', 2 );
@@ -2324,7 +2325,7 @@ class Less_Parser {
 
 			$value = $this->matchReg( '/\\G[^{;]+/' );
 			if ( $value ) {
-				$value = new Less_Tree_Anonymous( trim( $value[0] ) );
+				$value = new Less_Tree_Anonymous( trim( $value ) );
 			}
 		}
 
@@ -2437,9 +2438,7 @@ class Less_Parser {
 				$isSpaced = $this->isWhitespace( -1 );
 
 				$op = $this->matchReg( '/\\G[-+]\s+/' );
-				if ( $op ) {
-					$op = $op[0];
-				} else {
+				if ( !$op ) {
 					if ( !$isSpaced ) {
 						$op = $this->matcher( [ '#+', '#-' ] );
 					}
@@ -2505,7 +2504,7 @@ class Less_Parser {
 			if ( $op ) {
 				$b = $this->parseAddition() ?? $this->parseEntitiesKeyword() ?? $this->parseEntitiesQuoted();
 				if ( $b ) {
-					$c = new Less_Tree_Condition( $op[0], $a, $b, $index, $negate );
+					$c = new Less_Tree_Condition( $op, $a, $b, $index, $negate );
 				} else {
 					$this->Error( 'Unexpected expression' );
 				}
