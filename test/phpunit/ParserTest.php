@@ -64,6 +64,94 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 		);
 	}
 
+	public static function provideSetImportDirs() {
+		yield 'from-importdir' => [
+			'from-importdir.less',
+			[
+				__DIR__ . '/data/importdir-somevars/' => '',
+			],
+			'div{font-family:monospace}'
+		];
+		yield 'from-importdir-file' => [
+			'from-importdir-file.less',
+			[
+				__DIR__ . '/data/importdir-somevars/' => '',
+			],
+			'div{font-family:fantasy}'
+		];
+		yield 'from-importdir-filenosuffix' => [
+			'from-importdir-filenosuffix.less',
+			[
+				__DIR__ . '/data/importdir-somevars/' => '',
+			],
+			'div{font-family:fantasy}'
+		];
+		yield 'from-importcallback (backcompat)' => [
+			'from-importcallback.less',
+			[
+				__DIR__ . '/data/importdir-somevars/' => '',
+				static function ( $path ) {
+					// Backwards compatibility with how people used
+					// less.php 4.0.0 and earlier.
+					if ( $path === '@wikimedia/example.less' ) {
+						return [
+							Less_Environment::normalizePath( __DIR__ . '/data/importdir-somevars/callme.less' ),
+							Less_Environment::normalizePath( dirname( $path ) )
+						];
+					}
+					return [ null, null ];
+				}
+			],
+			'div{font-family:Call Me Maybe}'
+		];
+		yield 'from-importcallback (new)' => [
+			'from-importcallback.less',
+			[
+				__DIR__ . '/data/importdir-somevars/' => '',
+				static function ( $path ) {
+					if ( $path === '@wikimedia/example.less' ) {
+						return [
+							__DIR__ . '/data/importdir-somevars/callme.less',
+							null
+						];
+					}
+				}
+			],
+			'div{font-family:Call Me Maybe}'
+		];
+	}
+
+	/**
+	 * @dataProvider provideSetImportDirs
+	 */
+	public function testSetImportDirs( string $input, array $importDirs, string $expect ) {
+		$file = __DIR__ . '/data/consume-somevars/' . $input;
+
+		$parser = new Less_Parser( [
+			'compress' => true,
+		] );
+		$parser->SetImportDirs( $importDirs );
+		$parser->parseFile( $file );
+
+		$this->assertEquals( $expect, $parser->getCss() );
+	}
+
+	public function testImportCallback() {
+		$file = __DIR__ . '/data/consume-somevars/from-importcallback.less';
+
+		$parser = new Less_Parser( [
+			'compress' => true,
+			'import_callback' => static function ( $importNode ) {
+				if ( $importNode->getPath() === '@wikimedia/example.less' ) {
+					return [ __DIR__ . '/data/importdir-somevars/callme.less', '/site' ];
+				}
+			}
+		] );
+		$parser->parseFile( $file );
+
+		$this->assertEquals( 'div{font-family:Call Me Maybe}', $parser->getCss() );
+	}
+
 	public function testOperationException() {
 		$lessFile = __DIR__ . '/data/exception/f2.less';
 
