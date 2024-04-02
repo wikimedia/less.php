@@ -143,7 +143,7 @@ class Less_Tree_Import extends Less_Tree {
 				$pathValue = $path->value;
 				// Add the base path if the import is relative
 				if ( $pathValue && Less_Environment::isPathRelative( $pathValue ) ) {
-					$path->value = $rootpath . $pathValue;
+					$path->value = $this->currentFileInfo['uri_root'] . $pathValue;
 				}
 			}
 			$path->value = Less_Environment::normalizePath( $path->value );

@@ -45,11 +45,13 @@ class Less_ImportVisitor extends Less_Visitor {
 	}
 
 	public function processImportNode( $importNode, $env, &$importParent ) {
-		$inlineCSS = $importNode->options['inline'];
+		$evaldImportNode = $inlineCSS = $importNode->options['inline'];
 
-		// TODO: We might need upstream's try-catch here
-		// try { … } catch ( e ) { importNode.css = true; importNode.error = e; }
-		$evaldImportNode = $importNode->compileForImport( $env );
+		try {
+			$evaldImportNode = $importNode->compileForImport( $env );
+		} catch ( Exception $e ) {
+			$importNode->css = true;
+		}
 
 		if ( $evaldImportNode && ( !$evaldImportNode->css || $inlineCSS ) ) {
 
