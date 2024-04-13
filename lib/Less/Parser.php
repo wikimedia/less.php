@@ -990,8 +990,9 @@ class Less_Parser {
 			return new Less_Tree_Comment( $match, true, $this->pos, $this->env->currentFileInfo );
 		}
 
-		// $comment = $this->matchReg('/\\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/');
-		$comment = $this->matchReg( '/\\G\/\*(?s).*?\*+\/\n?/' );// not the same as less.js to prevent fatal errors
+		// not the same as less.js to prevent fatal errors
+		//         $this->matchReg( '/\\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/') ;
+		$comment = $this->matchReg( '/\\G\/\*(?s).*?\*+\/\n?/' );
 		if ( $comment ) {
 			return new Less_Tree_Comment( $comment, false, $this->pos, $this->env->currentFileInfo );
 		}
@@ -2018,7 +2019,7 @@ class Less_Parser {
 			if ( $isVariable ) {
 				$value = $this->parseDetachedRuleset();
 			}
-
+			$this->parseComments();
 			if ( !$value ) {
 				// a name returned by this.ruleProperty() is always an array of the form:
 				// [string-1, ..., string-n, ""] or [string-1, ..., string-n, "+"]
@@ -2302,6 +2303,8 @@ class Less_Parser {
 				$isRooted = false;
 				break;
 		}
+		// TODO: T353132 - differs from less.js - we don't have the ParserInput yet
+		$this->parseComments();
 
 		if ( $hasIdentifier ) {
 			$value = $this->parseEntity();
@@ -2320,6 +2323,9 @@ class Less_Parser {
 				$value = new Less_Tree_Anonymous( trim( $value ) );
 			}
 		}
+
+		// TODO: T353132 - differs from less.js - we don't have the ParserInput yet
+		$this->parseComments();
 
 		if ( $hasBlock ) {
 			$rules = $this->parseBlockRuleset();
@@ -2581,6 +2587,7 @@ class Less_Parser {
 	 * eg: 'color', 'width', 'height', etc
 	 *
 	 * @return array<Less_Tree_Keyword|Less_Tree_Variable>
+	 * @see less-2.5.3.js#parsers.ruleProperty
 	 */
 	private function parseRuleProperty() {
 		$name = [];
@@ -2600,6 +2607,8 @@ class Less_Parser {
 		// Consume!
 		// @phan-suppress-next-line PhanPluginEmptyStatementWhileLoop
 		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $index, $name ) );
+		// @phan-suppress-next-line PhanPluginEmptyStatementWhileLoop
+		while ( $this->rulePropertyCutOutBlockComments() );
 
 		if ( ( count( $name ) > 1 ) && $this->rulePropertyMatch( '/\\G((?:\+_|\+)?)\s*:/', $index, $name ) ) {
 			$this->forget();
@@ -2631,6 +2640,15 @@ class Less_Parser {
 			$name[] = $chunk[1];
 			return true;
 		}
+	}
+
+	private function rulePropertyCutOutBlockComments() {
+		// not the same as less.js to prevent fatal errors
+		// similar to parseComment()
+		//    '/\\G\s*\/\*(?:[^*]|\*+[^\/*])*\*+\//'
+		$re = '/\\G\s*\/\*(?s).*?\*+\//';
+		$chunk = $this->matchReg( $re );
+		return $chunk != null;
 	}
 
 	public static function serializeVars( $vars ) {

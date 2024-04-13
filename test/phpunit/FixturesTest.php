@@ -26,8 +26,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'parens' => true,
 
 			// Temporary disabled
-			'comments' => true, // T353131 & T353132
-			'comments2' => true, // T353131 & T353132
+			'comments2' => true, // T353132
 			'css' => true, // T352911 & T352866
 			'css-guards' => true, // T353144
 			'import' => true, // T353146
