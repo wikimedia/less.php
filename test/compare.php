@@ -154,6 +154,8 @@ class LessFixtureDiff {
 			$css = $parser->getCss();
 		} catch ( Less_Exception_Parser $e ) {
 			$css = $e->getMessage();
+		} catch ( Throwable $e ) {
+			$css = $e->__toString();
 		}
 		$css = trim( $css );
 
