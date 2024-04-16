@@ -39,6 +39,7 @@ define( 'FIXTURES', require __DIR__ . '/fixtures.php' );
 class LessFixtureDiff {
 	private int $summaryOK = 0;
 	private array $summaryFail = [];
+	private array $summaryUnsupported = [];
 
 	public function cli( $args ) {
 		$useOverride = false;
@@ -104,9 +105,14 @@ class LessFixtureDiff {
 		$lessDir = $fixture['lessDir'];
 		$overrideDir = $useOverride ? ( $fixture['overrideDir'] ?? null ) : null;
 		$options = $fixture['options'] ?? [];
+		$unsupported = $fixture['unsupported'] ?? [];
 		foreach ( glob( "$cssDir/*.css" ) as $cssFile ) {
 			$name = basename( $cssFile, '.css' );
 			$lessFile = "$lessDir/$name.less";
+			if ( in_array( $name, $unsupported ) ) {
+				$this->summaryUnsupported[] = basename( $lessFile );
+				continue;
+			}
 			$overrideFile = $overrideDir ? "$overrideDir/$name.css" : null;
 			if ( $overrideFile && file_exists( $overrideFile ) ) {
 				$cssFile = $overrideFile;
@@ -116,13 +122,22 @@ class LessFixtureDiff {
 
 		// Create a simple to understand summary at the end,
 		// separate from the potentially long diffs
-		print sprintf( "\nSummary:\n* OK: %d\n* Fail: %d%s\n",
-			$this->summaryOK,
+		print "\nSummary:\n";
+		print sprintf( "* OK: %d\n",
+			$this->summaryOK
+		);
+		print sprintf( "* Fail: %d%s\n",
 			count( $this->summaryFail ),
 			$this->summaryFail
 				? ' (' . implode( ', ', $this->summaryFail ) . ')'
 				: ''
 		);
+		if ( $this->summaryUnsupported ) {
+			print sprintf( "* Unsupported: %d (%s)\n",
+				count( $this->summaryUnsupported ),
+				implode( ', ', $this->summaryUnsupported )
+			);
+		}
 	}
 
 	private function addToSummary( string $line ) {

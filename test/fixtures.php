@@ -33,6 +33,11 @@ return [
 		'lessDir' => "$fixtureDir/lessjs-2.5.3/less",
 		'cssDir' => "$fixtureDir/lessjs-2.5.3/css",
 		'overrideDir' => "$fixtureDir/lessjs-2.5.3/override",
+		'unsupported' => [
+			// Permanently disabled, intentionally not supported.
+			'javascript',
+			'plugin',
+		],
 	],
 	'lessjs-2.5.3/compression' => [
 		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/compression",
@@ -70,6 +75,13 @@ return [
 		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/_main",
 		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/_main",
 		// 'overrideDir' => "$fixtureDir/lessjs-3.13.1/override",
+		'unsupported' => [
+			// Permanently disabled, intentionally not supported.
+			'javascript',
+			'plugin',
+			'plugin-module',
+			'plugin-preeval',
+		],
 	],
 	'lessjs-3.13.1/compression' => [
 		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/compression",

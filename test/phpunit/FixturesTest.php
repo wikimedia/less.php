@@ -17,9 +17,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		],
 
 		'lessjs-2.5.3' => [
-			// Permanently disabled
-			'plugin' => true, // Not supported.
-			'javascript' => true, // Not supported.
 			// We moved this to Less.php parens.less test case because
 			// our current version of Less.php suports Less.js v3.x parens
 			// behaviour of doing maths in parentheses by default
@@ -41,12 +38,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'include-path' => true, // T353147, data-uri()
 		],
 		'lessjs-3.13.1' => [
-			// Permanently disabled
-			'plugin' => true, // Not supported
-			'plugin-preeval' => true, // Not Supported
-			'plugin-module' => true, // Not Supported
-			'javascript' => true, // Not supported.
-
 			'calc' => true, // New Feature
 
 			'variables' => true,
@@ -92,6 +83,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			$lessDir = $fixture['lessDir'];
 			$overrideDir = $fixture['overrideDir'] ?? null;
 			$options = $fixture['options'] ?? [];
+			$unsupported = $fixture['unsupported'] ?? [];
 			if ( !is_dir( $cssDir ) ) {
 				// Check because glob() tolerances non-existence
 				throw new RuntimeException( "Directory missing: $cssDir" );
@@ -105,6 +97,9 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 						print "WARNING: Redundant override for $overrideFile\n";
 					}
 					$cssFile = $overrideFile;
+				}
+				if ( in_array( $name, $unsupported ) ) {
+					continue;
 				}
 				if ( self::KNOWN_FAILURE[ $group ][ $name ] ?? false ) {
 					continue;
