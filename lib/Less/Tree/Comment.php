@@ -5,13 +5,13 @@
 class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty {
 
 	public $value;
-	public $silent;
+	public $isLineComment;
 	public $isReferenced;
 	public $currentFileInfo;
 
-	public function __construct( $value, $silent, $index = null, $currentFileInfo = null ) {
+	public function __construct( $value, $isLineComment, $index = null, $currentFileInfo = null ) {
 		$this->value = $value;
-		$this->silent = (bool)$silent;
+		$this->isLineComment = (bool)$isLineComment;
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
@@ -22,7 +22,7 @@ class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty 
 		// if( $this->debugInfo ){
 			//$output->add( tree.debugInfo($env, $this), $this->currentFileInfo, $this->index);
 		//}
-		$output->add( trim( $this->value ) );// TODO shouldn't need to trim, we shouldn't grab the \n
+		$output->add( $this->value );
 	}
 
 	public function toCSS() {
@@ -31,8 +31,8 @@ class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty 
 
 	public function isSilent() {
 		$isReference = ( $this->currentFileInfo && isset( $this->currentFileInfo['reference'] ) && ( !isset( $this->isReferenced ) || !$this->isReferenced ) );
-		$isCompressed = Less_Parser::$options['compress'] && !preg_match( '/^\/\*!/', $this->value );
-		return $this->silent || $isReference || $isCompressed;
+		$isCompressed = Less_Parser::$options['compress'] && ( $this->value[2] ?? '' ) !== "!";
+		return $this->isLineComment || $isReference || $isCompressed;
 	}
 
 	public function markReferenced() {
