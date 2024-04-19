@@ -13,6 +13,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 	public $frames		= [];
 	public $condition;
 	public $variadic;
+	public $optionalParameters = [];
 
 	public function __construct( $name, $params, $rules, $condition, $variadic = false, $frames = [] ) {
 		$this->name = $name;
@@ -28,6 +29,8 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 			foreach ( $params as $p ) {
 				if ( !isset( $p['name'] ) || ( $p['name'] && !isset( $p['value'] ) ) ) {
 					$this->required++;
+				} else {
+					$this->optionalParameters[ (string)$p['name'] ] = true;
 				}
 			}
 		}
@@ -206,23 +209,33 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		return new self( $this->name, $this->params, $important_rules, $this->condition, $this->variadic, $this->frames );
 	}
 
+	/**
+	 * @param array[] $args
+	 * @param Less_Environment|null $env
+	 * @see less-2.5.3.js#Definition.prototype.matchArgs
+	 */
 	public function matchArgs( $args, $env = null ) {
-		$argsLength = count( $args );
-
+		$allArgsCnt = count( $args );
+		$requiredArgsCnt = 0;
+		foreach ( $args as $arg ) {
+			if ( !array_key_exists( $arg['name'], $this->optionalParameters ) ) {
+				$requiredArgsCnt++;
+			}
+		}
 		if ( !$this->variadic ) {
-			if ( $argsLength < $this->required ) {
+			if ( $requiredArgsCnt < $this->required ) {
 				return false;
 			}
-			if ( $argsLength > count( $this->params ) ) {
+			if ( $allArgsCnt > count( $this->params ) ) {
 				return false;
 			}
 		} else {
-			if ( $argsLength < ( $this->required - 1 ) ) {
+			if ( $requiredArgsCnt < ( $this->required - 1 ) ) {
 				return false;
 			}
 		}
 
-		$len = min( $argsLength, $this->arity );
+		$len = min( $requiredArgsCnt, $this->arity );
 
 		for ( $i = 0; $i < $len; $i++ ) {
 			if ( !isset( $this->params[$i]['name'] ) && !isset( $this->params[$i]['variadic'] ) ) {

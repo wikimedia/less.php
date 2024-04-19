@@ -1481,6 +1481,7 @@ class Less_Parser {
 		$expressionContainsNamed = null;
 		$name = null;
 		$returner = [ 'args' => [], 'variadic' => false ];
+		$expand = false;
 
 		$this->save();
 
@@ -1551,17 +1552,21 @@ class Less_Parser {
 					}
 
 					$nameLoop = ( $name = $val->name );
-				} elseif ( !$isCall && $this->matchStr( '...' ) ) {
-					$returner['variadic'] = true;
-					if ( $this->matchChar( ";" ) && !$isSemiColonSeperated ) {
-						$isSemiColonSeperated = true;
-					}
-					if ( $isSemiColonSeperated ) {
-						$argsSemiColon[] = [ 'name' => $arg->name, 'variadic' => true ];
+				} elseif ( $this->matchStr( '...' ) ) {
+					if ( !$isCall ) {
+						$returner['variadic'] = true;
+						if ( $this->matchChar( ";" ) && !$isSemiColonSeperated ) {
+							$isSemiColonSeperated = true;
+						}
+						if ( $isSemiColonSeperated ) {
+							$argsSemiColon[] = [ 'name' => $arg->name, 'variadic' => true ];
+						} else {
+							$argsComma[] = [ 'name' => $arg->name, 'variadic' => true ];
+						}
+						break;
 					} else {
-						$argsComma[] = [ 'name' => $arg->name, 'variadic' => true ];
+						$expand = true;
 					}
-					break;
 				} elseif ( !$isCall ) {
 					$name = $nameLoop = $val->name;
 					$value = null;
@@ -1572,7 +1577,7 @@ class Less_Parser {
 				$expressions[] = $value;
 			}
 
-			$argsComma[] = [ 'name' => $nameLoop, 'value' => $value ];
+			$argsComma[] = [ 'name' => $nameLoop, 'value' => $value, 'expand' => $expand ];
 
 			if ( $this->matchChar( ',' ) ) {
 				continue;
@@ -1589,7 +1594,7 @@ class Less_Parser {
 				if ( count( $expressions ) > 1 ) {
 					$value = new Less_Tree_Value( $expressions );
 				}
-				$argsSemiColon[] = [ 'name' => $name, 'value' => $value ];
+				$argsSemiColon[] = [ 'name' => $name, 'value' => $value, 'expand' => $expand ];
 
 				$name = null;
 				$expressions = [];
