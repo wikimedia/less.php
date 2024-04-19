@@ -2372,13 +2372,15 @@ class Less_Parser {
 	}
 
 	private function parseSub() {
+		$this->save();
 		if ( $this->matchChar( '(' ) ) {
 			$a = $this->parseAddition();
-			if ( $a ) {
-				$this->expectChar( ')' );
-				return new Less_Tree_Expression( [ $a ], true ); // instead of $e->parens = true so the value is cached
+			if ( $a && $this->matchChar( ')' ) ) {
+				$this->forget();
+				return new Less_Tree_Expression( [ $a ], true );
 			}
 		}
+		$this->restore();
 	}
 
 	/**
