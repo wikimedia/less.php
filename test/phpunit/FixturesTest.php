@@ -99,10 +99,11 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 				if ( in_array( $name, $unsupported ) ) {
 					continue;
 				}
+				$skipTestMessage = false;
 				if ( self::KNOWN_FAILURE[ $group ][ $name ] ?? false ) {
-					continue;
+					$skipTestMessage = 'Known failure, not yet supported.';
 				}
-				yield "Fixtures/$group $name" => [ $cssFile, $lessFile, $options ];
+				yield "Fixtures/$group $name" => [ $cssFile, $lessFile, $options, $skipTestMessage ];
 			}
 		}
 	}
@@ -110,7 +111,11 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 	/**
 	 * @dataProvider provideFixtures
 	 */
-	public function testFixture( $cssFile, $lessFile, $options ) {
+	public function testFixture( $cssFile, $lessFile, $options, $ifSetSkipTestMessage = false ) {
+		if ( $ifSetSkipTestMessage !== false ) {
+			$this->markTestSkipped( $ifSetSkipTestMessage );
+		}
+
 		$expectedCSS = trim( file_get_contents( $cssFile ) );
 
 		// Check with standard parser
