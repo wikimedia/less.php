@@ -860,11 +860,7 @@ class Less_Parser {
 	private function skipWhitespace( $length ) {
 		$this->pos += $length;
 
-		// we do not increment the $this->pos as upstream, because $this->pos is updated with
-		// comment length or by amount of whitespaces strsspn finds. What upstream does is ignores
-		// whitespaces, which makes the for loop keep iterating.
-		// phpcs:ignore Generic.CodeAnalysis.ForLoopShouldBeWhileLoop.CanSimplify
-		for ( ; $this->pos < $this->input_len; ) {
+		for ( ; $this->pos < $this->input_len; $this->pos++ ) {
 			$currentChar = $this->input[$this->pos];
 
 			if ( $this->autoCommentAbsorb && $currentChar === '/' ) {
@@ -881,28 +877,29 @@ class Less_Parser {
 					continue;
 				} elseif ( $nextChar === '*' ) {
 					$nextStarSlash = strpos( $this->input, "*/", $this->pos + 2 );
-					if ( $nextStarSlash ) {
+					if ( $nextStarSlash !== false ) {
 						$comment = [
+							'index' => $this->pos,
 							'text' => substr( $this->input, $this->pos, $nextStarSlash + 2 -
 								$this->pos ),
 							'isLineComment' => false,
-							'index' => $this->pos
 						];
+						$this->pos += strlen( $comment['text'] ) - 1;
 						$this->commentStore[] = $comment;
-						$this->pos += strlen( $comment['text'] );
 						continue;
 					}
 				}
 				break;
 			}
 
-			if ( $currentChar !== " " && $currentChar !== "\n"
-				&& $currentChar !== "\t" && $currentChar !== "\r" ) {
+			// Optimization: Skip over irrelevant chars without slow loop
+			$skip = strspn( $this->input, " \n\t\r", $this->pos );
+			if ( $skip ) {
+				$this->pos += $skip - 1;
+			}
+			if ( !$skip && $this->pos < $this->input_len ) {
 				break;
 			}
-
-			// Optimization: Skip over irrelevant chars without slow loop
-			$this->pos += strspn( $this->input, "\n\r\t ", $this->pos );
 		}
 	}
 
@@ -1036,7 +1033,9 @@ class Less_Parser {
 	/**
 	 * comments are collected by the main parsing mechanism and then assigned to nodes
 	 * where the current structure allows it
+	 *
 	 * @return Less_Tree_Comment|void
+	 * @see less-2.5.3.js#parsers.comment
 	 */
 	private function parseComment() {
 		$comment = array_shift( $this->commentStore );
