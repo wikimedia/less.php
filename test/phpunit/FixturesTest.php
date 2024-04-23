@@ -23,7 +23,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'parens' => true,
 
 			// Temporary disabled
-			'comments2' => true, // T353132
 			'css' => true, // T352911 & T352866
 			'import-reference' => true, // T352862
 			'mixin-args' => true, // T352897
@@ -53,8 +52,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'css-grid' => true,
 			'urls' => true,
 			'operations' => true,
-			'comments2' => true,
-			'comments' => true,
 			'import-remote' => true,
 			'import' => true,
 			'css-escapes' => true,

@@ -72,6 +72,12 @@ class Less_Parser {
 	private $furthest;
 	private $mb_internal_encoding = ''; // for remember exists value of mbstring.internal_encoding
 
+	private $autoCommentAbsorb = true;
+	/**
+	 * @var array<array{index:int,text:string,isLineComment:bool}>
+	 */
+	private $commentStore = [];
+
 	/**
 	 * @var Less_Environment
 	 */
@@ -659,7 +665,7 @@ class Less_Parser {
 				}
 			}
 		}
-
+		$this->skipWhitespace( 0 );
 		$rules = $this->parsePrimary();
 
 		if ( $this->pos < $this->input_len ) {
@@ -853,8 +859,51 @@ class Less_Parser {
 	 */
 	private function skipWhitespace( $length ) {
 		$this->pos += $length;
-		// Optimization: Skip over irrelevant chars without slow loop
-		$this->pos += strspn( $this->input, "\n\r\t ", $this->pos );
+
+		// we do not increment the $this->pos as upstream, because $this->pos is updated with
+		// comment length or by amount of whitespaces strsspn finds. What upstream does is ignores
+		// whitespaces, which makes the for loop keep iterating.
+		// phpcs:ignore Generic.CodeAnalysis.ForLoopShouldBeWhileLoop.CanSimplify
+		for ( ; $this->pos < $this->input_len; ) {
+			$currentChar = $this->input[$this->pos];
+
+			if ( $this->autoCommentAbsorb && $currentChar === '/' ) {
+				$nextChar = $this->input[$this->pos + 1] ?? '';
+				if ( $nextChar === '/' ) {
+					$comment = [ 'index' => $this->pos, 'isLineComment' => true ];
+					$nextNewLine = strpos( $this->input, "\n", $this->pos + 2 );
+					if ( $nextNewLine === false ) {
+						$nextNewLine = $this->input_len ?? 0;
+					}
+					$this->pos = $nextNewLine;
+					$comment['text'] = substr( $this->input, $this->pos, $nextNewLine - $this->pos );
+					$this->commentStore[] = $comment;
+					continue;
+				} elseif ( $nextChar === '*' ) {
+					$nextStarSlash = strpos( $this->input, "*/", $this->pos + 2 );
+					if ( $nextStarSlash ) {
+						$comment = [
+							'text' => substr( $this->input, $this->pos, $nextStarSlash + 2 -
+								$this->pos ),
+							'isLineComment' => false,
+							'index' => $this->pos
+						];
+						$this->commentStore[] = $comment;
+						$this->pos += strlen( $comment['text'] );
+						continue;
+					}
+				}
+				break;
+			}
+
+			if ( $currentChar !== " " && $currentChar !== "\n"
+				&& $currentChar !== "\t" && $currentChar !== "\r" ) {
+				break;
+			}
+
+			// Optimization: Skip over irrelevant chars without slow loop
+			$this->pos += strspn( $this->input, "\n\r\t ", $this->pos );
+		}
 	}
 
 	/**
@@ -941,7 +990,20 @@ class Less_Parser {
 
 		while ( true ) {
 
+			while ( true ) {
+				$node = $this->parseComment();
+				if ( !$node ) {
+					break;
+				}
+				$root[] = $node;
+			}
+
+			// always process comments before deciding if finished
 			if ( $this->pos >= $this->input_len ) {
+				break;
+			}
+
+			if ( $this->peekChar( '}' ) ) {
 				break;
 			}
 
@@ -951,8 +1013,7 @@ class Less_Parser {
 				continue;
 			}
 
-			$node = $this->parseComment()
-				?? $this->parseMixinDefinition()
+			$node = $this->parseMixinDefinition()
 				// Optimisation: NameValue is specific to less.php
 				?? $this->parseNameValue()
 				?? $this->parseRule()
@@ -967,50 +1028,26 @@ class Less_Parser {
 				break;
 			}
 
-			if ( $this->peekChar( '}' ) ) {
-				break;
-			}
 		}
 
 		return $root;
 	}
 
-	// We create a Comment node for CSS comments `/* */`,
-	// but keep the LeSS comments `//` silent, by just skipping
-	// over them.
+	/**
+	 * comments are collected by the main parsing mechanism and then assigned to nodes
+	 * where the current structure allows it
+	 * @return Less_Tree_Comment|void
+	 */
 	private function parseComment() {
-		$char = $this->input[$this->pos] ?? null;
-		if ( $char !== '/' ) {
-			return;
-		}
-
-		$nextChar = $this->input[$this->pos + 1] ?? null;
-		if ( $nextChar === '/' ) {
-			$match = $this->matchReg( '/\\G\/\/.*/' );
-			return new Less_Tree_Comment( $match, true, $this->pos, $this->env->currentFileInfo );
-		}
-
-		// not the same as less.js to prevent fatal errors
-		//         $this->matchReg( '/\\G\/\*(?:[^*]|\*+[^\/*])*\*+\/\n?/') ;
-		$comment = $this->matchReg( '/\\G\/\*(?s).*?\*+\/\n?/' );
+		$comment = array_shift( $this->commentStore );
 		if ( $comment ) {
-			return new Less_Tree_Comment( $comment, false, $this->pos, $this->env->currentFileInfo );
+			return new Less_Tree_Comment(
+				$comment['text'],
+				$comment['isLineComment'],
+				$comment['index'],
+				$this->env->currentFileInfo
+			);
 		}
-	}
-
-	private function parseComments() {
-		$comments = [];
-
-		while ( $this->pos < $this->input_len ) {
-			$comment = $this->parseComment();
-			if ( !$comment ) {
-				break;
-			}
-
-			$comments[] = $comment;
-		}
-
-		return $comments;
 	}
 
 	/**
@@ -1194,8 +1231,11 @@ class Less_Parser {
 	//
 	private function parseEntitiesUrl() {
 		$char = $this->input[$this->pos] ?? null;
+
+		$this->autoCommentAbsorb = false;
 		// Optimisation: 'u' check is specific to less.php
 		if ( $char !== 'u' || !$this->matchReg( '/\\Gurl\(/' ) ) {
+			$this->autoCommentAbsorb = true;
 			return;
 		}
 
@@ -1203,7 +1243,7 @@ class Less_Parser {
 		if ( !$value ) {
 			$value = '';
 		}
-
+		$this->autoCommentAbsorb = true;
 		$this->expectChar( ')' );
 
 		if ( $value instanceof Less_Tree_Quoted || $value instanceof Less_Tree_Variable ) {
@@ -1488,7 +1528,7 @@ class Less_Parser {
 			if ( $isCall ) {
 				$arg = $this->parseDetachedRuleset() ?? $this->parseExpression();
 			} else {
-				$this->parseComments();
+				$this->commentStore = [];
 				if ( $this->input[ $this->pos ] === '.' && $this->matchStr( '...' ) ) {
 					$returner['variadic'] = true;
 					if ( $this->matchChar( ";" ) && !$isSemiColonSeperated ) {
@@ -1651,7 +1691,7 @@ class Less_Parser {
 				return;
 			}
 
-			$this->parseComments();
+			$this->commentStore = [];
 
 			if ( $this->matchStr( 'when' ) ) { // Guard
 				$cond = $this->expect( 'parseConditions', 'Expected conditions' );
@@ -1675,13 +1715,13 @@ class Less_Parser {
 	// and can be found inside a rule's value.
 	//
 	private function parseEntity() {
-		return $this->parseEntitiesLiteral() ??
+		return $this->parseComment() ??
+			$this->parseEntitiesLiteral() ??
 			$this->parseEntitiesVariable() ??
 			$this->parseEntitiesUrl() ??
 			$this->parseEntitiesCall() ??
 			$this->parseEntitiesKeyword() ??
-			$this->parseEntitiesJavascript() ??
-			$this->parseComment();
+			$this->parseEntitiesJavascript();
 	}
 
 	//
@@ -1942,7 +1982,7 @@ class Less_Parser {
 				break;
 			}
 			$selectors[] = $s;
-			$this->parseComments();
+			$this->commentStore = [];
 
 			if ( $s->condition && count( $selectors ) > 1 ) {
 				$this->Error( 'Guards are only currently allowed on a single selector.' );
@@ -1954,7 +1994,7 @@ class Less_Parser {
 			if ( $s->condition ) {
 				$this->Error( 'Guards are only currently allowed on a single selector.' );
 			}
-			$this->parseComments();
+			$this->commentStore = [];
 		}
 
 		if ( $selectors ) {
@@ -1983,6 +2023,9 @@ class Less_Parser {
 		if ( $match ) {
 
 			if ( $match[4] == '}' ) {
+				// because we will parse all comments after closing }, we need to reset the store as
+				// we're going to reset the position to closing }
+				$this->commentStore = [];
 				$this->pos = $index + strlen( $match[0] ) - 1;
 				$match[2] = rtrim( $match[2] );
 			}
@@ -2019,7 +2062,7 @@ class Less_Parser {
 			if ( $isVariable ) {
 				$value = $this->parseDetachedRuleset();
 			}
-			$this->parseComments();
+			$this->commentStore = [];
 			if ( !$value ) {
 				// a name returned by this.ruleProperty() is always an array of the form:
 				// [string-1, ..., string-n, ""] or [string-1, ..., string-n, "+"]
@@ -2303,8 +2346,8 @@ class Less_Parser {
 				$isRooted = false;
 				break;
 		}
-		// TODO: T353132 - differs from less.js - we don't have the ParserInput yet
-		$this->parseComments();
+
+		$this->commentStore = [];
 
 		if ( $hasIdentifier ) {
 			$value = $this->parseEntity();
@@ -2323,9 +2366,6 @@ class Less_Parser {
 				$value = new Less_Tree_Anonymous( trim( $value ) );
 			}
 		}
-
-		// TODO: T353132 - differs from less.js - we don't have the ParserInput yet
-		$this->parseComments();
 
 		if ( $hasBlock ) {
 			$rules = $this->parseBlockRuleset();
@@ -2553,6 +2593,11 @@ class Less_Parser {
 		$entities = [];
 
 		do {
+			$e = $this->parseComment();
+			if ( $e ) {
+				$entities[] = $e;
+				continue;
+			}
 			$e = $this->parseAddition() ?? $this->parseEntity();
 			if ( $e ) {
 				$entities[] = $e;
@@ -2609,8 +2654,6 @@ class Less_Parser {
 		// Consume!
 		// @phan-suppress-next-line PhanPluginEmptyStatementWhileLoop
 		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $index, $name ) );
-		// @phan-suppress-next-line PhanPluginEmptyStatementWhileLoop
-		while ( $this->rulePropertyCutOutBlockComments() );
 
 		if ( ( count( $name ) > 1 ) && $this->rulePropertyMatch( '/\\G((?:\+_|\+)?)\s*:/', $index, $name ) ) {
 			$this->forget();
@@ -2642,15 +2685,6 @@ class Less_Parser {
 			$name[] = $chunk[1];
 			return true;
 		}
-	}
-
-	private function rulePropertyCutOutBlockComments() {
-		// not the same as less.js to prevent fatal errors
-		// similar to parseComment()
-		//    '/\\G\s*\/\*(?:[^*]|\*+[^\/*])*\*+\//'
-		$re = '/\\G\s*\/\*(?s).*?\*+\//';
-		$chunk = $this->matchReg( $re );
-		return $chunk != null;
 	}
 
 	public static function serializeVars( $vars ) {

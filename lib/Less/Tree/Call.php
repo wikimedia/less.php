@@ -25,6 +25,27 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 		$this->args = $visitor->visitArray( $this->args );
 	}
 
+	/**
+	 * @see less-2.5.3.js#functionCaller.call
+	 */
+	private function functionCaller( $function, array $arguments ) {
+		// This code is terrible and should be replaced as per this issue...
+		// https://github.com/less/less.js/issues/2477
+		$filtered = [];
+		foreach ( $arguments as $argument ) {
+			if ( $argument instanceof Less_Tree_Comment ) {
+				continue;
+			}
+			$filtered[] = $argument;
+		}
+		foreach ( $filtered as $index => $argument ) {
+			if ( $argument instanceof Less_Tree_Expression ) {
+				$filtered[$index] = $argument->mapToFunctionCallArgument();
+			}
+		}
+		return $function( ...$filtered );
+	}
+
 	//
 	// When evaluating a function call,
 	// we either find the function in Less_Functions,
@@ -44,17 +65,6 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 		$args = [];
 		foreach ( $this->args as $a ) {
 			$args[] = $a->compile( $env );
-		}
-
-		foreach ( $args as $key => $arg ) {
-			if ( $arg instanceof Less_Tree_Expression ) {
-				$arg->throwAwayComments();
-
-				if ( count( $arg->value ) === 1 ) {
-					$subNode = $arg->value[0];
-					array_splice( $args, $key, 1, [ $subNode ] );
-				}
-			}
 		}
 
 		$env->strictMath = $currentMathContext;
@@ -92,7 +102,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 			// If the function name isn't known to LESS, output it unchanged as CSS.
 			if ( $func ) {
 				try {
-					$result = $func( ...$args );
+					$result = $this->functionCaller( $func, $args );
 				} catch ( Exception $e ) {
 					// Preserve original trace, especially from custom functions.
 					// https://github.com/wikimedia/less.php/issues/38
