@@ -97,25 +97,19 @@ class Less_Tree_Import extends Less_Tree {
 	 * @return string|null
 	 */
 	public function getPath() {
-		if ( $this->path instanceof Less_Tree_Quoted ) {
-			$path = $this->path->value;
-			// TODO: This should be moved to ImportVisitor using $tryAppendLessExtension
-			// to match upstream. However, to remove this from here we have to first
-			// fix differences with how/when 'import_callback' is executed.
-			$path = ( isset( $this->css ) || preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $path ) ) ? $path : $path . '.less';
-
 		// During the first pass, Less_Tree_Url may contain a Less_Tree_Variable (not yet expanded),
 		// and thus has no value property defined yet. Return null until we reach the next phase.
 		// https://github.com/wikimedia/less.php/issues/29
-		// TODO: Do we still need this now that we have ImportVisitor?
-		} elseif ( $this->path instanceof Less_Tree_Url && !( $this->path->value instanceof Less_Tree_Variable ) ) {
-			$path = $this->path->value->value;
-		} else {
-			return null;
-		}
+		// TODO: Upstream doesn't need a check against Less_Tree_Variable. Why do we?
+		$path = ( $this->path instanceof Less_Tree_Url && !( $this->path->value instanceof Less_Tree_Variable ) )
+			? $this->path->value->value
+			// e.g. Less_Tree_Quoted
+			: $this->path->value;
 
-		// remove query string and fragment
-		return preg_replace( '/[\?#][^\?]*$/', '', $path );
+		if ( is_string( $path ) ) {
+			// remove query string and fragment
+			return preg_replace( '/[\?#][^\?]*$/', '', $path );
+		}
 	}
 
 	public function isVariableImport() {
@@ -130,8 +124,11 @@ class Less_Tree_Import extends Less_Tree {
 	}
 
 	public function compileForImport( $env ) {
-		// TODO: We might need upstream `if (path instanceof URL) { path = path.value; }`
-		return new self( $this->path->compile( $env ), $this->features, $this->options, $this->index, $this->currentFileInfo );
+		$path = $this->path;
+		if ( $path instanceof Less_Tree_Url ) {
+			 $path = $path->value;
+		}
+		return new self( $path->compile( $env ), $this->features, $this->options, $this->index, $this->currentFileInfo );
 	}
 
 	public function compilePath( $env ) {
@@ -216,6 +213,13 @@ class Less_Tree_Import extends Less_Tree {
 	 */
 	public function PathAndUri() {
 		$evald_path = $this->getPath();
+
+		$tryAppendLessExtension = $this->css === null;
+
+		if ( $tryAppendLessExtension ) {
+			$evald_path = ( isset( $this->css ) || preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $evald_path ) ) ? $evald_path : $evald_path . '.less';
+		}
+
 		// TODO: Move callImportCallback() and getPath() fallback logic from callers
 		//       to here so that PathAndUri() is equivalent to upstream fileManager.getPath()
 

@@ -96,6 +96,7 @@ class Less_ImportVisitor extends Less_Visitor {
 			// import dirs resolution logic.
 			// TODO: We might need upstream's `tryAppendLessExtension` logic here.
 			//       We currenlty do do this in getPath instead.
+
 			$path_and_uri = $env->callImportCallback( $importNode );
 			if ( !$path_and_uri ) {
 				$path_and_uri = $importNode->PathAndUri();
@@ -195,7 +196,7 @@ class Less_ImportVisitor extends Less_Visitor {
 	}
 
 	public function addVariableImport( $callback ) {
-		array_push( $this->variableImports, $callback );
+		$this->variableImports[] = $callback;
 	}
 
 	public function tryRun() {

@@ -142,7 +142,7 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 		$parser = new Less_Parser( [
 			'compress' => true,
 			'import_callback' => static function ( $importNode ) {
-				if ( $importNode->getPath() === '@wikimedia/example.less' ) {
+				if ( $importNode->getPath() === '@wikimedia/example' ) {
 					return [ __DIR__ . '/data/importdir-somevars/callme.less', '/site' ];
 				}
 			}
