@@ -36,20 +36,15 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 		}
 	}
 
+	/**
+	 * @see less-3.13.1.js#Quoted.prototype.containsVariables
+	 */
 	public function containsVariables() {
-		return preg_match( '/(`([^`]+)`)|@\{([\w-]+)\}/', $this->value );
+		return preg_match( '/@\{([\w-]+)\}/', $this->value );
 	}
 
 	public function compile( $env ) {
-		$value = $this->value;
-		if ( preg_match_all( '/`([^`]+)`/', $this->value, $matches ) ) {
-			foreach ( $matches[1] as $i => $match ) {
-				$js = new Less_Tree_JavaScript( $match, $this->index, true );
-				$js = $js->compile( $env )->value;
-				$value = str_replace( $matches[0][$i], $js, $value );
-			}
-		}
-		$r = $value;
+		$r = $this->value;
 		do {
 			$value = $r;
 			if ( preg_match_all( '/@\{([\w-]+)\}/', $value, $matches ) ) {
