@@ -817,6 +817,7 @@ class Less_Functions {
 			return new Less_Tree_Color( substr( $c->value, 1 ) );
 		}
 
+		// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition
 		if ( ( $c instanceof Less_Tree_Color ) || ( $c = Less_Tree_Color::fromKeyword( $c->value ) ) ) {
 			$c->value = null;
 			return $c;
