@@ -1,0 +1,21 @@
+.btn {
+  color: blue;
+  font-weight: bold;
+}
+.btn[title] {
+  background: lightgreen;
+}
+.btn[disabled] {
+  cursor: not-allowed;
+  color: red;
+}
+.btn[test] {
+  background-color: pink;
+}
+.btn-specific {
+  color: blue;
+  font-weight: bold;
+}
+.btn-specific[title] {
+  background: lightgreen;
+}

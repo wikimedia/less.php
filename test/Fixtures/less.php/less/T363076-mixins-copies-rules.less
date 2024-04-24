@@ -1,0 +1,19 @@
+.btn {
+	color: blue;
+	font-weight: bold;
+ 
+	&[title] {
+	   background: lightgreen;
+	}
+ }
+ .btn[disabled] {
+	cursor: not-allowed;
+	color: red;
+ }
+ .btn[test] {
+	background-color: pink;
+ }
+ 
+ .btn-specific {
+	.btn();
+ }
