@@ -26,7 +26,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 	}
 
 	/**
-	 * @see less-2.5.3.js#functionCaller.call
+	 * @see less-2.5.3.js#functionCaller.prototype.call
 	 */
 	private function functionCaller( $function, array $arguments ) {
 		// This code is terrible and should be replaced as per this issue...
