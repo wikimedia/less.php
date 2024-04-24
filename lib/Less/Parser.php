@@ -1266,8 +1266,11 @@ class Less_Parser {
 	 */
 	private function parseEntitiesVariable() {
 		$index = $this->pos;
-		if ( $this->peekChar( '@' ) && ( $name = $this->matchReg( '/\\G@@?[\w-]+/' ) ) ) {
-			return new Less_Tree_Variable( $name, $index, $this->env->currentFileInfo );
+		if ( $this->peekChar( '@' ) ) {
+			$name = $this->matchReg( '/\\G@@?[\w-]+/' );
+			if ( $name ) {
+				return new Less_Tree_Variable( $name, $index, $this->env->currentFileInfo );
+			}
 		}
 	}
 
@@ -1279,8 +1282,11 @@ class Less_Parser {
 	private function parseEntitiesVariableCurly() {
 		$index = $this->pos;
 
-		if ( $this->input_len > ( $this->pos + 1 ) && $this->input[$this->pos] === '@' && ( $curly = $this->matchReg( '/\\G@\{([\w-]+)\}/' ) ) ) {
-			return new Less_Tree_Variable( '@' . $curly[1], $index, $this->env->currentFileInfo );
+		if ( $this->input_len > ( $this->pos + 1 ) && $this->input[$this->pos] === '@' ) {
+			$curly = $this->matchReg( '/\\G@\{([\w-]+)\}/' );
+			if ( $curly ) {
+				return new Less_Tree_Variable( '@' . $curly[1], $index, $this->env->currentFileInfo );
+			}
 		}
 	}
 
@@ -1294,8 +1300,11 @@ class Less_Parser {
 	 * @return Less_Tree_Color|null
 	 */
 	private function parseEntitiesColor() {
-		if ( $this->peekChar( '#' ) && ( $rgb = $this->matchReg( '/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/' ) ) ) {
-			return new Less_Tree_Color( $rgb[1], 1, null, $rgb[0] );
+		if ( $this->peekChar( '#' ) ) {
+			$rgb = $this->matchReg( '/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/' );
+			if ( $rgb ) {
+				return new Less_Tree_Color( $rgb[1], 1, null, $rgb[0] );
+			}
 		}
 	}
 
@@ -1388,8 +1397,11 @@ class Less_Parser {
 	//
 	// @see less-2.5.3.js#parsers.variable
 	private function parseVariable() {
-		if ( $this->peekChar( '@' ) && ( $name = $this->matchReg( '/\\G(@[\w-]+)\s*:/' ) ) ) {
-			return $name[1];
+		if ( $this->peekChar( '@' ) ) {
+			$name = $this->matchReg( '/\\G(@[\w-]+)\s*:/' );
+			if ( $name ) {
+				return $name[1];
+			}
 		}
 	}
 
@@ -1400,8 +1412,11 @@ class Less_Parser {
 	//
 	// @see less-2.5.3.js#parsers.rulesetCall
 	private function parseRulesetCall() {
-		if ( $this->peekChar( '@' ) && ( $name = $this->matchReg( '/\\G(@[\w-]+)\s*\(\s*\)\s*;/' ) ) ) {
-			return new Less_Tree_RulesetCall( $name[1] );
+		if ( $this->peekChar( '@' ) ) {
+			$name = $this->matchReg( '/\\G(@[\w-]+)\s*\(\s*\)\s*;/' );
+			if ( $name ) {
+				return new Less_Tree_RulesetCall( $name[1] );
+			}
 		}
 	}
 
@@ -1784,7 +1799,8 @@ class Less_Parser {
 		if ( $e === null ) {
 			$this->save();
 			if ( $this->matchChar( '(' ) ) {
-				if ( ( $v = $this->parseSelector() ) && $this->matchChar( ')' ) ) {
+				$v = $this->parseSelector();
+				if ( $v && $this->matchChar( ')' ) ) {
 					$e = new Less_Tree_Paren( $v );
 					$this->forget();
 				} else {
@@ -1874,6 +1890,7 @@ class Less_Parser {
 		$c = null;
 		$index = $this->pos;
 
+		// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition
 		while ( ( $isLess && ( $extend = $this->parseExtend() ) ) || ( $isLess && ( $when = $this->matchStr( 'when' ) ) ) || ( $e = $this->parseElement() ) ) {
 			if ( $when ) {
 				$condition = $this->expect( 'parseConditions', 'expected condition' );
