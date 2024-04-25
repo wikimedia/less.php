@@ -123,4 +123,24 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 		return new self( $this->name, $this->value, '!important', $this->merge, $this->index, $this->currentFileInfo, $this->inline );
 	}
 
+	public function mark( $value ) {
+		if ( !is_array( $this->value ) ) {
+
+			if ( method_exists( $value, 'markReferenced' ) ) {
+				// @phan-suppress-next-line PhanUndeclaredMethod
+				$value->markReferenced();
+			}
+		} else {
+			foreach ( $this->value as $v ) {
+				$this->mark( $v );
+			}
+		}
+	}
+
+	public function markReferenced() {
+		if ( $this->value ) {
+			$this->mark( $this->value );
+		}
+	}
+
 }

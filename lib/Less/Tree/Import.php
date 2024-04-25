@@ -80,9 +80,7 @@ class Less_Tree_Import extends Less_Tree {
 	}
 
 	public function genCSS( $output ) {
-		// TODO: this.path.currentFileInfo.reference === undefined
-		// Related: T352862 (test/less-2.5.3/less/import-reference.less)
-		if ( $this->css ) {
+		if ( $this->css && !isset( $this->path->currentFileInfo["reference"] ) ) {
 			$output->add( '@import ', $this->currentFileInfo, $this->index );
 			$this->path->genCSS( $output );
 			if ( $this->features ) {
@@ -184,8 +182,8 @@ class Less_Tree_Import extends Less_Tree {
 					'reference' => $this->currentFileInfo['reference'] ?? null,
 				],
 				true,
-				true
-				// TODO: We might need upstream's bool $referenced param to Anonymous
+				true,
+				false
 			);
 			return $this->features
 				? new Less_Tree_Media( [ $contents ], $this->features->value )

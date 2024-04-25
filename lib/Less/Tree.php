@@ -131,7 +131,6 @@ class Less_Tree {
 	public static function ReferencedArray( $rules ) {
 		foreach ( $rules as $rule ) {
 			if ( method_exists( $rule, 'markReferenced' ) ) {
-				// @phan-suppress-next-line PhanUndeclaredMethod
 				$rule->markReferenced();
 			}
 		}

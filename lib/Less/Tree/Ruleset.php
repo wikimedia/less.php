@@ -486,12 +486,41 @@ class Less_Tree_Ruleset extends Less_Tree {
 	}
 
 	public function markReferenced() {
-		if ( !$this->selectors ) {
-			return;
+		if ( $this->selectors !== null ) {
+			foreach ( $this->selectors as $selector ) {
+				$selector->markReferenced();
+			}
 		}
-		foreach ( $this->selectors as $selector ) {
-			$selector->markReferenced();
+
+		if ( $this->rules ) {
+			foreach ( $this->rules as $rule ) {
+				if ( method_exists( $rule, 'markReferenced' ) ) {
+					$rule->markReferenced();
+				}
+			}
 		}
+	}
+
+	public function getIsReferenced() {
+		if ( $this->paths ) {
+			foreach ( $this->paths as $path ) {
+				foreach ( $path as $p ) {
+					if ( method_exists( $p, 'getIsReferenced' ) && $p->getIsReferenced() ) {
+						return true;
+					}
+				}
+			}
+		}
+
+		if ( $this->selectors ) {
+			foreach ( $this->selectors as $selector ) {
+				if ( method_exists( $selector, 'getIsReferenced' ) && $selector->getIsReferenced() ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**

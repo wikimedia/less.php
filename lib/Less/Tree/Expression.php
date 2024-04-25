@@ -88,6 +88,16 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 		}
 	}
 
+	public function markReferenced() {
+		if ( is_array( $this->value ) ) {
+			foreach ( $this->value as $v ) {
+				if ( method_exists( $v, 'markReferenced' ) ) {
+					$v->markReferenced();
+				}
+			}
+		}
+	}
+
 	/**
 	 * Should be used only in Less_Tree_Call::functionCaller()
 	 * to retrieve expression without comments
