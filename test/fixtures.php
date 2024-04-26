@@ -38,6 +38,9 @@ return [
 			'javascript',
 			'plugin',
 		],
+		'options' => [
+			'strictMath' => true
+		]
 	],
 	'lessjs-2.5.3/compression' => [
 		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/compression",

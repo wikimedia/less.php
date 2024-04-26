@@ -23,7 +23,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'parens' => true,
 
 			// Temporary disabled
-			'css' => true, // T352911 & T352866
 			'mixins-guards' => true, // T352867
 			'urls' => true, // T353147
 			'variables' => true, // T352830, T352866

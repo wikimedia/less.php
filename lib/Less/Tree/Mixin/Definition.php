@@ -44,6 +44,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 	}
 
 	/**
+	 * @param Less_Environment $env
 	 * @see less-2.5.3.js#Definition.prototype.evalParams
 	 */
 	public function compileParams( $env, $mixinFrames, $args = [], &$evaldArguments = [] ) {
@@ -104,8 +105,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 					} elseif ( isset( $param['value'] ) ) {
 
 						if ( !$mixinEnv ) {
-							$mixinEnv = new Less_Environment();
-							$mixinEnv->frames = array_merge( [ $frame ], $mixinFrames );
+							$mixinEnv = $env->copyEvalEnv( array_merge( [ $frame ], $mixinFrames ) );
 						}
 
 						$val = $param['value']->compile( $mixinEnv );
@@ -140,6 +140,12 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		return new self( $this->name, $this->params, $this->rules, $this->condition, $this->variadic, $env->frames );
 	}
 
+	/**
+	 * @param Less_Environment $env
+	 * @param array|null $args
+	 * @param bool|null $important
+	 * @return Less_Tree_Ruleset
+	 */
 	public function evalCall( $env, $args = null, $important = null ) {
 		Less_Environment::$mixin_stack++;
 
@@ -159,8 +165,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		$ruleset = new Less_Tree_Ruleset( null, $this->rules );
 		$ruleset->originalRuleset = $this->ruleset_id;
 
-		$ruleSetEnv = new Less_Environment();
-		$ruleSetEnv->frames = array_merge( [ $this, $frame ], $mixinFrames );
+		$ruleSetEnv = $env->copyEvalEnv( array_merge( [ $this, $frame ], $mixinFrames ) );
 		$ruleset = $ruleset->compile( $ruleSetEnv );
 
 		if ( $important ) {
@@ -172,7 +177,11 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		return $ruleset;
 	}
 
-	/** @return bool */
+	/**
+	 * @param array $args
+	 * @param Less_Environment $env
+	 * @return bool
+	 */
 	public function matchCondition( $args, $env ) {
 		if ( !$this->condition ) {
 			return true;
@@ -185,13 +194,13 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 
 		$frame = $this->compileParams( $env, array_merge( $this->frames, $env->frames ), $args );
 
-		$compile_env = new Less_Environment();
-		$compile_env->frames = array_merge(
+		$compile_env = $env->copyEvalEnv(
+			array_merge(
 				[ $frame ], // the parameter variables
-				 $this->frames, // the parent namespace/mixin frames
-				 $env->frames		// the current environment frames
-			);
-
+				$this->frames, // the parent namespace/mixin frames
+				$env->frames // the current environment frames
+			)
+		);
 		$compile_env->functions = $env->functions;
 
 		return (bool)$this->condition->compile( $compile_env );

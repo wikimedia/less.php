@@ -97,6 +97,7 @@ class Less_Environment {
 	public function copyEvalEnv( $frames = [] ) {
 		$new_env = new self();
 		$new_env->frames = $frames;
+		$new_env->strictMath = $this->strictMath;
 		return $new_env;
 	}
 
