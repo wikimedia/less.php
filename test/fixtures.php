@@ -50,6 +50,17 @@ return [
 			'compress' => true,
 		],
 	],
+	'lessjs-2.5.3/include-path' => [
+		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/include-path",
+		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/include-path",
+		'overrideDir' => "$fixtureDir/lessjs-2.5.3/override/include-path",
+		'options' => [
+			'import_dirs' => [
+				"$fixtureDir/lessjs-2.5.3/data" => '',
+				"$fixtureDir/lessjs-2.5.3/less/import" => '',
+			],
+		],
+	],
 	'lessjs-2.5.3/legacy' => [
 		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/legacy",
 		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/legacy",
@@ -63,17 +74,10 @@ return [
 			'strictUnits' => true,
 		],
 	],
-	'lessjs-2.5.3/include-path' => [
-		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/include-path",
-		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/include-path",
-		'overrideDir' => "$fixtureDir/lessjs-2.5.3/override/include-path",
-		'options' => [
-			'import_dirs' => [
-				"$fixtureDir/lessjs-2.5.3/data" => '',
-				"$fixtureDir/lessjs-2.5.3/less/import" => '',
-			],
-		],
-	],
+
+	// Upstream fixtures and parser options are declared
+	// at https://github.com/less/less.js/blob/v3.13.1/packages/less/test/index.js#L8
+
 	'lessjs-3.13.1' => [
 		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/_main",
 		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/_main",
@@ -84,6 +88,23 @@ return [
 			'plugin',
 			'plugin-module',
 			'plugin-preeval',
+		],
+	],
+	'lessjs-3.13.1/include-path' => [
+		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/include-path",
+		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/include-path",
+		// 'overrideDir' => "$fixtureDir/lessjs-3.13.1/override/include-path",
+		'options' => [
+			'import_dirs' => [
+				"$fixtureDir/lessjs-3.13.1/data" => '',
+				"$fixtureDir/lessjs-3.13.1/less/import" => '',
+			],
+		],
+	],
+	'lessjs-3.13.1/legacy' => [
+		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/legacy",
+		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/legacy",
+		'options' => [
 		],
 	],
 	'lessjs-3.13.1/compression' => [
@@ -99,17 +120,6 @@ return [
 		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/strict-units",
 		'options' => [
 			'strictUnits' => true,
-		],
-	],
-	'lessjs-3.13.1/include-path' => [
-		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/include-path",
-		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/include-path",
-		// 'overrideDir' => "$fixtureDir/lessjs-3.13.1/override/include-path",
-		'options' => [
-			'import_dirs' => [
-				"$fixtureDir/lessjs-3.13.1/data" => '',
-				"$fixtureDir/lessjs-3.13.1/less/import" => '',
-			],
 		],
 	],
 ];
