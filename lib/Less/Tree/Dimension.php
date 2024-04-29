@@ -36,7 +36,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 			throw new Less_Exception_Compiler( "Multiple units in dimension. Correct the units or use the unit function. Bad unit: " . $this->unit->toString() );
 		}
 
-		$value = Less_Functions::fround( $this->value );
+		$value = $this->fround( $this->value );
 		$strValue = (string)$value;
 
 		if ( $value !== 0 && $value < 0.000001 && $value > -0.000001 ) {
@@ -75,7 +75,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 	 * @param self $other
 	 */
 	public function operate( $op, $other ) {
-		$value = Less_Functions::operate( $op, $this->value, $other->value );
+		$value = $this->_operate( $op, $this->value, $other->value );
 		$unit = clone $this->unit;
 
 		if ( $op === '+' || $op === '-' ) {
@@ -93,7 +93,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 					throw new Less_Exception_Compiler( "Incompatible units. Change the units or use the unit function. Bad units: '" . $unit->toString() . "' and " . $other->unit->toString() . "'." );
 				}
 
-				$value = Less_Functions::operate( $op, $this->value, $other->value );
+				$value = $this->_operate( $op, $this->value, $other->value );
 			}
 		} elseif ( $op === '*' ) {
 			$unit->numerator = array_merge( $unit->numerator, $other->unit->numerator );

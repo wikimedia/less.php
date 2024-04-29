@@ -32,6 +32,41 @@ class Less_Tree {
 	}
 
 	/**
+	 * @param string $op
+	 * @param float $a
+	 * @param float $b
+	 * @see less-2.5.3.js#Node.prototype._operate
+	 */
+	protected function _operate( $op, $a, $b ) {
+		switch ( $op ) {
+			case '+':
+				return $a + $b;
+			case '-':
+				return $a - $b;
+			case '*':
+				return $a * $b;
+			case '/':
+				return $a / $b;
+		}
+	}
+
+	/**
+	 * @see less-2.5.3.js#Node.prototype.fround
+	 */
+	protected function fround( $value ) {
+		if ( $value === 0 ) {
+			return $value;
+		}
+
+		// TODO: Migrate to passing $env.
+		if ( Less_Parser::$options['numPrecision'] ) {
+			$p = pow( 10, Less_Parser::$options['numPrecision'] );
+			return round( $value * $p ) / $p;
+		}
+		return $value;
+	}
+
+	/**
 	 * @param Less_Output $output
 	 * @param Less_Tree_Ruleset[] $rules
 	 */

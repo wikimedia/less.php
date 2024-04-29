@@ -42,7 +42,7 @@ class phpunit_FunctionTest extends phpunit_bootstrap {
 			$prev = $e->getPrevious();
 			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
 			$this->assertStringContainsString(
-				'color functions take numbers as parameters',
+				'rgb expects three parameters',
 				$e->getMessage()
 			);
 		}
@@ -94,5 +94,56 @@ CSS;
 				$e->getMessage()
 			);
 		}
+	}
+
+	/**
+	 * Function registry must not clash with private helper functions.
+	 * Regression test for T363728, by checking that a custom function
+	 * that happens to share the same name, works fine.
+	 */
+	public function testNoconflictPrivateHelper() {
+		$lessCode = '
+		.foo {
+			fround: fround();
+			number-lo: _number();
+			number: number();
+			operate: operate();
+			scaled-lo: _scaled();
+			scaled: scaled();
+		}
+		';
+
+		$fnLo = static function () {
+			return new Less_Tree_Quoted( '', 'x' );
+		};
+		$fn = static function () {
+			return new Less_Tree_Quoted( '', 'y' );
+		};
+		$parser = new Less_Parser( [
+			'functions' => [
+				'_number' => $fnLo,
+				'_scaled' => $fnLo,
+				'fround' => $fn,
+				'number' => $fn,
+				'operate' => $fn,
+				'scaled' => $fn,
+			]
+		] );
+
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+
+		$expected = <<<CSS
+.foo {
+  fround: y;
+  number-lo: x;
+  number: y;
+  operate: y;
+  scaled-lo: x;
+  scaled: y;
+}
+CSS;
+
+		$this->assertEquals( $expected, $css );
 	}
 }
