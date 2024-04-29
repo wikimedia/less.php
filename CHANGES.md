@@ -1,5 +1,39 @@
 # Changelog
 
+## 4.3.0
+
+Added:
+* Support interpolated variable imports, via ImportVisitor (Hannah Okwelum) [T353133](https://phabricator.wikimedia.org/T353133)
+* Support rulesets as default values of a mixin parameter (Hannah Okwelum) [T353143](https://phabricator.wikimedia.org/T353143)
+* Support `...` expand operator in mixin calls (Piotr Miazga) [T352897](https://phabricator.wikimedia.org/T352897)
+* Improve support for `@import (reference)` matching Less.js 2.x (Hannah Okwelum) [T362647](https://phabricator.wikimedia.org/T362647)
+
+Changed:
+* Improve `mix()` argument exception message to mention given arg type (Timo Tijhof)
+* The `Less_Tree_Import->getPath()` method now reflects the path as written in the source code,
+  without auto-appended `.less` suffix, matching upstream Less.js 2.5.3 behaviour.
+  This internal detail is exposed via the deprecated `import_callback` parser option.
+  It is recommended to migrate to `Less_Parser->SetImportDirs`, which doesn't expose internals,
+  and is unaffected by this change.
+
+Deprecated:
+* Deprecate `import_callback` Less_Parser option. Use `Less_Parser->SetImportDirs` with callback instead.
+* Deprecate `Less_Parser->SetInput()` as public method. Use `Less_Parser->parseFile()` instead.
+* Deprecate `Less_Parser->CacheFile()` as public method. Use `Less_Cache` API instead.
+* Deprecate `Less_Parser::AllParsedFiles()` as static method. Use `Less_Parser->getParsedFiles()` instead.
+* Deprecate `Less_Parser->UnsetInput()` as public method, considered internal.
+* Deprecate `Less_Parser->save()` as public method, considered internal.
+
+Fixed:
+* Fix `replace()` when passed multiple replacements (Roan Kattouw) [T358631](https://phabricator.wikimedia.org/T358631)
+* Fix unexpected duplicating of uncalled mixin rules (Hannah Okwelum) [T363076](https://phabricator.wikimedia.org/T363076)
+* Fix ParseError for comments after rule name or in `@keyframes` (Piotr Miazga) [T353131](https://phabricator.wikimedia.org/T353131)
+* Fix ParseError for comments in more places and preserve them (Piotr Miazga) [T353132](https://phabricator.wikimedia.org/T353132)
+* Fix ParseError effecting pseudo classes with `when` guards (Piotr Miazga) [T353144](https://phabricator.wikimedia.org/T353144)
+* Fix preservation of units in some cases (Timo Tijhof) [T360065](https://phabricator.wikimedia.org/T360065)
+* Less_Parser: Faster matching by inlining `matcher()` chains (Timo Tijhof)
+* Less_Parser: Faster matching with `matchStr()` method (Timo Tijhof)
+
 ## 4.2.1
 
 Added:
