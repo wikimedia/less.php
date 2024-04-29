@@ -1,0 +1,4 @@
+Recursive variable definition for @navbar-hydra-inverse-color in oyejorge-109-recursive-var.less on line 2, column 38
+1| // https://github.com/oyejorge/less.php/issues/109
+2| @navbar-hydra-inverse-color: lighten(@navbar-hydra-inverse-color, 10%);
+3|

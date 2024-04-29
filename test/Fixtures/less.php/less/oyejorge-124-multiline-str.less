@@ -1,0 +1,14 @@
+// https://github.com/oyejorge/less.php/issues/124
+body{
+	@stra: 'This is a \
+	multiline string.';
+
+	content: @stra;
+
+
+	@strb: "This is a \
+	multiline string.";
+
+	content: @strb;
+
+}

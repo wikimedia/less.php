@@ -1,6 +1,0 @@
-div a + div a,
-div a + div b,
-div b + div a,
-div b + div b {
-  margin-top: 0;
-}

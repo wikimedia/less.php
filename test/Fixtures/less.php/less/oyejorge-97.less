@@ -1,0 +1,10 @@
+// https://github.com/oyejorge/less.php/issues/97
+
+@custom_css:'imports/a.less';
+
+.import_custom_css() when ( isstring(@custom_css) ){
+	@import "@{custom_css}";
+}
+.import_custom_css();
+
+
