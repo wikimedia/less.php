@@ -2281,12 +2281,12 @@ class Less_Parser {
 		}
 	}
 
-	//
-	// A CSS Directive
-	//
-	// @charset "utf-8";
-	//
-	// @see less-2.5.3.js#parsers.directive
+	/**
+	 * A CSS Directive like `@charset "utf-8";`
+	 *
+	 * @return Less_Tree_Import|Less_Tree_Media|Less_Tree_Directive|null
+	 * @see less-2.5.3.js#parsers.directive
+	 */
 	private function parseDirective() {
 		if ( !$this->peekChar( '@' ) ) {
 			return;

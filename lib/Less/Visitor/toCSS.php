@@ -54,7 +54,6 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 
 	public function visitDirective( $directiveNode, &$visitDeeper ) {
 		if ( $directiveNode->name === '@charset' ) {
-
 			if ( !$directiveNode->getIsReferenced() ) {
 				return;
 			}
@@ -69,7 +68,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 				//	return $this->visit($comment);
 				//}
 
-				return [];
+				return;
 			}
 			$this->charset = true;
 		}
@@ -86,7 +85,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 			}
 
 			if ( !$directiveNode->rules ) {
-				return [];
+				return;
 			}
 			if ( $this->hasVisibleChild( $directiveNode ) ) {
 				// marking as referenced in case the directive is stored inside another directive
