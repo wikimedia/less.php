@@ -59,3 +59,4 @@ or feels like it is for internal use only.
 * [Matomo (source code)](https://github.com/matomo-org/matomo/blob/5.0.2/core/AssetManager/UIAssetMerger/StylesheetUIAssetMerger.php)
 * [Adobe Magento (source code)](https://github.com/magento/magento2/blob/2.4.6/lib/internal/Magento/Framework/Css/PreProcessor/Adapter/Less/Processor.php)
 * [Shopware 5 (source code)](https://github.com/shopware5/shopware/blob/5.7/engine/Shopware/Components/Theme/LessCompiler/Oyejorge.php)
+* [Winter CMS Assetic (source code)](https://github.com/assetic-php/assetic/tree/v3.1.0/src/Assetic/Filter)
