@@ -333,7 +333,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 		return $this->_variables[$name] ?? null;
 	}
 
-	public function find( $selector, $self = null ) {
+	public function find( $selector, $self = null, $filter = null ) {
 		$key = implode( ' ', $selector->_oelements );
 
 		if ( !isset( $this->lookups[$key] ) ) {
@@ -355,9 +355,15 @@ class Less_Tree_Ruleset extends Less_Tree {
 							$match = $selector->match( $ruleSelector );
 							if ( $match ) {
 								if ( $selector->elements_len > $match ) {
-									$this->lookups[$key] = array_merge( $this->lookups[$key], $rule->find( new Less_Tree_Selector( array_slice( $selector->elements, $match ) ), $self ) );
+									if ( !$filter || $filter( $rule ) ) {
+										$foundMixins = $rule->find( new Less_Tree_Selector( array_slice( $selector->elements, $match ) ), $self, $filter );
+										for ( $i = 0; $i < count( $foundMixins ); ++$i ) {
+											$foundMixins[$i]["path"][] = $rule;
+										}
+										$this->lookups[$key] = array_merge( $this->lookups[$key], $foundMixins );
+									}
 								} else {
-									$this->lookups[$key][] = $rule;
+									$this->lookups[$key][] = [ "rule" => $rule, "path" => [] ];
 								}
 								break;
 							}
@@ -365,6 +371,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 					}
 				}
 			}
+
 		}
 
 		return $this->lookups[$key];

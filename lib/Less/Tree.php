@@ -85,8 +85,7 @@ class Less_Tree {
 			$res = $b->compare( $a );
 			return $res !== null ? -$res : null;
 		} elseif ( $a instanceof Less_Tree_Anonymous || $a instanceof Less_Tree_Color
-			|| $a instanceof Less_Tree_Dimension || $a instanceof Less_Tree_Keyword
-			|| $a instanceof Less_Tree_Quoted || $a instanceof Less_Tree_Unit
+			|| $a instanceof Less_Tree_Dimension || $a instanceof Less_Tree_Quoted || $a instanceof Less_Tree_Unit
 		) {
 			return $a->compare( $b );
 		} elseif ( get_class( $a ) !== get_class( $b ) ) {
