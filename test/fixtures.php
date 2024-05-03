@@ -9,10 +9,6 @@ return [
 		'lessDir' => "$fixtureDir/less.php/less",
 		'cssDir' => "$fixtureDir/less.php/css",
 	],
-	'bug-reports' => [
-		'lessDir' => "$fixtureDir/bug-reports/less",
-		'cssDir' => "$fixtureDir/bug-reports/css",
-	],
 	'bootstrap-3.0.3' => [
 		'lessDir' => "$fixtureDir/bootstrap-3.0.3/less",
 		'cssDir' => "$fixtureDir/bootstrap-3.0.3/css",

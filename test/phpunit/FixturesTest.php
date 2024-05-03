@@ -2,20 +2,6 @@
 
 class phpunit_FixturesTest extends phpunit_bootstrap {
 	private const KNOWN_FAILURE = [
-		'bug-reports' => [
-			// <lessjs>   background: transparent url("../images/logo.png")
-			// <less.php> background: transparent url("images/logo.png")
-			'110' => true,
-
-			// Invalid input, which lessjs autocorrects.
-			//
-			// <lessjs>   @charset 'UTF-8';
-			// <lessjs>   .test {}
-			// <less.php> .test {}
-			// <less.php> @charset 'UTF-8';
-			'280' => true,
-		],
-
 		'lessjs-2.5.3' => [
 			// We moved this to Less.php parens.less test case because
 			// our current version of Less.php suports Less.js v3.x parens

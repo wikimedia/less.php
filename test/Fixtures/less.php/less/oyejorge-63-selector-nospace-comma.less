@@ -1,0 +1,12 @@
+// Regression in less.php 1.6.1:
+// https://github.com/oyejorge/less.php/issues/63
+.foo {
+    h2,h3 {
+        font-size: 15px;
+    }
+}
+
+@num: 3;
+:nth-child(@{num}) {
+	selector: interpolated;
+}

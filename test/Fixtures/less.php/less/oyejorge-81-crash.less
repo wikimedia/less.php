@@ -1,0 +1,8 @@
+// Regression in less.php 1.6.1:
+// Support bootstrap 2.3.2
+// https://github.com/oyejorge/less.php/issues/81
+@menu_width:100;
+@navbarCollapseWidth: @menu_width+0px;
+#example{
+  width:@navbarCollapseWidth - 1px;
+}
