@@ -14,41 +14,11 @@ class Less_Functions {
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
-	/**
-	 * @param string $op
-	 * @param float $a
-	 * @param float $b
-	 */
-	public static function operate( $op, $a, $b ) {
-		switch ( $op ) {
-			case '+':
-				return $a + $b;
-			case '-':
-				return $a - $b;
-			case '*':
-				return $a * $b;
-			case '/':
-				return $a / $b;
-		}
-	}
-
-	public static function clamp( $val, $max = 1 ) {
+	private static function _clamp( $val, $max = 1 ) {
 		return min( max( $val, 0 ), $max );
 	}
 
-	public static function fround( $value ) {
-		if ( $value === 0 ) {
-			return $value;
-		}
-
-		if ( Less_Parser::$options['numPrecision'] ) {
-			$p = pow( 10, Less_Parser::$options['numPrecision'] );
-			return round( $value * $p ) / $p;
-		}
-		return $value;
-	}
-
-	public static function number( $n ) {
+	private static function _number( $n ) {
 		if ( $n instanceof Less_Tree_Dimension ) {
 			return floatval( $n->unit->is( '%' ) ? $n->value / 100 : $n->value );
 		} elseif ( is_numeric( $n ) ) {
@@ -58,11 +28,11 @@ class Less_Functions {
 		}
 	}
 
-	public static function scaled( $n, $size = 255 ) {
+	private static function _scaled( $n, $size = 255 ) {
 		if ( $n instanceof Less_Tree_Dimension && $n->unit->is( '%' ) ) {
 			return (float)$n->value * $size / 100;
 		} else {
-			return self::number( $n );
+			return self::_number( $n );
 		}
 	}
 
@@ -74,10 +44,13 @@ class Less_Functions {
 	}
 
 	public function rgba( $r = null, $g = null, $b = null, $a = null ) {
-		$rgb = [ $r, $g, $b ];
-		$rgb = array_map( [ __CLASS__, 'scaled' ], $rgb );
+		$rgb = [
+			self::_scaled( $r ),
+			self::_scaled( $g ),
+			self::_scaled( $b )
+		];
 
-		$a = self::number( $a );
+		$a = self::_number( $a );
 		return new Less_Tree_Color( $rgb, $a );
 	}
 
@@ -86,10 +59,10 @@ class Less_Functions {
 	}
 
 	public function hsla( $h, $s, $l, $a ) {
-		$h = fmod( self::number( $h ), 360 ) / 360; // Classic % operator will change float to int
-		$s = self::clamp( self::number( $s ) );
-		$l = self::clamp( self::number( $l ) );
-		$a = self::clamp( self::number( $a ) );
+		$h = fmod( self::_number( $h ), 360 ) / 360; // Classic % operator will change float to int
+		$s = self::_clamp( self::_number( $s ) );
+		$l = self::_clamp( self::_number( $l ) );
+		$a = self::_clamp( self::_number( $a ) );
 
 		$m2 = $l <= 0.5 ? $l * ( $s + 1 ) : $l + $s - $l * $s;
 
@@ -132,10 +105,10 @@ class Less_Functions {
 	 * @param float $a
 	 */
 	public function hsva( $h, $s, $v, $a ) {
-		$h = ( ( self::number( $h ) % 360 ) / 360 ) * 360;
-		$s = self::number( $s );
-		$v = self::number( $v );
-		$a = self::number( $a );
+		$h = ( ( self::_number( $h ) % 360 ) / 360 ) * 360;
+		$s = self::_number( $s );
+		$v = self::_number( $v );
+		$a = self::_number( $a );
 
 		$i = (int)floor( (int)( $h / 60 ) % 6 );
 		$f = ( $h / 60 ) - $i;
@@ -292,7 +265,7 @@ class Less_Functions {
 			$hsl['s'] += $hsl['s'] * $amount->value / 100;
 		} else {
 			$hsl['s'] += $amount->value / 100;
-		}		$hsl['s'] = self::clamp( $hsl['s'] );
+		}		$hsl['s'] = self::_clamp( $hsl['s'] );
 
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
@@ -317,7 +290,7 @@ class Less_Functions {
 			$hsl['s'] -= $amount->value / 100;
 		}
 
-		$hsl['s'] = self::clamp( $hsl['s'] );
+		$hsl['s'] = self::_clamp( $hsl['s'] );
 
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
@@ -338,7 +311,7 @@ class Less_Functions {
 			$hsl['l'] += $amount->value / 100;
 		}
 
-		$hsl['l'] = self::clamp( $hsl['l'] );
+		$hsl['l'] = self::_clamp( $hsl['l'] );
 
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
@@ -357,7 +330,7 @@ class Less_Functions {
 		} else {
 			$hsl['l'] -= $amount->value / 100;
 		}
-		$hsl['l'] = self::clamp( $hsl['l'] );
+		$hsl['l'] = self::_clamp( $hsl['l'] );
 
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
@@ -378,7 +351,7 @@ class Less_Functions {
 			$hsl['a'] += $amount->value / 100;
 		}
 
-		$hsl['a'] = self::clamp( $hsl['a'] );
+		$hsl['a'] = self::_clamp( $hsl['a'] );
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
 
@@ -398,7 +371,7 @@ class Less_Functions {
 			$hsl['a'] -= $amount->value / 100;
 		}
 
-		$hsl['a'] = self::clamp( $hsl['a'] );
+		$hsl['a'] = self::_clamp( $hsl['a'] );
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
 
@@ -413,7 +386,7 @@ class Less_Functions {
 		$hsl = $color->toHSL();
 
 		$hsl['a'] = $amount->value / 100;
-		$hsl['a'] = self::clamp( $hsl['a'] );
+		$hsl['a'] = self::_clamp( $hsl['a'] );
 		return $this->hsla( $hsl['h'], $hsl['s'], $hsl['l'], $hsl['a'] );
 	}
 
@@ -513,7 +486,7 @@ class Less_Functions {
 		if ( !$threshold ) {
 			$threshold = 0.43;
 		} else {
-			$threshold = self::number( $threshold );
+			$threshold = self::_number( $threshold );
 		}
 
 		if ( $color->luma() < $threshold ) {
@@ -562,7 +535,7 @@ class Less_Functions {
 		return new Less_Tree_Quoted( '', $result );
 	}
 
-	public static function replace_flags( $flags ) {
+	private static function replace_flags( $flags ) {
 		return str_replace( [ 'e', 'g' ], '', $flags );
 	}
 
@@ -696,8 +669,9 @@ class Less_Functions {
 	/**
 	 * @param bool $isMin
 	 * @param array<Less_Tree> $args
+	 * @see less-2.5.3.js#minMax
 	 */
-	private function _minmax( $isMin, $args ) {
+	private function _minMax( $isMin, $args ) {
 		$arg_count = count( $args );
 
 		if ( $arg_count < 1 ) {
@@ -782,11 +756,11 @@ class Less_Functions {
 	}
 
 	public function min( ...$args ) {
-		return $this->_minmax( true, $args );
+		return $this->_minMax( true, $args );
 	}
 
 	public function max( ...$args ) {
-		return $this->_minmax( false, $args );
+		return $this->_minMax( false, $args );
 	}
 
 	public function getunit( $n ) {
@@ -1054,17 +1028,6 @@ class Less_Functions {
 		return new Less_Tree_Url( new Less_Tree_Anonymous( $returner ) );
 	}
 
-	/**
-	 * Php version of javascript's `encodeURIComponent` function
-	 *
-	 * @param string $string The string to encode
-	 * @return string The encoded string
-	 */
-	public static function encodeURIComponent( $string ) {
-		$revert = [ '%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')' ];
-		return strtr( rawurlencode( $string ), $revert );
-	}
-
 	// Color Blending
 	// ref: https://www.w3.org/TR/compositing-1/
 	public function colorBlend( $mode, $color1, $color2 ) {
@@ -1215,7 +1178,7 @@ class Less_Functions {
 	}
 
 	// non-w3c functions:
-	public function colorBlendAverage( $cb, $cs ) {
+	private function colorBlendAverage( $cb, $cs ) {
 		return ( $cb + $cs ) / 2;
 	}
 
@@ -1230,7 +1193,7 @@ class Less_Functions {
 		return $this->colorBlend( [ $this, 'colorBlendNegation' ], $color1, $color2 );
 	}
 
-	public function colorBlendNegation( $cb, $cs ) {
+	private function colorBlendNegation( $cb, $cs ) {
 		return 1 - abs( $cb + $cs - 1 );
 	}
 
