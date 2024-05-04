@@ -46,9 +46,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		'lessjs-3.13.1/include-path' => [
 			'include-path' => true,
 		],
-		'lessjs-3.13.1/compression' => [
-			'compression' => true,
-		],
 	];
 
 	public static function provideFixtures() {
