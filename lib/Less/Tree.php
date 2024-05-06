@@ -110,19 +110,27 @@ class Less_Tree {
 	 */
 	public static function nodeCompare( $a, $b ) {
 		// Less_Tree subclasses that implement compare() are:
-		// Anonymous, Color, Dimension, Keyword, Quoted, Unit
-		if ( $b instanceof Less_Tree_Quoted || $b instanceof Less_Tree_Anonymous ) {
+		// Anonymous, Color, Dimension, Quoted, Unit
+		$aHasCompare = ( $a instanceof Less_Tree_Anonymous || $a instanceof Less_Tree_Color
+			|| $a instanceof Less_Tree_Dimension || $a instanceof Less_Tree_Quoted || $a instanceof Less_Tree_Unit
+		);
+		$bHasCompare = ( $b instanceof Less_Tree_Anonymous || $b instanceof Less_Tree_Color
+			|| $b instanceof Less_Tree_Dimension || $b instanceof Less_Tree_Quoted || $b instanceof Less_Tree_Unit
+		);
+
+		if ( $aHasCompare &&
+			!( $b instanceof Less_Tree_Quoted || $b instanceof Less_Tree_Anonymous )
+		) {
 			// for "symmetric results" force toCSS-based comparison via b.compare()
 			// of Quoted or Anonymous if either value is one of those
+			// @phan-suppress-next-line PhanUndeclaredMethod
+			return $a->compare( $b );
+		} elseif ( $bHasCompare ) {
+			$res = $b->compare( $a );
 			// In JS, `-undefined` produces NAN, which, just like undefined
 			// will enter the the default/false branch of Less_Tree_Condition#compile.
 			// In PHP, `-null` is 0. To ensure parity, preserve the null.
-			$res = $b->compare( $a );
 			return $res !== null ? -$res : null;
-		} elseif ( $a instanceof Less_Tree_Anonymous || $a instanceof Less_Tree_Color
-			|| $a instanceof Less_Tree_Dimension || $a instanceof Less_Tree_Quoted || $a instanceof Less_Tree_Unit
-		) {
-			return $a->compare( $b );
 		} elseif ( get_class( $a ) !== get_class( $b ) ) {
 			return null;
 		}
@@ -130,11 +138,12 @@ class Less_Tree {
 		// Less_Tree subclasses that have an array value: Less_Tree_Expression, Less_Tree_Value
 		// @phan-suppress-next-line PhanUndeclaredProperty
 		$aval = $a->value ?? [];
-		// @phan-suppress-next-line PhanUndeclaredProperty
 		$bval = $b->value ?? [];
 		if ( !( $a instanceof Less_Tree_Expression || $a instanceof Less_Tree_Value ) ) {
 			return $aval === $bval ? 0 : null;
 		}
+		'@phan-var Less_Tree[] $aval';
+		'@phan-var Less_Tree[] $bval';
 		if ( count( $aval ) !== count( $bval ) ) {
 			return null;
 		}
