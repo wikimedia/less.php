@@ -9,7 +9,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'parens' => true,
 
 			// Temporary disabled
-			'urls' => true, // T353147
 			'variables' => true, // T352830, T352866
 		],
 		'lessjs-2.5.3/include-path' => [

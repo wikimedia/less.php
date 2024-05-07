@@ -905,23 +905,24 @@ class Less_Functions {
 
 		}
 
+		$fragmentStart = strpos( $filePath, '#' );
+		$fragment = '';
+		if ( $fragmentStart && $fragmentStart !== -1 ) {
+			$fragment = substr( $filePath, $fragmentStart );
+			$filePath = substr( $filePath, 0, $fragmentStart );
+		}
+
 		// detect the mimetype if not given
 		if ( $args < 2 ) {
 
-			/* incomplete
-			$mime = require('mime');
-			mimetype = mime.lookup(path);
-
-			// use base 64 unless it's an ASCII or UTF-8 format
-			var charset = mime.charsets.lookup(mimetype);
-			useBase64 = ['US-ASCII', 'UTF-8'].indexOf(charset) < 0;
-			if (useBase64) mimetype += ';base64';
-			*/
-
 			$mimetype = Less_Mime::lookup( $filePath );
 
-			$charset = Less_Mime::charsets_lookup( $mimetype );
-			$useBase64 = !in_array( $charset, [ 'US-ASCII', 'UTF-8' ] );
+			if ( $mimetype === "image/svg+xml" ) {
+				$useBase64 = false;
+			} else {
+				$charset = Less_Mime::charsets_lookup( $mimetype );
+				$useBase64 = !in_array( $charset, [ 'US-ASCII', 'UTF-8' ] );
+			}
 			if ( $useBase64 ) {
 				$mimetype .= ';base64';
 			}
@@ -947,10 +948,10 @@ class Less_Functions {
 
 		if ( $buf ) {
 			$buf = $useBase64 ? base64_encode( $buf ) : rawurlencode( $buf );
-			$filePath = '"data:' . $mimetype . ',' . $buf . '"';
+			$filePath = "data:" . $mimetype . ',' . $buf . $fragment;
 		}
 
-		return new Less_Tree_Url( new Less_Tree_Anonymous( $filePath ) );
+		return new Less_Tree_Url( new Less_Tree_Quoted( '"' . $filePath . '"', $filePath, false ) );
 	}
 
 	// svg-gradient
@@ -963,7 +964,6 @@ class Less_Functions {
 
 		$gradientType = 'linear';
 		$rectangleDimension = 'x="0" y="0" width="1" height="1"';
-		$useBase64 = true;
 		$directionValue = $direction->toCSS();
 
 		switch ( $directionValue ) {
@@ -1019,13 +1019,57 @@ class Less_Functions {
 
 		$returner .= '</' . $gradientType . 'Gradient><rect ' . $rectangleDimension . ' fill="url(#gradient)" /></svg>';
 
-		if ( $useBase64 ) {
-			$returner = "'data:image/svg+xml;base64," . base64_encode( $returner ) . "'";
-		} else {
-			$returner = "'data:image/svg+xml," . $returner . "'";
+		$revert = [ '%21' => '!', '%2A' => '*', '%27' => "'", '%26' => '&', '%2C' => ',', '%40' => '@', '%2B' => '+', '%24' => '$', '%28' => '(', '%29' => ')' ];
+		$returner = strtr( rawurlencode( $returner ), $revert );
+
+		$returner = "data:image/svg+xml," . $returner;
+
+		return new Less_Tree_Url( new Less_Tree_Quoted( "'" . $returner . "'", $returner, false ) );
+	}
+
+	/**
+	 * @see https://github.com/less/less.js/blob/v2.5.3/lib/less-node/image-size.js
+	 */
+	private function getImageSize( $filePathNode ) {
+		$filePath = $filePathNode->value;
+
+		$filePath = str_replace( '\\', '/', $filePath );
+		if ( Less_Environment::isPathRelative( $filePath ) ) {
+			$currentFileInfo = $this->currentFileInfo;
+			'@phan-var array $currentFileInfo';
+			if ( Less_Parser::$options['relativeUrls'] ) {
+				$temp = $currentFileInfo['currentDirectory'];
+			} else {
+				$temp = $currentFileInfo['entryPath'];
+			}
+
+			if ( !empty( $temp ) ) {
+				$filePath = Less_Environment::normalizePath( rtrim( $temp, '/' ) . '/' . $filePath );
+			}
+
 		}
 
-		return new Less_Tree_Url( new Less_Tree_Anonymous( $returner ) );
+		[ $imagewidth, $imageheight ] = getimagesize( $filePath );
+
+		return [ "width" => $imagewidth, "height" => $imageheight ];
+	}
+
+	public function imagesize( $filePathNode = null ) {
+		$imagesize = $this->getImageSize( $filePathNode );
+		return new Less_Tree_Expression( [
+			new Less_Tree_Dimension( $imagesize["width"], "px" ),
+			new Less_Tree_Dimension( $imagesize["height"], "px" )
+		] );
+	}
+
+	public function imagewidth( $filePathNode = null ) {
+		$imagesize = $this->getImageSize( $filePathNode );
+		return new Less_Tree_Dimension( $imagesize["width"], "px" );
+	}
+
+	public function imageheight( $filePathNode = null ) {
+		$imagesize = $this->getImageSize( $filePathNode );
+		return new Less_Tree_Dimension( $imagesize["height"], "px" );
 	}
 
 	// Color Blending

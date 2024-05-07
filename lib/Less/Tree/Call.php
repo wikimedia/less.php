@@ -86,6 +86,15 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 			case 'svg-gradient':
 				$nameLC = 'svggradient';
 				break;
+			case 'image-size':
+				$nameLC = 'imagesize';
+				break;
+			case 'image-width':
+				$nameLC = 'imagewidth';
+				break;
+			case 'image-height':
+				$nameLC = 'imageheight';
+				break;
 		}
 
 		$result = null;

@@ -32,7 +32,7 @@ class Less_Tree_Mixin_Call extends Less_Tree {
 		$args = [];
 		foreach ( $this->arguments as $a ) {
 			$argValue = $a['value']->compile( $env );
-			if ( ( $a['expand'] ) && is_array( $argValue->value ) ) {
+			if ( !empty( $a['expand'] ) && is_array( $argValue->value ) ) {
 				foreach ( $argValue->value as $value ) {
 					$args[] = [ 'name' => null, 'value' => $value ];
 				}
