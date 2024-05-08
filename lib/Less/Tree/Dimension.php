@@ -1,6 +1,7 @@
 <?php
 /**
  * @private
+ * @see less-2.5.3.js#Dimension.prototype
  */
 class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValueProperty {
 
@@ -76,11 +77,11 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 	 */
 	public function operate( $op, $other ) {
 		$value = $this->_operate( $op, $this->value, $other->value );
-		$unit = clone $this->unit;
+		$unit = $this->unit->clone();
 
 		if ( $op === '+' || $op === '-' ) {
 			if ( !$unit->numerator && !$unit->denominator ) {
-				$unit = clone $other->unit;
+				$unit = $other->unit->clone();
 				if ( $this->unit->backupUnit ) {
 					$unit->backupUnit = $this->unit->backupUnit;
 				}
@@ -141,7 +142,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 
 	public function convertTo( $conversions ) {
 		$value = $this->value;
-		$unit = clone $this->unit;
+		$unit = $this->unit->clone();
 
 		if ( is_string( $conversions ) ) {
 			$derivedConversions = [];
