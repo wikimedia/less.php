@@ -29,6 +29,9 @@ class Less_Environment {
 	/** @var string[] */
 	public $imports = [];
 
+	/** @var array */
+	public $importantScope = [];
+
 	/**
 	 * This is the equivalent of `importVisitor.onceFileDetectionMap`
 	 * as used by the dynamic `importNode.skip` function.
@@ -97,6 +100,7 @@ class Less_Environment {
 	public function copyEvalEnv( $frames = [] ) {
 		$new_env = new self();
 		$new_env->frames = $frames;
+		$new_env->importantScope = $this->importantScope;
 		$new_env->strictMath = $this->strictMath;
 		return $new_env;
 	}

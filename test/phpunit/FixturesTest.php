@@ -7,9 +7,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// our current version of Less.php suports Less.js v3.x parens
 			// behaviour of doing maths in parentheses by default
 			'parens' => true,
-
-			// Temporary disabled
-			'variables' => true, // T352830, T352866
 		],
 		'lessjs-2.5.3/include-path' => [
 			'include-path' => true, // T353147, data-uri()
@@ -17,7 +14,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		'lessjs-3.13.1' => [
 			'calc' => true, // New Feature
 
-			'variables' => true,
 			'functions' => true,
 			'functions-each' => true,
 			'import-reference-issues' => true,

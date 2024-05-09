@@ -85,6 +85,12 @@ class Less_Parser {
 
 	protected $rules = [];
 
+	/**
+	 * Evaluated ruleset created by `getCss()`. Stored for potential use in `getVariables()`
+	 * @var Less_Tree[]|null
+	 */
+	private $cachedEvaldRules;
+
 	public static $has_extends = false;
 
 	public static $next_id = 0;
@@ -123,6 +129,7 @@ class Less_Parser {
 	 */
 	public function Reset( $options = null ) {
 		$this->rules = [];
+		$this->cachedEvaldRules = null;
 		self::$has_extends = false;
 		self::$contentsMap = [];
 
@@ -227,6 +234,8 @@ class Less_Parser {
 			self::$has_extends = false;
 			$evaldRoot = $root->compile( $this->env );
 
+			$this->cachedEvaldRules = $evaldRoot->rules;
+
 			$this->PostVisitors( $evaldRoot );
 
 			if ( self::$options['sourceMap'] ) {
@@ -266,7 +275,9 @@ class Less_Parser {
 	}
 
 	public function findValueOf( $varName ) {
-		foreach ( $this->rules as $rule ) {
+		$rules = $this->cachedEvaldRules ?? $this->rules;
+
+		foreach ( $rules as $rule ) {
 			if ( isset( $rule->variable ) && ( $rule->variable == true ) && ( str_replace( "@", "", $rule->name ) == $varName ) ) {
 				return $this->getVariableValue( $rule );
 			}
@@ -291,8 +302,9 @@ class Less_Parser {
 			Less_Tree_Operation::class,
 		];
 
-		// @TODO run compilation if not runned yet
-		foreach ( $this->rules as $key => $rule ) {
+		$rules = $this->cachedEvaldRules ?? $this->rules;
+
+		foreach ( $rules as $key => $rule ) {
 			if ( in_array( get_class( $rule ), $not_variable_type ) ) {
 				continue;
 			}
@@ -310,7 +322,9 @@ class Less_Parser {
 	}
 
 	public function findVarByName( $var_name ) {
-		foreach ( $this->rules as $rule ) {
+		$rules = $this->cachedEvaldRules ?? $this->rules;
+
+		foreach ( $rules as $rule ) {
 			if ( isset( $rule->variable ) && ( $rule->variable == true ) ) {
 				if ( $rule->name == $var_name ) {
 					return $this->getVariableValue( $rule );
@@ -342,11 +356,11 @@ class Less_Parser {
 			case Less_Tree_Rule::class:
 				return $this->getVariableValue( $var->value );
 			case Less_Tree_Value::class:
-				$value = '';
+				$values = [];
 				foreach ( $var->value as $sub_value ) {
-					$value .= $this->getVariableValue( $sub_value ) . ' ';
+					$values[] = $this->getVariableValue( $sub_value );
 				}
-				return $value;
+				return implode( ' ', $values );
 			case Less_Tree_Quoted::class:
 				return $var->quote . $var->value . $var->quote;
 			case Less_Tree_Dimension::class:
@@ -356,11 +370,11 @@ class Less_Parser {
 				}
 				return $value;
 			case Less_Tree_Expression::class:
-				$value = '';
+				$values = [];
 				foreach ( $var->value as $item ) {
-					$value .= $this->getVariableValue( $item ) . " ";
+					$values[] = $this->getVariableValue( $item );
 				}
-				return $value;
+				return implode( ' ', $values );
 			case Less_Tree_Operation::class:
 				throw new Exception( 'getVariables() require Less to be compiled. please use $parser->getCss() before calling getVariables()' );
 			case Less_Tree_Unit::class:

@@ -23,8 +23,10 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 	 * @param int|null $index
 	 * @param array|null $currentFileInfo
 	 * @param bool $inline
+	 * @param bool|null $variable
 	 */
-	public function __construct( $name, $value = null, $important = null, $merge = null, $index = null, $currentFileInfo = null, $inline = false ) {
+	public function __construct( $name, $value = null, $important = null, $merge = null,
+		$index = null, $currentFileInfo = null, $inline = false, $variable = null ) {
 		$this->name = $name;
 		$this->value = ( $value instanceof Less_Tree )
 			? $value
@@ -34,7 +36,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 		$this->inline = $inline;
-		$this->variable = ( is_string( $name ) && $name[0] === '@' );
+		$this->variable = $variable ?? ( is_string( $name ) && $name[0] === '@' );
 	}
 
 	public function accept( $visitor ) {
@@ -63,6 +65,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 	 * @return self
 	 */
 	public function compile( $env ) {
+		$variable = $this->variable;
 		$name = $this->name;
 		if ( is_array( $name ) ) {
 			// expand 'primitive' name directly to get
@@ -72,6 +75,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 			} else {
 				$name = $this->CompileName( $env, $name );
 			}
+			$variable = false; // never treat expanded interpolation as new variable name
 		}
 
 		$strictMathBypass = false;
@@ -81,19 +85,29 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 		}
 
 		try {
+			$env->importantScope[] = [];
 			$evaldValue = $this->value->compile( $env );
 
 			if ( !$this->variable && $evaldValue instanceof Less_Tree_DetachedRuleset ) {
 				throw new Less_Exception_Compiler( "Rulesets cannot be evaluated on a property.", null, $this->index, $this->currentFileInfo );
 			}
 
-			if ( Less_Environment::$mixin_stack ) {
-				$return = new self( $name, $evaldValue, $this->important, $this->merge, $this->index, $this->currentFileInfo, $this->inline );
-			} else {
-				$this->name = $name;
-				$this->value = $evaldValue;
-				$return = $this;
+			$important = $this->important;
+			$importantResult = array_pop( $env->importantScope );
+
+			if ( !$important && isset( $importantResult['important'] ) && $importantResult['important'] ) {
+				$important = $importantResult['important'];
 			}
+
+			$return = new Less_Tree_Rule( $name,
+				$evaldValue,
+				$important,
+				$this->merge,
+				$this->index,
+				$this->currentFileInfo,
+				$this->inline,
+				$variable,
+			);
 
 		} catch ( Less_Exception_Parser $e ) {
 			if ( !is_numeric( $e->index ) ) {

@@ -24,7 +24,7 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 
 		$parser = new Less_Parser();
 		$parser->parse( $lessCode );
-		$css = $parser->getCss();
+		$parser->getCss();
 
 		$this->assertEquals(
 			[
