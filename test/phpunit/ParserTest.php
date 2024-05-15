@@ -1,6 +1,54 @@
 <?php
 
 class phpunit_ParserTest extends phpunit_bootstrap {
+	public function testGetVariablesUncompiled() {
+		$lessCode = '
+			// Rule > Quoted
+			@some_string: "foo";
+
+			// Rule > Dimension
+			@some_number: 123;
+
+			// Rule > Dimension
+			@some_unit: 12px;
+
+			// Rule > Color
+			@some_color: #f9f9f9;
+
+			// Rule > Url > Quoted
+			@some_url: url("just/a/test.jpg");
+		';
+		$parser = new Less_Parser();
+		$parser->parse( $lessCode );
+		// Without getCss()
+
+		$this->assertEquals(
+			[
+				'@some_string' => '"foo"',
+				'@some_number' => 123.0,
+				'@some_unit' => '12px',
+				'@some_color' => '#f9f9f9',
+				'@some_url' => 'url("just/a/test.jpg")',
+			],
+			$parser->getVariables()
+		);
+	}
+
+	public function testGetVariablesUncompiledError() {
+		$lessCode = '
+			// Rule > Dimension + Operation
+			@some_unit_op: 2px + 3px;
+		';
+
+		$parser = new Less_Parser();
+		$parser->parse( $lessCode );
+		// Without getCss()
+
+		$this->expectException( Exception::class );
+		$this->expectExceptionMessage( 'getVariables() require Less to be compiled' );
+		$parser->getVariables();
+	}
+
 	public function testGetVariables() {
 		$lessCode = '
 			// Rule > Quoted
