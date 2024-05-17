@@ -8,12 +8,8 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			// behaviour of doing maths in parentheses by default
 			'parens' => true,
 		],
-		'lessjs-2.5.3/include-path' => [
-			'include-path' => true, // T353147, data-uri()
-		],
 		'lessjs-3.13.1' => [
 			'calc' => true, // New Feature
-
 			'functions' => true,
 			'functions-each' => true,
 			'import-reference-issues' => true,
@@ -36,9 +32,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'property-accessors' => true,
 			'property-name-interp' => true,
 			'permissive-parse' => true,
-		],
-		'lessjs-3.13.1/include-path' => [
-			'include-path' => true,
 		],
 	];
 

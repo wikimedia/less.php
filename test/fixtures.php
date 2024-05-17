@@ -92,8 +92,8 @@ return [
 		// 'overrideDir' => "$fixtureDir/lessjs-3.13.1/override/include-path",
 		'options' => [
 			'import_dirs' => [
-				"$fixtureDir/lessjs-3.13.1/data" => '',
-				"$fixtureDir/lessjs-3.13.1/less/import" => '',
+				"$fixtureDir/lessjs-3.13.1/less/data" => '',
+				"$fixtureDir/lessjs-3.13.1/less/_main/import" => '',
 			],
 		],
 	],

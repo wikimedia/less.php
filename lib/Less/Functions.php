@@ -879,31 +879,19 @@ class Less_Functions {
 		return new Less_Tree_Dimension( $n );
 	}
 
+	/**
+	 * @see less-2.5.3.js#data-uri
+	 */
 	public function datauri( $mimetypeNode, $filePathNode = null ) {
 		$filePath = ( $filePathNode ? $filePathNode->value : null );
 		$mimetype = $mimetypeNode->value;
 
-		$args = 2;
 		if ( !$filePath ) {
 			$filePath = $mimetype;
-			$args = 1;
+			$mimetype = null;
 		}
 
 		$filePath = str_replace( '\\', '/', $filePath );
-		if ( Less_Environment::isPathRelative( $filePath ) ) {
-			$currentFileInfo = $this->currentFileInfo;
-			'@phan-var array $currentFileInfo';
-			if ( Less_Parser::$options['relativeUrls'] ) {
-				$temp = $currentFileInfo['currentDirectory'];
-			} else {
-				$temp = $currentFileInfo['entryPath'];
-			}
-
-			if ( !empty( $temp ) ) {
-				$filePath = Less_Environment::normalizePath( rtrim( $temp, '/' ) . '/' . $filePath );
-			}
-
-		}
 
 		$fragmentStart = strpos( $filePath, '#' );
 		$fragment = '';
@@ -912,8 +900,10 @@ class Less_Functions {
 			$filePath = substr( $filePath, 0, $fragmentStart );
 		}
 
+		[ $filePath ] = Less_FileManager::getFilePath( $filePath, $this->currentFileInfo );
+
 		// detect the mimetype if not given
-		if ( $args < 2 ) {
+		if ( !$mimetype ) {
 
 			$mimetype = Less_Mime::lookup( $filePath );
 
@@ -934,24 +924,24 @@ class Less_Functions {
 		if ( file_exists( $filePath ) ) {
 			$buf = @file_get_contents( $filePath );
 		} else {
-			$buf = false;
-		}
-
-		// IE8 cannot handle a data-uri larger than 32KB. If this is exceeded
-		// and the --ieCompat flag is enabled, return a normal url() instead.
-		$DATA_URI_MAX_KB = 32;
-		$fileSizeInKB = round( strlen( $buf ) / 1024 );
-		if ( $fileSizeInKB >= $DATA_URI_MAX_KB ) {
 			$url = new Less_Tree_Url( ( $filePathNode ?: $mimetypeNode ), $this->currentFileInfo );
 			return $url->compile( $this->env );
 		}
 
-		if ( $buf ) {
-			$buf = $useBase64 ? base64_encode( $buf ) : rawurlencode( $buf );
-			$filePath = "data:" . $mimetype . ',' . $buf . $fragment;
+		$buf = $useBase64 ? base64_encode( $buf ) : rawurlencode( $buf );
+		$url = "data:" . $mimetype . ',' . $buf . $fragment;
+
+		// IE8 cannot handle a data-uri larger than 32KB. If this is exceeded
+		// and the --ieCompat flag is enabled, return a normal url() instead.
+		$DATA_URI_MAX_KB = 32768;
+		if ( strlen( $buf ) >= $DATA_URI_MAX_KB ) {
+			// NOTE: Less.js checks for ieCompat here (true by default).
+			// For Less.php, ieCompat is not configurable, and always true.
+			$fallback = new Less_Tree_Url( ( $filePathNode ?: $mimetypeNode ), $this->currentFileInfo );
+			return $fallback->compile( $this->env );
 		}
 
-		return new Less_Tree_Url( new Less_Tree_Quoted( '"' . $filePath . '"', $filePath, false ) );
+		return new Less_Tree_Url( new Less_Tree_Quoted( '"' . $url . '"', $url, false ) );
 	}
 
 	// svg-gradient
@@ -1034,24 +1024,30 @@ class Less_Functions {
 		$filePath = $filePathNode->value;
 
 		$filePath = str_replace( '\\', '/', $filePath );
-		if ( Less_Environment::isPathRelative( $filePath ) ) {
-			$currentFileInfo = $this->currentFileInfo;
-			'@phan-var array $currentFileInfo';
-			if ( Less_Parser::$options['relativeUrls'] ) {
-				$temp = $currentFileInfo['currentDirectory'];
-			} else {
-				$temp = $currentFileInfo['entryPath'];
-			}
 
-			if ( !empty( $temp ) ) {
-				$filePath = Less_Environment::normalizePath( rtrim( $temp, '/' ) . '/' . $filePath );
-			}
+		[ $filePath ] = Less_FileManager::getFilePath( $filePath, $this->currentFileInfo );
 
+		$mimetype = Less_Mime::lookup( $filePath );
+
+		if ( $mimetype === "image/svg+xml" ) {
+			return $this->getSvgSize( $filePath );
 		}
 
 		[ $imagewidth, $imageheight ] = getimagesize( $filePath );
 
 		return [ "width" => $imagewidth, "height" => $imageheight ];
+	}
+
+	/**
+	 * @see https://github.com/image-size/image-size/blob/main/lib/types/svg.ts
+	 */
+	private function getSvgSize( string $filePathNode ) {
+		$xml     = simplexml_load_string( file_get_contents( $filePathNode ) );
+		$attributes = $xml->attributes();
+		$width          = (string)$attributes->width;
+		$height         = (string)$attributes->height;
+
+		return [ "width" => $width, "height" => $height ];
 	}
 
 	public function imagesize( $filePathNode = null ) {

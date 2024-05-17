@@ -59,6 +59,8 @@ class Less_ImportVisitor extends Less_Visitor {
 				$env->importMultiple = true;
 			}
 
+			$tryAppendLessExtension = $evaldImportNode->css === null;
+
 			for ( $i = 0; $i < count( $importParent->rules ); $i++ ) {
 				if ( $importParent->rules[$i] === $importNode ) {
 					$importParent->rules[$i] = $evaldImportNode;
@@ -92,14 +94,16 @@ class Less_ImportVisitor extends Less_Visitor {
 			// @see less-2.5.3.js#ImportManager.prototype.push
 
 			// NOTE: This is the equivalent to upstream `newFileInfo` and `fileManager.getPath()`
-			// TODO: Move this into Less_Tree_Import->PathAndUri along with the rest of the
-			// import dirs resolution logic.
-			// TODO: We might need upstream's `tryAppendLessExtension` logic here.
-			//       We currenlty do do this in getPath instead.
+
+			$path = $importNode->getPath();
+
+			if ( $tryAppendLessExtension ) {
+					$path = preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $path ) ? $path : $path . '.less';
+			}
 
 			$path_and_uri = $env->callImportCallback( $importNode );
 			if ( !$path_and_uri ) {
-				$path_and_uri = $importNode->PathAndUri();
+				$path_and_uri = Less_FileManager::getFilePath( $path, $importNode->currentFileInfo );
 			}
 			if ( $path_and_uri ) {
 				[ $full_path, $uri ] = $path_and_uri;

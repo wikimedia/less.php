@@ -160,8 +160,9 @@ class Less_Tree_Import extends Less_Tree {
 		// skip() call $this->PathAndUri() on its own.
 		// get path & uri
 		$path_and_uri = $env->callImportCallback( $this );
+
 		if ( !$path_and_uri ) {
-			$path_and_uri = $this->PathAndUri();
+			$path_and_uri = Less_FileManager::getFilePath( $this->getPath(), $this->currentFileInfo );
 		}
 		if ( $path_and_uri ) {
 			[ $full_path, $uri ] = $path_and_uri;
@@ -201,74 +202,6 @@ class Less_Tree_Import extends Less_Tree {
 				? new Less_Tree_Media( $ruleset->rules, $this->features->value )
 				: $ruleset->rules;
 
-		}
-	}
-
-	/**
-	 * Using the import directories, get the full absolute path and uri of the import
-	 *
-	 * @see less-node/FileManager.getPath https://github.com/less/less.js/blob/v2.5.3/lib/less-node/file-manager.js#L70
-	 */
-	public function PathAndUri() {
-		$evald_path = $this->getPath();
-
-		$tryAppendLessExtension = $this->css === null;
-
-		if ( $tryAppendLessExtension ) {
-			$evald_path = ( isset( $this->css ) || preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $evald_path ) ) ? $evald_path : $evald_path . '.less';
-		}
-
-		// TODO: Move callImportCallback() and getPath() fallback logic from callers
-		//       to here so that PathAndUri() is equivalent to upstream fileManager.getPath()
-
-		if ( $evald_path ) {
-
-			$import_dirs = [];
-
-			if ( Less_Environment::isPathRelative( $evald_path ) ) {
-				// if the path is relative, the file should be in the current directory
-				if ( $this->currentFileInfo ) {
-					$import_dirs[ $this->currentFileInfo['currentDirectory'] ] = $this->currentFileInfo['uri_root'];
-				}
-
-			} else {
-				// otherwise, the file should be relative to the server root
-				if ( $this->currentFileInfo ) {
-					$import_dirs[ $this->currentFileInfo['entryPath'] ] = $this->currentFileInfo['entryUri'];
-				}
-				// if the user supplied entryPath isn't the actual root
-				$import_dirs[ $_SERVER['DOCUMENT_ROOT'] ] = '';
-
-			}
-
-			// always look in user supplied import directories
-			$import_dirs = array_merge( $import_dirs, Less_Parser::$options['import_dirs'] );
-
-			foreach ( $import_dirs as $rootpath => $rooturi ) {
-				if ( is_callable( $rooturi ) ) {
-					$res = $rooturi( $evald_path );
-					if ( $res && is_string( $res[0] ) ) {
-						return [
-							Less_Environment::normalizePath( $res[0] ),
-							Less_Environment::normalizePath( $res[1] ?? dirname( $evald_path ) )
-						];
-					}
-				} elseif ( !empty( $rootpath ) ) {
-					$path = rtrim( $rootpath, '/\\' ) . '/' . ltrim( $evald_path, '/\\' );
-					if ( file_exists( $path ) ) {
-						return [
-							Less_Environment::normalizePath( $path ),
-							Less_Environment::normalizePath( dirname( $rooturi . $evald_path ) )
-						];
-					}
-					if ( file_exists( $path . '.less' ) ) {
-						return [
-							Less_Environment::normalizePath( $path . '.less' ),
-							Less_Environment::normalizePath( dirname( $rooturi . $evald_path . '.less' ) )
-						];
-					}
-				}
-			}
 		}
 	}
 
