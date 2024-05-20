@@ -21,7 +21,6 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 			'merge' => true,
 			'css-3' => true,
 			'colors' => true,
-			'css-grid' => true,
 			'urls' => true,
 			'operations' => true,
 			'import-remote' => true,
