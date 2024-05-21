@@ -39,10 +39,6 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		$this->SetRulesetIndex();
 	}
 
-	public function toCSS() {
-		return '';
-	}
-
 	/**
 	 * @param Less_Environment $env
 	 * @see less-2.5.3.js#Definition.prototype.evalParams
