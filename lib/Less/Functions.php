@@ -883,19 +883,18 @@ class Less_Functions {
 	 * @see less-2.5.3.js#data-uri
 	 */
 	public function datauri( $mimetypeNode, $filePathNode = null ) {
-		$filePath = ( $filePathNode ? $filePathNode->value : null );
-		$mimetype = $mimetypeNode->value;
-
-		if ( !$filePath ) {
-			$filePath = $mimetype;
-			$mimetype = null;
+		if ( !$filePathNode ) {
+			$filePathNode = $mimetypeNode;
+			$mimetypeNode = null;
 		}
 
-		$filePath = str_replace( '\\', '/', $filePath );
+		$filePath = $filePathNode->value;
+		$mimetype = ( $mimetypeNode ? $mimetypeNode->value : null );
 
+		$filePath = str_replace( '\\', '/', $filePath );
 		$fragmentStart = strpos( $filePath, '#' );
 		$fragment = '';
-		if ( $fragmentStart && $fragmentStart !== -1 ) {
+		if ( $fragmentStart !== false ) {
 			$fragment = substr( $filePath, $fragmentStart );
 			$filePath = substr( $filePath, 0, $fragmentStart );
 		}
@@ -921,12 +920,11 @@ class Less_Functions {
 			$useBase64 = preg_match( '/;base64$/', $mimetype );
 		}
 
-		if ( file_exists( $filePath ) ) {
-			$buf = @file_get_contents( $filePath );
-		} else {
-			$url = new Less_Tree_Url( ( $filePathNode ?: $mimetypeNode ), $this->currentFileInfo );
-			return $url->compile( $this->env );
+		if ( !file_exists( $filePath ) ) {
+			$fallback = new Less_Tree_Url( ( $filePathNode ?: $mimetypeNode ), $this->currentFileInfo );
+			return $fallback->compile( $this->env );
 		}
+		$buf = @file_get_contents( $filePath );
 
 		$buf = $useBase64 ? base64_encode( $buf ) : rawurlencode( $buf );
 		$url = "data:" . $mimetype . ',' . $buf . $fragment;
