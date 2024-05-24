@@ -1,9 +1,9 @@
 <?php
 /**
  * @private
+ * @see less-2.5.3.js#Comment.prototype
  */
 class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty {
-
 	public $value;
 	public $isLineComment;
 	public $isReferenced;
@@ -15,18 +15,10 @@ class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty 
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
 	public function genCSS( $output ) {
-		// if( $this->debugInfo ){
-			//$output->add( tree.debugInfo($env, $this), $this->currentFileInfo, $this->index);
-		//}
-		$output->add( $this->value );
-	}
+		// NOTE: Skip debugInfo handling (not implemented)
 
-	public function toCSS() {
-		return Less_Parser::$options['compress'] ? '' : $this->value;
+		$output->add( $this->value );
 	}
 
 	public function isSilent() {

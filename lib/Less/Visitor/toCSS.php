@@ -57,17 +57,8 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 			if ( !$directiveNode->getIsReferenced() ) {
 				return;
 			}
-			// Only output the debug info together with subsequent @charset definitions
-			// a comment (or @media statement) before the actual @charset directive would
-			// be considered illegal css as it has to be on the first line
 			if ( isset( $this->charset ) && $this->charset ) {
-
-				// if( $directiveNode->debugInfo ){
-				//	$comment = new Less_Tree_Comment('/* ' . str_replace("\n",'',$directiveNode->toCSS())." */\n");
-				//	$comment->debugInfo = $directiveNode->debugInfo;
-				//	return $this->visit($comment);
-				//}
-
+				// NOTE: Skip debugInfo handling (not implemented)
 				return;
 			}
 			$this->charset = true;

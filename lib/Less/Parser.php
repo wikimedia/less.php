@@ -1942,7 +1942,7 @@ class Less_Parser {
 
 	/**
 	 * @return Less_Tree_Attribute|null
-	 * @see less-2.5.3.js#parsers.block
+	 * @see less-2.5.3.js#parsers.attribute
 	 */
 	private function parseAttribute() {
 		$val = null;
