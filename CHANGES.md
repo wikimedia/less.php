@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.4.0
+
+Added:
+* Add `image-size()` function, disable base64 for SVG `data-uri()` (Hannah Okwelum) [T353147](https://phabricator.wikimedia.org/T353147)
+* Improve support for preserving `!important` via variables (Piotr Miazga) [T362341](https://phabricator.wikimedia.org/T362341)
+* Add support for include path inside `data-uri()` (Hannah Okwelum) [T364871](https://phabricator.wikimedia.org/T364871)
+
+Changed, to match Less.js 2.5.3:
+* Fix multiplication of mixed units to preserve the first unit (Piotr Miazga) [T362341](https://phabricator.wikimedia.org/T362341)
+
+Fixed:
+* Fix checking of guard conditions in nested mixins (Hannah Okwelum) [T352867](https://phabricator.wikimedia.org/T352867)
+* Less_Functions: Avoid clobbering `clamp()` with internal helper (Timo Tijhof) [T363728](https://phabricator.wikimedia.org/T363728)
+
 ## 4.3.0
 
 Added:
