@@ -712,7 +712,7 @@ class Less_Parser {
 	/**
 	 * @internal since 4.3.0 No longer a public API.
 	 */
-	public function SetInput( $file_path ) {
+	private function SetInput( $file_path ) {
 		// Set up the input buffer
 		if ( $file_path ) {
 			$this->input = file_get_contents( $file_path );
