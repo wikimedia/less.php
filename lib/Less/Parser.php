@@ -715,7 +715,7 @@ class Less_Parser {
 	/**
 	 * @internal since 4.3.0 Use Less_Cache instead.
 	 */
-	public function CacheFile( $file_path ) {
+	private function CacheFile( $file_path ) {
 		if ( $file_path && $this->CacheEnabled() ) {
 
 			$env = get_object_vars( $this->env );
