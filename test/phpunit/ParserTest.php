@@ -184,22 +184,6 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 		$this->assertEquals( $expect, $parser->getCss() );
 	}
 
-	public function testImportCallback() {
-		$file = __DIR__ . '/data/consume-somevars/from-importcallback.less';
-
-		$parser = new Less_Parser( [
-			'compress' => true,
-			'import_callback' => static function ( $importNode ) {
-				if ( $importNode->getPath() === '@wikimedia/example' ) {
-					return [ __DIR__ . '/data/importdir-somevars/callme.less', '/site' ];
-				}
-			}
-		] );
-		$parser->parseFile( $file );
-
-		$this->assertEquals( 'div{font-family:Call Me Maybe}', $parser->getCss() );
-	}
-
 	public function testOperationException() {
 		$lessFile = __DIR__ . '/data/exception/f2.less';
 

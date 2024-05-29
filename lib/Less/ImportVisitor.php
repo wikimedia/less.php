@@ -101,10 +101,7 @@ class Less_ImportVisitor extends Less_Visitor {
 					$path = preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $path ) ? $path : $path . '.less';
 			}
 
-			$path_and_uri = $env->callImportCallback( $importNode );
-			if ( !$path_and_uri ) {
-				$path_and_uri = Less_FileManager::getFilePath( $path, $importNode->currentFileInfo );
-			}
+			$path_and_uri = Less_FileManager::getFilePath( $path, $importNode->currentFileInfo );
 			if ( $path_and_uri ) {
 				[ $full_path, $uri ] = $path_and_uri;
 			} else {

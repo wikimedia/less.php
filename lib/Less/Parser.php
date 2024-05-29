@@ -19,29 +19,6 @@ class Less_Parser {
 
 		'import_dirs'			=> [],
 
-		// Override how imported file names are resolved.
-		//
-		// This legacy calllback exposes internal objects and their implementation
-		// details and is therefore deprecated. Use Less_Parser::SetImportDirs instead
-		// to override the resolution of imported file names.
-		//
-		// Example:
-		//
-		//     $parser = new Less_Parser( [
-		//       'import_callback' => function ( $importNode ) {
-		//            $path = $importNode->getPath();
-		//            if ( $path === 'special.less' ) {
-		//                return [ $mySpecialFilePath, null ];
-		//            }
-		//       }
-		//     ] );
-		//
-		// @since 1.5.1
-		// @deprecated since 4.3.0
-		// @see Less_Environment::callImportCallback
-		// @see Less_Parser::SetImportDirs
-		//
-		'import_callback'		=> null,
 		'cache_dir'				=> null,
 		'cache_method'			=> 'serialize', // false, 'serialize', 'callback';
 		'cache_callback_get'	=> null,
@@ -59,7 +36,7 @@ class Less_Parser {
 
 	];
 
-	/** @var array{compress:bool,strictUnits:bool,strictMath:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,import_callback:null|callable,indentation:string} */
+	/** @var array{compress:bool,strictUnits:bool,strictMath:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,indentation:string} */
 	public static $options = [];
 
 	/** @var Less_Environment */
@@ -167,10 +144,6 @@ class Less_Parser {
 
 			case 'import_dirs':
 				$this->SetImportDirs( $value );
-				return;
-
-			case 'import_callback':
-				$this->env->importCallback = $value;
 				return;
 
 			case 'cache_dir':
