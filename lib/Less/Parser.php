@@ -62,9 +62,6 @@ class Less_Parser {
 	/** @var array{compress:bool,strictUnits:bool,strictMath:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,import_callback:null|callable,indentation:string} */
 	public static $options = [];
 
-	/** @var Less_Environment */
-	private static $envCompat;
-
 	private $input;					// Less input string
 	private $input_len;				// input string length
 	private $pos;					// current index in `input`
@@ -110,7 +107,6 @@ class Less_Parser {
 		// which will then be passed around by reference.
 		if ( $env instanceof Less_Environment ) {
 			$this->env = $env;
-			self::$envCompat = $this->env;
 		} else {
 			$this->Reset( $env );
 		}
@@ -134,7 +130,6 @@ class Less_Parser {
 		self::$contentsMap = [];
 
 		$this->env = new Less_Environment();
-		self::$envCompat = $this->env;
 
 		// set new options
 		$this->SetOptions( self::$default_options );
@@ -757,14 +752,6 @@ class Less_Parser {
 			$parts[] = self::$options['cache_method'];
 			return Less_Cache::$cache_dir . Less_Cache::$prefix . base_convert( sha1( json_encode( $parts ) ), 16, 36 ) . '.lesscache';
 		}
-	}
-
-	/**
-	 * @deprecated since 4.3.0 Use $parser->getParsedFiles() instead.
-	 * @return string[]
-	 */
-	public static function AllParsedFiles() {
-		return self::$envCompat->imports;
 	}
 
 	/**
