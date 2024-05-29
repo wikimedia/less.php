@@ -101,13 +101,8 @@ class Less_ImportVisitor extends Less_Visitor {
 					$path = preg_match( '/(\.[a-z]*$)|([\?;].*)$/', $path ) ? $path : $path . '.less';
 			}
 
-			$path_and_uri = Less_FileManager::getFilePath( $path, $importNode->currentFileInfo );
-			if ( $path_and_uri ) {
-				[ $full_path, $uri ] = $path_and_uri;
-			} else {
-				$full_path = $uri = $importNode->getPath();
-			}
-			'@phan-var string $full_path';
+			[ $fullPath, $uri ] =
+				Less_FileManager::getFilePath( $path, $importNode->currentFileInfo ) ?? [ $path, $path ];
 
 			// @see less-2.5.3.js#ImportManager.prototype.push/loadFileCallback
 
@@ -122,22 +117,22 @@ class Less_ImportVisitor extends Less_Visitor {
 			$e = null;
 			try {
 				if ( $importNode->options['inline'] ) {
-					if ( !file_exists( $full_path ) ) {
+					if ( !file_exists( $fullPath ) ) {
 						throw new Less_Exception_Parser(
-							sprintf( 'File `%s` not found.', $full_path ),
+							sprintf( 'File `%s` not found.', $fullPath ),
 							null,
 							$importNode->index,
 							$importNode->currentFileInfo
 						);
 					}
-					$root = file_get_contents( $full_path );
+					$root = file_get_contents( $fullPath );
 				} else {
 					$parser = new Less_Parser( $env );
 					// NOTE: Upstream sets `env->processImports = false` here to avoid
 					// running ImportVisitor again (infinite loop). We instead separate
 					// Less_Parser->parseFile() from Less_Parser->getCss(),
 					// and only getCss() runs ImportVisitor.
-					$root = $parser->parseFile( $full_path, $uri, true );
+					$root = $parser->parseFile( $fullPath, $uri, true );
 				}
 			} catch ( Less_Exception_Parser $err ) {
 				$e = $err;
@@ -148,7 +143,7 @@ class Less_ImportVisitor extends Less_Visitor {
 			if ( $importNode->options['optional'] && $e ) {
 				$e = null;
 				$root = new Less_Tree_Ruleset( null, [] );
-				$full_path = null;
+				$fullPath = null;
 			}
 
 			// @see less-2.5.3.js#ImportVisitor.prototype.onImported
@@ -162,7 +157,7 @@ class Less_ImportVisitor extends Less_Visitor {
 				throw $e;
 			}
 
-			$duplicateImport = isset( $this->recursionDetector[$full_path] );
+			$duplicateImport = isset( $this->recursionDetector[$fullPath] );
 
 			if ( !$env->importMultiple ) {
 				if ( $duplicateImport ) {
@@ -175,16 +170,16 @@ class Less_ImportVisitor extends Less_Visitor {
 				}
 			}
 
-			if ( !$full_path && $importNode->options['optional'] ) {
+			if ( !$fullPath && $importNode->options['optional'] ) {
 				$importNode->doSkip = true;
 			}
 
 			if ( $root ) {
 				$importNode->root = $root;
-				$importNode->importedFilename = $full_path;
+				$importNode->importedFilename = $fullPath;
 
-				if ( !$inlineCSS && ( $env->importMultiple || !$duplicateImport ) && $full_path ) {
-					$this->recursionDetector[$full_path] = true;
+				if ( !$inlineCSS && ( $env->importMultiple || !$duplicateImport ) && $fullPath ) {
+					$this->recursionDetector[$fullPath] = true;
 					$oldContext = $this->env;
 					$this->env = $env;
 					$this->visitObj( $root );

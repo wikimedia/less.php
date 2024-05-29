@@ -195,22 +195,22 @@ class Less_Tree_Import extends Less_Tree {
 	 * @return bool|null
 	 */
 	public function skip( $env ) {
-		[ $path ] = Less_FileManager::getFilePath( $this->getPath(), $this->currentFileInfo );
-
-		if ( !$path ) {
-			$path = $this->getPath();
-		}
+		$path = $this->getPath();
+		// TODO: Since our Import->getPath() varies from upstream Less.js (ours can return null).
+		// we therefore need an empty string fallback here. Remove this fallback once getPath()
+		// is in sync with upstream.
+		$fullPath = Less_FileManager::getFilePath( $path, $this->currentFileInfo )[0] ?? $path ?? '';
 
 		if ( $this->doSkip !== null ) {
 			return $this->doSkip;
 		}
 
 		// @see less-2.5.3.js#ImportVisitor.prototype.onImported
-		if ( isset( $env->importVisitorOnceMap[$path] ) ) {
+		if ( isset( $env->importVisitorOnceMap[$fullPath] ) ) {
 			return true;
 		}
 
-		$env->importVisitorOnceMap[$path] = true;
+		$env->importVisitorOnceMap[$fullPath] = true;
 		return false;
 	}
 }
