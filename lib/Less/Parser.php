@@ -778,7 +778,7 @@ class Less_Parser {
 	/**
 	 * @internal since 4.3.0 No longer a public API.
 	 */
-	public function save() {
+	private function save() {
 		$this->saveStack[] = $this->pos;
 	}
 
