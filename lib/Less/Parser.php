@@ -622,9 +622,9 @@ class Less_Parser {
 	 * @param string|null $file_path
 	 */
 	private function GetRules( $file_path ) {
-		$this->SetInput( $file_path );
+		$this->setInput( $file_path );
 
-		$cache_file = $this->CacheFile( $file_path );
+		$cache_file = $this->cacheFile( $file_path );
 		if ( $cache_file ) {
 			if ( self::$options['cache_method'] == 'callback' ) {
 				$callback = self::$options['cache_callback_get'];
@@ -632,7 +632,7 @@ class Less_Parser {
 					$cache = $callback( $this, $file_path, $cache_file );
 
 					if ( $cache ) {
-						$this->UnsetInput();
+						$this->unsetInput();
 						return $cache;
 					}
 				}
@@ -645,7 +645,7 @@ class Less_Parser {
 						$cache = unserialize( file_get_contents( $cache_file ) );
 						if ( $cache ) {
 							touch( $cache_file );
-							$this->UnsetInput();
+							$this->unsetInput();
 							return $cache;
 						}
 						break;
@@ -659,7 +659,7 @@ class Less_Parser {
 			throw new Less_Exception_Chunk( $this->input, null, $this->furthest, $this->env->currentFileInfo );
 		}
 
-		$this->UnsetInput();
+		$this->unsetInput();
 
 		// save the cache
 		if ( $cache_file ) {
@@ -685,7 +685,7 @@ class Less_Parser {
 	/**
 	 * @internal since 4.3.0 No longer a public API.
 	 */
-	private function SetInput( $file_path ) {
+	private function setInput( $file_path ) {
 		// Set up the input buffer
 		if ( $file_path ) {
 			$this->input = file_get_contents( $file_path );
@@ -706,7 +706,7 @@ class Less_Parser {
 	/**
 	 * @internal since 4.3.0 No longer a public API.
 	 */
-	private function UnsetInput() {
+	private function unsetInput() {
 		// Free up some memory
 		$this->input = $this->pos = $this->input_len = $this->furthest = null;
 		$this->saveStack = [];
@@ -715,7 +715,7 @@ class Less_Parser {
 	/**
 	 * @internal since 4.3.0 Use Less_Cache instead.
 	 */
-	private function CacheFile( $file_path ) {
+	private function cacheFile( $file_path ) {
 		if ( $file_path && $this->CacheEnabled() ) {
 
 			$env = get_object_vars( $this->env );
