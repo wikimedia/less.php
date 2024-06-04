@@ -1,6 +1,7 @@
 <?php
 /**
  * @private
+ * @see less-3.13.1.js#Expression.prototype
  */
 class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProperty {
 
@@ -18,19 +19,17 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 	}
 
 	public function compile( $env ) {
+		$mathOn = $env->isMathOn();
+		// NOTE: We don't support STRICT_LEGACY (Less.js 3.13)
+		$inParenthesis = $this->parens && ( true || !$this->parensInOp );
 		$doubleParen = false;
-
-		if ( $this->parens && !$this->parensInOp ) {
-			Less_Environment::$parensStack++;
+		if ( $inParenthesis ) {
+			$env->inParenthesis();
 		}
 
-		$returnValue = null;
 		if ( $this->value ) {
 
-			$count = count( $this->value );
-
-			if ( $count > 1 ) {
-
+			if ( count( $this->value ) > 1 ) {
 				$ret = [];
 				foreach ( $this->value as $e ) {
 					$ret[] = $e->compile( $env );
@@ -38,26 +37,24 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 				$returnValue = new self( $ret );
 
 			} else {
-
-				if ( ( $this->value[0] instanceof self ) && $this->value[0]->parens && !$this->value[0]->parensInOp ) {
+				// Implied `if ( count() === 1 )`
+				if ( ( $this->value[0] instanceof self ) && $this->value[0]->parens && !$this->value[0]->parensInOp && !$env->inCalc ) {
 					$doubleParen = true;
 				}
-
 				$returnValue = $this->value[0]->compile( $env );
 			}
-
 		} else {
 			$returnValue = $this;
 		}
 
-		if ( $this->parens ) {
-			if ( !$this->parensInOp ) {
-				Less_Environment::$parensStack--;
+		if ( $inParenthesis ) {
+			$env->outOfParenthesis();
+		}
 
-			} elseif ( !$env->isMathOn() && !$doubleParen ) {
-				$returnValue = new Less_Tree_Paren( $returnValue );
-
-			}
+		if ( $this->parens && $this->parensInOp && !$mathOn && !$doubleParen &&
+			( !( $returnValue instanceof Less_Tree_Dimension ) )
+		) {
+			$returnValue = new Less_Tree_Paren( $returnValue );
 		}
 		return $returnValue;
 	}

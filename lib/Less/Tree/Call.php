@@ -1,22 +1,21 @@
 <?php
 /**
  * @private
- * @see less.tree.Call in less.js 3.0.0 https://github.com/less/less.js/blob/v3.0.0/dist/less.js#L6336
+ * @see less-3.13.1.js#Call.prototype
  */
 class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 	public $value;
 
 	public $name;
 	public $args;
-	/** @var bool */
-	public $mathOn;
+	public $calc;
 	public $index;
 	public $currentFileInfo;
 
 	public function __construct( $name, $args, $index, $currentFileInfo = null ) {
 		$this->name = $name;
 		$this->args = $args;
-		$this->mathOn = ( $name !== 'calc' );
+		$this->calc = ( $name === 'calc' );
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 	}
@@ -59,15 +58,16 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 	//
 	public function compile( $env ) {
 		// Turn off math for calc(). https://phabricator.wikimedia.org/T331688
-		$currentMathContext = $env->strictMath;
-		$env->strictMath = !$this->mathOn;
+		$currentMathContext = $env->mathOn;
+		$env->mathOn = !$this->calc;
+		// TODO: Less.js 3.13 also checks/toggles $env->inCalc
 
 		$args = [];
 		foreach ( $this->args as $a ) {
 			$args[] = $a->compile( $env );
 		}
 
-		$env->strictMath = $currentMathContext;
+		$env->mathOn = $currentMathContext;
 
 		$nameLC = strtolower( $this->name );
 		switch ( $nameLC ) {

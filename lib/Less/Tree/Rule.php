@@ -78,10 +78,11 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 			$variable = false; // never treat expanded interpolation as new variable name
 		}
 
-		$strictMathBypass = false;
-		if ( $name === "font" && !$env->strictMath ) {
-			$strictMathBypass = true;
-			$env->strictMath = true;
+		$mathBypass = false;
+		$prevMath = $env->math;
+		if ( $name === "font" && $env->math === Less_Environment::MATH_ALWAYS ) {
+			$mathBypass = true;
+			$env->math = Less_Environment::MATH_PARENS_DIVISION;
 		}
 
 		try {
@@ -118,8 +119,8 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 			throw $e;
 		}
 
-		if ( $strictMathBypass ) {
-			$env->strictMath = false;
+		if ( $mathBypass ) {
+			$env->math = $prevMath;
 		}
 
 		return $return;

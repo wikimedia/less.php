@@ -20,6 +20,10 @@ class Less_Environment {
 	 * @var array
 	 */
 	public $frames = [];
+	/** @var array */
+	public $importantScope = [];
+	public $inCalc = false;
+	public $mathOn = true;
 
 	/** @var Less_Tree_Media[] */
 	public $mediaBlocks = [];
@@ -28,9 +32,6 @@ class Less_Environment {
 
 	/** @var string[] */
 	public $imports = [];
-
-	/** @var array */
-	public $importantScope = [];
 
 	/**
 	 * This is the equivalent of `importVisitor.onceFileDetectionMap`
@@ -41,8 +42,6 @@ class Less_Environment {
 	 */
 	public $importVisitorOnceMap = [];
 
-	public static $parensStack = 0;
-
 	public static $tabLevel = 0;
 
 	public static $lastRule = false;
@@ -51,9 +50,15 @@ class Less_Environment {
 
 	public static $mixin_stack = 0;
 
-	public $strictMath = false;
+	public $math = self::MATH_PARENS_DIVISION;
 
 	public $importCallback = null;
+
+	public $parensStack = [];
+
+	public const MATH_ALWAYS = 0;
+	public const MATH_PARENS_DIVISION = 1;
+	public const MATH_PARENS = 2;
 
 	/**
 	 * @var array
@@ -61,7 +66,6 @@ class Less_Environment {
 	public $functions = [];
 
 	public function Init() {
-		self::$parensStack = 0;
 		self::$tabLevel = 0;
 		self::$lastRule = false;
 		self::$mixin_stack = 0;
@@ -101,16 +105,41 @@ class Less_Environment {
 		$new_env = new self();
 		$new_env->frames = $frames;
 		$new_env->importantScope = $this->importantScope;
-		$new_env->strictMath = $this->strictMath;
+		$new_env->math = $this->math;
 		return $new_env;
 	}
 
 	/**
 	 * @return bool
-	 * @see Eval.prototype.isMathOn in less.js 3.0.0 https://github.com/less/less.js/blob/v3.0.0/dist/less.js#L1007
+	 * @see less-3.13.1.js#Eval.prototype.isMathOn
 	 */
-	public function isMathOn() {
-		return $this->strictMath ? (bool)self::$parensStack : true;
+	public function isMathOn( $op = "" ) {
+		if ( !$this->mathOn ) {
+			return false;
+		}
+		if ( $op === '/' && $this->math !== $this::MATH_ALWAYS && !$this->parensStack ) {
+			return false;
+		}
+
+		if ( $this->math > $this::MATH_PARENS_DIVISION ) {
+			return (bool)$this->parensStack;
+		}
+		return true;
+	}
+
+	/**
+	 * @see less-3.13.1.js#Eval.prototype.inParenthesis
+	 */
+	public function inParenthesis() {
+		// Optimization: We don't need undefined/null, always have an array
+		$this->parensStack[] = true;
+	}
+
+	/**
+	 * @see less-3.13.1.js#Eval.prototype.inParenthesis
+	 */
+	public function outOfParenthesis() {
+		array_pop( $this->parensStack );
 	}
 
 	/**

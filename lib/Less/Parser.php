@@ -12,7 +12,14 @@ class Less_Parser {
 	public static $default_options = [
 		'compress'				=> false, // option - whether to compress
 		'strictUnits'			=> false, // whether units need to evaluate correctly
-		'strictMath'			=> false, // whether math has to be within parenthesis
+		/* How to process math
+		 *   always           - eagerly try to solve all operations
+		 *   parens-division  - require parens for division "/"
+		 *   parens | strict  - require parens for all operations
+		 */
+		// NOTE: We use the default of Less.js 4.0 (parens-division)
+		//       instead of Less.js 3.13 (always).
+		'math'					=> 'parens-division',
 		'relativeUrls'			=> true, // option - whether to adjust URL's to be relative
 		'urlArgs'				=> '', // whether to add args into url tokens
 		'numPrecision'			=> 8,
@@ -36,7 +43,7 @@ class Less_Parser {
 
 	];
 
-	/** @var array{compress:bool,strictUnits:bool,strictMath:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,indentation:string} */
+	/** @var array{compress:bool,strictUnits:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,indentation:string} */
 	public static $options = [];
 
 	/** @var Less_Environment */
@@ -138,8 +145,22 @@ class Less_Parser {
 	public function SetOption( $option, $value ) {
 		switch ( $option ) {
 			case 'strictMath':
-				$this->env->strictMath = (bool)$value;
-				self::$options[$option] = $value;
+				if ( $value ) {
+					$this->env->math = Less_Environment::MATH_PARENS;
+				} else {
+					$this->env->math = Less_Environment::MATH_ALWAYS;
+				}
+				break;
+
+			case 'math':
+				$value = strtolower( $value );
+				if ( $value === 'always' ) {
+					$this->env->math = Less_Environment::MATH_ALWAYS;
+				} elseif ( $value === 'parens-division' ) {
+					$this->env->math = Less_Environment::MATH_PARENS_DIVISION;
+				} elseif ( $value === 'parens' || $value === 'strict' ) {
+					$this->env->math = Less_Environment::MATH_PARENS;
+				}
 				return;
 
 			case 'import_dirs':
@@ -2435,12 +2456,12 @@ class Less_Parser {
 	 * Parses multiplication operation
 	 *
 	 * @return Less_Tree_Operation|null
+	 * @see less-3.13.1.js#parsers.multiplication
 	 */
 	private function parseMultiplication() {
 		$return = $m = $this->parseOperand();
 		if ( $return ) {
 			while ( true ) {
-
 				$isSpaced = $this->isWhitespace( -1 );
 
 				if ( $this->peekReg( '/\\G\/[*\/]/' ) ) {
@@ -2448,13 +2469,10 @@ class Less_Parser {
 				}
 				$this->save();
 
-				$op = $this->matchChar( '/' );
+				$op = $this->matchChar( '/' ) ?? $this->matchChar( '*' ) ?? $this->matchStr( './' );
 				if ( !$op ) {
-					$op = $this->matchChar( '*' );
-					if ( !$op ) {
-						$this->forget();
-						break;
-					}
+					$this->forget();
+					break;
 				}
 
 				$a = $this->parseOperand();
