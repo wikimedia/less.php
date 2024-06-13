@@ -8,10 +8,16 @@ return [
 	'less.php' => [
 		'lessDir' => "$fixtureDir/less.php/less",
 		'cssDir' => "$fixtureDir/less.php/css",
+		'options' => [
+			'math' => "always",
+		],
 	],
 	'bootstrap-3.0.3' => [
 		'lessDir' => "$fixtureDir/bootstrap-3.0.3/less",
 		'cssDir' => "$fixtureDir/bootstrap-3.0.3/css",
+		'options' => [
+			'math' => "always",
+		],
 	],
 	'bootstrap-3.1' => [
 		'lessDir' => "$fixtureDir/bootstrap-3.1/less",
@@ -57,12 +63,6 @@ return [
 			],
 		],
 	],
-	'lessjs-2.5.3/legacy' => [
-		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/legacy",
-		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/legacy",
-		'options' => [
-		],
-	],
 	'lessjs-2.5.3/strict-units' => [
 		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/strict-units",
 		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/strict-units",
@@ -101,6 +101,7 @@ return [
 		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/legacy",
 		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/legacy",
 		'options' => [
+			'math' => "always"
 		],
 	],
 	'lessjs-3.13.1/compression' => [
@@ -116,6 +117,18 @@ return [
 		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/strict-units",
 		'options' => [
 			'strictUnits' => true,
+		],
+	],
+	'lessjs-3.13.1/math/parens-division' => [
+		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/math/parens-division",
+		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/math/parens-division",
+	],
+	'lessjs-3.13.1/math/strict' => [
+		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/math/strict",
+		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/math/strict",
+		'overrideDir' => "$fixtureDir/lessjs-3.13.1/override/math/strict",
+		'options' => [
+			'math' => "parens",
 		],
 	],
 ];
