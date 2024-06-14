@@ -1,11 +1,11 @@
 <?php
 
-class phpunit_MapTest extends phpunit_bootstrap {
+class MapTest extends LessTestCase {
 
 	public function testMap() {
-		$lessFile = $this->fixtures_dir . '/bootstrap3-sourcemap/less/bootstrap.less';
-		$expectedFile = $this->fixtures_dir . '/bootstrap3-sourcemap/expected/bootstrap.map';
-		$mapDestination = $this->cache_dir . '/bootstrap.map';
+		$lessFile = self::$fixturesDir . '/bootstrap3-sourcemap/less/bootstrap.less';
+		$expectedFile = self::$fixturesDir . '/bootstrap3-sourcemap/expected/bootstrap.map';
+		$mapDestination = self::$cacheDir . '/bootstrap.map';
 
 		$options['sourceMap'] = true;
 		$options['sourceMapWriteTo'] = $mapDestination;

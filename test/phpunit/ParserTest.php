@@ -1,6 +1,6 @@
 <?php
 
-class phpunit_ParserTest extends phpunit_bootstrap {
+class ParserTest extends LessTestCase {
 	public function testGetVariablesUncompiled() {
 		$lessCode = '
 			// Rule > Quoted
@@ -89,7 +89,7 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 
 	public function testGetParsedFiles() {
 		$parser = new Less_Parser();
-		$baseDir = Less_Parser::WinPath( realpath( $this->fixtures_dir . '/less.php/less' ) );
+		$baseDir = Less_Parser::WinPath( realpath( self::$fixturesDir . '/less.php/less' ) );
 		$parser->parseFile( $baseDir . '/imports.less' );
 		$parser->getCss();
 

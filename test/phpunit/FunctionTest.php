@@ -1,6 +1,6 @@
 <?php
 
-class phpunit_FunctionTest extends phpunit_bootstrap {
+class FunctionTest extends LessTestCase {
 
 	public function testFunction() {
 		$lessFile = __DIR__ . '/data/f1.less';

@@ -1,6 +1,6 @@
 <?php
 
-class phpunit_FixturesTest extends phpunit_bootstrap {
+class FixturesTest extends LessTestCase {
 	private const KNOWN_FAILURE = [
 		'lessjs-2.5.3' => [
 			// We moved this to Less.php parens.less test case because
@@ -95,7 +95,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 
 		// Check with cache
 		$optionsWithCache = $options + [
-			'cache_dir' => $this->cache_dir,
+			'cache_dir' => self::$cacheDir,
 			'functions' => [
 				'_color' => [ __CLASS__, 'FnColor' ],
 				'add' => [ __CLASS__, 'FnAdd' ],
@@ -105,7 +105,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		$files = [ $lessFile => '' ];
 		try {
 			$cacheFile = Less_Cache::Regen( $files, $optionsWithCache );
-			$css = file_get_contents( $this->cache_dir . '/' . $cacheFile );
+			$css = file_get_contents( self::$cacheDir . '/' . $cacheFile );
 		} catch ( Less_Exception_Parser $e ) {
 			$css = $e->getMessage();
 		}
@@ -115,7 +115,7 @@ class phpunit_FixturesTest extends phpunit_bootstrap {
 		// Check using the cached data
 		try {
 			$cacheFile = Less_Cache::Get( $files, $optionsWithCache );
-			$css = file_get_contents( $this->cache_dir . '/' . $cacheFile );
+			$css = file_get_contents( self::$cacheDir . '/' . $cacheFile );
 		} catch ( Less_Exception_Parser $e ) {
 			$css = $e->getMessage();
 		}
