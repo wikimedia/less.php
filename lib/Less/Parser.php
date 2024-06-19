@@ -1063,14 +1063,14 @@ class Less_Parser {
 	 *	 "milky way" 'he\'s the one!'
 	 *
 	 * @return Less_Tree_Quoted|null
-	 * @see less-2.5.3.js#entities.quoted
+	 * @see less-3.13.1.js#entities.quoted
 	 */
-	private function parseEntitiesQuoted() {
+	private function parseEntitiesQuoted( $forceEscaped = false ) {
 		// Optimization: Determine match potential without save()/restore() overhead
 		// Optimization: Inline matchChar() here, with its skipWhitespace(1) call below
 		$startChar = $this->input[$this->pos] ?? null;
 		$isEscaped = $startChar === '~';
-		if ( !$isEscaped && $startChar !== "'" && $startChar !== '"' ) {
+		if ( ( !$isEscaped && $startChar !== "'" && $startChar !== '"' ) || ( $forceEscaped && !$isEscaped ) ) {
 			return;
 		}
 
@@ -2587,6 +2587,8 @@ class Less_Parser {
 	/**
 	 * An operand is anything that can be part of an operation,
 	 * such as a Color, or a Variable
+	 *
+	 * @see less-3.13.1.js#parsers.operand
 	 */
 	private function parseOperand() {
 		$negate = false;
@@ -2595,11 +2597,20 @@ class Less_Parser {
 			return;
 		}
 		$char = $this->input[$offset];
+		// TODO: handle char `$`
 		if ( $char === '@' || $char === '(' ) {
 			$negate = $this->matchChar( '-' );
 		}
 
-		$o = $this->parseSub() ?? $this->parseEntitiesDimension() ?? $this->parseEntitiesColor() ?? $this->parseEntitiesVariable() ?? $this->parseEntitiesCall();
+		$o = $this->parseSub()
+			?? $this->parseEntitiesDimension()
+			?? $this->parseEntitiesColor()
+			?? $this->parseEntitiesVariable()
+			// TODO: from less-3.13.1.js missing entities.property()
+			?? $this->parseEntitiesCall()
+			?? $this->parseEntitiesQuoted( true );
+			// TODO: from less-3.13.1.js missing entities.colorKeyword()
+			// TODO: from less-3.13.1.js missing entities.mixinLookup()
 
 		if ( $negate ) {
 			$o->parensInOp = true;

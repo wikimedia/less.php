@@ -856,6 +856,13 @@ class Less_Functions {
 		return $this->mix( $this->rgb( 0, 0, 0 ), $color, $amount );
 	}
 
+	/**
+	 * @see less-3.13.1.js#functions _SELF
+	 */
+	public function _self( $args ) {
+		return $args;
+	}
+
 	public function extract( $values, $index ) {
 		$index = (int)$index->value - 1; // (1-based index)
 		// handle non-array values as an array of length 1

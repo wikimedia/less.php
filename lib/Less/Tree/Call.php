@@ -15,7 +15,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 	public function __construct( $name, $args, $index, $currentFileInfo = null ) {
 		$this->name = $name;
 		$this->args = $args;
-		$this->calc = ( $name === 'calc' );
+		$this->calc = $name === 'calc';
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 	}
@@ -45,6 +45,17 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 		return $function( ...$filtered );
 	}
 
+	/**
+	 * @param Less_Environment $env
+	 * @return void
+	 */
+	private function exitCalc( $env, $currentMathContext ) {
+		if ( $this->calc || $env->inCalc ) {
+			$env->exitCalc();
+		}
+		$env->mathOn = $currentMathContext;
+	}
+
 	//
 	// When evaluating a function call,
 	// we either find the function in Less_Functions,
@@ -55,12 +66,17 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 	// of them is a LESS variable that only PHP knows the value of,
 	// like: `saturate(@mycolor)`.
 	// The function should receive the value, not the variable.
-	//
+	// TODO less.js#3.13.1 provide better parity with upstream.
 	public function compile( $env ) {
-		// Turn off math for calc(). https://phabricator.wikimedia.org/T331688
+		/**
+		 * Turn off math for calc(), and switch back on for evaluating nested functions
+		 */
 		$currentMathContext = $env->mathOn;
 		$env->mathOn = !$this->calc;
-		// TODO: Less.js 3.13 also checks/toggles $env->inCalc
+
+		if ( $this->calc || $env->inCalc ) {
+			$env->enterCalc();
+		}
 
 		$args = [];
 		foreach ( $this->args as $a ) {
@@ -114,6 +130,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 			if ( $func ) {
 				try {
 					$result = $this->functionCaller( $func, $args );
+					$this->exitCalc( $env, $currentMathContext );
 				} catch ( Exception $e ) {
 					// Preserve original trace, especially from custom functions.
 					// https://github.com/wikimedia/less.php/issues/38
@@ -129,7 +146,7 @@ class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
 		if ( $result !== null ) {
 			return $result;
 		}
-
+		$this->exitCalc( $env, $currentMathContext );
 		return new self( $this->name, $args, $this->index, $this->currentFileInfo );
 	}
 
