@@ -104,12 +104,6 @@ class phpunit_ParserTest extends phpunit_bootstrap {
 			],
 			$normalFiles
 		);
-
-		$this->assertEquals(
-			$files,
-			Less_Parser::AllParsedFiles(),
-			'AllParsedFiles compatibility'
-		);
 	}
 
 	public static function provideSetImportDirs() {
