@@ -77,7 +77,7 @@ return [
 	'lessjs-3.13.1' => [
 		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/_main",
 		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/_main",
-		// 'overrideDir' => "$fixtureDir/lessjs-3.13.1/override",
+		'overrideDir' => "$fixtureDir/lessjs-3.13.1/override/_main",
 		'unsupported' => [
 			// Permanently disabled, intentionally not supported.
 			'javascript',

@@ -113,10 +113,15 @@ class LessFixtureDiff {
 				$this->summaryUnsupported[] = basename( $lessFile );
 				continue;
 			}
-			$overrideFile = $overrideDir ? "$overrideDir/$name.css" : null;
-			if ( $overrideFile && file_exists( $overrideFile ) ) {
-				$cssFile = $overrideFile;
+			$overrideCssFile = $overrideDir ? "$overrideDir/$name.css" : null;
+			if ( $overrideCssFile && file_exists( $overrideCssFile ) ) {
+				$cssFile = $overrideCssFile;
 			}
+			$overrideLessFile = $overrideDir ? "$overrideDir/$name.less" : null;
+			if ( $overrideLessFile && file_exists( $overrideLessFile ) ) {
+				$lessFile = $overrideLessFile;
+			}
+
 			$this->handleFixture( $cssFile, $lessFile, $options );
 		}
 

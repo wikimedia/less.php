@@ -25,6 +25,8 @@ class Less_Environment {
 	public $inCalc = false;
 	public $mathOn = true;
 
+	private $calcStack = [];
+
 	/** @var Less_Tree_Media[] */
 	public $mediaBlocks = [];
 	/** @var Less_Tree_Media[] */
@@ -149,6 +151,18 @@ class Less_Environment {
 	 */
 	public static function isPathRelative( $path ) {
 		return !preg_match( '/^(?:[a-z-]+:|\/|#)/', $path );
+	}
+
+	public function enterCalc() {
+		$this->calcStack[] = true;
+		$this->inCalc = true;
+	}
+
+	public function exitCalc() {
+		array_pop( $this->calcStack );
+		if ( !$this->calcStack ) {
+			$this->inCalc = false;
+		}
 	}
 
 	/**

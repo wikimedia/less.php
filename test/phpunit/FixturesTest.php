@@ -9,7 +9,6 @@ class FixturesTest extends LessTestCase {
 			'parens' => true,
 		],
 		'lessjs-3.13.1' => [
-			'calc' => true, // New Feature
 			'functions' => true,
 			'functions-each' => true,
 			'import-reference-issues' => true,
@@ -50,13 +49,21 @@ class FixturesTest extends LessTestCase {
 			foreach ( glob( "$cssDir/*.css" ) as $cssFile ) {
 				$name = basename( $cssFile, '.css' );
 				$lessFile = "$lessDir/$name.less";
-				$overrideFile = $overrideDir ? "$overrideDir/$name.css" : null;
-				if ( $overrideFile && file_exists( $overrideFile ) ) {
-					if ( file_get_contents( $overrideFile ) === file_get_contents( $cssFile ) ) {
-						print "WARNING: Redundant override for $overrideFile\n";
+				$overrideCssFile = $overrideDir ? "$overrideDir/$name.css" : null;
+				if ( $overrideCssFile && file_exists( $overrideCssFile ) ) {
+					if ( file_get_contents( $overrideCssFile ) === file_get_contents( $cssFile ) ) {
+						print "WARNING: Redundant override for $overrideCssFile\n";
 					}
-					$cssFile = $overrideFile;
+					$cssFile = $overrideCssFile;
 				}
+				$overrideLessFile = $overrideDir ? "$overrideDir/$name.less" : null;
+				if ( $overrideLessFile && file_exists( $overrideLessFile ) ) {
+					if ( file_get_contents( $overrideLessFile ) === file_get_contents( $lessFile ) ) {
+						print "WARNING: Redundant override for $overrideLessFile\n";
+					}
+					$lessFile = $overrideLessFile;
+				}
+
 				if ( in_array( $name, $unsupported ) ) {
 					continue;
 				}
