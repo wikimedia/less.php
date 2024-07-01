@@ -7,11 +7,13 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 
 	/** @var Less_Tree[] */
 	public $value = [];
-	public $parens = false;
 
-	public function __construct( $value, $parens = null ) {
+	public $noSpacing;
+	public $parens = null;
+
+	public function __construct( $value, $noSpacing = false ) {
 		$this->value = $value;
-		$this->parens = $parens;
+		$this->noSpacing = $noSpacing;
 	}
 
 	public function accept( $visitor ) {
@@ -34,7 +36,7 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 				foreach ( $this->value as $e ) {
 					$ret[] = $e->compile( $env );
 				}
-				$returnValue = new self( $ret );
+				$returnValue = new self( $ret, $this->noSpacing );
 
 			} else {
 				// Implied `if ( count() === 1 )`
@@ -66,7 +68,7 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 		$val_len = count( $this->value );
 		for ( $i = 0; $i < $val_len; $i++ ) {
 			$this->value[$i]->genCSS( $output );
-			if ( $i + 1 < $val_len ) {
+			if ( !$this->noSpacing && ( $i + 1 < $val_len ) ) {
 				$output->add( ' ' );
 			}
 		}

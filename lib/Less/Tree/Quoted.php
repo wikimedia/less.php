@@ -10,6 +10,9 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 	public $index;
 	public $currentFileInfo;
 
+	public $variableRegex = '/@\{([\w-]+)\}/';
+	public $propRegex = '/\$\{([\w-]+)\}/';
+
 	/**
 	 * @param string $str
 	 */
@@ -40,13 +43,13 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 	 * @see less-3.13.1.js#Quoted.prototype.containsVariables
 	 */
 	public function containsVariables() {
-		return preg_match( '/@\{([\w-]+)\}/', $this->value );
+		return preg_match( $this->variableRegex, $this->value );
 	}
 
 	private function variableReplacement( $r, $env ) {
 		do {
 			$value = $r;
-			if ( preg_match_all( '/@\{([\w-]+)\}/', $value, $matches ) ) {
+			if ( preg_match_all( $this->variableRegex, $value, $matches ) ) {
 				foreach ( $matches[1] as $i => $match ) {
 					$v = new Less_Tree_Variable( '@' . $match, $this->index, $this->currentFileInfo );
 					$v = $v->compile( $env );
@@ -61,7 +64,7 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 	private function propertyReplacement( $r, $env ) {
 		do {
 			$value = $r;
-			if ( preg_match_all( '/\$\{([\w-]+)\}/', $value, $matches ) ) {
+			if ( preg_match_all( $this->propRegex, $value, $matches ) ) {
 				foreach ( $matches[1] as $i => $match ) {
 					$v = new Less_Tree_Property( '$' . $match, $this->index, $this->currentFileInfo );
 					$v = $v->compile( $env );

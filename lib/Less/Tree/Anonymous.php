@@ -27,6 +27,8 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 		$this->mapLines = $mapLines;
 		$this->currentFileInfo = $currentFileInfo;
 		$this->rulesetLike = $rulesetLike;
+		// TODO: remove isReferenced and implement $visibilityInfo
+		// https://github.com/less/less.js/commit/ead3e29f7b79390ad3ac798bf42195b24919107d
 		$this->isReferenced = $referenced;
 	}
 
@@ -48,7 +50,9 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 	}
 
 	public function genCSS( $output ) {
-		$output->add( $this->value, $this->currentFileInfo, $this->index, $this->mapLines );
+		if ( $this->value !== "" && $this->value !== 0 ) {
+			$output->add( $this->value, $this->currentFileInfo, $this->index, $this->mapLines );
+		}
 	}
 
 	public function markReferenced() {
