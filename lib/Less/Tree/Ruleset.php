@@ -111,7 +111,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 
 					for ( $j = 0; $j < count( $rule->rules ); $j++ ) {
 						$subRule = $rule->rules[$j];
-						if ( !( $subRule instanceof Less_Tree_Rule ) || !$subRule->variable ) {
+						if ( !( $subRule instanceof Less_Tree_Declaration ) || !$subRule->variable ) {
 							array_splice( $ruleset->rules, ++$i, 0, [ $subRule ] );
 							$rsRuleCnt++;
 						}
@@ -150,7 +150,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 
 				$temp = [];
 				foreach ( $rule as $r ) {
-					if ( ( $r instanceof Less_Tree_Rule ) && $r->variable ) {
+					if ( ( $r instanceof Less_Tree_Declaration ) && $r->variable ) {
 						// do not pollute the scope if the variable is
 						// already there. consider returning false here
 						// but we need a way to "return" variable from mixins
@@ -172,7 +172,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 				$rule = $rule->compile( $env );
 				$rules = [];
 				foreach ( $rule->rules as $r ) {
-					if ( ( $r instanceof Less_Tree_Rule ) && $r->variable ) {
+					if ( ( $r instanceof Less_Tree_Declaration ) && $r->variable ) {
 						continue;
 					}
 					$rules[] = $r;
@@ -267,7 +267,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 	public function makeImportant() {
 		$important_rules = [];
 		foreach ( $this->rules as $rule ) {
-			if ( $rule instanceof Less_Tree_Rule || $rule instanceof self || $rule instanceof Less_Tree_NameValue ) {
+			if ( $rule instanceof Less_Tree_Declaration || $rule instanceof self || $rule instanceof Less_Tree_NameValue ) {
 				$important_rules[] = $rule->makeImportant();
 			} else {
 				$important_rules[] = $rule;
@@ -306,7 +306,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 	public function variables() {
 		$this->_variables = [];
 		foreach ( $this->rules as $r ) {
-			if ( $r instanceof Less_Tree_Rule && $r->variable === true ) {
+			if ( $r instanceof Less_Tree_Declaration && $r->variable === true ) {
 				$this->_variables[$r->name] = $r;
 			}
 			// when evaluating variables in an import statement, imports have not been eval'd
@@ -324,7 +324,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 
 	/**
 	 * @param string $name
-	 * @return Less_Tree_Rule|null
+	 * @return Less_Tree_Declaration|null
 	 */
 	public function variable( $name ) {
 		if ( $this->_variables === null ) {
@@ -383,7 +383,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 		// some directives and anonymous nodes are ruleset like, others are not
 		if ( $rule instanceof Less_Tree_Media || $rule instanceof Less_Tree_Ruleset ) {
 			return true;
-		} elseif ( $rule instanceof Less_Tree_Anonymous || $rule instanceof Less_Tree_Directive ) {
+		} elseif ( $rule instanceof Less_Tree_Anonymous || $rule instanceof Less_Tree_AtRule ) {
 			return $rule->isRulesetLike();
 		}
 
@@ -419,7 +419,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 					$importNodeIndex++;
 				}
 				$ruleNodes[] = $rule;
-			} elseif ( $rule instanceof Less_Tree_Directive && $rule->isCharset() ) {
+			} elseif ( $rule instanceof Less_Tree_AtRule && $rule->isCharset() ) {
 				array_splice( $ruleNodes, $charsetNodeIndex, 0, [ $rule ] );
 				$charsetNodeIndex++;
 				$importNodeIndex++;

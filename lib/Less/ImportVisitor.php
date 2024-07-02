@@ -214,19 +214,19 @@ class Less_ImportVisitor extends Less_Visitor {
 		}
 	}
 
-	public function visitRule( $ruleNode, $visitDeeper ) {
+	public function visitDeclaration( $declNode, $visitDeeper ) {
 		// TODO: We might need upstream's `if (… DetachedRuleset) { this.context.frames.unshift(ruleNode); }`
 		$visitDeeper = false;
 	}
 
-	// TODO: We might need upstream's visitRuleOut()
+	// TODO: Implement less-3.13.1.js#ImportVisitor.prototype.visitDeclarationOut
 	// if (… DetachedRuleset) { this.context.frames.shift(); }
 
-	public function visitDirective( $directiveNode, $visitArgs ) {
-		array_unshift( $this->env->frames, $directiveNode );
+	public function visitAtRule( $atRuleNode, $visitArgs ) {
+		array_unshift( $this->env->frames, $atRuleNode );
 	}
 
-	public function visitDirectiveOut( $directiveNode ) {
+	public function visitAtRuleOut( $atRuleNode ) {
 		array_shift( $this->env->frames );
 	}
 

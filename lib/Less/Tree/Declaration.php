@@ -1,8 +1,10 @@
 <?php
 /**
  * @private
+ * @see less-3.13.1.js#Declaration.prototype
+ * @todo check for feature parity with 3.13.1
  */
-class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
+class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValueProperty {
 
 	public $name;
 	/** @var Less_Tree */
@@ -100,7 +102,7 @@ class Less_Tree_Rule extends Less_Tree implements Less_Tree_HasValueProperty {
 				$important = $importantResult['important'];
 			}
 
-			$return = new Less_Tree_Rule( $name,
+			$return = new Less_Tree_Declaration( $name,
 				$evaldValue,
 				$important,
 				$this->merge,

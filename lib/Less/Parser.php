@@ -299,7 +299,7 @@ class Less_Parser {
 			}
 
 			// Note: it seems $rule is always Less_Tree_Rule when variable = true
-			if ( $rule instanceof Less_Tree_Rule && $rule->variable ) {
+			if ( $rule instanceof Less_Tree_Declaration && $rule->variable ) {
 				$variables[$rule->name] = $this->getVariableValue( $rule );
 			} else {
 				if ( $rule instanceof Less_Tree_Comment ) {
@@ -342,7 +342,7 @@ class Less_Parser {
 				// Based on Less_Tree_Url::genCSS()
 				// Recurse to serialize the Less_Tree_Quoted value
 				return 'url(' . $this->getVariableValue( $var->value ) . ')';
-			case Less_Tree_Rule::class:
+			case Less_Tree_Declaration::class:
 				return $this->getVariableValue( $var->value );
 			case Less_Tree_Value::class:
 				$values = [];
@@ -936,7 +936,7 @@ class Less_Parser {
 	//
 	// The basic structure of the syntax tree generated is as follows:
 	//
-	//   Ruleset ->  Rule -> Value -> Expression -> Entity
+	//   Ruleset ->  Declaration -> Value -> Expression -> Entity
 	//
 	// Here's some LESS code:
 	//
@@ -950,9 +950,9 @@ class Less_Parser {
 	// And here's what the parse tree might look like:
 	//
 	//	 Ruleset (Selector '.class', [
-	//		 Rule ("color",  Value ([Expression [Color #fff]]))
-	//		 Rule ("border", Value ([Expression [Dimension 1px][Keyword "solid"][Color #000]]))
-	//		 Rule ("width",  Value ([Expression [Operation "+" [Variable "@w"][Dimension 4px]]]))
+	//		 Declaration ("color",  Value ([Expression [Color #fff]]))
+	//		 Declaration ("border", Value ([Expression [Dimension 1px][Keyword "solid"][Color #000]]))
+	//		 Declaration ("width",  Value ([Expression [Operation "+" [Variable "@w"][Dimension 4px]]]))
 	//		 Ruleset (Selector [Element '>', '.child'], [...])
 	//	 ])
 	//
@@ -969,7 +969,7 @@ class Less_Parser {
 	// rule, which represents `{ ... }`, the `ruleset` rule, and this `primary` rule,
 	// as represented by this simplified grammar:
 	//
-	//	 primary  →  (ruleset | rule)+
+	//	 primary  →  (ruleset | declaration )+
 	//	 ruleset  →  selector+ block
 	//	 block	→  '{' primary '}'
 	//
@@ -1008,11 +1008,11 @@ class Less_Parser {
 			$node = $this->parseMixinDefinition()
 				// Optimisation: NameValue is specific to less.php
 				?? $this->parseNameValue()
-				?? $this->parseRule()
+				?? $this->parseDeclaration()
 				?? $this->parseRuleset()
 				?? $this->parseMixinCall()
 				?? $this->parseRulesetCall()
-				?? $this->parseDirective();
+				?? $this->parseAtRule();
 
 			if ( $node ) {
 				$root[] = $node;
@@ -1739,7 +1739,7 @@ class Less_Parser {
 	}
 
 	//
-	// A Rule terminator. Note that we use `peek()` to check for '}',
+	// A Declaration terminator. Note that we use `peek()` to check for '}',
 	// because the `block` rule will be expecting it, but we still need to make sure
 	// it's there, if ';' was omitted.
 	//
@@ -2056,8 +2056,9 @@ class Less_Parser {
 		$this->restore();
 	}
 
-	// @see less-2.5.3.js#parsers.rule
-	private function parseRule( $tryAnonymous = null ) {
+	// @see less-2.5.3.js#parsers.declaration
+	// @todo provide feature parity with 3.13.1
+	private function parseDeclaration( $tryAnonymous = null ) {
 		$value = null;
 		$startOfRule = $this->pos;
 		$c = $this->input[$this->pos] ?? null;
@@ -2098,7 +2099,7 @@ class Less_Parser {
 					if ( $value ) {
 						$this->forget();
 						// anonymous values absorb the end ';' which is required for them to work
-						return new Less_Tree_Rule( $name, $value, false, $merge, $startOfRule, $this->env->currentFileInfo );
+						return new Less_Tree_Declaration( $name, $value, false, $merge, $startOfRule, $this->env->currentFileInfo );
 					}
 				}
 				if ( !$tryValueFirst && !$value ) {
@@ -2110,11 +2111,11 @@ class Less_Parser {
 
 			if ( $value && $this->parseEnd() ) {
 				$this->forget();
-				return new Less_Tree_Rule( $name, $value, $important, $merge, $startOfRule, $this->env->currentFileInfo );
+				return new Less_Tree_Declaration( $name, $value, $important, $merge, $startOfRule, $this->env->currentFileInfo );
 			} else {
 				$this->restore();
 				if ( $value && !$tryAnonymous ) {
-					return $this->parseRule( true );
+					return $this->parseDeclaration( true );
 				}
 			}
 		} else {
@@ -2130,7 +2131,7 @@ class Less_Parser {
 	}
 
 	//
-	// An @import directive
+	// An @import atrule
 	//
 	//	 @import "lib";
 	//
@@ -2214,7 +2215,7 @@ class Less_Parser {
 				$e = $this->parseValue();
 				if ( $this->matchChar( ')' ) ) {
 					if ( $p && $e ) {
-						$r = new Less_Tree_Rule( $p, $e, null, null, $this->pos, $this->env->currentFileInfo, true );
+						$r = new Less_Tree_Declaration( $p, $e, null, null, $this->pos, $this->env->currentFileInfo, true );
 						$nodes[] = new Less_Tree_Paren( $r );
 					} elseif ( $e ) {
 						$nodes[] = new Less_Tree_Paren( $e );
@@ -2277,12 +2278,13 @@ class Less_Parser {
 	}
 
 	/**
-	 * A CSS Directive like `@charset "utf-8";`
+	 * A CSS AtRule like `@charset "utf-8";`
 	 *
-	 * @return Less_Tree_Import|Less_Tree_Media|Less_Tree_Directive|null
-	 * @see less-2.5.3.js#parsers.directive
+	 * @return Less_Tree_Import|Less_Tree_Media|Less_Tree_AtRule|null
+	 * @see less-3.13.1.js#parsers.atrule
+	 * @todo check feature parity with 3.13.1
 	 */
-	private function parseDirective() {
+	private function parseAtRule() {
 		if ( !$this->peekChar( '@' ) ) {
 			return;
 		}
@@ -2389,7 +2391,7 @@ class Less_Parser {
 
 		if ( $rules || ( !$hasBlock && $value && $this->matchChar( ';' ) ) ) {
 			$this->forget();
-			return new Less_Tree_Directive( $name, $value, $rules, $index, $isRooted, $this->env->currentFileInfo );
+			return new Less_Tree_AtRule( $name, $value, $rules, $index, $isRooted, $this->env->currentFileInfo );
 		}
 
 		$this->restore();
