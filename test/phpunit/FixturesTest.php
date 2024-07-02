@@ -27,7 +27,6 @@ class FixturesTest extends LessTestCase {
 			'css-escapes' => true,
 			'parse-interpolation' => true,
 			'selectors' => true,
-			'property-accessors' => true,
 			'property-name-interp' => true,
 			'permissive-parse' => true,
 		],

@@ -6,6 +6,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 
 	protected $lookups;
 	public $_variables;
+	public $_properties;
 	public $_rulesets;
 
 	public $strictImports;
@@ -301,7 +302,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 	}
 
 	/**
-	 * @see less-2.5.3.js#Ruleset.prototype.variables
+	 * @see less-3.13.1.js#Ruleset.prototype.variables
 	 */
 	public function variables() {
 		$this->_variables = [];
@@ -323,14 +324,97 @@ class Less_Tree_Ruleset extends Less_Tree {
 	}
 
 	/**
+	 * @see less-3.13.1#Ruleset.prototype.properties
+	 */
+	public function properties() {
+		$this->_properties = [];
+		foreach ( $this->rules as $r ) {
+
+			if ( $r instanceof Less_Tree_Declaration && $r->variable !== true ) {
+				$name = is_array( $r->name ) && count( $r->name ) === 1 && $r->name[0] instanceof Less_Tree_Keyword
+					? $r->name[0]->value
+					: $r->name;
+				// Properties don't overwrite as they can merge
+
+				// TODO: differs from upstream. Upstream expects $r->name to be only a
+				// Less_Tree_Keyword but somehow our parser also returns Less_Tree_Property.
+				// Let's handle it for now, but we should debug why this happens
+				// caused by test/Fixtures/lessjs-3.13.1/less/_main/property-accessors.less:59
+				if ( is_array( $name ) && $name[0] instanceof Less_Tree_Property ) {
+					$name = $name[0]->name;
+				}
+
+				$idx = '$' . $name;
+				if ( !array_key_exists( $idx, $this->_properties ) ) {
+					$this->_properties[ $idx ] = [];
+				}
+				$this->_properties[ $idx ][] = $r;
+			}
+		}
+		return $this->_properties;
+	}
+
+	/**
 	 * @param string $name
 	 * @return Less_Tree_Declaration|null
+	 * @see less-3.13.1#Ruleset.prototype.variable
 	 */
 	public function variable( $name ) {
 		if ( $this->_variables === null ) {
 			$this->variables();
 		}
-		return $this->_variables[$name] ?? null;
+		return array_key_exists( $name, $this->_variables )
+			? $this->parseValue( $this->_variables[ $name ] )
+			: null;
+	}
+
+	/**
+	 * @param string $name
+	 * @return Less_Tree_Declaration|null
+	 * @see less-3.13.1#Ruleset.prototype.property
+	 */
+	public function property( $name ) {
+		if ( $this->_properties === null ) {
+			$this->properties();
+		}
+		return array_key_exists( $name, $this->_properties )
+			? $this->parseValue( $this->_properties[ $name ] )
+			: null;
+	}
+
+	/**
+	 * @param Less_Tree_Declaration $decl
+	 * @return mixed
+	 * @throws Less_Exception_Parser
+	 */
+	private function transformDeclaration( $decl ) {
+		if ( $decl->value instanceof Less_Tree_Anonymous && !$decl->parsed ) {
+			[ $err, $result ] = self::$parse->parseNode( (string)$decl->value->value, [ 'value', 'important' ],
+				$decl->value->index, $decl->value->currentFileInfo ?? [] );
+			if ( $err ) {
+				$decl->parsed = true;
+			}
+			if ( $result ) {
+				$decl->value = $result[0];
+				$decl->important = $result[1] ?? '';
+				$decl->parsed = true;
+			}
+			return $decl;
+		} else {
+			return $decl;
+		}
+	}
+
+	private function parseValue( $toParse ) {
+		if ( !is_array( $toParse ) ) {
+			return $this->transformDeclaration( $toParse );
+		} else {
+			$nodes = [];
+			foreach ( $toParse as $n ) {
+				$nodes[] = $this->transformDeclaration( $n );
+			}
+			return $nodes;
+		}
 	}
 
 	public function find( $selector, $self = null, $filter = null ) {

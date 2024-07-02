@@ -7,6 +7,9 @@ indent_size = tab
 trim_trailing_whitespace = true
 insert_final_newline = true
 
+[test/phpunit/ParserTest.php]
+trim_trailing_whitespace = false
+
 # Markdown:
 # - Editors should not change leading spaces to tabs (e.g. multi-line list items)
 # YAML:
