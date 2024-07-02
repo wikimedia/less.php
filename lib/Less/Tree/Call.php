@@ -3,9 +3,7 @@
  * @private
  * @see less-3.13.1.js#Call.prototype
  */
-class Less_Tree_Call extends Less_Tree implements Less_Tree_HasValueProperty {
-	public $value;
-
+class Less_Tree_Call extends Less_Tree {
 	public $name;
 	public $args;
 	public $calc;
