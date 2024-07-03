@@ -88,6 +88,7 @@ class FixturesTest extends LessTestCase {
 
 		// Check with standard parser
 		$parser = new Less_Parser( $options );
+		$hasError = false;
 		try {
 			$parser->registerFunction( '_color', [ __CLASS__, 'FnColor' ] );
 			$parser->registerFunction( 'add', [ __CLASS__, 'FnAdd' ] );
@@ -95,10 +96,19 @@ class FixturesTest extends LessTestCase {
 			$parser->parseFile( $lessFile );
 			$css = $parser->getCss();
 		} catch ( Less_Exception_Parser $e ) {
+			$hasError = true;
 			$css = $e->getMessage();
 		}
 		$css = trim( $css );
-		$this->assertSame( $expectedCSS, $css, "Standard compiler" );
+
+		if ( $hasError && $expectedCSS !== $css && strlen( $expectedCSS ) > 1024 ) {
+			// If we have a parser exception, show the error as-is instead of a long diff
+			// with all lines from $expectedCss as missing. We check the length so as to
+			// still render a diff if this is a test case where we expected a (different) error.
+			$this->fail( $css );
+		} else {
+			$this->assertSame( $expectedCSS, $css, "Standard compiler" );
+		}
 
 		// Check with cache
 		$optionsWithCache = $options + [
