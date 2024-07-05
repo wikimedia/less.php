@@ -9,12 +9,17 @@ class LessPhpBenchmark {
 			'files' => [
 				__DIR__ . '/Fixtures/bench-strings/*.less',
 			],
+			'options' => [],
 		],
 		'bootstrap-3.0.3' => [
 			'count' => 50,
 			'files' => [
 				__DIR__ . '/Fixtures/bootstrap-3.0.3/less/bootstrap.less',
 			],
+			// Same as in /test/fixtures.php
+			'options' => [
+				'math' => 'always',
+			]
 		],
 	];
 
@@ -31,18 +36,18 @@ class LessPhpBenchmark {
 					glob( $pattern )
 				);
 			}
-			$this->bench( $name, $info['count'], $files );
+			$this->bench( $name, $info['count'], $info['options'], $files );
 		}
 	}
 
-	public function bench( $name, $iterations, $files ) {
+	public function bench( $name, $iterations, $options, $files ) {
 		$name = sprintf( $name, count( $files ) );
 		$total = 0;
 		$max = -INF;
 		for ( $i = 1; $i <= $iterations; $i++ ) {
 			$start = microtime( true );
 			foreach ( $files as $lessFile ) {
-				$parser = new Less_Parser();
+				$parser = new Less_Parser( $options );
 				$parser->parseFile( $lessFile );
 				try {
 					$css = $parser->getCss();
