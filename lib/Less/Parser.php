@@ -1011,7 +1011,7 @@ class Less_Parser {
 				?? $this->parseDeclaration()
 				?? $this->parseRuleset()
 				?? $this->parseMixinCall()
-				?? $this->parseRulesetCall()
+				?? $this->parseVariableCall()
 				?? $this->parseAtRule();
 
 			if ( $node ) {
@@ -1404,12 +1404,13 @@ class Less_Parser {
 	//
 	// @fink();
 	//
-	// @see less-2.5.3.js#parsers.rulesetCall
-	private function parseRulesetCall() {
+	// @see less-3.13.1.js#parsers.variableCall
+	// @todo missing NamespacedVariables feature https://github.com/less/less.js/commit/6237e13b1437b13aab4032502381c0cf3b6d3a52
+	private function parseVariableCall() {
 		if ( $this->peekChar( '@' ) ) {
 			$name = $this->matchReg( '/\\G(@[\w-]+)\s*\(\s*\)\s*;/' );
 			if ( $name ) {
-				return new Less_Tree_RulesetCall( $name[1] );
+				return new Less_Tree_VariableCall( $name[1] );
 			}
 		}
 	}

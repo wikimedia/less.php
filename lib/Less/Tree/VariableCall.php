@@ -2,10 +2,10 @@
 /**
  * @private
  */
-class Less_Tree_RulesetCall extends Less_Tree {
+class Less_Tree_VariableCall extends Less_Tree {
 
 	public $variable;
-	public $type = "RulesetCall";
+	public $type = "VariableCall";
 
 	/**
 	 * @param string $variable

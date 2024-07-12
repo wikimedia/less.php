@@ -167,7 +167,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 				$i += $temp_count;
 				$ruleset->resetCache();
 
-			} elseif ( $rule instanceof Less_Tree_RulesetCall ) {
+			} elseif ( $rule instanceof Less_Tree_VariableCall ) {
 
 				$rule = $rule->compile( $env );
 				$rules = [];
