@@ -97,7 +97,12 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 					$val = ( $arg && $arg['value'] ) ? $arg['value'] : false;
 
 					if ( $val ) {
-						$val = $val->compile( $env );
+						// This was a mixin call, pass in a detached ruleset of it's eval'd rules
+						if ( is_array( $val ) ) {
+							$val = new Less_Tree_DetachedRuleset( new Less_Tree_Ruleset( null, $val ) );
+						} else {
+							$val = $val->compile( $env );
+						}
 					} elseif ( isset( $param['value'] ) ) {
 
 						if ( !$mixinEnv ) {

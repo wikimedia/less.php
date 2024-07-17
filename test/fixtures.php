@@ -105,8 +105,8 @@ return [
 		],
 	],
 	'lessjs-3.13.1/compression' => [
-		'lessDir' => "$fixtureDir/lessjs-2.5.3/less/compression",
-		'cssDir' => "$fixtureDir/lessjs-2.5.3/css/compression",
+		'lessDir' => "$fixtureDir/lessjs-3.13.1/less/compression",
+		'cssDir' => "$fixtureDir/lessjs-3.13.1/css/compression",
 		'overrideDir' => "$fixtureDir/lessjs-3.13.1/override/compression",
 		'options' => [
 			'compress' => true,

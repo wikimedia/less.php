@@ -41,6 +41,7 @@ class Less_Tree_Variable extends Less_Tree {
 		$this->evaluating = true;
 		$variable = null;
 		foreach ( $env->frames as $frame ) {
+			/** @var Less_Tree_Ruleset $frame */
 			$v = $frame->variable( $name );
 			if ( $v ) {
 				if ( isset( $v->important ) && $v->important ) {

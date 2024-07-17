@@ -1226,7 +1226,7 @@ class Less_Parser {
 				// ?? $this->parseNameValue()
 				?? $this->parseDeclaration()
 				?? $this->parseRuleset()
-				?? $this->parseMixinCall()
+				?? $this->parseMixinCall( false, false )
 				?? $this->parseVariableCall()
 				?? $this->parseAtRule();
 
@@ -1258,6 +1258,13 @@ class Less_Parser {
 				$this->env->currentFileInfo
 			);
 		}
+	}
+
+	/**
+	 * @see less-3.13.1.js#parsers.entities.mixinLookup
+	 */
+	private function parseEntitiesMixinLookup() {
+		return $this->parseMixinCall( true, true );
 	}
 
 	/**
@@ -1457,17 +1464,32 @@ class Less_Parser {
 	 * We use a different parser for variable definitions,
 	 * see `parsers.variable`.
 	 *
-	 * @return Less_Tree_Variable|null
-	 * @see less-2.5.3.js#parsers.entities.variable
+	 * @return Less_Tree_Variable|Less_Tree_VariableCall|Less_Tree_NamespaceValue|null
+	 * @see less-3.13.1.js#parsers.entities.variable
 	 */
 	private function parseEntitiesVariable() {
 		$index = $this->pos;
+		$this->save();
+
 		if ( $this->peekChar( '@' ) ) {
 			$name = $this->matchReg( '/\\G@@?[\w-]+/' );
 			if ( $name ) {
+				$ch = $this->input[ $this->pos ] ?? '';
+				$prevChar = $this->input[ $this->pos - 1 ] ?? '';
+				if ( $ch === '(' || ( $ch === '[' && !preg_match( '/\s/', $prevChar, $match ) ) ) {
+					// this may be a VariableCall lookup
+					$result = $this->parseVariableCall( $name );
+					if ( $result ) {
+						$this->forget();
+						return $result;
+					}
+				}
+				$this->forget();
 				return new Less_Tree_Variable( $name, $index, $this->env->currentFileInfo );
 			}
 		}
+
+		$this->restore();
 	}
 
 	/**
@@ -1614,12 +1636,11 @@ class Less_Parser {
 		$this->restore();
 	}
 
-	//
 	// The variable part of a variable definition. Used in the `rule` parser
 	//
-	//	 @fink:
+	// @fink:
 	//
-	// @see less-2.5.3.js#parsers.variable
+	// @see less-3.13.1.js#parsers.variable
 	private function parseVariable() {
 		if ( $this->peekChar( '@' ) ) {
 			$name = $this->matchReg( '/\\G(@[\w-]+)\s*:/' );
@@ -1629,19 +1650,46 @@ class Less_Parser {
 		}
 	}
 
+	// Call a variable value to retrieve a detached ruleset
+	// or a value from a detached ruleset's rules.
 	//
-	// The variable part of a variable definition. Used in the `rule` parser
-	//
-	// @fink();
+	//     @fink();
+	//     @fink;
+	//     color: @fink[@color];
 	//
 	// @see less-3.13.1.js#parsers.variableCall
-	// @todo missing NamespacedVariables feature https://github.com/less/less.js/commit/6237e13b1437b13aab4032502381c0cf3b6d3a52
-	private function parseVariableCall() {
-		if ( $this->peekChar( '@' ) ) {
-			$name = $this->matchReg( '/\\G(@[\w-]+)\s*\(\s*\)\s*;/' );
-			if ( $name ) {
-				return new Less_Tree_VariableCall( $name[1] );
-			}
+	private function parseVariableCall( $parsedName = null ) {
+		$i = $this->pos;
+		$inValue = (bool)$parsedName;
+
+		if ( $parsedName === null && !$this->peekChar( '@' ) ) {
+			return;
+		}
+		$this->save();
+		$name = $parsedName ?? $this->matchReg( '/\\G(@[\w-]+)(\(\s*\))?/' );
+		if ( $name === null ) {
+			$this->restore();
+			return;
+		}
+
+		$lookups = $this->parseMixinRuleLookups();
+		if ( !$lookups && (
+			( $inValue && $this->matchStr( '()' ) !== '()' ) || ( ( $name[2] ?? '' ) !== '()' ) ) ) {
+			// Restore error mesage: 'Missing \'[...]\' lookup in variable call'
+			$this->restore();
+			return;
+		}
+		if ( !$inValue ) {
+			$name = $name[1];
+		}
+
+		$call = new Less_Tree_VariableCall( $name, $i, $this->env->currentFileInfo );
+		if ( !$inValue && $this->parseEnd() ) {
+			$this->forget();
+			return $call;
+		} else {
+			$this->forget();
+			return new Less_Tree_NamespaceValue( $call, $lookups, $i, $this->env->currentFileInfo );
 		}
 	}
 
@@ -1693,45 +1741,75 @@ class Less_Parser {
 	// A Mixin call, with an optional argument list
 	//
 	//	 #mixins > .square(#fff);
+	//	 #mixins.square(#fff);
 	//	 .rounded(4px, black);
 	//	 .button;
+	//
+	// We can lookup / return a value using the lookup syntax:
+	//
+	//     color: #mixin.square(#fff)[@color];
 	//
 	// The `while` loop is there because mixins can be
 	// namespaced, but we only support the child and descendant
 	// selector for now.
 	//
-	private function parseMixinCall() {
-		$char = $this->input[$this->pos] ?? null;
-		if ( $char !== '.' && $char !== '#' ) {
+	private function parseMixinCall( $inValue = false, $getLookup = false ) {
+		$s = $this->input[$this->pos] ?? null;
+		$important = false;
+		$lookups = null;
+		$index = $this->pos;
+		$args = [];
+		$hasParens = false;
+		if ( $s !== '.' && $s !== '#' ) {
 			return;
 		}
 
-		$index = $this->pos;
 		$this->save(); // stop us absorbing part of an invalid selector
-
 		$elements = $this->parseMixinCallElements();
 
 		if ( $elements ) {
-
 			if ( $this->matchChar( '(' ) ) {
-				$returned = $this->parseMixinArgs( true );
-				$args = $returned['args'];
+				$args = ( $this->parseMixinArgs( true ) )['args'];
 				$this->expectChar( ')' );
-			} else {
-				$args = [];
+				$hasParens = true;
+			}
+			if ( $getLookup !== false ) {
+				$lookups = $this->parseMixinRuleLookups();
+			}
+			if ( $getLookup === true && $lookups === null ) {
+				$this->restore();
+				return;
+			}
+			if ( $inValue && !$lookups && !$hasParens ) {
+				// This isn't a valid in-value mixin call
+				$this->restore();
+				return;
 			}
 
-			$important = $this->parseImportant();
+			if ( !$inValue && $this->parseImportant() ) {
+				$important = true;
+			}
 
-			if ( $this->parseEnd() ) {
+			if ( $inValue || $this->parseEnd() ) {
 				$this->forget();
-				return new Less_Tree_Mixin_Call( $elements, $args, $index, $this->env->currentFileInfo, $important );
+				$mixin = new Less_Tree_Mixin_Call( $elements, $args, $index,
+					$this->env->currentFileInfo, !$lookups && $important );
+				if ( $lookups ) {
+					return new Less_Tree_NamespaceValue( $mixin, $lookups );
+				} else {
+					return $mixin;
+				}
 			}
 		}
 
 		$this->restore();
 	}
 
+	/**
+	 * Matching elements for mixins
+	 * (Start with . or # and can have > )
+	 * @see less-3.13.1.js#parsers.mixin.elements
+	 */
 	private function parseMixinCallElements() {
 		$elements = [];
 		$c = null;
@@ -1746,7 +1824,7 @@ class Less_Parser {
 			$c = $this->matchChar( '>' );
 		}
 
-		return $elements;
+		return $elements ?: null;
 	}
 
 	/**
@@ -1890,6 +1968,54 @@ class Less_Parser {
 		return $returner;
 	}
 
+	/**
+	 * @see less-3.13.1.js#parsers.mixin.ruleLookups
+	 */
+	private function parseMixinRuleLookups() {
+		$lookups = [];
+
+		if ( !$this->peekChar( '[' ) ) {
+			return;
+		}
+
+		while ( true ) {
+			$this->save();
+			$rule = $this->parseLookupValue();
+			if ( !$rule && $rule !== '' ) {
+				$this->restore();
+				break;
+			}
+			$lookups[] = $rule;
+			$this->forget();
+		}
+		if ( $lookups ) {
+			return $lookups;
+		}
+	}
+
+	/**
+	 * @see less-3.13.1.js#parsers.mixin.lookupValue
+	 */
+	private function parseLookupValue() {
+		$this->save();
+
+		if ( !$this->matchChar( '[' ) ) {
+			$this->restore();
+			return;
+		}
+		$name = $this->matchReg( "/\\G(?:[@\$]{0,2})[_a-zA-Z0-9-]*/" );
+
+		if ( !$this->matchChar( ']' ) ) {
+			$this->restore();
+			return;
+		}
+		if ( $name || $name === '' ) {
+			$this->forget();
+			return $name;
+		}
+		$this->restore();
+	}
+
 	//
 	// A Mixin definition, with a list of parameters
 	//
@@ -1970,6 +2096,7 @@ class Less_Parser {
 			$this->parseEntitiesProperty() ??
 			$this->parseEntitiesCall() ??
 			$this->parseEntitiesKeyword() ??
+			$this->parseMixinCall( true ) ??
 			$this->parseEntitiesJavascript();
 	}
 
@@ -2299,10 +2426,10 @@ class Less_Parser {
 	private function parseDeclaration() {
 		$value = null;
 		$index = $this->pos;
+		$hasDR = false;
 		$c = $this->input[$this->pos] ?? null;
 		$important = null;
 		$merge = false;
-		// TODO: missing support of $hasDR from 3.13.1
 		// TODO: Figure out why less.js also handles ':' here, and implement with regression test.
 		if ( $c === '.' || $c === '#' || $c === '&' ) {
 			return;
@@ -2316,17 +2443,21 @@ class Less_Parser {
 
 			if ( $isVariable ) {
 				$value = $this->parseDetachedRuleset();
+				if ( $value ) {
+					$hasDR = true;
+				}
 			}
 			$this->commentStore = [];
 			if ( !$value ) {
 				// a name returned by this.ruleProperty() is always an array of the form:
 				// [string-1, ..., string-n, ""] or [string-1, ..., string-n, "+"]
 				// where each item is a tree.Keyword or tree.Variable
-				if ( !$isVariable && count( $name ) > 1 ) {
+				if ( !$isVariable && is_array( $name ) && count( $name ) > 1 ) {
 					$merge = array_pop( $name )->value;
 				}
 				// Custom property values get permissive parsing
-				if ( $name[0] instanceof Less_Tree_Keyword
+				if ( is_array( $name ) && array_key_exists( 0, $name ) // to satisfy phan
+					&& $name[0] instanceof Less_Tree_Keyword
 					&& $name[0]->value && strpos( $name[0]->value, '--' ) === 0 ) {
 					$value = $this->parsePermissiveValue( ';' );
 				} else {
@@ -2337,7 +2468,6 @@ class Less_Parser {
 
 				if ( $value ) {
 					$this->forget();
-
 					// anonymous values absorb the end ';' which is required for them to work
 					return new Less_Tree_Declaration( $name, $value, false, $merge, $index,
 						$this->env->currentFileInfo );
@@ -2351,7 +2481,7 @@ class Less_Parser {
 					$value = $this->parsePermissiveValue( ';' );
 				}
 			}
-			if ( $value && $this->parseEnd() ) {
+			if ( $value && ( $this->parseEnd() || $hasDR ) ) {
 				$this->forget();
 				return new Less_Tree_Declaration( $name, $value, $important, $merge, $index, $this->env->currentFileInfo );
 			} else {
@@ -2362,13 +2492,12 @@ class Less_Parser {
 		}
 	}
 
-		/**
-		 * @todo missing '#' handling in matchReg(), it's a part of Namesspace Values patch and
-		 * will be implemented in I264c6618e4a4434cd6c6458a3714320119382a48
-		 */
+	/**
+	 * @see less-3.13.1.js#parsers.anonymousValue
+	 */
 	private function parseAnonymousValue() {
 		$index = $this->pos;
-		$match = $this->matchReg( '/\\G([^@\$+\/\'"*`(;{}-]*);/' );
+		$match = $this->matchReg( '/\\G([^.#@\$+\/\'"*`(;{}-]*);/' );
 		if ( $match ) {
 			return new Less_Tree_Anonymous( $match[1], $index );
 		}
@@ -2898,12 +3027,20 @@ class Less_Parser {
 			$negate = true;
 		}
 		$this->expectChar( '(' );
-		$a = $this->parseAddition() ?? $this->parseEntitiesKeyword() ?? $this->parseEntitiesQuoted();
+		/** @see less-3.13.1.js parsers.atomicCondition */
+		$a = $this->parseAddition()
+			?? $this->parseEntitiesKeyword()
+			?? $this->parseEntitiesQuoted()
+			?? $this->parseEntitiesMixinLookup();
 
 		if ( $a ) {
 			$op = $this->matchReg( '/\\G(?:>=|<=|=<|[<=>])/' );
 			if ( $op ) {
-				$b = $this->parseAddition() ?? $this->parseEntitiesKeyword() ?? $this->parseEntitiesQuoted();
+				/** @see less-3.13.1.js parsers.atomicCondition */
+				$b = $this->parseAddition()
+					?? $this->parseEntitiesKeyword()
+					?? $this->parseEntitiesQuoted()
+					?? $this->parseEntitiesMixinLookup();
 				if ( $b ) {
 					$c = new Less_Tree_Condition( $op, $a, $b, $index, $negate );
 				} else {
@@ -2943,9 +3080,9 @@ class Less_Parser {
 			?? $this->parseEntitiesVariable()
 			?? $this->parseEntitiesProperty()
 			?? $this->parseEntitiesCall()
-			?? $this->parseEntitiesQuoted( true );
+			?? $this->parseEntitiesQuoted( true )
 			// TODO: from less-3.13.1.js missing entities.colorKeyword()
-			// TODO: from less-3.13.1.js missing entities.mixinLookup()
+			?? $this->parseEntitiesMixinLookup();
 
 		if ( $negate ) {
 			$o->parensInOp = true;
