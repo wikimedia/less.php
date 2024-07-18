@@ -102,6 +102,7 @@ class Less_Parser {
 			$this->mb_internal_encoding = ini_get( 'mbstring.internal_encoding' );
 			@ini_set( 'mbstring.internal_encoding', 'ascii' );
 		}
+		Less_Tree::$parse = $this;
 	}
 
 	/**
@@ -343,6 +344,10 @@ class Less_Parser {
 				// Recurse to serialize the Less_Tree_Quoted value
 				return 'url(' . $this->getVariableValue( $var->value ) . ')';
 			case Less_Tree_Declaration::class:
+				if ( $var->value instanceof Less_Tree_Anonymous ) {
+					$nodes = $this->parseNode( $var->value->value, [ 'value', 'important' ], 0, [] );
+					return $this->getVariableValue( $nodes[1][0] );
+				}
 				return $this->getVariableValue( $var->value );
 			case Less_Tree_Value::class:
 				$values = [];
@@ -931,6 +936,61 @@ class Less_Parser {
 		}
 	}
 
+	/**
+	 * @param string $str
+	 * @see less-3.13.1.js#ParserInput.start
+	 */
+	private function parserInputStart( $str ) {
+		$this->pos = $this->furthest = 0;
+		$this->input = $str;
+		$this->input_len = strlen( $str );
+		$this->skipWhitespace( 0 );
+	}
+
+	/**
+	 *  Used after initial parsing to create nodes on the fly
+	 *
+	 * @param string $str string to parse
+	 * @param string[] $parseList array of parsers to run input through e.g. ["value", "important"]
+	 * @param int $currentIndex start number to begin indexing
+	 * @param array $fileInfo fileInfo to attach to created nodes
+	 * @return array
+	 * @see less-3.13.1.js#Parser.parseNode
+	 */
+	public function parseNode( $str, array $parseList, $currentIndex, $fileInfo ) {
+		$returnNodes = [];
+		try {
+			$this->parserInputStart( $str );
+			foreach ( $parseList as $p ) {
+				$i = $this->pos;
+				$method = 'parse' . ucfirst( $p );
+				if ( !method_exists( $this, $method ) ) {
+					throw new CompileError( 'Unknown parser ' . $p );
+				}
+				$result = $this->$method();
+				if ( $result ) {
+					$result->index = $i + $currentIndex;
+					$result->currentFileInfo = $fileInfo;
+					$returnNodes[] = $result;
+				} else {
+					$returnNodes[] = null;
+				}
+			}
+			if ( $this->pos >= $this->input_len ) {
+				return [ null, $returnNodes ];
+			} else {
+				return [ true, null ];
+			}
+		} catch ( Less_Exception_Parser $e ) {
+			throw new Less_Exception_Parser(
+				$e->getMessage(),
+				$e,
+				( $e->index ?? 0 ) + $currentIndex,
+				$fileInfo
+			);
+		}
+	}
+
 	//
 	// Here in, the parsing rules/functions
 	//
@@ -1007,7 +1067,17 @@ class Less_Parser {
 
 			$node = $this->parseMixinDefinition()
 				// Optimisation: NameValue is specific to less.php
-				?? $this->parseNameValue()
+
+				/**
+				 * TODO enabling $this->parseNameValue causes property-accessors to fail with
+				 *
+				 * 'error evaluating function `lighten` The first argument to lighten must be a
+				 * color index: 146 in property-accessors.less on line 9,
+				 *
+				 * note: the Less_Tree_NameValue specifies that it may break color keyword
+				 * interpretation
+				 */
+				// ?? $this->parseNameValue()
 				?? $this->parseDeclaration()
 				?? $this->parseRuleset()
 				?? $this->parseMixinCall()
@@ -1233,14 +1303,22 @@ class Less_Parser {
 			return;
 		}
 
-		$value = $this->parseEntitiesQuoted() ?? $this->parseEntitiesVariable() ?? $this->matchReg( '/\\Gdata\:.*?[^\)]+/' ) ?? $this->matchReg( '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/' ) ?? null;
+		$value = $this->parseEntitiesQuoted()
+			?? $this->parseEntitiesVariable()
+			?? $this->parseEntitiesProperty()
+			?? $this->matchReg( '/\\Gdata\:.*?[^\)]+/' ) // TODO less doesn't handle this
+			?? $this->matchReg( '/\\G(?:(?:\\\\[\(\)\'"])|[^\(\)\'"])+/' )
+			?? null;
+
 		if ( !$value ) {
 			$value = '';
 		}
 		$this->autoCommentAbsorb = true;
 		$this->expectChar( ')' );
 
-		if ( $value instanceof Less_Tree_Quoted || $value instanceof Less_Tree_Variable ) {
+		if ( $value instanceof Less_Tree_Quoted
+			|| $value instanceof Less_Tree_Variable
+			|| $value instanceof Less_Tree_Property ) {
 			return new Less_Tree_Url( $value, $this->env->currentFileInfo );
 		}
 
@@ -1285,6 +1363,34 @@ class Less_Parser {
 	}
 
 	/**
+	 * A Property accessor, such as `$color`, in
+	 *
+	 *   background-color: $color
+	 */
+	private function parseEntitiesProperty() {
+		$index = $this->pos;
+
+		if ( ( $this->input[$this->pos] ?? '' ) === '$' ) {
+			$name = $this->matchReg( '/\\G\$[\w-]+/' );
+			if ( $name ) {
+				return new Less_Tree_Property( $name, $index, $this->env->currentFileInfo );
+			}
+		}
+	}
+
+	// A property entity useing the protective {} e.g. @{prop}
+	private function parseEntitiesPropertyCurly() {
+		$index = $this->pos;
+
+		if ( $this->input[$this->pos] === '$' ) {
+			$curly = $this->matchReg( '/\\G@\{([\w-]+)\}/' );
+			if ( $curly ) {
+				return new Less_Tree_Property( "$" . $curly[1], $index, $this->env->currentFileInfo );
+			}
+		}
+	}
+
+	/**
 	 * A Hexadecimal color
 	 *
 	 *	 #4F3C2F
@@ -1310,7 +1416,7 @@ class Less_Parser {
 	 * @return Less_Tree_Dimension|null
 	 */
 	private function parseEntitiesDimension() {
-		$c = @ord( $this->input[$this->pos] );
+		$c = @ord( $this->input[$this->pos] ?? '' );
 
 		// Is the first char of the dimension 0-9, '.', '+' or '-'
 		if ( ( $c > 57 || $c < 43 ) || $c === 47 || $c == 44 ) {
@@ -1553,7 +1659,10 @@ class Less_Parser {
 					}
 					break;
 				}
-				$arg = $this->parseEntitiesVariable() ?? $this->parseEntitiesLiteral() ?? $this->parseEntitiesKeyword();
+				$arg = $this->parseEntitiesVariable()
+					?? $this->parseEntitiesProperty()
+					?? $this->parseEntitiesLiteral()
+					?? $this->parseEntitiesKeyword();
 			}
 
 			if ( !$arg ) {
@@ -1576,7 +1685,7 @@ class Less_Parser {
 				$val = $arg;
 			}
 
-			if ( $val instanceof Less_Tree_Variable ) {
+			if ( $val instanceof Less_Tree_Variable || $val instanceof Less_Tree_Property ) {
 
 				if ( $this->matchChar( ':' ) ) {
 					if ( $expressions ) {
@@ -1734,6 +1843,7 @@ class Less_Parser {
 			$this->parseEntitiesLiteral() ??
 			$this->parseEntitiesVariable() ??
 			$this->parseEntitiesUrl() ??
+			$this->parseEntitiesProperty() ??
 			$this->parseEntitiesCall() ??
 			$this->parseEntitiesKeyword() ??
 			$this->parseEntitiesJavascript();
@@ -2057,9 +2167,9 @@ class Less_Parser {
 		$this->restore();
 	}
 
-	// @see less-2.5.3.js#parsers.declaration
+	// @see less-2.6.0.js#parsers.declaration
 	// @todo provide feature parity with 3.13.1
-	private function parseDeclaration( $tryAnonymous = null ) {
+	private function parseDeclaration() {
 		$value = null;
 		$startOfRule = $this->pos;
 		$c = $this->input[$this->pos] ?? null;
@@ -2089,21 +2199,16 @@ class Less_Parser {
 					$merge = array_pop( $name )->value;
 				}
 
-				// prefer to try to parse first if its a variable or we are compressing
-				// but always fallback on the other one
-				$tryValueFirst = ( !$tryAnonymous && ( self::$options['compress'] || $isVariable ) );
-				if ( $tryValueFirst ) {
-					$value = $this->parseValue();
+				// Try to store values as anonymous
+				// If we need the value later we'll re-parse it in ruleset.parseValue
+				$value = $this->parseAnonymousValue();
+				if ( $value ) {
+					$this->forget();
+					// anonymous values absorb the end ';' which is required for them to work
+					return new Less_Tree_Declaration( $name, $value, false, $merge, $startOfRule,
+						$this->env->currentFileInfo );
 				}
 				if ( !$value ) {
-					$value = $this->parseAnonymousValue();
-					if ( $value ) {
-						$this->forget();
-						// anonymous values absorb the end ';' which is required for them to work
-						return new Less_Tree_Declaration( $name, $value, false, $merge, $startOfRule, $this->env->currentFileInfo );
-					}
-				}
-				if ( !$tryValueFirst && !$value ) {
 					$value = $this->parseValue();
 				}
 
@@ -2115,19 +2220,21 @@ class Less_Parser {
 				return new Less_Tree_Declaration( $name, $value, $important, $merge, $startOfRule, $this->env->currentFileInfo );
 			} else {
 				$this->restore();
-				if ( $value && !$tryAnonymous ) {
-					return $this->parseDeclaration( true );
-				}
 			}
 		} else {
-			$this->forget();
+			$this->restore();
 		}
 	}
 
+		/**
+		 * @todo missing '#' handling in matchReg(), it's a part of Namesspace Values patch and
+		 * will be implemented in I264c6618e4a4434cd6c6458a3714320119382a48
+		 */
 	private function parseAnonymousValue() {
-		$match = $this->matchReg( '/\\G([^@+\/\'"*`(;{}-]*);/' );
+		$index = $this->pos;
+		$match = $this->matchReg( '/\\G([^@\$+\/\'"*`(;{}-]*);/' );
 		if ( $match ) {
-			return new Less_Tree_Anonymous( $match[1] );
+			return new Less_Tree_Anonymous( $match[1], $index );
 		}
 	}
 
@@ -2408,6 +2515,7 @@ class Less_Parser {
 	//
 	private function parseValue() {
 		$expressions = [];
+		$index = $this->pos;
 
 		do {
 			$e = $this->parseExpression();
@@ -2420,7 +2528,7 @@ class Less_Parser {
 		} while ( $e );
 
 		if ( $expressions ) {
-			return new Less_Tree_Value( $expressions );
+			return new Less_Tree_Value( $expressions, $index );
 		}
 	}
 
@@ -2587,8 +2695,8 @@ class Less_Parser {
 			return;
 		}
 		$char = $this->input[$offset];
-		// TODO: handle char `$`
-		if ( $char === '@' || $char === '(' ) {
+
+		if ( $char === '@' || $char === '(' || $char === '$' ) {
 			$negate = $this->matchChar( '-' );
 		}
 
@@ -2596,7 +2704,7 @@ class Less_Parser {
 			?? $this->parseEntitiesDimension()
 			?? $this->parseEntitiesColor()
 			?? $this->parseEntitiesVariable()
-			// TODO: from less-3.13.1.js missing entities.property()
+			?? $this->parseEntitiesProperty()
 			?? $this->parseEntitiesCall()
 			?? $this->parseEntitiesQuoted( true );
 			// TODO: from less-3.13.1.js missing entities.colorKeyword()
@@ -2615,9 +2723,11 @@ class Less_Parser {
 	 * or white-space delimited Entities.
 	 *
 	 * @return Less_Tree_Expression|null
+	 * @see less-3.13.1.js#parsers.expression
 	 */
 	private function parseExpression() {
 		$entities = [];
+		$index = $this->pos;
 
 		do {
 			$e = $this->parseComment();
@@ -2626,13 +2736,16 @@ class Less_Parser {
 				continue;
 			}
 			$e = $this->parseAddition() ?? $this->parseEntity();
+			if ( $e instanceof Less_Tree_Comment ) {
+				$e = null;
+			}
 			if ( $e ) {
 				$entities[] = $e;
 				// operations do not allow keyword "/" dimension (e.g. small/20px) so we support that here
 				if ( !$this->peekReg( '/\\G\/[\/*]/' ) ) {
 					$delim = $this->matchChar( '/' );
 					if ( $delim ) {
-						$entities[] = new Less_Tree_Anonymous( $delim );
+						$entities[] = new Less_Tree_Anonymous( $delim, $index );
 					}
 				}
 			}
@@ -2661,7 +2774,7 @@ class Less_Parser {
 	 * eg: 'color', 'width', 'height', etc
 	 *
 	 * @return array<Less_Tree_Keyword|Less_Tree_Variable>
-	 * @see less-2.5.3.js#parsers.ruleProperty
+	 * @see less-3.13.1.js#parsers.ruleProperty
 	 */
 	private function parseRuleProperty() {
 		$name = [];
@@ -2680,7 +2793,8 @@ class Less_Parser {
 
 		// Consume!
 		// @phan-suppress-next-line PhanPluginEmptyStatementWhileLoop
-		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:@\{[\w-]+\}))/', $index, $name ) );
+		while ( $this->rulePropertyMatch( '/\\G((?:[\w-]+)|(?:[@\$]\{[\w-]+\}))/', $index, $name
+		) );
 
 		if ( ( count( $name ) > 1 ) && $this->rulePropertyMatch( '/\\G((?:\+_|\+)?)\s*:/', $index, $name ) ) {
 			$this->forget();
@@ -2692,11 +2806,13 @@ class Less_Parser {
 				array_shift( $index );
 			}
 			foreach ( $name as $k => $s ) {
-				if ( !$s || $s[0] !== '@' ) {
-					$name[$k] = new Less_Tree_Keyword( $s );
-				} else {
-					$name[$k] = new Less_Tree_Variable( '@' . substr( $s, 2, -1 ), $index[$k], $this->env->currentFileInfo );
-				}
+				$firstChar = $s[0] ?? '';
+				$name[$k] = ( $firstChar !== '@' && $firstChar !== '$' ) ?
+					new Less_Tree_Keyword( $s ) :
+					( $s[0] === '@'
+						? new Less_Tree_Variable( '@' . substr( $s, 2, -1 ), $index[$k], $this->env->currentFileInfo )
+						: new Less_Tree_Property( '$' . substr( $s, 2, -1 ), $index[$k], $this->env->currentFileInfo )
+					);
 			}
 			return $name;
 		} else {

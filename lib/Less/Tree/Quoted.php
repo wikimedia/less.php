@@ -43,8 +43,7 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 		return preg_match( '/@\{([\w-]+)\}/', $this->value );
 	}
 
-	public function compile( $env ) {
-		$r = $this->value;
+	private function variableReplacement( $r, $env ) {
 		do {
 			$value = $r;
 			if ( preg_match_all( '/@\{([\w-]+)\}/', $value, $matches ) ) {
@@ -56,8 +55,29 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 				}
 			}
 		} while ( $r != $value );
+		return $r;
+	}
 
-		return new self( $this->quote . $r . $this->quote, $r, $this->escaped, $this->index, $this->currentFileInfo );
+	private function propertyReplacement( $r, $env ) {
+		do {
+			$value = $r;
+			if ( preg_match_all( '/\$\{([\w-]+)\}/', $value, $matches ) ) {
+				foreach ( $matches[1] as $i => $match ) {
+					$v = new Less_Tree_Property( '$' . $match, $this->index, $this->currentFileInfo );
+					$v = $v->compile( $env );
+					$v = ( $v instanceof self ) ? $v->value : $v->toCSS();
+					$r = str_replace( $matches[0][$i], $v, $r );
+				}
+			}
+		} while ( $r != $value );
+		return $r;
+	}
+
+	public function compile( $env ) {
+		$value = $this->value;
+		$value = $this->variableReplacement( $value, $env );
+		$value = $this->propertyReplacement( $value, $env );
+		return new self( $this->quote . $value . $this->quote, $value, $this->escaped, $this->index, $this->currentFileInfo );
 	}
 
 	/**

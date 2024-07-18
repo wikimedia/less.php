@@ -65,7 +65,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 		}
 
 		if ( $atRuleNode->rules ) {
-			$this->_mergeRules( $atRuleNode->rules[0]->rules );
+			self::_mergeRules( $atRuleNode->rules[0]->rules );
 			// process childs
 			$atRuleNode->accept( $this );
 			$visitDeeper = false;
@@ -144,7 +144,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 			if ( $rulesetNode->rules ) {
 
 				if ( count( $rulesetNode->rules ) > 1 ) {
-					$this->_mergeRules( $rulesetNode->rules );
+					self::_mergeRules( $rulesetNode->rules );
 					$this->_removeDuplicateRules( $rulesetNode->rules );
 				}
 
@@ -242,7 +242,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 		}
 	}
 
-	protected function _mergeRules( &$rules ) {
+	public static function _mergeRules( &$rules ) {
 		$groups = [];
 
 		// obj($rules);
