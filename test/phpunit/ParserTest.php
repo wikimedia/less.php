@@ -21,7 +21,6 @@ class ParserTest extends LessTestCase {
 		$parser = new Less_Parser();
 		$parser->parse( $lessCode );
 		// Without getCss()
-
 		$this->assertEquals(
 			[
 				'@some_string' => '"foo"',
@@ -47,6 +46,36 @@ class ParserTest extends LessTestCase {
 		$this->expectException( Exception::class );
 		$this->expectExceptionMessage( 'getVariables() require Less to be compiled' );
 		$parser->getVariables();
+	}
+
+	public function testNamespacedValuesWithProperties() {
+		$lessCode = '
+		   @defaultHeight: 50px;
+		   .block {
+		       color: #f9f9f9;
+		       width: 10px;
+		       height: @defaultHeight;
+		       margin: $width;
+		   };
+		   @var: .block();
+		   @width: @var[width];
+		';
+		$parser = new Less_Parser();
+		$parser->parse( $lessCode );
+		$parser->getCss();
+		$this->assertEquals(
+			[
+				"@var" => [
+					"color" => "#f9f9f9",
+					"width" => "10px",
+					"height" => "50px",
+					"margin" => "10px",
+				],
+				"@width" => "10px",
+				"@defaultHeight" => "50px",
+			],
+			$parser->getVariables()
+		);
 	}
 
 	public function testGetVariables() {

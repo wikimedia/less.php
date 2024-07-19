@@ -329,7 +329,7 @@ class Less_Parser {
 	 * Since the objects vary here we add the logic for extracting the css/less value.
 	 *
 	 * @param Less_Tree $var
-	 * @return string
+	 * @return mixed
 	 */
 	private function getVariableValue( Less_Tree $var ) {
 		switch ( get_class( $var ) ) {
@@ -339,6 +339,17 @@ class Less_Parser {
 				return $this->findVarByName( $var->name );
 			case Less_Tree_Keyword::class:
 				return $var->value;
+			case Less_Tree_Anonymous::class:
+				$return = [];
+				if ( is_array( $var->value ) ) {
+					foreach ( $var->value as $value ) {
+						/** @var Less_Tree $value */
+						// in compilation phase, Less_Tree_Anonymous::$val can be a Less_Tree[]
+						// @phan-suppress-next-line PhanTypeExpectedObjectPropAccess,PhanTypeMismatchArgument
+						$return[ $value->name ] = $this->getVariableValue( $value );
+					}
+				}
+				return count( $return ) === 1 ? $return[0] : $return;
 			case Less_Tree_Url::class:
 				// Based on Less_Tree_Url::genCSS()
 				// Recurse to serialize the Less_Tree_Quoted value
@@ -354,7 +365,7 @@ class Less_Parser {
 				foreach ( $var->value as $sub_value ) {
 					$values[] = $this->getVariableValue( $sub_value );
 				}
-				return implode( ' ', $values );
+				return count( $values ) === 1 ? $values[0] : $values;
 			case Less_Tree_Quoted::class:
 				return $var->quote . $var->value . $var->quote;
 			case Less_Tree_Dimension::class:
