@@ -39,18 +39,23 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 	/**
 	 * @param Less_Tree|mixed $x
 	 * @return int|null
-	 * @see less-2.5.3.js#Anonymous.prototype.compare
+	 * @see less-3.13.1.js#Anonymous.prototype.compare
 	 */
 	public function compare( $x ) {
-		return ( is_object( $x ) && $this->toCSS() === $x->toCSS() ) ? 0 : null;
+		return ( $x instanceof Less_Tree && $this->toCSS() === $x->toCSS() ) ? 0 : null;
 	}
 
 	public function isRulesetLike() {
 		return $this->rulesetLike;
 	}
 
+	/**
+	 * @see less-3.13.1.js#Anonymous.prototype.genCSS
+	 */
 	public function genCSS( $output ) {
-		if ( $this->value !== "" && $this->value !== 0 ) {
+		// TODO: When we implement $visibilityInfo, store this result in-class
+		$nodeVisible = $this->value !== "" && $this->value !== 0;
+		if ( $nodeVisible ) {
 			$output->add( $this->value, $this->currentFileInfo, $this->index, $this->mapLines );
 		}
 	}

@@ -1,10 +1,11 @@
 <?php
 /**
  * @private
- * @see less-3.13.1.js#NamespaceValue
+ * @see less-3.13.1.js#NamespaceValue.prototype
  */
 class Less_Tree_NamespaceValue extends Less_Tree {
 
+	/** @var Less_Tree_Mixin_Call|Less_Tree_VariableCall */
 	public $value;
 	public $index;
 	public $lookups;

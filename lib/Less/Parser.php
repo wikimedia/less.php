@@ -1615,7 +1615,7 @@ class Less_Parser {
 	 *	 `window.location.href`
 	 *
 	 * @return Less_Tree_JavaScript|null
-	 * @see less-2.5.3.js#parsers.entities.javascript
+	 * @see less-3.13.1.js#parsers.entities.javascript
 	 */
 	private function parseEntitiesJavascript() {
 		// Optimization: Hardcode first char, to avoid save()/restore() overhead
@@ -1642,7 +1642,7 @@ class Less_Parser {
 		$js = $this->matchReg( '/\\G[^`]*`/' );
 		if ( $js ) {
 			$this->forget();
-			return new Less_Tree_JavaScript( substr( $js, 0, -1 ), $index, $isEscaped );
+			return new Less_Tree_JavaScript( substr( $js, 0, -1 ), $isEscaped, $index );
 		}
 		$this->restore();
 	}
@@ -1764,7 +1764,9 @@ class Less_Parser {
 	// namespaced, but we only support the child and descendant
 	// selector for now.
 	//
-	private function parseMixinCall( $inValue = false, $getLookup = false ) {
+	// @see less-3.13.1.js#parsers.mixin.call
+	//
+	private function parseMixinCall( $inValue, $getLookup = null ) {
 		$s = $this->input[$this->pos] ?? null;
 		$important = false;
 		$lookups = null;
@@ -2470,7 +2472,7 @@ class Less_Parser {
 				if ( is_array( $name ) && array_key_exists( 0, $name ) // to satisfy phan
 					&& $name[0] instanceof Less_Tree_Keyword
 					&& $name[0]->value && strpos( $name[0]->value, '--' ) === 0 ) {
-					$value = $this->parsePermissiveValue( ';' );
+					$value = $this->parsePermissiveValue();
 				} else {
 					// Try to store values as anonymous
 					// If we need the value later we'll re-parse it in ruleset.parseValue
@@ -2489,7 +2491,7 @@ class Less_Parser {
 				if ( $value ) {
 					$important = $this->parseImportant();
 				} elseif ( $isVariable ) {
-					$value = $this->parsePermissiveValue( ';' );
+					$value = $this->parsePermissiveValue();
 				}
 			}
 			if ( $value && ( $this->parseEnd() || $hasDR ) ) {
@@ -2527,7 +2529,6 @@ class Less_Parser {
 	 * @param null|string|array $untilTokens
 	 */
 	private function parsePermissiveValue( $untilTokens = null ) {
-		$value = [];
 		$tok = $untilTokens ?? ';';
 		$index = $this->pos;
 		$result = [];
@@ -2545,6 +2546,8 @@ class Less_Parser {
 		if ( $testCurrentChar( $this->input[$this->pos] ) ) {
 			return;
 		}
+
+		$value = [];
 		do {
 			$e = $this->parseComment();
 			if ( $e ) {
@@ -2574,7 +2577,7 @@ class Less_Parser {
 
 		if ( $value ) {
 			if ( is_string( $value ) ) {
-				$this->error( "expected '" . $value . "'" );
+				$this->Error( "expected '" . $value . "'" );
 			}
 			if ( count( $value ) === 1 && $value[0] === ' ' ) {
 				$this->forget();
@@ -2849,19 +2852,19 @@ class Less_Parser {
 		if ( $hasIdentifier ) {
 			$value = $this->parseEntity();
 			if ( !$value ) {
-				$this->error( "expected " . $name . " identifier" );
+				$this->Error( "expected " . $name . " identifier" );
 			}
 		} elseif ( $hasExpression ) {
 			$value = $this->parseExpression();
 			if ( !$value ) {
-				$this->error( "expected " . $name . " expression" );
+				$this->Error( "expected " . $name . " expression" );
 			}
 		} elseif ( $hasUnknown ) {
 			$value = $this->parsePermissiveValue( [ '{', ';' ] );
 			$hasBlock = $this->input[$this->pos] === '{';
 			if ( !$value ) {
 				if ( !$hasBlock && $this->input[$this->pos] !== ';' ) {
-					$this->error( $name . " rule is missing block or ending semi-colon" );
+					$this->Error( $name . " rule is missing block or ending semi-colon" );
 				}
 			} elseif ( !$value->value ) {
 				$value = null;
