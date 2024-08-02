@@ -7,14 +7,17 @@ Usage: php compare.php [--override] [<fixtureDir>]
 
 Options:
 
-    fixtureDir  Pass one of the /test/Fixtures/ directories.
+    fixtureDir  Pass one of the test/Fixtures/ directories.
                 The compare tool will compile each file in the "less/"
                 subdirectory, and compare it to an eponymous file in the
                 "css/" subdirectory.
+                Alternatively, pass one of the "less/" sub-sub directories
+                directly and the corresponding "css/" directory will be found
+                automatically.
 
                 - {{FIXTURE_DIR}}
 
-                Default: test/Fixtures/lessjs-2.5.3/
+                Default: test/Fixtures/lessjs-3.13.1/less/_main/
 
     --override  By default, the compare tool validates the full upstream
                 Less.js specification, as stored in the fixture's "css/"
@@ -59,7 +62,7 @@ class LessFixtureDiff {
 		}
 
 		$this->compare(
-			$fixtureDir ?? __DIR__ . '/Fixtures/lessjs-2.5.3/',
+			$fixtureDir ?? 'lessjs-3.13.1',
 			$useOverride
 		);
 	}
