@@ -2134,7 +2134,7 @@ class Less_Parser {
 		}
 
 		$value = $this->matchReg( '/\\G[0-9]+/' );
-		if ( !$value ) {
+		if ( $value === null ) {
 			$value = $this->expect( 'parseEntitiesVariable', 'Could not parse alpha' );
 		}
 
