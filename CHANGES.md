@@ -1,5 +1,15 @@
 # Changelog
 
+## v5.1.0
+
+Added:
+* Add support for property acessors (Piotr Miazga) [T368408](https://phabricator.wikimedia.org/T368408)
+* Increase parsing flexibility around at-rule blocks and custom properties (Piotr Miazga) [T368408](https://phabricator.wikimedia.org/T368408)
+* Add support for Namespaces and Accessors (Piotr Miazga) [T368409](https://phabricator.wikimedia.org/T368409)
+
+Fixed:
+* Fix parse error when opacity is set to zero in `alpha()` function (Hannah Okwelum) [T371606](https://phabricator.wikimedia.org/T371606)
+
 ## v5.0.0
 
 Added:
