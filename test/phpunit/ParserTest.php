@@ -277,12 +277,36 @@ CSS;
 		$this->assertEquals( $expected, $css );
 	}
 
+	public function testModifyVars() {
+		$lessCode = <<<CSS
+			div{
+				border-width: @border-width;
+				line-height: unit(@line-height, px);
+				border-radius: @border-radius;
+				margin: @margin;
+			}
+			CSS;
+		$expected = <<<CSS
+			div {
+			  border-width: ;
+			  line-height: 1px;
+			  border-radius: ;
+			  margin: ;
+			}
+			CSS;
+		$parser = new Less_Parser;
+		$parser->ModifyVars( [ 'border-width' => false, 'line-height' => true, 'border-radius' => null, 'margin' => '' ] );
+		$parser->parse( $lessCode );
+		$css = trim( $parser->getCss() );
+		$this->assertSame( $expected, $css, 'static callback' );
+	}
+
 	public function testOptionFunctions() {
 		$lessCode = <<<CSS
 			#test {
 			  border-width: add(7, 6);
 			}
-		CSS;
+			CSS;
 		$expected = <<<CSS
 			#test {
 			  border-width: 13;

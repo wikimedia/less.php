@@ -3222,6 +3222,9 @@ class Less_Parser {
 		$s = '';
 
 		foreach ( $vars as $name => $value ) {
+			if ( strval( $value ) === "" ) {
+				$value = '~""';
+			}
 			$s .= ( ( $name[0] === '@' ) ? '' : '@' ) . $name . ': ' . $value . ( ( substr( $value, -1 ) === ';' ) ? '' : ';' );
 		}
 
