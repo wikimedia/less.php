@@ -596,11 +596,11 @@ class Less_Parser {
 	 *         }
 	 *     }
 	 *
-	 *
-	 * @param array<string|callable> $dirs The key should be a server directory from which LESS
+	 * @param array $dirs The key should be a server directory from which LESS
 	 * files may be imported. The value is an optional public URL or URL base path that corresponds to
 	 * the same directory (use empty string otherwise). The value may also be a closure, in
 	 * which case the key is ignored.
+	 * @phan-param array<string,string|callable> $dirs
 	 */
 	public function SetImportDirs( $dirs ) {
 		self::$options['import_dirs'] = [];
@@ -3217,6 +3217,7 @@ class Less_Parser {
 	/**
 	 * Some versions of PHP have trouble with method_exists($a,$b) if $a is not an object
 	 *
+	 * @internal For internal use only
 	 * @param mixed $a
 	 * @param string $b
 	 */
@@ -3227,6 +3228,8 @@ class Less_Parser {
 	/**
 	 * Round numbers similarly to javascript
 	 * eg: 1.499999 to 1 instead of 2
+	 *
+	 * @internal For internal use only
 	 */
 	public static function round( $input, $precision = 0 ) {
 		$precision = pow( 10, $precision );

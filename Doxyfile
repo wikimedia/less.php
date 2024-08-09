@@ -12,6 +12,7 @@ INPUT                  = README.md API.md SECURITY.md CHANGES.md lib/
 FILE_PATTERNS          = *.php
 RECURSIVE              = YES
 USE_MDFILE_AS_MAINPAGE = README.md
+ALIASES                = "phan=\noop"
 HTML_COLORSTYLE        = LIGHT
 HTML_DYNAMIC_SECTIONS  = YES
 GENERATE_TREEVIEW      = YES

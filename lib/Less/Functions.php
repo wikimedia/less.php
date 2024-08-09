@@ -273,6 +273,7 @@ class Less_Functions {
 	/**
 	 * @param Less_Tree_Color|null $color
 	 * @param Less_Tree_Dimension|null $amount
+	 * @param Less_Tree_Quoted|Less_Tree_Color|Less_Tree_Keyword|null $method
 	 */
 	public function desaturate( $color = null, $amount = null, $method = null ) {
 		if ( !$color instanceof Less_Tree_Color ) {

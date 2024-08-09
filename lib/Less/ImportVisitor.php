@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @private
+ */
 class Less_ImportVisitor extends Less_Visitor {
 
 	public $env;
