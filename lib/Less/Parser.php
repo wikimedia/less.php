@@ -276,36 +276,18 @@ class Less_Parser {
 	}
 
 	/**
-	 * Gets the private rules variable and returns an array of the found variables
-	 * it uses a helper method getVariableValue() that contains the logic ot fetch the value
-	 * from the rule object
+	 * Get an array of the found variables in the parsed input.
 	 *
 	 * @return array
+	 * @phan-return array<string,string|float|array>
 	 */
 	public function getVariables() {
 		$variables = [];
 
-		$not_variable_type = [
-			Less_Tree_Comment::class, // this include less comments ( // ) and css comments (/* */)
-			Less_Tree_Import::class, // do not search variables in included files @import
-			Less_Tree_Ruleset::class, // selectors (.someclass, #someid, …)
-			Less_Tree_Operation::class,
-		];
-
 		$rules = $this->cachedEvaldRules ?? $this->rules;
-
 		foreach ( $rules as $key => $rule ) {
-			if ( in_array( get_class( $rule ), $not_variable_type ) ) {
-				continue;
-			}
-
-			// Note: it seems $rule is always Less_Tree_Rule when variable = true
 			if ( $rule instanceof Less_Tree_Declaration && $rule->variable ) {
 				$variables[$rule->name] = $this->getVariableValue( $rule );
-			} else {
-				if ( $rule instanceof Less_Tree_Comment ) {
-					$variables[] = $this->getVariableValue( $rule );
-				}
 			}
 		}
 		return $variables;
@@ -330,6 +312,7 @@ class Less_Parser {
 	 *
 	 * @param Less_Tree $var
 	 * @return mixed
+	 * @phan-return string|float|array<string|float>
 	 */
 	private function getVariableValue( Less_Tree $var ) {
 		switch ( get_class( $var ) ) {

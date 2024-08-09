@@ -87,6 +87,9 @@ class ParserTest extends LessTestCase {
 			@some_number: 123;
 
 			// Rule > Dimension
+			@some_number_dot: 123.1;
+
+			// Rule > Dimension
 			@some_unit: 12px;
 
 			// Rule > Dimension
@@ -97,6 +100,12 @@ class ParserTest extends LessTestCase {
 
 			// Rule > Url > Quoted
 			@some_url: url("just/a/test.jpg");
+
+			@some_list_comma: 1, 2, foo, bar baz, 42;
+
+			@some_list_comma_dot: 1, 2.1, foo, bar baz, 42;
+
+			@some_list_space: foo bar baz;
 		';
 
 		$parser = new Less_Parser();
@@ -106,11 +115,15 @@ class ParserTest extends LessTestCase {
 		$this->assertEquals(
 			[
 				'@some_string' => '"foo"',
-				'@some_number' => 123.0,
+				'@some_number' => '123',
+				'@some_number_dot' => 123.1,
 				'@some_unit' => '12px',
 				'@some_unit_op' => '5px',
 				'@some_color' => '#f9f9f9',
 				'@some_url' => 'url("just/a/test.jpg")',
+				'@some_list_comma' => [ '1', '2', 'foo', 'bar baz', '42' ],
+				'@some_list_comma_dot' => [ 1.0, 2.1, 'foo', 'bar baz', 42.0 ],
+				'@some_list_space' => 'foo bar baz',
 			],
 			$parser->getVariables()
 		);
