@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.1.1
+
+Fixed:
+* Fix compiling of PHP-injected variables with false, null or empty string (Hannah Okwelum)
+
 ## v5.1.0
 
 Added:
