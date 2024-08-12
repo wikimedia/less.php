@@ -712,7 +712,7 @@ class Less_Functions {
 				$unit = $currentUnified->unit->toString();
 			}
 
-			if ( $unit !== '' && !$unitStatic || $unit !== '' && $order[0]->unify()->unit->toString() === "" ) {
+			if ( ( $unit !== '' && !$unitStatic ) || ( $unit !== '' && $order[0]->unify()->unit->toString() === "" ) ) {
 				$unitStatic = $unit;
 			}
 
