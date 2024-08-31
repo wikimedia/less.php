@@ -17,7 +17,7 @@ class Less_Visitor {
 			return $node;
 		}
 
-		$prefixClassName = str_replace("Less_Visitor", "", __CLASS__);
+		$prefixClassName = str_replace("Less"."_"."Visitor", "", __CLASS__);
 		$funcName = 'visit' . str_replace( [ $prefixClassName . 'Less_Tree_', '_' ], '', get_class( $node ) );
 
 		if ( isset( $this->_visitFnCache[$funcName] ) ) {
