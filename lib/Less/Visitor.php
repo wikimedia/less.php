@@ -16,7 +16,10 @@ class Less_Visitor {
 		if ( !$node || !is_object( $node ) ) {
 			return $node;
 		}
-		$funcName = 'visit' . str_replace( [ 'Less_Tree_', '_' ], '', get_class( $node ) );
+
+		$prefixClassName = str_replace("Less_Visitor", "", __CLASS__);
+		$funcName = 'visit' . str_replace( [ $prefixClassName . 'Less_Tree_', '_' ], '', get_class( $node ) );
+
 		if ( isset( $this->_visitFnCache[$funcName] ) ) {
 			$visitDeeper = true;
 			$newNode = $this->$funcName( $node, $visitDeeper );
