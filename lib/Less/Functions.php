@@ -9,7 +9,7 @@ class Less_Functions {
 	public $env;
 	public $currentFileInfo;
 
-	public function __construct( $env, array $currentFileInfo = null ) {
+	public function __construct( $env, ?array $currentFileInfo = null ) {
 		$this->env = $env;
 		$this->currentFileInfo = $currentFileInfo;
 	}
