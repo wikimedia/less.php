@@ -27,8 +27,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Includes php7.4 - 8.2 and composer 2
-          # https://github.com/actions/runner-images/blob/ubuntu20/20221212.2/images/linux/Ubuntu2004-Readme.md#php
+          # Includes php7.4 - 8.3 and composer 2
+          # https://github.com/actions/runner-images/blob/releases/ubuntu20/20241023/images/ubuntu/Ubuntu2004-Readme.md#php-tools
           - php: '7.4'
             os: ubuntu-20.04
           - php: '8.0'
@@ -36,6 +36,8 @@ jobs:
           - php: '8.1'
             os: ubuntu-20.04
           - php: '8.2'
+            os: ubuntu-20.04
+          - php: '8.3'
             os: ubuntu-20.04
 
     runs-on: ${{ matrix.os }}
