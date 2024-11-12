@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.1.2
+
+Fixed:
+* Less_Functions: Fix "Implicitly nullable parameter" PHP 8.4 warning (Reedy) [T376276](https://phabricator.wikimedia.org/T376276)
+
 ## v5.1.1
 
 Fixed:
