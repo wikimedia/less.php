@@ -63,7 +63,7 @@ class Less_Output_Mapped extends Less_Output {
 		$sourceLines = [];
 		$sourceColumns = ' ';
 
-		if ( $fileInfo ) {
+		if ( $fileInfo['currentUri'] ?? false ) {
 
 			$url = $fileInfo['currentUri'];
 

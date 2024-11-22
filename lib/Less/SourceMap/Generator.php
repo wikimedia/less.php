@@ -199,6 +199,9 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @param array $fileInfo The original source file
 	 */
 	public function addMapping( $generatedLine, $generatedColumn, $originalLine, $originalColumn, $fileInfo ) {
+		if ( ! ($fileInfo['currentUri'] ?? false) ) {
+            return;
+        }
 		$this->mappings[] = [
 			'generated_line' => $generatedLine,
 			'generated_column' => $generatedColumn,
