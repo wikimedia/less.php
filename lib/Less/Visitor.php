@@ -13,6 +13,8 @@ class Less_Visitor {
 	}
 
 	public function visitObj( $node ) {
+		static $funcNames = [];
+
 		if ( !$node || !is_object( $node ) ) {
 			return $node;
 		}
@@ -27,9 +29,10 @@ class Less_Visitor {
 		//
 		// https://packagist.org/packages/brianhenryie/strauss
 		// https://packagist.org/packages/coenjacobs/mozart
-		$nodeClassNameParts = explode( 'Less_Tree_', get_class( $node ), 2 );
-		$nodeType = end( $nodeClassNameParts );
-		$funcName = 'visit' . strtr( $nodeType, [ '_' => '', '\\' => '' ] );
+		$class = get_class( $node );
+		$funcName = $funcNames[$class] ??= 'visit' . str_replace( [ '_', '\\' ], '',
+			substr( $class, strpos( $class, 'Less_Tree_' ) + 10 )
+		);
 
 		if ( isset( $this->_visitFnCache[$funcName] ) ) {
 			$visitDeeper = true;
