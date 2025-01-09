@@ -27,18 +27,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Includes php7.4 - 8.3 and composer 2
-          # https://github.com/actions/runner-images/blob/releases/ubuntu20/20241023/images/ubuntu/Ubuntu2004-Readme.md#php-tools
+          # Includes php 8.3 and composer 2
+          # https://github.com/actions/runner-images/blob/ubuntu24/20250105.1/images/ubuntu/Ubuntu2404-Readme.md#php-tools
           - php: '7.4'
-            os: ubuntu-20.04
+            os: ubuntu-24.04
           - php: '8.0'
-            os: ubuntu-20.04
+            os: ubuntu-24.04
           - php: '8.1'
-            os: ubuntu-20.04
+            os: ubuntu-24.04
           - php: '8.2'
-            os: ubuntu-20.04
+            os: ubuntu-24.04
           - php: '8.3'
-            os: ubuntu-20.04
+            os: ubuntu-24.04
+          - php: '8.4'
+            os: ubuntu-24.04
 
     runs-on: ${{ matrix.os }}
 
@@ -47,7 +49,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Use PHP ${{ matrix.php }}
-      run: sudo update-alternatives --set php /usr/bin/php${{ matrix.php }}
+      run: |
+        sudo apt-add-repository ppa:ondrej/php -y
+        sudo apt-get install -y -q php${{ matrix.php }} php${{ matrix.php }}-intl php${{ matrix.php }}-mbstring php${{ matrix.php }}-xml php${{ matrix.php }}-apcu php${{ matrix.php }}-curl php${{ matrix.php }}-xdebug
+        php --version
 
     - name: Validate composer.json and composer.lock
       run: composer validate
