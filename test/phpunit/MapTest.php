@@ -7,15 +7,34 @@ class MapTest extends LessTestCase {
 		$expectedFile = self::$fixturesDir . '/bootstrap3-sourcemap/expected/bootstrap.map';
 		$mapDestination = self::$cacheDir . '/bootstrap.map';
 
-		$options['sourceMap'] = true;
-		$options['sourceMapWriteTo'] = $mapDestination;
-		$options['sourceMapURL'] = '/';
-		$options['sourceMapBasepath'] = dirname( dirname( $lessFile ) );
-		$options['math'] = "always";
-
-		$parser = new Less_Parser( $options );
+		$parser = new Less_Parser( [
+			'sourceMap' => true,
+			'sourceMapURL' => '/',
+			'sourceMapBasepath' => dirname( dirname( $lessFile ) ),
+			'sourceMapWriteTo' => $mapDestination,
+			'math' => 'always',
+		] );
 		$parser->parseFile( $lessFile );
-		$css = $parser->getCss();
+		$parser->getCss();
+
+		$expected = file_get_contents( $expectedFile );
+		$generated = file_get_contents( $mapDestination );
+		$this->assertEquals( $expected, $generated );
+	}
+
+	public function testImportInline() {
+		$lessFile = self::$fixturesDir . '/less.php/less/T380641-sourcemap-import-inline.less';
+		$expectedFile = self::$fixturesDir . '/less.php/css/T380641-sourcemap-import-inline.map';
+		$mapDestination = self::$cacheDir . '/import-inline.map';
+
+		$parser = new Less_Parser( [
+			'sourceMap' => true,
+			'sourceMapURL' => '/',
+			'sourceMapBasepath' => dirname( $lessFile ),
+			'sourceMapWriteTo' => $mapDestination,
+		] );
+		$parser->parseFile( $lessFile );
+		$parser->getCss();
 
 		$expected = file_get_contents( $expectedFile );
 		$generated = file_get_contents( $mapDestination );

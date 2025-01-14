@@ -10,6 +10,9 @@ insert_final_newline = true
 [test/phpunit/ParserTest.php]
 trim_trailing_whitespace = false
 
+[test/**/*.map]
+insert_final_newline = false
+
 # Markdown:
 # - Editors should not change leading spaces to tabs (e.g. multi-line list items)
 # YAML:
