@@ -137,7 +137,7 @@ class ParserTest extends LessTestCase {
 
 		$files = $parser->getParsedFiles();
 
-		$normalFiles = array_map( fn ( $file ) => str_replace( $baseDir, '', $file ), $files );
+		$normalFiles = array_map( static fn ( $file ) => str_replace( $baseDir, '', $file ), $files );
 		$this->assertEqualsCanonicalizing(
 			[
 				'/imports.less',
