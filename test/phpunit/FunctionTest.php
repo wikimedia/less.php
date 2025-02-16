@@ -1,5 +1,8 @@
 <?php
 
+// No @covers here, as this may cover all classes.
+// phpcs:disable MediaWiki.Commenting.MissingCovers.MissingCovers
+
 class FunctionTest extends LessTestCase {
 
 	public function testFunction() {

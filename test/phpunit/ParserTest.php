@@ -1,5 +1,8 @@
 <?php
 
+// No @covers here, as this may cover all classes.
+// phpcs:disable MediaWiki.Commenting.MissingCovers.MissingCovers
+
 class ParserTest extends LessTestCase {
 	public function testGetVariablesUncompiled() {
 		$lessCode = '

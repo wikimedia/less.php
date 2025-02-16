@@ -1,5 +1,8 @@
 <?php
 
+// No @covers here, as this may cover all classes.
+// phpcs:disable MediaWiki.Commenting.MissingCovers.MissingCovers
+
 class FixturesTest extends LessTestCase {
 	private const KNOWN_FAILURE = [
 		'lessjs-2.5.3' => [

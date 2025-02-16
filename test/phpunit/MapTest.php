@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * @covers \Less_Parser
+ * @covers \Less_Configurable
+ * @covers \Less_Output_Mapped
+ * @covers \Less_SourceMap_Generator
+ * @covers \Less_SourceMap_Base64VLQ
+ */
 class MapTest extends LessTestCase {
 
 	public function testMap() {
