@@ -261,6 +261,25 @@ class ParserTest extends LessTestCase {
 				$e->getMessage()
 			);
 		}
+
+		// Fixed in Less.js 4.1.1 (T386074)
+		$lessFile = __DIR__ . '/data/exception/T386074-fix-parenthesized-operation.less';
+		// This fails only when math is set to "parens-division"
+		$parser = new Less_Parser( [ 'math' => "parens-division" ] );
+		$parser->parseFile( $lessFile );
+		try {
+			$parser->getCss();
+		} catch ( Exception $e ) {
+			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
+			$this->assertEquals(
+"Operation on an invalid type in T386074-fix-parenthesized-operation.less on line 3, column 2
+1| p {
+2| 	@a: 20px / 2;
+3| 	margin: 2 * @a;
+4| }",
+				$e->getMessage()
+			);
+		}
 	}
 
 	public function testOptionRootpath() {
