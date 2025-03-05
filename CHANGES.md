@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.2.1
+
+Fixed:
+* Fix un-parenthesized nested operation via a variable (Hannah Okwelum) [T386074](https://phabricator.wikimedia.org/T386074)
+* Faster Less_Visitor_joinSelector by skipping Declaration blocks (ubermanu)
+
 ## v5.2.0
 
 Added:
