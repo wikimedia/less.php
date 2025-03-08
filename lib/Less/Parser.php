@@ -39,6 +39,7 @@ class Less_Parser {
 		 * for more information.
 		 */
 		'cache_dir' => null,
+		'cache_incremental' => true,
 		// one of false, 'serialize', or 'callback'
 		'cache_method' => 'serialize',
 		'cache_callback_get' => null,
@@ -57,7 +58,7 @@ class Less_Parser {
 
 	];
 
-	/** @var array{compress:bool,strictUnits:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,cache_dir:?string,indentation:string} */
+	/** @var array{compress:bool,strictUnits:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,cache_dir:?string,cache_incremental:bool,indentation:string} */
 	public static $options = [];
 
 	/** @var string Less input string */
@@ -3278,6 +3279,6 @@ class Less_Parser {
 	}
 
 	public function CacheEnabled() {
-		return ( self::$options['cache_method'] && self::$options['cache_dir'] );
+		return ( self::$options['cache_incremental'] && self::$options['cache_method'] && self::$options['cache_dir'] );
 	}
 }
