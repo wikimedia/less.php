@@ -31,6 +31,13 @@ class Less_Parser {
 
 		'import_dirs' => [],
 
+		/**
+		 * Set this to a directory to enable the incremental cache.
+		 *
+		 * It is recommended to use Less_Cache::Get() instead, which is much faster,
+		 * as it can skip compilation alltogether. Refer to API.md#incremental-cache
+		 * for more information.
+		 */
 		'cache_dir' => null,
 		// one of false, 'serialize', or 'callback'
 		'cache_method' => 'serialize',
@@ -50,7 +57,7 @@ class Less_Parser {
 
 	];
 
-	/** @var array{compress:bool,strictUnits:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,indentation:string} */
+	/** @var array{compress:bool,strictUnits:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,cache_dir:?string,indentation:string} */
 	public static $options = [];
 
 	/** @var string Less input string */
@@ -144,7 +151,6 @@ class Less_Parser {
 
 	/**
 	 * Set one or more compiler options
-	 *  options: import_dirs, cache_dir, cache_method
 	 */
 	public function SetOptions( $options ) {
 		foreach ( $options as $option => $value ) {
@@ -182,9 +188,10 @@ class Less_Parser {
 
 			case 'cache_dir':
 				if ( is_string( $value ) ) {
-					Less_Cache::SetCacheDir( $value );
+					$value = Less_Cache::CheckCacheDir( $value );
 				}
-				return;
+				break;
+
 			case 'functions':
 				foreach ( $value as $key => $function ) {
 					$this->registerFunction( $key, $function );
@@ -642,29 +649,22 @@ class Less_Parser {
 
 		$cache_file = $this->cacheFile( $file_path );
 		if ( $cache_file ) {
-			if ( self::$options['cache_method'] == 'callback' ) {
+			if ( self::$options['cache_method'] === 'callback' ) {
 				$callback = self::$options['cache_callback_get'];
 				if ( is_callable( $callback ) ) {
 					$cache = $callback( $this, $file_path, $cache_file );
-
 					if ( $cache ) {
 						$this->unsetInput();
 						return $cache;
 					}
 				}
 
-			} elseif ( file_exists( $cache_file ) ) {
-				switch ( self::$options['cache_method'] ) {
-
-					// Using serialize
-					case 'serialize':
-						$cache = unserialize( file_get_contents( $cache_file ) );
-						if ( $cache ) {
-							touch( $cache_file );
-							$this->unsetInput();
-							return $cache;
-						}
-						break;
+			} elseif ( self::$options['cache_method'] === 'serialize' && file_exists( $cache_file ) ) {
+				$cache = unserialize( file_get_contents( $cache_file ) );
+				if ( $cache ) {
+					touch( $cache_file );
+					$this->unsetInput();
+					return $cache;
 				}
 			}
 		}
@@ -679,19 +679,14 @@ class Less_Parser {
 
 		// save the cache
 		if ( $cache_file ) {
-			if ( self::$options['cache_method'] == 'callback' ) {
+			if ( self::$options['cache_method'] === 'callback' ) {
 				$callback = self::$options['cache_callback_set'];
 				if ( is_callable( $callback ) ) {
 					$callback( $this, $file_path, $cache_file, $rules );
 				}
-			} else {
-				switch ( self::$options['cache_method'] ) {
-					case 'serialize':
-						file_put_contents( $cache_file, serialize( $rules ) );
-						break;
-				}
-
-				Less_Cache::CleanCache();
+			} elseif ( self::$options['cache_method'] === 'serialize' ) {
+				file_put_contents( $cache_file, serialize( $rules ) );
+				Less_Cache::CleanCache( self::$options['cache_dir'] );
 			}
 		}
 
@@ -729,9 +724,6 @@ class Less_Parser {
 		$this->saveStack = [];
 	}
 
-	/**
-	 * @internal since 4.3.0 Use Less_Cache instead.
-	 */
 	private function cacheFile( $file_path ) {
 		if ( $file_path && $this->CacheEnabled() ) {
 
@@ -745,7 +737,7 @@ class Less_Parser {
 			$parts[] = $env;
 			$parts[] = Less_Version::cache_version;
 			$parts[] = self::$options['cache_method'];
-			return Less_Cache::$cache_dir . Less_Cache::$prefix . base_convert( sha1( json_encode( $parts ) ), 16, 36 ) . '.lesscache';
+			return self::$options['cache_dir'] . Less_Cache::$prefix . base_convert( sha1( json_encode( $parts ) ), 16, 36 ) . '.lesscache';
 		}
 	}
 
@@ -3286,7 +3278,6 @@ class Less_Parser {
 	}
 
 	public function CacheEnabled() {
-		return ( self::$options['cache_method'] && ( Less_Cache::$cache_dir || ( self::$options['cache_method'] == 'callback' ) ) );
+		return ( self::$options['cache_method'] && self::$options['cache_dir'] );
 	}
-
 }
