@@ -166,7 +166,6 @@ class Less_Parser {
 			case 'cache_dir':
 				if ( is_string( $value ) ) {
 					Less_Cache::SetCacheDir( $value );
-					Less_Cache::CheckCacheDir();
 				}
 				return;
 			case 'functions':
@@ -555,26 +554,11 @@ class Less_Parser {
 	}
 
 	/**
-	 * @deprecated 1.5.1.2
+	 * @deprecated 1.5.1.2 Use Less_Cache::SetCacheDir instead.
 	 */
 	public function SetCacheDir( $dir ) {
-		if ( !file_exists( $dir ) ) {
-			if ( mkdir( $dir ) ) {
-				return true;
-			}
-			throw new Less_Exception_Parser( 'Less.php cache directory couldn\'t be created: ' . $dir );
-
-		} elseif ( !is_dir( $dir ) ) {
-			throw new Less_Exception_Parser( 'Less.php cache directory doesn\'t exist: ' . $dir );
-
-		} elseif ( !is_writable( $dir ) ) {
-			throw new Less_Exception_Parser( 'Less.php cache directory isn\'t writable: ' . $dir );
-
-		} else {
-			$dir = self::WinPath( $dir );
-			Less_Cache::$cache_dir = rtrim( $dir, '/' ) . '/';
-			return true;
-		}
+		trigger_error( 'Less_Parser::SetCacheDir is deprecated, use Less_Cache::SetCacheDir instead', E_USER_DEPRECATED );
+		Less_Cache::SetCacheDir( $dir );
 	}
 
 	/**
