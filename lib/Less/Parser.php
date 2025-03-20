@@ -2452,7 +2452,7 @@ class Less_Parser {
 				if ( is_array( $name ) && array_key_exists( 0, $name ) // to satisfy phan
 					&& $name[0] instanceof Less_Tree_Keyword
 					&& $name[0]->value && strpos( $name[0]->value, '--' ) === 0 ) {
-					$value = $this->parsePermissiveValue();
+					$value = $this->parsePermissiveValue( [ ';', '}' ] );
 				} else {
 					// Try to store values as anonymous
 					// If we need the value later we'll re-parse it in ruleset.parseValue

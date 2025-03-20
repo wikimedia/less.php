@@ -1,0 +1,8 @@
+.test {
+  --test: 38px;
+}
+@media only screen and (max-width: 1024px) {
+  .test {
+    --test: 38px;
+  }
+}
