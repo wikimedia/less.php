@@ -2538,6 +2538,11 @@ class Less_Parser {
 			if ( $e ) {
 				$value[] = $e;
 			}
+			// NOTE: Comma handling backported from Less.js 4.2.1 (T386077)
+			if ( $this->peekChar( ',' ) ) {
+				$value[] = new Less_Tree_Anonymous( ',' );
+				$this->matchChar( ',' );
+			}
 		} while ( $e );
 		$done = $testCurrentChar( $this->input[$this->pos] );
 		if ( $value ) {
