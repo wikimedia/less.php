@@ -707,7 +707,8 @@ class Less_Parser {
 	 */
 	private function unsetInput() {
 		// Free up some memory
-		$this->input = $this->pos = $this->input_len = $this->furthest = null;
+		$this->input = '';
+		$this->pos = $this->input_len = $this->furthest = 0;
 		$this->saveStack = [];
 	}
 
