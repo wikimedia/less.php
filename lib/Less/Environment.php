@@ -25,6 +25,7 @@ class Less_Environment {
 	public $inCalc = false;
 	public $mathOn = true;
 
+	/** @var true[] */
 	private $calcStack = [];
 
 	/** @var Less_Tree_Media[] */

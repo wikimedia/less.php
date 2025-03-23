@@ -20,7 +20,9 @@ class lessc {
 	protected $allParsedFiles = [];
 	protected $libFunctions = [];
 	protected $registeredVars = [];
+	/** @var string */
 	private $formatterName;
+	/** @var array<string,mixed> */
 	private $options = [];
 
 	public function __construct( $lessc = null, $sourceName = null ) {

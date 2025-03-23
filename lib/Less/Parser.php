@@ -46,13 +46,20 @@ class Less_Parser {
 	/** @var array{compress:bool,strictUnits:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,indentation:string} */
 	public static $options = [];
 
-	private $input;					// Less input string
-	private $input_len;				// input string length
-	private $pos;					// current index in `input`
-	private $saveStack = [];	// holds state for backtracking
+	/** @var string Less input string */
+	private $input;
+	/** @var int input string length */
+	private $input_len;
+	/** @var int current index in `input` */
+	private $pos;
+	/** @var int[] holds state for backtracking */
+	private $saveStack = [];
+	/** @var int */
 	private $furthest;
-	private $mb_internal_encoding = ''; // for remember exists value of mbstring.internal_encoding
+	/** @var string for remember exists value of mbstring.internal_encoding */
+	private $mb_internal_encoding = '';
 
+	/** @var bool */
 	private $autoCommentAbsorb = true;
 	/**
 	 * @var array<array{index:int,text:string,isLineComment:bool}>
