@@ -21,8 +21,6 @@ class Less_Exception_Parser extends Exception {
 
 	protected $input;
 
-	protected $details = [];
-
 	/**
 	 * @param string|null $message
 	 * @param Exception|null $previous Previous exception
