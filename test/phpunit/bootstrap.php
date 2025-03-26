@@ -1,7 +1,9 @@
 <?php
 
 class LessTestCase extends PHPUnit\Framework\TestCase {
+	/** @var string */
 	protected static $fixturesDir;
+	/** @var string */
 	protected static $cacheDir;
 
 	public static function setUpBeforeClass(): void {

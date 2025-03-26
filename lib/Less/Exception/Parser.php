@@ -19,6 +19,7 @@ class Less_Exception_Parser extends Exception {
 	 */
 	public $index;
 
+	/** @var string|null */
 	protected $input;
 
 	/**

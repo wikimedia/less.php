@@ -4,6 +4,7 @@
  */
 class Less_Visitor {
 
+	/** @var array */
 	protected $_visitFnCache = [];
 
 	public function __construct() {

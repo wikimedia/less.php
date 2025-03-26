@@ -71,6 +71,7 @@ class Less_Parser {
 	 */
 	private $env;
 
+	/** @var Less_Tree[] */
 	protected $rules = [];
 
 	/**

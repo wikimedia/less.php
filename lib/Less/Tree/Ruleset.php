@@ -4,6 +4,7 @@
  */
 class Less_Tree_Ruleset extends Less_Tree {
 
+	/** @var array[][] */
 	protected $lookups;
 	public $_variables;
 	public $_properties;

@@ -17,8 +17,11 @@ class lessc {
 	public static $VERSION = Less_Version::less_version;
 
 	public $importDir = '';
+	/** @var array<string,int> */
 	protected $allParsedFiles = [];
+	/** @var array<string,callable> */
 	protected $libFunctions = [];
+	/** @var array */
 	protected $registeredVars = [];
 	/** @var string */
 	private $formatterName;
