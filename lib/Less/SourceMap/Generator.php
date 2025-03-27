@@ -72,9 +72,10 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	/**
 	 * File to content map
 	 *
-	 * @var array
+	 * @var array<string,string>
 	 */
 	protected $sources = [];
+	/** @var array<string,int> */
 	protected $source_keys = [];
 
 	/**
@@ -345,7 +346,7 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 * @return int|false
 	 */
 	protected function findFileIndex( $filename ) {
-		return $this->source_keys[$filename];
+		return $this->source_keys[$filename] ?? false;
 	}
 
 	/**
