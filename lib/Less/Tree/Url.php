@@ -4,7 +4,6 @@
  */
 class Less_Tree_Url extends Less_Tree implements Less_Tree_HasValueProperty {
 
-	public $attrs;
 	public $value;
 	public $currentFileInfo;
 	public $isEvald;
