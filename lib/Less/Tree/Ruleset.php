@@ -8,7 +8,6 @@ class Less_Tree_Ruleset extends Less_Tree {
 	protected $lookups;
 	public $_variables;
 	public $_properties;
-	public $_rulesets;
 
 	public $strictImports;
 
@@ -297,7 +296,6 @@ class Less_Tree_Ruleset extends Less_Tree {
 	}
 
 	public function resetCache() {
-		$this->_rulesets = null;
 		$this->_variables = null;
 		$this->lookups = [];
 	}
