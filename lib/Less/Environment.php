@@ -55,8 +55,6 @@ class Less_Environment {
 
 	public $math = self::MATH_PARENS_DIVISION;
 
-	public $importCallback = null;
-
 	public $parensStack = [];
 
 	public const MATH_ALWAYS = 0;
