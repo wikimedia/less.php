@@ -4,10 +4,15 @@
  */
 class Less_Tree_Media extends Less_Tree {
 
+	/** @var Less_Tree_Value */
 	public $features;
+	/** @var Less_Tree_Ruleset[] */
 	public $rules;
+	/** @var int|null */
 	public $index;
+	/** @var array|null */
 	public $currentFileInfo;
+	/** @var bool|null */
 	public $isReferenced;
 
 	public function __construct( $value = [], $features = [], $index = null, $currentFileInfo = null ) {

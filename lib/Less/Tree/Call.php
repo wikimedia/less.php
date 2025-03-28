@@ -4,10 +4,15 @@
  * @see less-3.13.1.js#Call.prototype
  */
 class Less_Tree_Call extends Less_Tree {
+	/** @var string */
 	public $name;
+	/** @var Less_Tree[] */
 	public $args;
+	/** @var bool */
 	public $calc;
+	/** @var int */
 	public $index;
+	/** @var array|null */
 	public $currentFileInfo;
 
 	public function __construct( $name, $args, $index, $currentFileInfo = null ) {

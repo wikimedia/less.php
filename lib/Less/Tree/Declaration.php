@@ -6,15 +6,21 @@
  */
 class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValueProperty {
 
+	/** @var string|array<Less_Tree_Keyword|Less_Tree_Variable> */
 	public $name;
 	/** @var Less_Tree[]|Less_Tree_Anonymous */
 	public $value;
 	/** @var string */
 	public $important;
+	/** @var null|false|string */
 	public $merge;
+	/** @var int|null */
 	public $index;
+	/** @var bool */
 	public $inline;
+	/** @var bool */
 	public $variable;
+	/** @var array|null */
 	public $currentFileInfo;
 
 	/**

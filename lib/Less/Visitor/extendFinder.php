@@ -4,8 +4,11 @@
  */
 class Less_Visitor_extendFinder extends Less_Visitor {
 
+	/** @var Less_Tree_Selector[] */
 	public $contexts = [];
+	/** @var Less_Tree_Extend[][] */
 	public $allExtendsStack;
+	/** @var bool */
 	public $foundExtends;
 
 	public function __construct() {

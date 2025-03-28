@@ -4,11 +4,16 @@
  */
 class Less_Tree_Mixin_Call extends Less_Tree {
 
+	/** @var Less_Tree_Selector */
 	public $selector;
+	/** @var array[] */
 	public $arguments;
+	/** @var int */
 	public $index;
+	/** @var array */
 	public $currentFileInfo;
 
+	/** @var bool */
 	public $important;
 
 	public function __construct( $elements, $args, $index, $currentFileInfo, $important = false ) {

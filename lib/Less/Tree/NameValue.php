@@ -12,10 +12,15 @@
  */
 class Less_Tree_NameValue extends Less_Tree implements Less_Tree_HasValueProperty {
 
+	/** @var string */
 	public $name;
+	/** @var string */
 	public $value;
+	/** @var int|null */
 	public $index;
+	/** @var array|null */
 	public $currentFileInfo;
+	/** @var string */
 	public $important = '';
 
 	public function __construct( $name, $value = null, $index = null, $currentFileInfo = null ) {

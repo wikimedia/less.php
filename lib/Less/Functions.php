@@ -6,7 +6,9 @@
  */
 class Less_Functions {
 
+	/** @var Less_Environment */
 	public $env;
+	/** @var array|null */
 	public $currentFileInfo;
 
 	public function __construct( $env, ?array $currentFileInfo = null ) {

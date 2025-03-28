@@ -4,8 +4,11 @@
  * @see less-2.5.3.js#Attribute.prototype
  */
 class Less_Tree_Attribute extends Less_Tree implements Less_Tree_HasValueProperty {
+	/** @var string */
 	public $key;
+	/** @var null|string */
 	public $op;
+	/** @var null|string|Less_Tree */
 	public $value;
 
 	/**

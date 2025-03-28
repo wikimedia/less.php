@@ -3,14 +3,20 @@
  * @private
  */
 class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
+	/** @var bool */
 	public $escaped;
 	/** @var string */
 	public $value;
+	/** @var string */
 	public $quote;
+	/** @var int|false */
 	public $index;
+	/** @var array|null */
 	public $currentFileInfo;
 
+	/** @var string */
 	public $variableRegex = '/@\{([\w-]+)\}/';
+	/** @var string */
 	public $propRegex = '/\$\{([\w-]+)\}/';
 
 	/**

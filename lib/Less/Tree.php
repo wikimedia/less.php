@@ -5,8 +5,11 @@
  */
 class Less_Tree {
 
+	/** @var bool */
 	public $parensInOp = false;
+	/** @var true|null */
 	public $extendOnEveryPath;
+	/** @var Less_Tree_Extend[] */
 	public $allExtends;
 
 	/**
@@ -180,6 +183,7 @@ class Less_Tree {
 	public static function ReferencedArray( $rules ) {
 		foreach ( $rules as $rule ) {
 			if ( method_exists( $rule, 'markReferenced' ) ) {
+				// @phan-suppress-next-line PhanUndeclaredMethod False positive
 				$rule->markReferenced();
 			}
 		}

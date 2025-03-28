@@ -16,11 +16,17 @@
  */
 class Less_Tree_Import extends Less_Tree {
 
+	/** @var array<string,bool> */
 	public $options;
+	/** @var int */
 	public $index;
+	/** @var Less_Tree_Quoted|Less_Tree_Url */
 	public $path;
+	/** @var Less_Tree_Value */
 	public $features;
+	/** @var array|null */
 	public $currentFileInfo;
+	/** @var bool|null */
 	public $css;
 	/** @var bool|null This is populated by Less_ImportVisitor */
 	public $doSkip = false;

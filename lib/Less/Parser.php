@@ -87,8 +87,10 @@ class Less_Parser {
 	 */
 	private $cachedEvaldRules;
 
+	/** @var bool */
 	public static $has_extends = false;
 
+	/** @var int */
 	public static $next_id = 0;
 
 	/**
@@ -339,10 +341,10 @@ class Less_Parser {
 			case Less_Tree_Anonymous::class:
 				$return = [];
 				if ( is_array( $var->value ) ) {
+					// in compilation phase, Less_Tree_Anonymous::$val can be a Less_Tree[]
+					// @phan-suppress-next-line PhanTypeMismatchForeach
 					foreach ( $var->value as $value ) {
 						/** @var Less_Tree $value */
-						// in compilation phase, Less_Tree_Anonymous::$val can be a Less_Tree[]
-						// @phan-suppress-next-line PhanTypeExpectedObjectPropAccess,PhanTypeMismatchArgument
 						$return[ $value->name ] = $this->getVariableValue( $value );
 					}
 				}
@@ -2071,6 +2073,7 @@ class Less_Parser {
 
 			if ( $this->matchStr( 'when' ) ) { // Guard
 				$cond = $this->expect( 'parseConditions', 'Expected conditions' );
+				'@phan-var Less_Tree_Condition|null $cond';
 			}
 
 			$ruleset = $this->parseBlock();
@@ -2257,6 +2260,7 @@ class Less_Parser {
 		while ( ( $isLess && ( $extend = $this->parseExtend() ) ) || ( $isLess && ( $when = $this->matchStr( 'when' ) ) ) || ( $e = $this->parseElement() ) ) {
 			if ( $when ) {
 				$condition = $this->expect( 'parseConditions', 'expected condition' );
+				'@phan-var Less_Tree_Condition|null $condition';
 			} elseif ( $condition ) {
 				// error("CSS guard can only be used at the end of selector");
 			} elseif ( $extend ) {

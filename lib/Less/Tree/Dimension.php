@@ -7,6 +7,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 
 	/** @var float */
 	public $value;
+	/** @var Less_Tree_Unit */
 	public $unit;
 
 	public function __construct( $value, $unit = null ) {

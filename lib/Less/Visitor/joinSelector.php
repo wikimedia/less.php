@@ -4,6 +4,7 @@
  */
 class Less_Visitor_joinSelector extends Less_Visitor {
 
+	/** @var Less_Tree_Selector[][][] */
 	public $contexts = [ [] ];
 
 	/**

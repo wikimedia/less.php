@@ -4,6 +4,7 @@
  */
 class Less_Visitor_processExtends extends Less_Visitor {
 
+	/** @var Less_Tree_Extend[][] */
 	public $allExtendsStack;
 
 	/**

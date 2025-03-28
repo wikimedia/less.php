@@ -4,8 +4,11 @@
  */
 class Less_Tree_Url extends Less_Tree implements Less_Tree_HasValueProperty {
 
+	/** @var Less_Tree_Variable|Less_Tree_Quoted|Less_Tree_Anonymous */
 	public $value;
+	/** @var array|null */
 	public $currentFileInfo;
+	/** @var bool|null */
 	public $isEvald;
 
 	/**

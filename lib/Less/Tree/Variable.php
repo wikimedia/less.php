@@ -4,9 +4,13 @@
  */
 class Less_Tree_Variable extends Less_Tree {
 
+	/** @var string */
 	public $name;
+	/** @var int|null */
 	public $index;
+	/** @var array|null */
 	public $currentFileInfo;
+	/** @var bool */
 	public $evaluating = false;
 
 	/**
