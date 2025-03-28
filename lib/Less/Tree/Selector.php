@@ -7,7 +7,6 @@ class Less_Tree_Selector extends Less_Tree {
 	public $elements;
 	public $condition;
 	public $extendList = [];
-	public $_css;
 	public $index;
 	public $evaldCondition = false;
 	public $currentFileInfo = [];
