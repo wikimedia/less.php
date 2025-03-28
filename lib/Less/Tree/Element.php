@@ -63,7 +63,9 @@ class Less_Tree_Element extends Less_Tree implements Less_Tree_HasValueProperty 
 		}
 
 		$spaceOrEmpty = ' ';
-		if ( Less_Parser::$options['compress'] || ( isset( Less_Environment::$_noSpaceCombinators[$this->combinator] ) && Less_Environment::$_noSpaceCombinators[$this->combinator] ) ) {
+		if ( Less_Parser::$options['compress'] ||
+			( isset( Less_Environment::$_noSpaceCombinators[$this->combinator] ) && Less_Environment::$_noSpaceCombinators[$this->combinator] )
+		) {
 			$spaceOrEmpty = '';
 		}
 

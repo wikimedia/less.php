@@ -20,25 +20,25 @@ class Less_SourceMap_Generator extends Less_Configurable {
 			// an optional source root, useful for relocating source files
 			// on a server or removing repeated values in the 'sources' entry.
 			// This value is prepended to the individual entries in the 'source' field.
-			'sourceRoot'			=> '',
+			'sourceRoot' => '',
 
 			// an optional name of the generated code that this source map is associated with.
-			'sourceMapFilename'		=> null,
+			'sourceMapFilename' => null,
 
 			// url of the map
-			'sourceMapURL'			=> null,
+			'sourceMapURL' => null,
 
 			// absolute path to a file to write the map to
-			'sourceMapWriteTo'		=> null,
+			'sourceMapWriteTo' => null,
 
 			// output source contents?
-			'outputSourceFiles'		=> false,
+			'outputSourceFiles' => false,
 
 			// base path for filename normalization
-			'sourceMapRootpath'		=> '',
+			'sourceMapRootpath' => '',
 
 			// base path for filename normalization
-			'sourceMapBasepath'   => ''
+			'sourceMapBasepath' => ''
 	];
 
 	/**
@@ -118,10 +118,10 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		// catch the output
 		$this->root->genCSS( $output );
 
-		$sourceMapUrl				= $this->getOption( 'sourceMapURL' );
-		$sourceMapFilename			= $this->getOption( 'sourceMapFilename' );
-		$sourceMapContent			= $this->generateJson();
-		$sourceMapWriteTo			= $this->getOption( 'sourceMapWriteTo' );
+		$sourceMapUrl = $this->getOption( 'sourceMapURL' );
+		$sourceMapFilename = $this->getOption( 'sourceMapFilename' );
+		$sourceMapContent = $this->generateJson();
+		$sourceMapWriteTo = $this->getOption( 'sourceMapWriteTo' );
 
 		if ( !$sourceMapUrl && $sourceMapFilename ) {
 			$sourceMapUrl = $this->normalizeFilename( $sourceMapFilename );
@@ -232,7 +232,8 @@ class Less_SourceMap_Generator extends Less_Configurable {
 			$sourceMap['file'] = $file;
 		}
 
-		// An optional source root, useful for relocating source files on a server or removing repeated values in the 'sources' entry.	This value is prepended to the individual entries in the 'source' field.
+		// An optional source root, useful for relocating source files on a server or removing repeated values in the 'sources' entry.
+		// This value is prepended to the individual entries in the 'source' field.
 		$root = $this->getOption( 'sourceRoot' );
 		if ( $root ) {
 			$sourceMap['sourceRoot'] = $root;

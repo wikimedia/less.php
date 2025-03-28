@@ -8,9 +8,9 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 	public $params;
 	public $arity = 0;
 	public $rules;
-	public $lookups		= [];
-	public $required	= 0;
-	public $frames		= [];
+	public $lookups = [];
+	public $required = 0;
+	public $frames = [];
 	public $condition;
 	public $variadic;
 	public $optionalParameters = [];
@@ -190,7 +190,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 
 		// set array to prevent error on array_merge
 		if ( !is_array( $this->frames ) ) {
-			 $this->frames = [];
+			$this->frames = [];
 		}
 
 		$frame = $this->compileParams( $env, array_merge( $this->frames, $env->frames ), $args );

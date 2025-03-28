@@ -34,7 +34,9 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 	 */
 	public function genCSS( $output ) {
 		if ( Less_Parser::$options['strictUnits'] && !$this->unit->isSingular() ) {
-			throw new Less_Exception_Compiler( "Multiple units in dimension. Correct the units or use the unit function. Bad unit: " . $this->unit->toString() );
+			throw new Less_Exception_Compiler(
+				"Multiple units in dimension. Correct the units or use the unit function. Bad unit: " . $this->unit->toString()
+			);
 		}
 
 		$value = $this->fround( $this->value );
@@ -91,7 +93,10 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 				$other = $other->convertTo( $this->unit->usedUnits() );
 
 				if ( Less_Parser::$options['strictUnits'] && $other->unit->toString() !== $unit->toCSS() ) {
-					throw new Less_Exception_Compiler( "Incompatible units. Change the units or use the unit function. Bad units: '" . $unit->toString() . "' and " . $other->unit->toString() . "'." );
+					throw new Less_Exception_Compiler(
+						"Incompatible units. Change the units or use the unit function. Bad units: '" .
+							$unit->toString() . "' and " . $other->unit->toString() . "'."
+					);
 				}
 
 				$value = $this->_operate( $op, $this->value, $other->value );

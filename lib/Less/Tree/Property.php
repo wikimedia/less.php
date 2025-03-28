@@ -23,8 +23,11 @@ class Less_Tree_Property extends Less_Tree {
 		$name = $this->name;
 
 		if ( $this->evaluating ) {
-			throw new Less_Exception_Compiler( "Recursive property reference for " . $name, null,
-				$this->index, $this->currentFileInfo );
+			throw new Less_Exception_Compiler(
+				"Recursive property reference for " . $name,
+				null,
+				$this->index, $this->currentFileInfo
+			);
 		}
 
 		$property = null;

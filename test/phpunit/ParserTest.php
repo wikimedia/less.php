@@ -239,8 +239,8 @@ class ParserTest extends LessTestCase {
 3| div {
 4|  content: (@foo) * @bar;
 5| }",
-								$e->getMessage()
-							);
+				$e->getMessage()
+			);
 		}
 
 		$lessFile = __DIR__ . '/data/exception/f3.less';

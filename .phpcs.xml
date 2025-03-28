@@ -19,7 +19,7 @@
 	</rule>
 	<rule ref="Generic.Files.LineLength">
 		<properties>
-			<property name="lineLimit" value="210" />
+			<property name="lineLimit" value="160" />
 		</properties>
 	</rule>
 	<rule ref="Generic.Classes.DuplicateClassName.Found">

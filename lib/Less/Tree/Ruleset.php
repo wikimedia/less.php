@@ -387,8 +387,12 @@ class Less_Tree_Ruleset extends Less_Tree {
 	 */
 	private function transformDeclaration( $decl ) {
 		if ( $decl->value instanceof Less_Tree_Anonymous && !$decl->parsed ) {
-			[ $err, $result ] = self::$parse->parseNode( (string)$decl->value->value, [ 'value', 'important' ],
-				$decl->value->index, $decl->value->currentFileInfo ?? [] );
+			[ $err, $result ] = self::$parse->parseNode(
+				(string)$decl->value->value,
+				[ 'value', 'important' ],
+				$decl->value->index,
+				$decl->value->currentFileInfo ?? []
+			);
 			if ( $err ) {
 				$decl->parsed = true;
 			}

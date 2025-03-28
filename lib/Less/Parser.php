@@ -10,36 +10,43 @@ class Less_Parser {
 	 * @var array<string,mixed>
 	 */
 	public static $default_options = [
-		'compress'				=> false, // option - whether to compress
-		'strictUnits'			=> false, // whether units need to evaluate correctly
-		/* How to process math
-		 *   always           - eagerly try to solve all operations
-		 *   parens-division  - require parens for division "/"
-		 *   parens | strict  - require parens for all operations
-		 */
+		// whether to compress
+		'compress' => false,
+		// whether units need to evaluate correctly
+		'strictUnits' => false,
+		// How to process math
+		//
+		//   always           - eagerly try to solve all operations
+		//   parens-division  - require parens for division "/"
+		//   parens | strict  - require parens for all operations
+		//
 		// NOTE: We use the default of Less.js 4.0 (parens-division)
 		//       instead of Less.js 3.13 (always).
-		'math'					=> 'parens-division',
-		'relativeUrls'			=> true, // option - whether to adjust URL's to be relative
-		'urlArgs'				=> '', // whether to add args into url tokens
-		'numPrecision'			=> 8,
+		'math' => 'parens-division',
+		// whether to adjust URL's to be relative
+		'relativeUrls' => true,
+		// whether to add args into url tokens
+		'urlArgs' => '',
+		'numPrecision' => 8,
 
-		'import_dirs'			=> [],
+		'import_dirs' => [],
 
-		'cache_dir'				=> null,
-		'cache_method'			=> 'serialize', // false, 'serialize', 'callback';
-		'cache_callback_get'	=> null,
-		'cache_callback_set'	=> null,
+		'cache_dir' => null,
+		// one of false, 'serialize', or 'callback'
+		'cache_method' => 'serialize',
+		'cache_callback_get' => null,
+		'cache_callback_set' => null,
 
-		'sourceMap'				=> false, // whether to output a source map
-		'sourceMapBasepath'		=> null,
-		'sourceMapWriteTo'		=> null,
-		'sourceMapURL'			=> null,
+		// whether to output a source map
+		'sourceMap' => false,
+		'sourceMapBasepath' => null,
+		'sourceMapWriteTo' => null,
+		'sourceMapURL' => null,
 
-		'indentation' 			=> '  ',
+		'indentation' => '  ',
 
-		'plugins'				=> [],
-		'functions'             => [],
+		'plugins' => [],
+		'functions' => [],
 
 	];
 
@@ -1014,8 +1021,7 @@ class Less_Parser {
 					if ( $nextStarSlash !== false ) {
 						$comment = [
 							'index' => $this->pos,
-							'text' => substr( $this->input, $this->pos, $nextStarSlash + 2 -
-								$this->pos ),
+							'text' => substr( $this->input, $this->pos, $nextStarSlash + 2 - $this->pos ),
 							'isLineComment' => false,
 						];
 						$this->pos += strlen( $comment['text'] ) - 1;
@@ -1282,8 +1288,13 @@ class Less_Parser {
 			return;
 		}
 		$this->forget();
-		return new Less_Tree_Quoted( $str[0], substr( $str, 1, -1 ), $isEscaped,
-			$index, $this->env->currentFileInfo );
+		return new Less_Tree_Quoted(
+			$str[0],
+			substr( $str, 1, -1 ),
+			$isEscaped,
+			$index,
+			$this->env->currentFileInfo
+		);
 	}
 
 	/**
@@ -1778,8 +1789,13 @@ class Less_Parser {
 
 			if ( $inValue || $this->parseEnd() ) {
 				$this->forget();
-				$mixin = new Less_Tree_Mixin_Call( $elements, $args, $index,
-					$this->env->currentFileInfo, !$lookups && $important );
+				$mixin = new Less_Tree_Mixin_Call(
+					$elements,
+					$args,
+					$index,
+					$this->env->currentFileInfo,
+					!$lookups && $important
+				);
 				if ( $lookups ) {
 					return new Less_Tree_NamespaceValue( $mixin, $lookups );
 				} else {
@@ -2339,7 +2355,8 @@ class Less_Parser {
 		$selectors = [];
 
 		$this->save();
-		// TODO: missing https://github.com/less/less.js/commit/b8140d4baad18ba732e2b322d8891a9b0ff065d5#diff-cad419f131cbecb0799ee17eba9319d3ff51de09eb3876efb9e4c068c1f6025f
+		// TODO: missing
+		// https://github.com/less/less.js/commit/b8140d4baad18ba732e2b322d8891a9b0ff065d5#diff-cad419f131cbecb0799ee17eba9319d3ff51de09eb3876efb9e4c068c1f6025f
 		// the commit above updated the `permissive-parse.less` fixture worked on Id36e0f142d7f430603da3f0d6825aa6a0bc9b7f1
 		// and it required to add an override for permisive-parse.css.
 		// When working on parse interpolation, please make sure to remove the permissive-parse
@@ -2455,8 +2472,14 @@ class Less_Parser {
 				if ( $value ) {
 					$this->forget();
 					// anonymous values absorb the end ';' which is required for them to work
-					return new Less_Tree_Declaration( $name, $value, false, $merge, $index,
-						$this->env->currentFileInfo );
+					return new Less_Tree_Declaration(
+						$name,
+						$value,
+						false,
+						$merge,
+						$index,
+						$this->env->currentFileInfo
+					);
 				}
 				if ( !$value ) {
 					$value = $this->parseValue();
@@ -2565,16 +2588,25 @@ class Less_Parser {
 			for ( $i = 0; $i < $valueLength; $i++ ) {
 				$item = $value[$i];
 				if ( is_array( $item ) ) {
-					$result[] =	new Less_Tree_Quoted( $item[0], $item[1], true, $index,
-							$this->env->currentFileInfo );
+					$result[] =	new Less_Tree_Quoted(
+						$item[0],
+						$item[1],
+						true,
+						$index,
+						$this->env->currentFileInfo
+					);
 				} else {
 					if ( $i === $valueLength - 1 ) {
 						$item = trim( $item );
 					}
 					// Treat like quoted values, but replace vars like unquoted expressions
-					$quote =
-						new Less_Tree_Quoted( '\'', $item, true, $index,
-							$this->env->currentFileInfo );
+					$quote = new Less_Tree_Quoted(
+						'\'',
+						$item,
+						true,
+						$index,
+						$this->env->currentFileInfo
+					);
 					$quote->variableRegex = '/@([\w-]+)/';
 					$quote->propRegex = '/\$([\w-]+)/';
 					$result[] = $quote;
