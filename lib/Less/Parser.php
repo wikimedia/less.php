@@ -3242,17 +3242,6 @@ class Less_Parser {
 	}
 
 	/**
-	 * Some versions of PHP have trouble with method_exists($a,$b) if $a is not an object
-	 *
-	 * @internal For internal use only
-	 * @param mixed $a
-	 * @param string $b
-	 */
-	public static function is_method( $a, $b ) {
-		return is_object( $a ) && method_exists( $a, $b );
-	}
-
-	/**
 	 * Round numbers similarly to javascript
 	 * eg: 1.499999 to 1 instead of 2
 	 *

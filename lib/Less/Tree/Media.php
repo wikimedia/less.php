@@ -134,7 +134,7 @@ class Less_Tree_Media extends Less_Tree {
 		foreach ( $permuted as $path ) {
 
 			for ( $i = 0, $len = count( $path ); $i < $len; $i++ ) {
-				$path[$i] = Less_Parser::is_method( $path[$i], 'toCSS' ) ? $path[$i] : new Less_Tree_Anonymous( $path[$i] );
+				$path[$i] = $path[$i] instanceof Less_Tree ? $path[$i] : new Less_Tree_Anonymous( $path[$i] );
 			}
 
 			for ( $i = count( $path ) - 1; $i > 0; $i-- ) {

@@ -80,7 +80,7 @@ class Less_Visitor_extendFinder extends Less_Visitor {
 	}
 
 	public function visitRulesetOut( $rulesetNode ) {
-		if ( !is_object( $rulesetNode ) || !$rulesetNode->root ) {
+		if ( !$rulesetNode instanceof Less_Tree_Ruleset || !$rulesetNode->root ) {
 			array_pop( $this->contexts );
 		}
 	}

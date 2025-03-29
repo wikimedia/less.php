@@ -180,7 +180,7 @@ class Less_Tree_Mixin_Call extends Less_Tree {
 				if ( $a['name'] ) {
 					$argValue .= $a['name'] . ':';
 				}
-				if ( is_object( $a['value'] ) ) {
+				if ( $a['value'] instanceof Less_Tree ) {
 					$argValue .= $a['value']->toCSS();
 				} else {
 					$argValue .= '???';

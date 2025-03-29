@@ -41,7 +41,7 @@ class Less_Tree_Attribute extends Less_Tree implements Less_Tree_HasValuePropert
 
 		if ( $this->op ) {
 			$value .= $this->op;
-			$value .= ( is_object( $this->value ) ? $this->value->toCSS() : $this->value );
+			$value .= ( $this->value instanceof Less_Tree ? $this->value->toCSS() : $this->value );
 		}
 
 		return '[' . $value . ']';

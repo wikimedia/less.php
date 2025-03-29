@@ -93,7 +93,7 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 			return Less_Tree::numericCompare( $this->value, $other->value );
 		} else {
 			return (
-				Less_Parser::is_method( $other, 'toCSS' )
+				$other instanceof Less_Tree
 				&& $this->toCSS() === $other->toCSS()
 			) ? 0 : null;
 		}
