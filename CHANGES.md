@@ -1,5 +1,15 @@
 # Changelog
 
+## v5.3.0
+
+Added:
+* Less_Parser: Add `cache_incremental` option. Set this to false via `Less_Cache` to use the fast whole-output cache without the memory-intensive incremental cache. (Timo Tijhof)
+
+Deprecated:
+* Deprecate `Less_Cache::CheckCacheDir()` as public method. This is called automatically.
+* Deprecate `Less_Cache::CleanCache()` as public method. This is called automatically.
+* Deprecate `Less_Parser::SetCacheDir()`. Set the `cache_dir` option, or use `Less_Cache::SetCacheDir()` instead.
+
 ## v5.2.2
 
 Fixed:
