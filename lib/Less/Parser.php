@@ -1043,18 +1043,15 @@ class Less_Parser {
 	 *
 	 * @param string $tok
 	 * @param string|null $msg
-	 * @see less-2.5.3.js#Parser.expect
+	 * @return string|array|never
+	 * @see less-3.13.1.js#Parser.expect
 	 */
 	private function expect( $tok, $msg = null ) {
-		if ( $tok[0] === '/' ) {
-			$result = $this->matchReg( $tok );
-		} else {
-			$result = $this->$tok();
-		}
-		if ( $result !== null ) {
+		$result = $this->matchReg( $tok );
+		if ( $result ) {
 			return $result;
 		}
-		$this->Error( $msg ? "Expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" : $msg );
+		$this->Error( $msg ?? "expected '" . $tok . "' got '" . $this->input[$this->pos] . "'" );
 	}
 
 	/**
@@ -2065,8 +2062,7 @@ class Less_Parser {
 			$this->commentStore = [];
 
 			if ( $this->matchStr( 'when' ) ) { // Guard
-				$cond = $this->expect( 'parseConditions', 'Expected conditions' );
-				'@phan-var Less_Tree_Condition|null $cond';
+				$cond = $this->parseConditions() ?? $this->Error( 'Expected conditions' );
 			}
 
 			$ruleset = $this->parseBlock();
@@ -2120,7 +2116,7 @@ class Less_Parser {
 
 		$value = $this->matchReg( '/\\G[0-9]+/' );
 		if ( $value === null ) {
-			$value = $this->expect( 'parseEntitiesVariable', 'Could not parse alpha' );
+			$value = $this->parseEntitiesVariable() ?? $this->Error( 'Could not parse alpha' );
 		}
 
 		$this->expectChar( ')' );
@@ -2252,8 +2248,7 @@ class Less_Parser {
 		// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition
 		while ( ( $isLess && ( $extend = $this->parseExtend() ) ) || ( $isLess && ( $when = $this->matchStr( 'when' ) ) ) || ( $e = $this->parseElement() ) ) {
 			if ( $when ) {
-				$condition = $this->expect( 'parseConditions', 'expected condition' );
-				'@phan-var Less_Tree_Condition|null $condition';
+				$condition = $this->parseConditions() ?? $this->Error( 'Expected condition' );
 			} elseif ( $condition ) {
 				// error("CSS guard can only be used at the end of selector");
 			} elseif ( $extend ) {
