@@ -941,33 +941,41 @@ class Less_Functions {
 	}
 
 	/**
-	 * @see less-3.13.1.js#functions _SELF
+	 * @see less-3.13.1.js#getItemsFromNode
+	 */
+	private function getItemsFromNode( Less_Tree $node ) {
+		// handle non-array values as an array of length 1
+		// return 'undefined' if index is invalid
+		//
+		// NOTE: Less.js uses duck-typing `isArray(node.value)`, which would cause warnings in PHP,
+		// and potentially bugs for Less_Tree classes with a $value that is only sometimes an array.
+		// Instead, check for Less_Tree classes that always implement an array $value.
+		return ( $node instanceof Less_Tree_Expression || $node instanceof Less_Tree_Value )
+			? $node->value
+			: [ $node ];
+	}
+
+	/**
+	 * @see less-3.13.1.js#_SELF
 	 */
 	public function _self( $args ) {
 		return $args;
 	}
 
+	/**
+	 * @see less-3.13.1.js#extract
+	 */
 	public function extract( $values, $index ) {
-		$index = (int)$index->value - 1; // (1-based index)
-		// handle non-array values as an array of length 1
-		// return 'undefined' if index is invalid
-		if ( !( $values instanceof Less_Tree_Color ) && is_array( $values->value ) ) {
-			if ( isset( $values->value[$index] ) ) {
-				return $values->value[$index];
-			}
-			return null;
-
-		} elseif ( (int)$index === 0 ) {
-			return $values;
-		}
-
-		return null;
+		// (1-based index)
+		$index = (int)$index->value - 1;
+		return $this->getItemsFromNode( $values )[ $index ] ?? null;
 	}
 
+	/**
+	 * @see less-3.13.1.js#length
+	 */
 	public function length( $values ) {
-		$n = ( $values instanceof Less_Tree_Expression || $values instanceof Less_Tree_Value ) ?
-			count( $values->value ) : 1;
-		return new Less_Tree_Dimension( $n );
+		return new Less_Tree_Dimension( count( $this->getItemsFromNode( $values ) ) );
 	}
 
 	/**

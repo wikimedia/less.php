@@ -1,0 +1,12 @@
+.foo-one-div {
+  foo: 1;
+}
+.foo-one-detached {
+  foo: 1;
+}
+.foo-two {
+  foo: 2;
+}
+.foo-includes-false {
+  color: purple;
+}

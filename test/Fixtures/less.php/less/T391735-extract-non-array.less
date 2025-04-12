@@ -1,0 +1,24 @@
+@x: 20px;
+
+.foo-one-div {
+    .foo(calc(@x / 1px));
+}
+.foo-one-detached {
+    .foo( { color: blue } );
+}
+.foo-two {
+    .foo(calc(@x / 1px) 2px);
+}
+.foo-includes-false {
+    color: purple;
+    .foo(@x 2px false 4px);
+}
+
+.foo(@value: false) when not (@value = false)
+  and not (extract(@value, 1) = false)
+  and not (extract(@value, 2) = false)
+  and not (extract(@value, 3) = false)
+  and not (extract(@value, 4) = false)
+  and not (extract(@value, 5) = false) {
+    foo: length(@value);
+}
