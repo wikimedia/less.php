@@ -6,11 +6,11 @@
 class Less_Version {
 
 	/* Current release version of less.php */
-	public const version = '5.3.0';
+	public const version = '5.3.1';
 
 	/* Upstream less.js version that this release should be compatible with */
 	public const less_version = '3.13.1';
 
 	/* Parser cache version */
-	public const cache_version = '3131-8';
+	public const cache_version = '3131-9';
 }

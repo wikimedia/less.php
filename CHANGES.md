@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.3.1
+
+Fixed:
+* Fix `PHP Warning: Undefined property $value` in `extract()`. (Timo Tijhof) [T391735](https://phabricator.wikimedia.org/T391735)
+
 ## v5.3.0
 
 Added:
