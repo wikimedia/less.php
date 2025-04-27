@@ -19,6 +19,9 @@ class Less_Exception_Parser extends Exception {
 	 */
 	public $index;
 
+	/** @var string */
+	public $finalMessage = '';
+
 	/** @var string|null */
 	protected $input;
 
@@ -49,14 +52,14 @@ class Less_Exception_Parser extends Exception {
 	 */
 	public function genMessage() {
 		if ( $this->currentFile && $this->currentFile['filename'] ) {
-			$this->message .= ' in ' . basename( $this->currentFile['filename'] );
+			$this->finalMessage .= ' in ' . basename( $this->currentFile['filename'] );
 		}
 
 		if ( $this->index !== null ) {
 			$this->getInput();
 			if ( $this->input ) {
 				$line = self::getLineNumber();
-				$this->message .= ' on line ' . $line . ', column ' . self::getColumn();
+				$this->finalMessage .= ' on line ' . $line . ', column ' . self::getColumn();
 
 				$lines = explode( "\n", $this->input );
 
@@ -65,7 +68,7 @@ class Less_Exception_Parser extends Exception {
 				$last_line = min( $count, $start_line + 6 );
 				$num_len = strlen( $last_line );
 				for ( $i = $start_line; $i < $last_line; $i++ ) {
-					$this->message .= "\n" . str_pad( (string)( $i + 1 ), $num_len, '0', STR_PAD_LEFT ) . '| ' . $lines[$i];
+					$this->finalMessage .= "\n" . str_pad( (string)( $i + 1 ), $num_len, '0', STR_PAD_LEFT ) . '| ' . $lines[$i];
 				}
 			}
 		}
@@ -99,4 +102,7 @@ class Less_Exception_Parser extends Exception {
 		return $this->index - $pos;
 	}
 
+	public function getFinalMessage() {
+		$this->message .= $this->finalMessage;
+	}
 }

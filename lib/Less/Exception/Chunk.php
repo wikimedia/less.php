@@ -32,6 +32,7 @@ class Less_Exception_Chunk extends Less_Exception_Parser {
 
 		$this->Chunks();
 		$this->genMessage();
+		$this->getFinalMessage();
 	}
 
 	/**

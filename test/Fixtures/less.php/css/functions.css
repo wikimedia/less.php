@@ -14,4 +14,18 @@
   escape: ?&%3D&%25!%23$;
   javascript: /* Sorry, can not do JavaScript evaluation in PHP... :( */;
   darken: #080808;
+  /* results in void */
+  a: 1;
+  b: 2;
+  c: 3;
+  e: ;
+  f: 6;
+  g: 3;
+  h: 5;
+  i: 6;
+  j: 8;
+  k: 1;
+  l: black;
+  color: green;
+  color: purple;
 }

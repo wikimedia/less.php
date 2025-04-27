@@ -93,7 +93,7 @@ CSS;
 		} catch ( Exception $e ) {
 			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
 			$this->assertStringContainsString(
-				'error evaluating function `mix` The second argument must be a color, Less_Tree_Dimension given',
+				'error evaluating function `mix`: The second argument must be a color, Less_Tree_Dimension given',
 				$e->getMessage()
 			);
 		}

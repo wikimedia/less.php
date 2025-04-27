@@ -1388,4 +1388,13 @@ class Less_Functions {
 
 	// ~ End of Color Blending
 
+	public function if( $condition, $trueValue, $falseValue = null ) {
+		return $condition->compile( $this->env ) ? $trueValue->compile( $this->env )
+		  : ( $falseValue ? $falseValue->compile( $this->env ) : new Less_Tree_Anonymous( '' ) );
+	}
+
+	public function boolean( $condition ) {
+		return $condition ? new Less_Tree_Keyword( 'true' ) : new Less_Tree_Keyword( 'false' );
+	}
+
 }
