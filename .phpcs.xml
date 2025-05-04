@@ -21,10 +21,6 @@
 			<property name="lineLimit" value="160" />
 		</properties>
 	</rule>
-	<rule ref="Generic.Classes.DuplicateClassName.Found">
-		<exclude-pattern>\.phan/stubs/</exclude-pattern>
-		<exclude-pattern>Less/Tree/Selector\.php</exclude-pattern>
-	</rule>
 	<rule ref="MediaWiki.Usage.ForbiddenFunctions">
 		<exclude-pattern>test/</exclude-pattern>
 	</rule>

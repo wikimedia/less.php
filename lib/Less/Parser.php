@@ -292,6 +292,7 @@ class Less_Parser {
 		$rules = $this->cachedEvaldRules ?? $this->rules;
 
 		foreach ( $rules as $rule ) {
+			// @phan-suppress-next-line PhanUndeclaredProperty
 			if ( isset( $rule->variable ) && ( $rule->variable == true ) && ( str_replace( "@", "", $rule->name ) == $varName ) ) {
 				return $this->getVariableValue( $rule );
 			}
@@ -321,7 +322,9 @@ class Less_Parser {
 		$rules = $this->cachedEvaldRules ?? $this->rules;
 
 		foreach ( $rules as $rule ) {
+			// @phan-suppress-next-line PhanUndeclaredProperty
 			if ( isset( $rule->variable ) && ( $rule->variable == true ) ) {
+				// @phan-suppress-next-line PhanUndeclaredProperty
 				if ( $rule->name == $var_name ) {
 					return $this->getVariableValue( $rule );
 				}
@@ -2260,7 +2263,9 @@ class Less_Parser {
 				if ( $this->pos < $this->input_len ) {
 					$c = $this->input[ $this->pos ];
 				}
-				$elements[] = $e;
+				if ( $e !== null ) {
+					$elements[] = $e;
+				}
 				$e = null;
 			}
 

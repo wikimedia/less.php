@@ -114,12 +114,15 @@ class Less_Tree_Selector extends Less_Tree {
 				continue;
 			}
 
+			// @phan-suppress-next-line PhanUndeclaredProperty
 			if ( isset( $v->value->value ) && is_scalar( $v->value->value ) ) {
+				// @phan-suppress-next-line PhanUndeclaredProperty
 				$css .= $v->value->value;
 				continue;
 			}
 
 			if ( ( $v->value instanceof Less_Tree_Selector || $v->value instanceof Less_Tree_Variable )
+				// @phan-suppress-next-line PhanUndeclaredProperty
 				|| !is_string( $v->value->value ) ) {
 				$this->cacheable = false;
 				return;
