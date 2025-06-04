@@ -11,6 +11,14 @@ class Less_Tree {
 	public $extendOnEveryPath;
 	/** @var Less_Tree_Extend[] */
 	public $allExtends;
+	/**
+	 * This is set to true to ensure visibility
+	 * for all except Less_Tree_Anonymous where we decide
+	 * if the the node should be visible or not
+	 *
+	 * @var bool
+	 */
+	public $nodeVisible = true;
 
 	/**
 	 * @var Less_Parser
@@ -199,6 +207,13 @@ class Less_Tree {
 			$obj->$key = $val;
 		}
 		return $obj;
+	}
+
+	/**
+	 * @see less-3.13.1.js#Node.prototype.isVisible
+	 */
+	public function isVisible() {
+		return $this->nodeVisible;
 	}
 
 }

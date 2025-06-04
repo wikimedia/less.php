@@ -582,7 +582,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 
 			Less_Environment::$lastRule = $currentLastRule;
 
-			if ( !Less_Environment::$lastRule ) {
+			if ( !Less_Environment::$lastRule && $rule->isVisible() ) {
 				$output->add( $tabRuleStr );
 			} else {
 				Less_Environment::$lastRule = false;
