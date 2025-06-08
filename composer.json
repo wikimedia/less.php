@@ -41,7 +41,7 @@
 		"bin/lessc"
 	],
 	"require": {
-		"php": ">=7.4.3"
+		"php": ">=8.1"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "47.0.0",
