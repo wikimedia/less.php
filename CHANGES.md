@@ -1,5 +1,13 @@
 # Changelog
 
+## v5.4.0
+
+Added:
+* Add support for Logical Functions `if()` and `boolean()`. (Hannah Okwelum) [T393383](https://phabricator.wikimedia.org/T393383)
+
+Changed:
+* Remove support for PHP 7.4 and 8.0. Raise requirement to PHP 8.1+. (James D. Forrester)
+
 ## v5.3.1
 
 Fixed:
