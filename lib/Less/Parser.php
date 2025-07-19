@@ -2495,7 +2495,7 @@ class Less_Parser {
 				// Custom property values get permissive parsing
 				if ( is_array( $name ) && array_key_exists( 0, $name ) // to satisfy phan
 					&& $name[0] instanceof Less_Tree_Keyword
-					&& $name[0]->value && strpos( $name[0]->value, '--' ) === 0 ) {
+					&& $name[0]->value && str_starts_with( $name[0]->value, '--' ) ) {
 					$value = $this->parsePermissiveValue( [ ';', '}' ] );
 				} else {
 					// Try to store values as anonymous
@@ -3354,7 +3354,7 @@ class Less_Parser {
 			if ( strval( $value ) === "" ) {
 				$value = '~""';
 			}
-			$s .= ( ( $name[0] === '@' ) ? '' : '@' ) . $name . ': ' . $value . ( ( substr( $value, -1 ) === ';' ) ? '' : ';' );
+			$s .= ( str_starts_with( $name, '@' ) ? '' : '@' ) . $name . ': ' . $value . ( str_ends_with( $value, ';' ) ? '' : ';' );
 		}
 
 		return $s;
@@ -3389,7 +3389,7 @@ class Less_Parser {
 	}
 
 	public static function AbsPath( $path, $winPath = false ) {
-		if ( strpos( $path, '//' ) !== false && preg_match( '/^(https?:)?\/\//i', $path ) ) {
+		if ( str_contains( $path, '//' ) && preg_match( '/^(https?:)?\/\//i', $path ) ) {
 			return $winPath ? '' : false;
 		} else {
 			$path = realpath( $path );

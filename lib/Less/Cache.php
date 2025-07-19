@@ -147,7 +147,7 @@ class Less_Cache {
 		foreach ( $less_files as $file_path => $uri_or_less ) {
 
 			// treat as less markup if there are newline characters
-			if ( strpos( $uri_or_less, "\n" ) !== false ) {
+			if ( str_contains( $uri_or_less, "\n" ) ) {
 				$parser->Parse( $uri_or_less );
 				continue;
 			}
@@ -236,7 +236,7 @@ class Less_Cache {
 		foreach ( $files as $file ) {
 
 			// don't delete if the file wasn't created with less.php
-			if ( strpos( $file, self::$prefix ) !== 0 ) {
+			if ( !str_starts_with( $file, self::$prefix ) ) {
 				continue;
 			}
 

@@ -147,7 +147,7 @@ class Less_Tree_Call extends Less_Tree {
 
 					// Check if 'error evaluating function' is the start of the error message
 					// less.js does this by checking if line and column already set
-					if ( strpos( $e->getMessage(), 'error evaluating function' ) === 0 ) {
+					if ( str_starts_with( $e->getMessage(), 'error evaluating function' ) ) {
 						throw $e;
 					}
 

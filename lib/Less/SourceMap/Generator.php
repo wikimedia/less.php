@@ -178,12 +178,12 @@ class Less_SourceMap_Generator extends Less_Configurable {
 		$basePath = $this->getOption( 'sourceMapBasepath' );
 
 		// "Trim" the 'sourceMapBasepath' from the output filename.
-		if ( is_string( $basePath ) && strpos( $filename, $basePath ) === 0 ) {
+		if ( is_string( $basePath ) && str_starts_with( $filename, $basePath ) ) {
 			$filename = substr( $filename, strlen( $basePath ) );
 		}
 
 		// Remove extra leading path separators.
-		if ( strpos( $filename, '\\' ) === 0 || strpos( $filename, '/' ) === 0 ) {
+		if ( str_starts_with( $filename, '\\' ) || str_starts_with( $filename, '/' ) ) {
 			$filename = substr( $filename, 1 );
 		}
 

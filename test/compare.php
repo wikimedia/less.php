@@ -51,7 +51,7 @@ class LessFixtureDiff {
 		foreach ( $args as $arg ) {
 			if ( $arg === '--override' ) {
 				$useOverride = true;
-			} elseif ( strpos( $arg, '--' ) === 0 ) {
+			} elseif ( str_starts_with( $arg, '--' ) ) {
 				$this->error( "Invalid option $arg" );
 			} elseif ( $fixtureDir === null ) {
 				// First non-option argument

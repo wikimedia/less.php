@@ -43,7 +43,7 @@ class Less_Autoloader {
 	 */
 	public static function loadClass( $className ) {
 		// handle only package classes
-		if ( strpos( $className, 'Less_' ) !== 0 ) {
+		if ( !str_starts_with( $className, 'Less_' ) ) {
 			return;
 		}
 
