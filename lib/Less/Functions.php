@@ -591,7 +591,6 @@ class Less_Functions {
 
 	/**
 	 * todo: This function will need some additional work to make it work the same as less.js
-	 *
 	 */
 	public function replace( $string, $pattern, $replacement, $flags = null ) {
 		$result = $string->value;
