@@ -23,10 +23,10 @@ body .color-definitions .argb {
   color: #e6336699;
 }
 body .color-definitions .hsl {
-  color: #336699;
+  color: hsl(210, 50%, 40%);
 }
 body .color-definitions .hsla {
-  color: rgba(51, 102, 153, 0.9);
+  color: hsla(210, 50%, 40%, 0.9);
 }
 body .color-definitions .hsv {
   color: #336699;

@@ -156,7 +156,7 @@
   case-insensitive-2: true;
 }
 #alpha {
-  alpha: rgba(153, 94, 51, 0.6);
+  alpha: hsla(25, 50%, 40%, 0.6);
   alpha2: 0.5;
   alpha3: 0;
 }

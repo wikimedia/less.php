@@ -1,0 +1,4 @@
+ParseError: Unexpected input in T403056-invalid-color.less on line 2, column 29
+1| .invalid-input {
+2|   background-color: #1234567;
+3| }

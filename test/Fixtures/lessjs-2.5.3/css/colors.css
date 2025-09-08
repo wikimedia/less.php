@@ -23,7 +23,7 @@
   color: #1a0000ff;
 }
 #alpha #hsla {
-  color: rgba(61, 45, 41, 0.6);
+  color: hsla(11, 20%, 20%, 0.6);
 }
 #overflow .a {
   color: #000000;
@@ -47,10 +47,10 @@
   color: #333333;
 }
 #808080 {
-  color: #808080;
+  color: hsl(0, 0%, 50%);
 }
 #00ff00 {
-  color: #00ff00;
+  color: hsl(120, 100%, 50%);
 }
 .lightenblue {
   color: #3333ff;

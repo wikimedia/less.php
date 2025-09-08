@@ -1556,12 +1556,15 @@ class Less_Parser {
 	 * @return Less_Tree_Color|null
 	 */
 	private function parseEntitiesColor() {
+		$this->save();
 		if ( $this->peekChar( '#' ) ) {
-			$rgb = $this->matchReg( '/\\G#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/' );
-			if ( $rgb ) {
-				return new Less_Tree_Color( $rgb[1], 1, $rgb[0] );
+			$rgb = $this->matchReg( '/\\G#([A-Fa-f0-9]{8}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3,4})([\w.#\[])?/' );
+			if ( $rgb && !isset( $rgb[2] ) ) {
+				$this->forget();
+				return new Less_Tree_Color( $rgb[1], null, $rgb[0] );
 			}
 		}
+		$this->restore();
 	}
 
 	/**
