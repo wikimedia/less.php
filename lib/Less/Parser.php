@@ -1554,6 +1554,7 @@ class Less_Parser {
 	 * `rgb` and `hsl` colors are parsed through the `entities.call` parser.
 	 *
 	 * @return Less_Tree_Color|null
+	 * @see less-3.13.1.js#parsers.entities.color
 	 */
 	private function parseEntitiesColor() {
 		$this->save();
@@ -1573,21 +1574,24 @@ class Less_Parser {
 	 *	 0.5em 95%
 	 *
 	 * @return Less_Tree_Dimension|null
+	 * @see less-3.13.1.js#parsers.entities.dimension
 	 */
 	private function parseEntitiesDimension() {
-		$c = @ord( $this->input[$this->pos] ?? '' );
-
+		// Optimization: Inlined version of Less.js parserInput.peekNotNumeric
+		static $CHARCODE_COMMA = 44;
+		static $CHARCODE_FORWARD_SLASH = 47;
+		static $CHARCODE_PLUS = 43;
+		static $CHARCODE_9 = 57;
+		$c = ord( $this->input[$this->pos] ?? '' );
 		// Is the first char of the dimension 0-9, '.', '+' or '-'
-		if ( ( $c > 57 || $c < 43 ) || $c === 47 || $c == 44 ) {
+		$peekNotNumeric = ( $c > $CHARCODE_9 || $c < $CHARCODE_PLUS ) || $c === $CHARCODE_FORWARD_SLASH || $c === $CHARCODE_COMMA;
+
+		if ( $peekNotNumeric ) {
 			return;
 		}
-
-		$value = $this->matchReg( '/\\G([+-]?\d*\.?\d+)(%|[a-z]+)?/i' );
+		$value = $this->matchReg( '/\\G([+-]?\d*\.?\d+)(%|[a-z_]+)?/i' );
 		if ( $value ) {
-			if ( isset( $value[2] ) ) {
-				return new Less_Tree_Dimension( $value[1], $value[2] );
-			}
-			return new Less_Tree_Dimension( $value[1] );
+			return new Less_Tree_Dimension( $value[1], $value[2] ?? null );
 		}
 	}
 
