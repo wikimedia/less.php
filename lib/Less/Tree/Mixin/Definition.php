@@ -239,7 +239,8 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		$allArgsCnt = count( $args );
 		$requiredArgsCnt = 0;
 		foreach ( $args as $arg ) {
-			if ( !array_key_exists( $arg['name'], $this->optionalParameters ) ) {
+            $name = isset( $arg['name'] ) ? (string)$arg['name'] : '';
+			if ( !array_key_exists( $name, $this->optionalParameters ) ) {
 				$requiredArgsCnt++;
 			}
 		}
