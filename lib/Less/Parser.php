@@ -1853,6 +1853,7 @@ class Less_Parser {
 
 	/**
 	 * @param bool $isCall
+	 * @return array{args:array<array{name?:string,value?:mixed,variadic?:bool}>,variadic:bool}
 	 * @see less-2.5.3.js#parsers.mixin.args
 	 */
 	private function parseMixinArgs( $isCall ) {
