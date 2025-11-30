@@ -36,7 +36,7 @@ class FunctionTest extends LessTestCase {
 		} catch ( Exception $e ) {
 			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
 			$this->assertStringContainsString(
-				'error evaluating function',
+				'error evaluating function `max`',
 				$e->getMessage()
 			);
 
@@ -45,7 +45,7 @@ class FunctionTest extends LessTestCase {
 			$prev = $e->getPrevious();
 			$this->assertInstanceOf( Less_Exception_Parser::class, $e );
 			$this->assertStringContainsString(
-				'rgb expects three parameters',
+				'one or more arguments required in f1.less on line 2',
 				$e->getMessage()
 			);
 		}

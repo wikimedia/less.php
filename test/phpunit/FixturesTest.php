@@ -19,7 +19,6 @@ class FixturesTest extends LessTestCase {
 			'import-module' => true,
 			'extend-selector' => true,
 			'merge' => true,
-			'colors' => true,
 			'urls' => true,
 			'operations' => true,
 			'import-remote' => true,

@@ -42,7 +42,7 @@ class Less_Functions {
 		}
 	}
 
-	private static function _scaled( $n, $size = 255 ) {
+	private static function _scaled( $n, $size ) {
 		if ( $n instanceof Less_Tree_Dimension && $n->unit->is( '%' ) ) {
 			return (float)$n->value * $size / 100;
 		} else {
@@ -51,9 +51,6 @@ class Less_Functions {
 	}
 
 	public function rgb( $r = null, $g = null, $b = null ) {
-		if ( $r === null || $g === null || $b === null ) {
-			throw new Less_Exception_Compiler( "rgb expects three parameters" );
-		}
 		$color = $this->rgba( $r, $g, $b, 1.0 );
 		if ( $color ) {
 			  $color->value = 'rgb';
@@ -62,14 +59,26 @@ class Less_Functions {
 	}
 
 	public function rgba( $r = null, $g = null, $b = null, $a = null ) {
-		$rgb = [
-			self::_scaled( $r ),
-			self::_scaled( $g ),
-			self::_scaled( $b )
-		];
+		try {
+			if ( $r instanceof Less_Tree_Color ) {
+				if ( $g ) {
+					$a = self::_number( $g );
+				} else {
+					$a = $r->alpha;
+				}
+				return new Less_Tree_Color( $r->rgb, $a, 'rgba' );
+			}
+			$rgb = [
+				self::_scaled( $r, 255 ),
+				self::_scaled( $g, 255 ),
+				self::_scaled( $b, 255 )
+			];
 
-		$a = self::_number( $a );
-		return new Less_Tree_Color( $rgb, $a, 'rgba' );
+			$a = self::_number( $a );
+			return new Less_Tree_Color( $rgb, $a, 'rgba' );
+		} catch ( Exception $e ) {
+
+		}
 	}
 
 	public function hsl( $h, $s, $l ) {
@@ -80,23 +89,36 @@ class Less_Functions {
 		}
 	}
 
-	public function hsla( $h, $s, $l, $a ) {
-		$h = fmod( self::_number( $h ), 360 ) / 360; // Classic % operator will change float to int
-		$s = self::_clamp( self::_number( $s ) );
-		$l = self::_clamp( self::_number( $l ) );
-		$a = self::_clamp( self::_number( $a ) );
+	public function hsla( $h = null, $s = null, $l = null, $a = null ) {
+		try {
+			if ( $h instanceof Less_Tree_Color ) {
+				if ( $s ) {
+					$a = self::_number( $s );
+				} else {
+					$a = $h->alpha;
+				}
+				return new Less_Tree_Color( $h->rgb, $a, 'hsla' );
+			}
+			// NOTE: Avoid % operator which would change float to int
+			$h = fmod( self::_number( $h ), 360 ) / 360;
+			$s = self::_clamp( self::_number( $s ) );
+			$l = self::_clamp( self::_number( $l ) );
+			$a = self::_clamp( self::_number( $a ) );
 
-		$m2 = $l <= 0.5 ? $l * ( $s + 1 ) : $l + $s - $l * $s;
+			$m2 = $l <= 0.5 ? $l * ( $s + 1 ) : $l + $s - $l * $s;
 
-		$m1 = $l * 2 - $m2;
+			$m1 = $l * 2 - $m2;
 
-		$rgb = [
-			self::hsla_hue( $h + 1 / 3, $m1, $m2 ) * 255,
-			self::hsla_hue( $h, $m1, $m2 ) * 255,
-			self::hsla_hue( $h - 1 / 3, $m1, $m2 ) * 255,
-		];
-		$a = self::_number( $a );
-		return new Less_Tree_Color( $rgb, $a, 'hsla' );
+			$rgb = [
+				self::hsla_hue( $h + 1 / 3, $m1, $m2 ) * 255,
+				self::hsla_hue( $h, $m1, $m2 ) * 255,
+				self::hsla_hue( $h - 1 / 3, $m1, $m2 ) * 255,
+			];
+			$a = self::_number( $a );
+			return new Less_Tree_Color( $rgb, $a, 'hsla' );
+		} catch ( Exception $e ) {
+
+		}
 	}
 
 	/**
