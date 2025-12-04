@@ -164,7 +164,7 @@ class Less_ImportVisitor extends Less_Visitor {
 				throw $e;
 			}
 
-			$duplicateImport = isset( $this->recursionDetector[$fullPath] );
+			$duplicateImport = $fullPath && isset( $this->recursionDetector[$fullPath] );
 
 			if ( !$env->importMultiple ) {
 				if ( $duplicateImport ) {
