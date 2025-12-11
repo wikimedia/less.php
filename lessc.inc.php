@@ -110,13 +110,11 @@ class lessc {
 		return $options;
 	}
 
+	/**
+	 * @return array<string,string>
+	 */
 	protected function getImportDirs() {
-		$dirs_ = (array)$this->importDir;
-		$dirs = [];
-		foreach ( $dirs_ as $dir ) {
-			$dirs[$dir] = '';
-		}
-		return $dirs;
+		return array_fill_keys( (array)$this->importDir, '' );
 	}
 
 	public function compile( $string, $name = null ) {
@@ -240,32 +238,26 @@ class lessc {
 			return null;
 		}
 
-		if ( $root !== null ) {
-			// If we have a root value which means we should rebuild.
-			$out = [];
-			$out['root'] = $root;
-			$out['compiled'] = $this->compileFile( $root );
-			$out['files'] = $this->allParsedFiles;
-			$out['updated'] = time();
-			return $out;
-		} else {
-			// No changes, pass back the structure
-			// we were given initially.
+		if ( $root === null ) {
+			// No changes, pass back the structure we were given initially.
 			return $in;
 		}
+
+		return [
+			'root' => $root,
+			'compiled' => $this->compileFile( $root ),
+			'files' => $this->allParsedFiles,
+			'updated' => time(),
+		];
 	}
 
 	public function ccompile( $in, $out, $less = null ) {
-		if ( $less === null ) {
-			$less = new self;
-		}
+		$less ??= new self();
 		return $less->checkedCompile( $in, $out );
 	}
 
 	public static function cexecute( $in, $force = false, $less = null ) {
-		if ( $less === null ) {
-			$less = new self;
-		}
+		$less ??= new self();
 		return $less->cachedCompile( $in, $force );
 	}
 

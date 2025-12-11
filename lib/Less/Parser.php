@@ -717,17 +717,17 @@ class Less_Parser {
 
 	private function cacheFile( $file_path ) {
 		if ( $file_path && $this->CacheEnabled() ) {
-
 			$env = get_object_vars( $this->env );
 			unset( $env['frames'] );
 
-			$parts = [];
-			$parts[] = $file_path;
-			$parts[] = filesize( $file_path );
-			$parts[] = filemtime( $file_path );
-			$parts[] = $env;
-			$parts[] = Less_Version::cache_version;
-			$parts[] = self::$options['cache_method'];
+			$parts = [
+				$file_path,
+				filesize( $file_path ),
+				filemtime( $file_path ),
+				$env,
+				Less_Version::cache_version,
+				self::$options['cache_method'],
+			];
 			return self::$options['cache_dir'] . Less_Cache::$prefix . base_convert( sha1( json_encode( $parts ) ), 16, 36 ) . '.lesscache';
 		}
 	}
