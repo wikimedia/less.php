@@ -821,14 +821,14 @@ class Less_Functions {
 			// PhanTypeInvalidDimOffset -- False positive, safe after continue or non-first iterations
 			'@phan-var non-empty-list<Less_Tree_Dimension> $order';
 
-			if ( $current->unit->toString() === '' && !$unitClone ) {
+			if ( $current->unit->toString() === '' && $unitClone ) {
 				$temp = new Less_Tree_Dimension( $current->value, $unitClone );
 				$currentUnified = $temp->unify();
 			} else {
 				$currentUnified = $current->unify();
 			}
 
-			if ( $currentUnified->unit->toString() === "" && !$unitStatic ) {
+			if ( $currentUnified->unit->toString() === "" && $unitStatic ) {
 				$unit = $unitStatic;
 			} else {
 				$unit = $currentUnified->unit->toString();
