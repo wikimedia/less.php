@@ -1582,7 +1582,7 @@ class Less_Parser {
 		static $CHARCODE_FORWARD_SLASH = 47;
 		static $CHARCODE_PLUS = 43;
 		static $CHARCODE_9 = 57;
-		$c = ord( $this->input[$this->pos] ?? '' );
+		$c = isset( $this->input[$this->pos] ) ? ord( $this->input[$this->pos] ) : 0;
 		// Is the first char of the dimension 0-9, '.', '+' or '-'
 		$peekNotNumeric = ( $c > $CHARCODE_9 || $c < $CHARCODE_PLUS ) || $c === $CHARCODE_FORWARD_SLASH || $c === $CHARCODE_COMMA;
 
