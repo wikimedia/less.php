@@ -1,7 +1,19 @@
 <?php
+
+// NOTE: Automatically re-enable after each update unless someone updates
+// this str_contains check, to avoid forgetting and losing Phan coverage.
+$composerJson = file_get_contents( __DIR__ . '/../composer.json' );
+if (
+	version_compare( PHP_VERSION, '8.5.0' ) >= 0
+	&& str_contains( $composerJson, '"mediawiki/mediawiki-phan-config": "0.17.0"' )
+) {
+	print "Skipping Phan on PHP 8.5. https://phabricator.wikimedia.org/T406326\n\n";
+	exit( 0 );
+}
+
 return [
 
-	'target_php_version' => '7.4',
+	'target_php_version' => '8.1',
 
 	// A list of directories that should be parsed for class and
 	// method information. After excluding the directories
