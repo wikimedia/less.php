@@ -1,5 +1,18 @@
 # Changelog
 
+## v5.5.0
+
+Added:
+* Add support for CSS4 `#RRGGBBAA` colors. (Hannah Okwelum) [T403056](https://phabricator.wikimedia.org/T403056)
+* Add support for native CSS color functions including with CSS variables. (Hannah Okwelum) [T405815](https://phabricator.wikimedia.org/T405815)
+
+Fixed:
+* Fix "Using null as the key parameter for array_key_exists" PHP 8.5 warning. (del72683) [T410596](https://phabricator.wikimedia.org/T410596)
+* Fix interpolation of string with number followed by underscore. (Timo Tijhof) [Less.js #2462](https://github.com/less/less.js/issues/2462)
+* Less_Functions: Fix "Using null as an array offset is deprecated" PHP 8.5 warnings. (Hannah Okwelum) [T411398](https://phabricator.wikimedia.org/T411398)
+* Less_ImportVisitor: Fix "Using null as an array offset" PHP 8.5 warning. (Hannah Okwelum) [T411400](https://phabricator.wikimedia.org/T411400)
+* Less_Parser: Fix "ord(): Providing an empty string is deprecated" PHP 8.5 warning. (Hannah Okwelum) [T411397](https://phabricator.wikimedia.org/T411397)
+
 ## v5.4.0
 
 Added:
