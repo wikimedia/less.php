@@ -599,7 +599,7 @@ class Less_Parser {
 	 * files may be imported. The value is an optional public URL or URL base path that corresponds to
 	 * the same directory (use empty string otherwise). The value may also be a closure, in
 	 * which case the key is ignored.
-	 * @phan-param array<string,string|callable> $dirs
+	 * @phan-param array<string,string|callable>|callable[] $dirs
 	 */
 	public function SetImportDirs( $dirs ) {
 		self::$options['import_dirs'] = [];
