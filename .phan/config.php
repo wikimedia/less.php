@@ -5,7 +5,7 @@
 $composerJson = file_get_contents( __DIR__ . '/../composer.json' );
 if (
 	version_compare( PHP_VERSION, '8.5.0' ) >= 0
-	&& str_contains( $composerJson, '"mediawiki/mediawiki-phan-config": "0.17.0"' )
+	&& str_contains( $composerJson, '"mediawiki/mediawiki-phan-config": "0.18.0"' )
 ) {
 	print "Skipping Phan on PHP 8.5. https://phabricator.wikimedia.org/T406326\n\n";
 	exit( 0 );
