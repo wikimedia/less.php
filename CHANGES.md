@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.5.1
+
+Fixed:
+* Less_Parser: Fix SetImportDirs() type hint to accept callable without string key (Timo Tijhof)
+
 ## v5.5.0
 
 Added:
