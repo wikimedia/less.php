@@ -226,6 +226,7 @@ class Less_Parser {
 		$locale = setlocale( LC_NUMERIC, 0 );
 		setlocale( LC_NUMERIC, "C" );
 
+		$css = '';
 		try {
 			$root = new Less_Tree_Ruleset( null, $this->rules );
 			$root->root = true;
@@ -340,7 +341,6 @@ class Less_Parser {
 				$return = [];
 				if ( is_array( $var->value ) ) {
 					// in compilation phase, Less_Tree_Anonymous::$val can be a Less_Tree[]
-					// @phan-suppress-next-line PhanTypeMismatchForeach
 					foreach ( $var->value as $value ) {
 						/** @var Less_Tree $value */
 						$return[ $value->name ] = $this->getVariableValue( $value );
