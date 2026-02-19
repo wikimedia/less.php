@@ -1,5 +1,10 @@
 <?php
 
+if ( PHP_VERSION_ID < 80200 ) {
+	print "Skipping Phan on PHP 8.1.\n\n";
+	exit( 0 );
+}
+
 return [
 
 	'target_php_version' => '8.1',
