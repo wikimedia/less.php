@@ -1,4 +1,6 @@
 <?php
+declare( strict_types = 1 );
+
 /**
  * @private
  * @see less-3.13.1.js#Color.prototype

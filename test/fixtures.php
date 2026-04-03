@@ -1,4 +1,5 @@
 <?php
+declare( strict_types = 1 );
 
 // Used by phpunit/FixturesTest.php and test/compare.php
 

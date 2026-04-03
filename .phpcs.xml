@@ -24,6 +24,7 @@
 	<rule ref="MediaWiki.Usage.ForbiddenFunctions">
 		<exclude-pattern>test/</exclude-pattern>
 	</rule>
+	<rule ref="Generic.PHP.RequireStrictTypes" />
 
 	<file>.</file>
 	<arg name="encoding" value="UTF-8"/>

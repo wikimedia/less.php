@@ -1,4 +1,5 @@
 <?php
+declare( strict_types = 1 );
 
 class LessTestCase extends PHPUnit\Framework\TestCase {
 	/** @var string */

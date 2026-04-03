@@ -1,4 +1,6 @@
 <?php
+declare( strict_types = 1 );
+
 /**
  * @private
  * @see less-2.5.3.js#Dimension.prototype

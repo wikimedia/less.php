@@ -1,4 +1,5 @@
 <?php
+declare( strict_types = 1 );
 
 // No @covers here, as this may cover all classes.
 // phpcs:disable MediaWiki.Commenting.MissingCovers.MissingCovers

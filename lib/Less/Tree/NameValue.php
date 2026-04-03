@@ -1,4 +1,6 @@
 <?php
+declare( strict_types = 1 );
+
 /**
  * A simple CSS name-value pair, e.g. `width: 100px;`
  *

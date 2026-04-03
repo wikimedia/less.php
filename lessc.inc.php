@@ -1,4 +1,6 @@
 <?php
+declare( strict_types = 1 );
+
 /**
  * This file provides the part of lessphp API (https://github.com/leafo/lessphp)
  * to be a drop-in replacement for following products:

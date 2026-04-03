@@ -1,4 +1,5 @@
 <?php
+declare( strict_types = 1 );
 
 if ( PHP_VERSION_ID < 80200 ) {
 	print "Skipping Phan on PHP 8.1.\n\n";
