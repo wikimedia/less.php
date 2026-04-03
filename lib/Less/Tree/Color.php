@@ -248,7 +248,7 @@ class Less_Tree_Color extends Less_Tree {
 	public function toHex( $v ) {
 		$ret = '#';
 		foreach ( $v as $c ) {
-			$c = $this->clamp( Less_Parser::round( $c ), 255 );
+			$c = (int)$this->clamp( Less_Parser::round( $c ), 255 );
 			if ( $c < 16 ) {
 				$ret .= '0';
 			}

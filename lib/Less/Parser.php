@@ -223,7 +223,7 @@ class Less_Parser {
 	public function getCss() {
 		$precision = ini_get( 'precision' );
 		@ini_set( 'precision', '16' );
-		$locale = setlocale( LC_NUMERIC, 0 );
+		$locale = setlocale( LC_NUMERIC, '0' );
 		setlocale( LC_NUMERIC, "C" );
 
 		$css = '';
@@ -606,12 +606,12 @@ class Less_Parser {
 
 		foreach ( $dirs as $path => $uri_root ) {
 
-			$path = self::WinPath( $path );
-			if ( !empty( $path ) ) {
-				$path = rtrim( $path, '/' ) . '/';
-			}
-
 			if ( !is_callable( $uri_root ) ) {
+				$path = self::WinPath( $path );
+				if ( !empty( $path ) ) {
+					$path = rtrim( $path, '/' ) . '/';
+				}
+
 				$uri_root = self::WinPath( $uri_root );
 				if ( !empty( $uri_root ) ) {
 					$uri_root = rtrim( $uri_root, '/' ) . '/';
@@ -3343,7 +3343,8 @@ class Less_Parser {
 		$s = '';
 
 		foreach ( $vars as $name => $value ) {
-			if ( strval( $value ) === "" ) {
+			$value = (string)$value;
+			if ( $value === "" ) {
 				$value = '~""';
 			}
 			$s .= ( str_starts_with( $name, '@' ) ? '' : '@' ) . $name . ': ' . $value . ( str_ends_with( $value, ';' ) ? '' : ';' );
