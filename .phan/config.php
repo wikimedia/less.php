@@ -6,6 +6,13 @@ if ( PHP_VERSION_ID < 80200 ) {
 	exit( 0 );
 }
 
+// Prevent automatic updates by LibUp while this library supports PHP 8.1
+$composerJson = file_get_contents( __DIR__ . '/../composer.json' );
+if ( !str_contains( $composerJson, '"mediawiki/mediawiki-codesniffer": "48.' ) ) {
+	print "Update to mediawiki-codesniffer denied because less.php supports PHP 8.1.\n\n";
+	exit( 1 );
+}
+
 return [
 
 	'target_php_version' => '8.1',
