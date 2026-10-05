@@ -39,7 +39,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 			);
 		}
 
-		$value = $this->fround( $this->value );
+		$value = $this->fround( $context, $this->value );
 		$strValue = (string)$value;
 
 		if ( $value !== 0 && $value < 0.000001 && $value > -0.000001 ) {

@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 /**
  * Parser output
  *
+ * @see less-3.13.1.js#Node.prototype.toCSS
  * @private
  */
 class Less_Output {

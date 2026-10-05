@@ -30,7 +30,7 @@ class Less_Tree {
 	public static $parse;
 
 	/**
-	 * @see less-2.5.3.js#Node.prototype.toCSS
+	 * @see less-3.13.1.js#Node.prototype.toCSS
 	 */
 	public function toCSS( ?Less_Environment $context = null ) {
 		$output = new Less_Output();
@@ -56,7 +56,7 @@ class Less_Tree {
 	 * @param string $op
 	 * @param float $a
 	 * @param float $b
-	 * @see less-2.5.3.js#Node.prototype._operate
+	 * @see less-3.13.1.js#Node.prototype._operate
 	 */
 	protected function _operate( $op, $a, $b ) {
 		switch ( $op ) {
@@ -72,19 +72,15 @@ class Less_Tree {
 	}
 
 	/**
-	 * @see less-2.5.3.js#Node.prototype.fround
+	 * @see less-3.13.1.js#Node.prototype.fround
 	 */
-	protected function fround( $value ) {
-		if ( $value === 0 ) {
+	protected function fround( ?Less_Environment $context, $value ) {
+		if ( $context ) {
+			$p = pow( 10, $context->numPrecision );
+			return round( $value * $p ) / $p;
+		} else {
 			return $value;
 		}
-
-		// TODO: Migrate to passing $env.
-		if ( Less_Parser::$options['numPrecision'] ) {
-			$p = pow( 10, Less_Parser::$options['numPrecision'] );
-			return round( $value * $p ) / $p;
-		}
-		return $value;
 	}
 
 	public function accept( $visitor ) {
@@ -94,7 +90,7 @@ class Less_Tree {
 	 * @param Less_Tree $a
 	 * @param Less_Tree $b
 	 * @return int|null
-	 * @see less-2.5.3.js#Node.compare
+	 * @see less-3.13.1.js#Node.compare
 	 */
 	public static function nodeCompare( $a, $b ) {
 		// Less_Tree subclasses that implement compare() are:
@@ -145,7 +141,7 @@ class Less_Tree {
 	 * @param string|float|int $a
 	 * @param string|float|int $b
 	 * @return int|null
-	 * @see less-2.5.3.js#Node.numericCompare
+	 * @see less-3.13.1.js#Node.numericCompare
 	 */
 	public static function numericCompare( $a, $b ) {
 		return $a < $b ? -1

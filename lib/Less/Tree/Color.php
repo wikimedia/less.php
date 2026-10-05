@@ -60,7 +60,7 @@ class Less_Tree_Color extends Less_Tree {
 
 	public function toCSS( ?Less_Environment $context = null, $doNotCompress = false ) {
 		$compress = $context && $context->compress && !$doNotCompress;
-		$alpha = $this->fround( $this->alpha );
+		$alpha = $this->fround( $context, $this->alpha );
 
 		// If we have alpha transparency other than 1.0, the only way to represent it
 		// is via rgba(). Otherwise, we use the hex representation,
@@ -102,9 +102,9 @@ class Less_Tree_Color extends Less_Tree {
 				// fall through
 			case 'hsl':
 				$color = $this->toHSL();
-				$args = [ $this->fround( $color["h"] ),
-					$this->fround( $color["s"] * 100 ) . "%",
-					$this->fround( $color["l"] * 100 ) . "%",
+				$args = [ $this->fround( $context, $color["h"] ),
+					$this->fround( $context, $color["s"] * 100 ) . "%",
+					$this->fround( $context, $color["l"] * 100 ) . "%",
 					...$args
 				];
 

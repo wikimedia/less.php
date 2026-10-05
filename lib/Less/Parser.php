@@ -59,7 +59,7 @@ class Less_Parser {
 
 	];
 
-	/** @var array{strictUnits:bool,relativeUrls:bool,urlArgs:string,numPrecision:int,import_dirs:array,cache_dir:?string,cache_incremental:bool,indentation:string} */
+	/** @var array{strictUnits:bool,relativeUrls:bool,urlArgs:string,import_dirs:array,cache_dir:?string,cache_incremental:bool,indentation:string} */
 	public static $options = [];
 
 	/** @var string Less input string */
@@ -158,6 +158,10 @@ class Less_Parser {
 		switch ( $option ) {
 			case 'compress':
 				$this->env->compress = (bool)$value;
+				break;
+
+			case 'numPrecision':
+				$this->env->numPrecision = (int)$value;
 				break;
 
 			case 'strictMath':

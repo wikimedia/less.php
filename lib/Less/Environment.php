@@ -63,6 +63,8 @@ class Less_Environment {
 	/** @var bool */
 	public $compress = false;
 	/** @var int */
+	public $numPrecision = 8;
+	/** @var int */
 	public $math = self::MATH_PARENS_DIVISION;
 
 	/** @var true[] */
