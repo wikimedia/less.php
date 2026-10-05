@@ -22,11 +22,11 @@ class Less_Tree_Media extends Less_Tree {
 		$this->currentFileInfo = $currentFileInfo;
 
 		$selectors = $this->emptySelectors();
-
 		$this->features = new Less_Tree_Value( $features );
-
 		$this->rules = [ new Less_Tree_Ruleset( $selectors, $value ) ];
 		$this->rules[0]->allowImports = true;
+
+		$this->allowRoot = true;
 	}
 
 	public function accept( $visitor ) {

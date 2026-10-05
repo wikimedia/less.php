@@ -48,6 +48,7 @@ class Less_Tree_Import extends Less_Tree {
 		$this->index = $index;
 		$this->path = $path;
 		$this->features = $features;
+		$this->allowRoot = true;
 		$this->currentFileInfo = $currentFileInfo;
 
 		if ( isset( $this->options['less'] ) || $this->options['inline'] ) {

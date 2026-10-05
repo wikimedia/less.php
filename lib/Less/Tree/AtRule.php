@@ -55,6 +55,7 @@ class Less_Tree_AtRule extends Less_Tree implements Less_Tree_HasValueProperty {
 		$this->isRooted = $isRooted;
 		$this->currentFileInfo = $currentFileInfo;
 		$this->debugInfo = $debugInfo;
+		$this->allowRoot = true;
 		$this->isReferenced = $isReferenced;
 	}
 

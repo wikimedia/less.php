@@ -4,7 +4,6 @@ declare( strict_types = 1 );
 /**
  * @private
  * @see less-3.13.1.js#Declaration.prototype
- * @todo check for feature parity with 3.13.1
  */
 class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValueProperty {
 
@@ -63,6 +62,8 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 		$this->currentFileInfo = $currentFileInfo;
 		$this->inline = $inline;
 		$this->variable = $variable ?? ( is_string( $name ) && $name[0] === '@' );
+		$this->allowRoot = true;
+		// TODO: Implement Less_Tree#setParent() and call here
 	}
 
 	public function accept( $visitor ) {
@@ -70,7 +71,7 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 	}
 
 	/**
-	 * @see less-2.5.3.js#Rule.prototype.genCSS
+	 * @see less-3.13.1.js#Declaration.prototype.genCSS
 	 */
 	public function genCSS( $output ) {
 		$output->add( $this->name . ( Less_Parser::$options['compress'] ? ':' : ': ' ), $this->currentFileInfo, $this->index );
@@ -90,28 +91,28 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 	}
 
 	/**
-	 * @see less-2.5.3.js#Rule.prototype.eval
+	 * @see less-3.13.1.js#Declaration.prototype.eval
 	 * @param Less_Environment $env
 	 * @return self
 	 */
 	public function compile( $env ) {
-		$variable = $this->variable;
+		$mathBypass = false;
 		$name = $this->name;
+		$variable = $this->variable;
 		if ( is_array( $name ) ) {
 			// expand 'primitive' name directly to get
 			// things faster (~10% for benchmark.less):
 			if ( count( $name ) === 1 && $name[0] instanceof Less_Tree_Keyword ) {
 				$name = $name[0]->value;
 			} else {
-				$name = $this->CompileName( $env, $name );
+				$name = $this->evalName( $env, $name );
 			}
 			$variable = false; // never treat expanded interpolation as new variable name
 		}
 
-		$mathBypass = false;
-		$prevMath = $env->math;
 		if ( $name === "font" && $env->math === Less_Environment::MATH_ALWAYS ) {
 			$mathBypass = true;
+			$prevMath = $env->math;
 			$env->math = Less_Environment::MATH_PARENS_DIVISION;
 		}
 
@@ -130,7 +131,8 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 				$important = $importantResult['important'];
 			}
 
-			$return = new Less_Tree_Declaration(
+			// TODO: Once we have getIndex(), fileInfo(), and setParent() in Less_Tree, use it here
+			return new Less_Tree_Declaration(
 				$name,
 				$evaldValue,
 				$important,
@@ -148,16 +150,15 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 				$e->genMessage();
 			}
 			throw $e;
+		} finally {
+			if ( $mathBypass ) {
+				// @phan-suppress-next-line PhanPossiblyUndeclaredVariable, PhanPossiblyNullTypeMismatchProperty
+				$env->math = $prevMath;
+			}
 		}
-
-		if ( $mathBypass ) {
-			$env->math = $prevMath;
-		}
-
-		return $return;
 	}
 
-	public function CompileName( $env, $name ) {
+	private function evalName( $env, $name ) {
 		$output = new Less_Output();
 		foreach ( $name as $n ) {
 			$n->compile( $env )->genCSS( $output );
@@ -166,9 +167,14 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 	}
 
 	public function makeImportant() {
+		// TODO: Once we have getIndex(), fileInfo(), and setParent() in Less_Tree, use it here
 		return new self( $this->name, $this->value, '!important', $this->merge, $this->index, $this->currentFileInfo, $this->inline );
 	}
 
+	/**
+	 * @see less-2.5.3.js#Declaration.prototype.markReferenced
+	 * TODO: remove markReferenced and implement $visibilityInfo
+	 */
 	public function mark( $value ) {
 		if ( !is_array( $this->value ) ) {
 

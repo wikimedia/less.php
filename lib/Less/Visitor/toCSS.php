@@ -98,16 +98,38 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 		return $atRuleNode;
 	}
 
-	public function checkPropertiesInRoot( $rulesetNode ) {
-		if ( !$rulesetNode->firstRoot ) {
+	/**
+	 * @see less-3.13.1.js#ToCSSVisitor.prototype.checkValidNodes
+	 */
+	public function checkValidNodes( $rules, $isRoot ) {
+		if ( !$rules ) {
 			return;
 		}
 
-		foreach ( $rulesetNode->rules as $ruleNode ) {
-			if ( $ruleNode instanceof Less_Tree_Declaration && !$ruleNode->variable ) {
-				$msg = "properties must be inside selector blocks, they cannot be in the root. Index " . $ruleNode->index .
-					( $ruleNode->currentFileInfo ? ' Filename: ' . $ruleNode->currentFileInfo['filename'] : null );
-				throw new Less_Exception_Compiler( $msg );
+		foreach ( $rules as $ruleNode ) {
+			if ( $isRoot && $ruleNode instanceof Less_Tree_Declaration && !$ruleNode->variable ) {
+				throw new Less_Exception_Compiler(
+					"Properties must be inside selector blocks. They cannot be in the root",
+					null,
+					$ruleNode->index,
+					$ruleNode->currentFileInfo
+				);
+			}
+			if ( $ruleNode instanceof Less_Tree_Call ) {
+				throw new Less_Exception_Compiler(
+					"Function '" . $ruleNode->name . "' is undefined",
+					null,
+					$ruleNode->index,
+					$ruleNode->currentFileInfo
+				);
+			}
+			if ( $ruleNode instanceof Less_Tree && !$ruleNode->allowRoot ) {
+				throw new Less_Exception_Compiler(
+					get_class( $ruleNode ) . " node returned by a function is not valid here",
+					null,
+					$ruleNode->index ?? null,
+					$ruleNode->currentFileInfo ?? null
+				);
 			}
 		}
 	}
@@ -115,7 +137,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 	public function visitRuleset( $rulesetNode, &$visitDeeper ) {
 		$visitDeeper = false;
 
-		$this->checkPropertiesInRoot( $rulesetNode );
+		$this->checkValidNodes( $rulesetNode->rules, $rulesetNode->firstRoot );
 
 		if ( $rulesetNode->root ) {
 			return $this->visitRulesetRoot( $rulesetNode );

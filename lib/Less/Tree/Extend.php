@@ -37,6 +37,7 @@ class Less_Tree_Extend extends Less_Tree {
 		$this->selector = $selector;
 		$this->option = $option;
 		$this->index = $index;
+		$this->allowRoot = true;
 
 		switch ( $option ) {
 			case "all":
@@ -52,7 +53,6 @@ class Less_Tree_Extend extends Less_Tree {
 		// This must use a string (instead of int) so that array_merge()
 		// preserves keys on arrays that use IDs in their keys.
 		$this->object_id = 'id_' . $i++;
-
 		$this->parent_ids = [
 			$this->object_id => true
 		];

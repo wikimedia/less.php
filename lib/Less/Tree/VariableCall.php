@@ -4,7 +4,6 @@ declare( strict_types = 1 );
 /**
  * @private
  * @see less-3.13.1.js#VariableCall
- * @todo missing allowRoot implementation https://github.com/less/less.js/commit/b67403d3
  */
 class Less_Tree_VariableCall extends Less_Tree {
 
@@ -28,6 +27,7 @@ class Less_Tree_VariableCall extends Less_Tree {
 		$this->variable = $variable;
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
+		$this->allowRoot = true;
 	}
 
 	public function accept( $visitor ) {

@@ -12,6 +12,8 @@ class Less_Tree {
 	public $extendOnEveryPath;
 	/** @var Less_Tree_Extend[] */
 	public $allExtends;
+	/** @var bool */
+	public $allowRoot = false;
 	/**
 	 * This is set to true to ensure visibility
 	 * for all except Less_Tree_Anonymous where we decide

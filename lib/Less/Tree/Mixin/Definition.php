@@ -29,7 +29,8 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 	public $optionalParameters = [];
 
 	public function __construct( $name, $params, $rules, $condition, $variadic = false, $frames = [] ) {
-		$this->name = $name;
+		// NOTE: Used by Less_Tree_Mixin_Call
+		$this->name = $name !== '' ? $name : 'anonymous mixin';
 		$this->selectors = [ new Less_Tree_Selector( [ new Less_Tree_Element( null, $name ) ] ) ];
 
 		$this->params = $params;
@@ -50,6 +51,7 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 		}
 
 		$this->frames = $frames;
+		$this->allowRoot = true;
 		$this->SetRulesetIndex();
 	}
 

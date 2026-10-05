@@ -3,7 +3,7 @@ declare( strict_types = 1 );
 
 /**
  * @private
- * @see less-2.5.3.js#Anonymous.prototype
+ * @see less-3.13.1.js#Anonymous.prototype
  */
 class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValueProperty {
 	/** @var string */
@@ -32,9 +32,10 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 	public function __construct( $value, $index = null, $currentFileInfo = null, $mapLines = null, $rulesetLike = false, $referenced = false ) {
 		$this->value = $value;
 		$this->index = $index;
-		$this->mapLines = $mapLines;
 		$this->currentFileInfo = $currentFileInfo;
+		$this->mapLines = $mapLines;
 		$this->rulesetLike = $rulesetLike;
+		$this->allowRoot = true;
 		// TODO: remove isReferenced and implement $visibilityInfo
 		// https://github.com/less/less.js/commit/ead3e29f7b79390ad3ac798bf42195b24919107d
 		$this->isReferenced = $referenced;
@@ -67,10 +68,18 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 		}
 	}
 
+	/**
+	 * @see less-2.5.3.js#Anonymous.prototype.markReferenced
+	 * TODO: remove isReferenced and implement $visibilityInfo
+	 */
 	public function markReferenced() {
 		$this->isReferenced = true;
 	}
 
+	/**
+	 * @see less-2.5.3.js#Anonymous.prototype.getIsReferenced
+	 * TODO: remove isReferenced and implement $visibilityInfo
+	 */
 	public function getIsReferenced() {
 		return !isset( $this->currentFileInfo['reference'] ) || !$this->currentFileInfo['reference'] || $this->isReferenced;
 	}

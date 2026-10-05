@@ -64,6 +64,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 		$this->rules = $rules;
 		$this->lookups = [];
 		$this->strictImports = $strictImports;
+		$this->allowRoot = true;
 		$this->SetRulesetIndex();
 	}
 

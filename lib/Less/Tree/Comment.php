@@ -3,7 +3,7 @@ declare( strict_types = 1 );
 
 /**
  * @private
- * @see less-2.5.3.js#Comment.prototype
+ * @see less-3.13.1.js#Comment.prototype
  */
 class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty {
 	/** @var string */
@@ -19,6 +19,7 @@ class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty 
 		$this->value = $value;
 		$this->isLineComment = (bool)$isLineComment;
 		$this->currentFileInfo = $currentFileInfo;
+		$this->allowRoot = true;
 	}
 
 	public function genCSS( $output ) {
@@ -28,11 +29,17 @@ class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty 
 	}
 
 	public function isSilent() {
+		// TODO: Remove $isReference once $visibilityInfo is implemented
 		$isReference = ( $this->currentFileInfo && isset( $this->currentFileInfo['reference'] ) && ( !isset( $this->isReferenced ) || !$this->isReferenced ) );
 		$isCompressed = Less_Parser::$options['compress'] && ( $this->value[2] ?? '' ) !== "!";
+
 		return $this->isLineComment || $isReference || $isCompressed;
 	}
 
+	/**
+	 * TODO: Remove once $visibilityInfo is implemented
+	 * @see less-2.5.3.js#Comment.prototype.markReferenced
+	 */
 	public function markReferenced() {
 		$this->isReferenced = true;
 	}

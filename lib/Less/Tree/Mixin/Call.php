@@ -24,6 +24,7 @@ class Less_Tree_Mixin_Call extends Less_Tree {
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 		$this->important = $important;
+		$this->allowRoot = true;
 	}
 
 	/**
