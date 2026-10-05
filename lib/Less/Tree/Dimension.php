@@ -32,10 +32,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 		return new Less_Tree_Color( [ $this->value, $this->value, $this->value ] );
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		if ( Less_Parser::$options['strictUnits'] && !$this->unit->isSingular() ) {
 			throw new Less_Exception_Compiler(
 				"Multiple units in dimension. Correct the units or use the unit function. Bad unit: " . $this->unit->toString()
@@ -51,7 +48,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 			$strValue = preg_replace( '/\.?0+$/', '', $strValue );
 		}
 
-		if ( Less_Parser::$options['compress'] ) {
+		if ( $context && $context->compress ) {
 			// Zero values doesn't need a unit
 			if ( $value === 0 && $this->unit->isLength() ) {
 				$output->add( $strValue );
@@ -65,7 +62,7 @@ class Less_Tree_Dimension extends Less_Tree implements Less_Tree_HasValuePropert
 		}
 
 		$output->add( $strValue );
-		$this->unit->genCSS( $output );
+		$this->unit->genCSS( $context, $output );
 	}
 
 	public function __toString() {

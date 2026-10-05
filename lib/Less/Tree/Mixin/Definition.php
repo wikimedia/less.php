@@ -237,10 +237,9 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 
 	/**
 	 * @param array[] $args
-	 * @param Less_Environment|null $env
-	 * @see less-2.5.3.js#Definition.prototype.matchArgs
+	 * @see less-3.13.1.js#Definition.prototype.matchArgs
 	 */
-	public function matchArgs( $args, $env = null ) {
+	public function matchArgs( $args, Less_Environment $context ) {
 		$allArgsCnt = count( $args );
 		$requiredArgsCnt = 0;
 		foreach ( $args as $arg ) {
@@ -263,11 +262,11 @@ class Less_Tree_Mixin_Definition extends Less_Tree_Ruleset {
 			}
 		}
 
+		// check patterns
 		$len = min( $requiredArgsCnt, $this->arity );
-
 		for ( $i = 0; $i < $len; $i++ ) {
 			if ( !isset( $this->params[$i]['name'] ) && !isset( $this->params[$i]['variadic'] ) ) {
-				if ( $args[$i]['value']->compile( $env )->toCSS() != $this->params[$i]['value']->compile( $env )->toCSS() ) {
+				if ( $args[$i]['value']->compile( $context )->toCSS() != $this->params[$i]['value']->compile( $context )->toCSS() ) {
 					return false;
 				}
 			}

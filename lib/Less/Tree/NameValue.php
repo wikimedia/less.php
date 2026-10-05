@@ -32,13 +32,13 @@ class Less_Tree_NameValue extends Less_Tree implements Less_Tree_HasValuePropert
 		$this->currentFileInfo = $currentFileInfo;
 	}
 
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$output->add(
 			$this->name
-				. ( Less_Parser::$options['compress'] ? ':' : ': ' )
+				. ( ( $context && $context->compress ) ? ':' : ': ' )
 				. $this->value
 				. $this->important
-				. ( ( ( Less_Environment::$lastRule && Less_Parser::$options['compress'] ) ) ? "" : ";" ),
+				. ( ( ( Less_Environment::$lastRule && $context && $context->compress ) ) ? "" : ";" ),
 			$this->currentFileInfo, $this->index );
 	}
 

@@ -13,10 +13,7 @@ class Less_Tree_UnicodeDescriptor extends Less_Tree implements Less_Tree_HasValu
 		$this->value = $value;
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$output->add( $this->value );
 	}
 }

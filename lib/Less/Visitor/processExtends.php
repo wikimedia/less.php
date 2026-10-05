@@ -208,7 +208,7 @@ class Less_Visitor_processExtends extends Less_Visitor {
 						'pathIndex' => $haystackSelectorIndex,
 						'index' => $hackstackElementIndex,
 						'matched' => 0,
-						'initialCombinator' => $haystackElement->combinator
+						'initialCombinator' => $haystackElement->combinatorVal
 					];
 					$potentialMatches_len++;
 				}
@@ -287,12 +287,12 @@ class Less_Visitor_processExtends extends Less_Visitor {
 			// selectors add " " onto the first element. When we use & it joins the selectors together, but if we don't
 			// then each selector in haystackSelectorPath has a space before it added in the toCSS phase. so we need to work out
 			// what the resulting combinator will be
-			$targetCombinator = $haystackElement->combinator;
+			$targetCombinator = $haystackElement->combinatorVal;
 			if ( $targetCombinator === '' && $hackstackElementIndex === 0 ) {
 				$targetCombinator = ' ';
 			}
 
-			if ( $needleElements[ $potentialMatch['matched'] ]->combinator !== $targetCombinator ) {
+			if ( $needleElements[ $potentialMatch['matched'] ]->combinatorVal !== $targetCombinator ) {
 				return null;
 			}
 		}
@@ -345,8 +345,11 @@ class Less_Visitor_processExtends extends Less_Visitor {
 
 		for ( $i = 0; $i < $elementValue1->elements_len; $i++ ) {
 
-			if ( $elementValue1->elements[$i]->combinator !== $elementValue2->elements[$i]->combinator ) {
-				if ( $i !== 0 || ( $elementValue1->elements[$i]->combinator || ' ' ) !== ( $elementValue2->elements[$i]->combinator || ' ' ) ) {
+			if ( $elementValue1->elements[$i]->combinatorVal !== $elementValue2->elements[$i]->combinatorVal ) {
+				// TODO: This seems wrong per "||" difference between JS and PHP, because
+				// `( "foo" || " " ) === ( "bar" || " " )` is true in PHP. Perhaps use "?:"
+				// TODO: Figure out impact and add a regression test for it.
+				if ( $i !== 0 || ( $elementValue1->elements[$i]->combinatorVal || ' ' ) !== ( $elementValue2->elements[$i]->combinatorVal || ' ' ) ) {
 					return false;
 				}
 			}

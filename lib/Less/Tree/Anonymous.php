@@ -61,7 +61,7 @@ class Less_Tree_Anonymous extends Less_Tree implements Less_Tree_HasValuePropert
 	/**
 	 * @see less-3.13.1.js#Anonymous.prototype.genCSS
 	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$this->nodeVisible = $this->value !== "" && $this->value !== 0;
 		if ( $this->nodeVisible ) {
 			$output->add( $this->value, $this->currentFileInfo, $this->index, $this->mapLines );

@@ -22,16 +22,16 @@ class Less_Tree_Comment extends Less_Tree implements Less_Tree_HasValueProperty 
 		$this->allowRoot = true;
 	}
 
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		// NOTE: Skip debugInfo handling (not implemented)
 
 		$output->add( $this->value );
 	}
 
-	public function isSilent() {
+	public function isSilent( Less_Environment $context ) {
 		// TODO: Remove $isReference once $visibilityInfo is implemented
 		$isReference = ( $this->currentFileInfo && isset( $this->currentFileInfo['reference'] ) && ( !isset( $this->isReferenced ) || !$this->isReferenced ) );
-		$isCompressed = Less_Parser::$options['compress'] && ( $this->value[2] ?? '' ) !== "!";
+		$isCompressed = $context->compress && ( $this->value[2] ?? '' ) !== "!";
 
 		return $this->isLineComment || $isReference || $isCompressed;
 	}

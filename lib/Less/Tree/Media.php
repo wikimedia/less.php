@@ -4,18 +4,10 @@ declare( strict_types = 1 );
 /**
  * @private
  */
-class Less_Tree_Media extends Less_Tree {
+class Less_Tree_Media extends Less_Tree_AtRule {
 
 	/** @var Less_Tree_Value */
 	public $features;
-	/** @var Less_Tree_Ruleset[] */
-	public $rules;
-	/** @var int|null */
-	public $index;
-	/** @var array|null */
-	public $currentFileInfo;
-	/** @var bool|null */
-	public $isReferenced;
 
 	public function __construct( $value = [], $features = [], $index = null, $currentFileInfo = null ) {
 		$this->index = $index;
@@ -29,18 +21,20 @@ class Less_Tree_Media extends Less_Tree {
 		$this->allowRoot = true;
 	}
 
+	public function isRulesetLike() {
+		return true;
+	}
+
 	public function accept( $visitor ) {
 		$this->features = $visitor->visitObj( $this->features );
 		$this->rules = $visitor->visitArray( $this->rules );
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$output->add( '@media ', $this->currentFileInfo, $this->index );
-		$this->features->genCSS( $output );
-		Less_Tree::outputRuleset( $output, $this->rules );
+		$this->features->genCSS( $context, $output );
+		'@phan-var Less_Environment $context';
+		self::outputRuleset( $context, $output, $this->rules );
 	}
 
 	/**

@@ -114,11 +114,11 @@ class Less_SourceMap_Generator extends Less_Configurable {
 	 *
 	 * @return string
 	 */
-	public function generateCSS() {
+	public function generateCSS( Less_Environment $context ) {
 		$output = new Less_Output_Mapped( $this->contentsMap, $this );
 
 		// catch the output
-		$this->root->genCSS( $output );
+		$this->root->genCSS( $context, $output );
 
 		$sourceMapUrl = $this->getOption( 'sourceMapURL' );
 		$sourceMapFilename = $this->getOption( 'sourceMapFilename' );

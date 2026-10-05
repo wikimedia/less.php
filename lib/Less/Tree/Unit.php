@@ -27,10 +27,7 @@ class Less_Tree_Unit extends Less_Tree {
 		return new Less_Tree_Unit( $this->numerator, $this->denominator, $this->backupUnit );
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$strictUnits = Less_Parser::$options['strictUnits'];
 
 		if ( count( $this->numerator ) === 1 ) {

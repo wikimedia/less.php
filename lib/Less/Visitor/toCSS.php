@@ -9,8 +9,12 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 	/** @var bool|null */
 	private $charset;
 
-	public function __construct() {
+	/** @var Less_Environment */
+	private $context;
+
+	public function __construct( Less_Environment $context ) {
 		parent::__construct();
+		$this->context = $context;
 	}
 
 	/**
@@ -39,7 +43,7 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 	}
 
 	public function visitComment( $commentNode ) {
-		if ( $commentNode->isSilent() ) {
+		if ( $commentNode->isSilent( $this->context ) ) {
 			return [];
 		}
 		return $commentNode;
@@ -225,8 +229,8 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 	private function visitRulesetPaths( $rulesetNode ) {
 		$paths = [];
 		foreach ( $rulesetNode->paths as $p ) {
-			if ( $p[0]->elements[0]->combinator === ' ' ) {
-				$p[0]->elements[0]->combinator = '';
+			if ( $p[0]->elements[0]->combinatorVal === ' ' ) {
+				$p[0]->elements[0]->combinatorVal = '';
 			}
 
 			foreach ( $p as $pi ) {
@@ -253,10 +257,10 @@ class Less_Visitor_toCSS extends Less_VisitorReplacing {
 					$ruleList =& $ruleCache[$rule->name];
 
 					if ( $ruleList instanceof Less_Tree_Declaration || $ruleList instanceof Less_Tree_NameValue ) {
-						$ruleList = $ruleCache[$rule->name] = [ $ruleCache[$rule->name]->toCSS() ];
+						$ruleList = $ruleCache[$rule->name] = [ $ruleCache[$rule->name]->toCSS( $this->context ) ];
 					}
 
-					$ruleCSS = $rule->toCSS();
+					$ruleCSS = $rule->toCSS( $this->context );
 					if ( in_array( $ruleCSS, $ruleList ) ) {
 						array_splice( $rules, $i, 1 );
 					} else {

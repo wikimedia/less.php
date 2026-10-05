@@ -110,7 +110,7 @@ class Less_Tree_Selector extends Less_Tree {
 
 		foreach ( $this->elements as $v ) {
 
-			$css .= $v->combinator;
+			$css .= $v->combinatorVal;
 			if ( !( $v->value instanceof Less_Tree ) ) {
 				$css .= $v->value;
 				continue;
@@ -148,7 +148,7 @@ class Less_Tree_Selector extends Less_Tree {
 		return !$this->mediaEmpty &&
 			count( $this->elements ) === 1 &&
 			$this->elements[0]->value === '&' &&
-			( $this->elements[0]->combinator === ' ' || $this->elements[0]->combinator === '' );
+			( $this->elements[0]->combinatorVal === ' ' || $this->elements[0]->combinatorVal === '' );
 	}
 
 	public function compile( $env ) {
@@ -171,15 +171,15 @@ class Less_Tree_Selector extends Less_Tree {
 	}
 
 	/**
-	 * @see Less_Tree::genCSS
+	 * @see less-3.13.1.js#Selector.prototype.genCSS
 	 */
-	public function genCSS( $output, $firstSelector = true ) {
-		if ( !$firstSelector && $this->elements[0]->combinator === "" ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
+		if ( ( !$context || !$context->firstSelector ) && $this->elements[0]->combinatorVal === "" ) {
 			$output->add( ' ', $this->currentFileInfo, $this->index );
 		}
 
 		foreach ( $this->elements as $element ) {
-			$element->genCSS( $output );
+			$element->genCSS( $context, $output );
 		}
 	}
 

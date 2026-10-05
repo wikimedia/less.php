@@ -37,16 +37,16 @@ class Less_Tree_Attribute extends Less_Tree implements Less_Tree_HasValuePropert
 			$this->value instanceof Less_Tree ? $this->value->compile( $env ) : $this->value );
 	}
 
-	public function genCSS( $output ) {
-		$output->add( $this->toCSS() );
+	public function genCSS( ?Less_Environment $context, $output ) {
+		$output->add( $this->toCSS( $context ) );
 	}
 
-	public function toCSS() {
+	public function toCSS( ?Less_Environment $context = null ) {
 		$value = $this->key;
 
 		if ( $this->op ) {
 			$value .= $this->op;
-			$value .= ( $this->value instanceof Less_Tree ? $this->value->toCSS() : $this->value );
+			$value .= ( $this->value instanceof Less_Tree ? $this->value->toCSS( $context ) : $this->value );
 		}
 
 		return '[' . $value . ']';

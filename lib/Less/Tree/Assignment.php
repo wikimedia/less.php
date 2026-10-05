@@ -26,8 +26,8 @@ class Less_Tree_Assignment extends Less_Tree implements Less_Tree_HasValueProper
 		return new self( $this->key, $this->value->compile( $env ) );
 	}
 
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$output->add( $this->key . '=' );
-		$this->value->genCSS( $output );
+		$this->value->genCSS( $context, $output );
 	}
 }

@@ -33,10 +33,7 @@ class Less_Tree_Quoted extends Less_Tree implements Less_Tree_HasValueProperty {
 		$this->allowRoot = $escaped;
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		if ( !$this->escaped ) {
 			$output->add( $this->quote, $this->currentFileInfo, $this->index );
 		}

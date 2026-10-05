@@ -73,10 +73,11 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 	/**
 	 * @see less-3.13.1.js#Declaration.prototype.genCSS
 	 */
-	public function genCSS( $output ) {
-		$output->add( $this->name . ( Less_Parser::$options['compress'] ? ':' : ': ' ), $this->currentFileInfo, $this->index );
+	public function genCSS( ?Less_Environment $context, $output ) {
+		'@phan-var Less_Environment $context';
+		$output->add( $this->name . ( $context->compress ? ':' : ': ' ), $this->currentFileInfo, $this->index );
 		try {
-			$this->value->genCSS( $output );
+			$this->value->genCSS( $context, $output );
 
 		} catch ( Less_Exception_Parser $e ) {
 			$e->index = $this->index;
@@ -84,7 +85,7 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 			throw $e;
 		}
 		$output->add(
-			$this->important . ( ( $this->inline || ( Less_Environment::$lastRule && Less_Parser::$options['compress'] ) ) ? "" : ";" ),
+			$this->important . ( ( $this->inline || ( Less_Environment::$lastRule && $context->compress ) ) ? "" : ";" ),
 			$this->currentFileInfo,
 			$this->index
 		);
@@ -161,7 +162,7 @@ class Less_Tree_Declaration extends Less_Tree implements Less_Tree_HasValuePrope
 	private function evalName( $env, $name ) {
 		$output = new Less_Output();
 		foreach ( $name as $n ) {
-			$n->compile( $env )->genCSS( $output );
+			$n->compile( $env )->genCSS( $env, $output );
 		}
 		return $output->toString();
 	}

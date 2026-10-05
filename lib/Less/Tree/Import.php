@@ -88,13 +88,13 @@ class Less_Tree_Import extends Less_Tree {
 		}
 	}
 
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		if ( $this->css && !isset( $this->path->currentFileInfo["reference"] ) ) {
 			$output->add( '@import ', $this->currentFileInfo, $this->index );
-			$this->path->genCSS( $output );
+			$this->path->genCSS( $context, $output );
 			if ( $this->features ) {
 				$output->add( ' ' );
-				$this->features->genCSS( $output );
+				$this->features->genCSS( $context, $output );
 			}
 			$output->add( ';' );
 		}

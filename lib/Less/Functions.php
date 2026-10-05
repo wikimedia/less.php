@@ -875,7 +875,7 @@ class Less_Functions {
 		foreach ( $order as $a ) {
 			$args[] = $a->toCSS();
 		}
-		return new Less_Tree_Anonymous( ( $isMin ? 'min(' : 'max(' ) . implode( ( Less_Parser::$options['compress'] ? ',' : ', ' ), $args ) . ')' );
+		return new Less_Tree_Anonymous( ( $isMin ? 'min(' : 'max(' ) . implode( ( $this->env->compress ? ',' : ', ' ), $args ) . ')' );
 	}
 
 	public function min( ...$args ) {

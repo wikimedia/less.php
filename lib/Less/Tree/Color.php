@@ -54,15 +54,12 @@ class Less_Tree_Color extends Less_Tree {
 		return 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
-		$output->add( $this->toCSS() );
+	public function genCSS( ?Less_Environment $context, $output ) {
+		$output->add( $this->toCSS( $context ) );
 	}
 
-	public function toCSS( $doNotCompress = false ) {
-		$compress = Less_Parser::$options['compress'] && !$doNotCompress;
+	public function toCSS( ?Less_Environment $context = null, $doNotCompress = false ) {
+		$compress = $context && $context->compress && !$doNotCompress;
 		$alpha = $this->fround( $this->alpha );
 
 		// If we have alpha transparency other than 1.0, the only way to represent it

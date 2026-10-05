@@ -174,14 +174,11 @@ class Less_Tree_Call extends Less_Tree {
 		return new self( $this->name, $args, $this->index, $this->currentFileInfo );
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$output->add( $this->name . '(', $this->currentFileInfo, $this->index );
 		$args_len = count( $this->args );
 		for ( $i = 0; $i < $args_len; $i++ ) {
-			$this->args[$i]->genCSS( $output );
+			$this->args[$i]->genCSS( $context, $output );
 			if ( $i + 1 < $args_len ) {
 				$output->add( ', ' );
 			}

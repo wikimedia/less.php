@@ -62,11 +62,8 @@ class Less_Tree_Operation extends Less_Tree {
 		}
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
-		$this->operands[0]->genCSS( $output );
+	public function genCSS( ?Less_Environment $context, $output ) {
+		$this->operands[0]->genCSS( $context, $output );
 		if ( $this->isSpaced ) {
 			$output->add( " " );
 		}
@@ -74,7 +71,7 @@ class Less_Tree_Operation extends Less_Tree {
 		if ( $this->isSpaced ) {
 			$output->add( ' ' );
 		}
-		$this->operands[1]->genCSS( $output );
+		$this->operands[1]->genCSS( $context, $output );
 	}
 
 }

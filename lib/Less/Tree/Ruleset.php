@@ -293,7 +293,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 		return new self( $this->selectors, $important_rules, $this->strictImports );
 	}
 
-	public function matchArgs( $args, $env = null ) {
+	public function matchArgs( $args, Less_Environment $env ) {
 		return !$args;
 	}
 
@@ -502,16 +502,16 @@ class Less_Tree_Ruleset extends Less_Tree {
 	}
 
 	/**
-	 * @param Less_Output $output
 	 * @see less-2.5.3.js#Ruleset.prototype.genCSS
 	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
+		'@phan-var Less_Environment $context';
 		if ( !$this->root ) {
 			Less_Environment::$tabLevel++;
 		}
 
 		$tabRuleStr = $tabSetStr = '';
-		if ( !Less_Parser::$options['compress'] ) {
+		if ( !$context->compress ) {
 			if ( Less_Environment::$tabLevel ) {
 				$tabRuleStr = "\n" . str_repeat( Less_Parser::$options['indentation'], Less_Environment::$tabLevel );
 				$tabSetStr = "\n" . str_repeat( Less_Parser::$options['indentation'], Less_Environment::$tabLevel - 1 );
@@ -546,9 +546,6 @@ class Less_Tree_Ruleset extends Less_Tree {
 		if ( !$this->root ) {
 
 			$sep = ',' . $tabSetStr;
-			// TODO: Move to Env object
-			// TODO: Inject Env object to toCSS() and genCSS()
-			$firstSelector = false;
 
 			foreach ( $this->paths as $i => $path ) {
 				$pathSubCnt = count( $path );
@@ -558,15 +555,15 @@ class Less_Tree_Ruleset extends Less_Tree {
 				if ( $i > 0 ) {
 					$output->add( $sep );
 				}
-				$firstSelector = true;
-				$path[0]->genCSS( $output, $firstSelector );
-				$firstSelector = false;
+				$context->firstSelector = true;
+				$path[0]->genCSS( $context, $output );
+				$context->firstSelector = false;
 				for ( $j = 1; $j < $pathSubCnt; $j++ ) {
-					$path[$j]->genCSS( $output, $firstSelector );
+					$path[$j]->genCSS( $context, $output );
 				}
 			}
 
-			$output->add( ( Less_Parser::$options['compress'] ? '{' : " {" ) . $tabRuleStr );
+			$output->add( ( $context->compress ? '{' : " {" ) . $tabRuleStr );
 		}
 
 		// Compile rules and rulesets
@@ -581,7 +578,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 				Less_Environment::$lastRule = false;
 			}
 
-			$rule->genCSS( $output );
+			$rule->genCSS( $context, $output );
 
 			Less_Environment::$lastRule = $currentLastRule;
 
@@ -597,7 +594,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 			Less_Environment::$tabLevel--;
 		}
 
-		if ( !Less_Parser::$options['compress'] && $this->firstRoot ) {
+		if ( !$context->compress && $this->firstRoot ) {
 			$output->add( "\n" );
 		}
 	}
@@ -753,7 +750,7 @@ class Less_Tree_Ruleset extends Less_Tree {
 						// the combinator used on el should now be applied to the next element instead so that
 						// it is not lost
 						if ( $sel ) {
-							$sel[0]->elements[] = new Less_Tree_Element( $el->combinator, '', $el->index, $el->currentFileInfo );
+							$sel[0]->elements[] = new Less_Tree_Element( $el->combinatorVal, '', $el->index, $el->currentFileInfo );
 						}
 						$selectorsMultiplied[] = $sel;
 					} else {
@@ -859,10 +856,10 @@ class Less_Tree_Ruleset extends Less_Tree {
 			// if the & does not have a combinator that is "" or " " then
 			// and there is a combinator on the parent, then grab that.
 			// this also allows `+ a { & .b { .a & { ...`
-			$combinator = $replacedElement->combinator;
+			$combinator = $replacedElement->combinatorVal;
 			$parentEl = $addPath[0]->elements[0];
 			if ( $replacedElement->combinatorIsEmptyOrWhitespace && !$parentEl->combinatorIsEmptyOrWhitespace ) {
-				$combinator = $parentEl->combinator;
+				$combinator = $parentEl->combinatorVal;
 			}
 			// join the elements so far with the first part of the parent
 			$newJoinedSelector->elements[] = new Less_Tree_Element( $combinator, $parentEl->value, $replacedElement->index, $replacedElement->currentFileInfo );

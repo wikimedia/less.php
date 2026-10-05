@@ -80,8 +80,8 @@ class Less_Tree_Extend extends Less_Tree {
 			$selectorElements = $selectors[$i]->elements;
 			// duplicate the logic in genCSS function inside the selector node.
 			// future TODO - move both logics into the selector joiner visitor
-			if ( $i && $selectorElements && $selectorElements[0]->combinator === "" ) {
-				$selectorElements[0]->combinator = ' ';
+			if ( $i && $selectorElements && $selectorElements[0]->combinatorVal === "" ) {
+				$selectorElements[0]->combinatorVal = ' ';
 			}
 			$selfElements = array_merge( $selfElements, $selectors[$i]->elements );
 		}

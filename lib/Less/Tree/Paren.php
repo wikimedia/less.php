@@ -20,12 +20,9 @@ class Less_Tree_Paren extends Less_Tree implements Less_Tree_HasValueProperty {
 		$this->value = $visitor->visitObj( $this->value );
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$output->add( '(' );
-		$this->value->genCSS( $output );
+		$this->value->genCSS( $context, $output );
 		$output->add( ')' );
 	}
 

@@ -5,9 +5,15 @@ declare( strict_types = 1 );
  * @private
  */
 class Less_Tree_Element extends Less_Tree implements Less_Tree_HasValueProperty {
+	/** @var array<string,true> */
+	private const noSpaceCombinators = [
+		'' => true,
+		' ' => true,
+		'|' => true
+	];
 
 	/** @var string */
-	public $combinator;
+	public $combinatorVal;
 	/** @var bool Whether combinator is null (represented by empty string) or child (single space) */
 	public $combinatorIsEmptyOrWhitespace;
 	/** @var string|Less_Tree */
@@ -24,12 +30,16 @@ class Less_Tree_Element extends Less_Tree implements Less_Tree_HasValueProperty 
 	 * @param array|null $currentFileInfo
 	 */
 	public function __construct( $combinator, $value, $index = null, $currentFileInfo = null ) {
-		$this->value = $value;
+		// see less-3.13.1.js#Combinator.prototype
+		if ( $combinator === ' ' ) {
+			$this->combinatorVal = $combinator;
+			$this->combinatorIsEmptyOrWhitespace = true;
+		} else {
+			$this->combinatorVal = trim( $combinator ?? '' );
+			$this->combinatorIsEmptyOrWhitespace = $this->combinatorVal === '';
+		}
 
-		// see less-2.5.3.js#Combinator
-		$this->combinator = $combinator ?? '';
-		$this->combinatorIsEmptyOrWhitespace = ( $combinator === null || trim( $combinator ) === '' );
-
+		$this->value = is_string( $value ) ? trim( $value ) : $value;
 		$this->index = $index;
 		$this->currentFileInfo = $currentFileInfo;
 	}
@@ -42,35 +52,37 @@ class Less_Tree_Element extends Less_Tree implements Less_Tree_HasValueProperty 
 
 	public function compile( $env ) {
 		return new self(
-			$this->combinator,
+			$this->combinatorVal,
 			( $this->value instanceof Less_Tree ? $this->value->compile( $env ) : $this->value ),
 			$this->index,
 			$this->currentFileInfo
 		);
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
-		$output->add( $this->toCSS(), $this->currentFileInfo, $this->index );
+	public function genCSS( ?Less_Environment $context, $output ) {
+		$output->add( $this->toCSS( $context ), $this->currentFileInfo, $this->index );
 	}
 
-	public function toCSS() {
-		if ( $this->value instanceof Less_Tree ) {
-			$value = $this->value->toCSS();
+	public function toCSS( ?Less_Environment $context = null ) {
+		$context ??= new Less_Environment();
+		$value = $this->value;
+		$firstSelector = $context->firstSelector;
+		if ( $value instanceof Less_Tree_Paren ) {
+			// selector in parens should not be affected by outer selector flags
+			// breaks only interpolated selectors - see https://github.com/less/less.js/issues/1973
+			$context->firstSelector = true;
+		}
+		$value = ( $value instanceof Less_Tree ) ? $value->toCSS( $context ) : $value;
+		$context->firstSelector = $firstSelector;
+
+		if ( $value === '' && ( $this->combinatorVal[0] ?? '' ) === '&' ) {
+			return '';
 		} else {
-			$value = $this->value;
+			// see less-3.13.1.js#Combinator.prototype.genCSS
+			$spaceOrEmpty = ( $context->compress || ( self::noSpaceCombinators[$this->combinatorVal] ?? false ) )
+				? ''
+				: ' ';
+			return $spaceOrEmpty . $this->combinatorVal . $spaceOrEmpty . $value;
 		}
-
-		$spaceOrEmpty = ' ';
-		if ( Less_Parser::$options['compress'] ||
-			( isset( Less_Environment::$_noSpaceCombinators[$this->combinator] ) && Less_Environment::$_noSpaceCombinators[$this->combinator] )
-		) {
-			$spaceOrEmpty = '';
-		}
-
-		return $spaceOrEmpty . $this->combinator . $spaceOrEmpty . $value;
 	}
-
 }

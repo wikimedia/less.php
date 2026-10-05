@@ -32,19 +32,20 @@ class Less_Tree {
 	/**
 	 * @see less-2.5.3.js#Node.prototype.toCSS
 	 */
-	public function toCSS() {
+	public function toCSS( ?Less_Environment $context = null ) {
 		$output = new Less_Output();
-		$this->genCSS( $output );
+		$this->genCSS( $context, $output );
 		return $output->toString();
 	}
 
 	/**
 	 * Generate CSS by adding it to the output object
 	 *
+	 * @param ?Less_Environment $context
 	 * @param Less_Output $output The output
 	 * @return void
 	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 	}
 
 	public function compile( $env ) {
@@ -84,39 +85,6 @@ class Less_Tree {
 			return round( $value * $p ) / $p;
 		}
 		return $value;
-	}
-
-	/**
-	 * @param Less_Output $output
-	 * @param Less_Tree_Ruleset[] $rules
-	 */
-	public static function outputRuleset( $output, $rules ) {
-		$ruleCnt = count( $rules );
-		Less_Environment::$tabLevel++;
-
-		// Compressed
-		if ( Less_Parser::$options['compress'] ) {
-			$output->add( '{' );
-			for ( $i = 0; $i < $ruleCnt; $i++ ) {
-				$rules[$i]->genCSS( $output );
-			}
-
-			$output->add( '}' );
-			Less_Environment::$tabLevel--;
-			return;
-		}
-
-		// Non-compressed
-		$tabSetStr = "\n" . str_repeat( Less_Parser::$options['indentation'], Less_Environment::$tabLevel - 1 );
-		$tabRuleStr = $tabSetStr . Less_Parser::$options['indentation'];
-
-		$output->add( " {" );
-		for ( $i = 0; $i < $ruleCnt; $i++ ) {
-			$output->add( $tabRuleStr );
-			$rules[$i]->genCSS( $output );
-		}
-		Less_Environment::$tabLevel--;
-		$output->add( $tabSetStr . '}' );
 	}
 
 	public function accept( $visitor ) {
@@ -192,7 +160,6 @@ class Less_Tree {
 	public static function ReferencedArray( $rules ) {
 		foreach ( $rules as $rule ) {
 			if ( method_exists( $rule, 'markReferenced' ) ) {
-				// @phan-suppress-next-line PhanUndeclaredMethod False positive
 				$rule->markReferenced();
 			}
 		}

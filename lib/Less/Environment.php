@@ -28,6 +28,8 @@ class Less_Environment {
 	public $inCalc = false;
 	/** @var bool */
 	public $mathOn = true;
+	/** @var bool|null */
+	public $firstSelector = null;
 
 	/** @var true[] */
 	private $calcStack = [];
@@ -55,12 +57,11 @@ class Less_Environment {
 	/** @var bool */
 	public static $lastRule = false;
 
-	/** @var array<string,true> */
-	public static $_noSpaceCombinators;
-
 	/** @var int */
 	public static $mixin_stack = 0;
 
+	/** @var bool */
+	public $compress = false;
 	/** @var int */
 	public $math = self::MATH_PARENS_DIVISION;
 
@@ -80,12 +81,6 @@ class Less_Environment {
 		self::$tabLevel = 0;
 		self::$lastRule = false;
 		self::$mixin_stack = 0;
-
-		self::$_noSpaceCombinators = [
-			'' => true,
-			' ' => true,
-			'|' => true
-		];
 	}
 
 	/**

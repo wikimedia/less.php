@@ -76,17 +76,15 @@ class Less_Tree_AtRule extends Less_Tree implements Less_Tree_HasValueProperty {
 		return $this->name === "@charset";
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$output->add( $this->name, $this->currentFileInfo, $this->index );
 		if ( $this->value ) {
 			$output->add( ' ' );
-			$this->value->genCSS( $output );
+			$this->value->genCSS( $context, $output );
 		}
 		if ( $this->rules !== null ) {
-			Less_Tree::outputRuleset( $output, $this->rules );
+			'@phan-var Less_Environment $context';
+			self::outputRuleset( $context, $output, $this->rules );
 		} else {
 			$output->add( ';' );
 		}
@@ -137,8 +135,44 @@ class Less_Tree_AtRule extends Less_Tree implements Less_Tree_HasValueProperty {
 	// TODO: Implement less-3.13.1.js#AtRule.prototype.rulesets
 	// Unused?
 
-	// TODO: Implement less-3.13.1.js#AtRule.prototype.outputRuleset
-	// We have ours in Less_Tree::outputRuleset instead.
+	/**
+	 * @see less-3.13.1.js#AtRule.prototype.outputRuleset
+	 * @param Less_Environment $context
+	 * @param Less_Output $output
+	 * @param Less_Tree_Ruleset[] $rules
+	 */
+	public static function outputRuleset( Less_Environment $context, $output, $rules ) {
+		$ruleCnt = count( $rules );
+		Less_Environment::$tabLevel++;
+
+		// Compressed
+		if ( $context->compress ) {
+			$output->add( '{' );
+			for ( $i = 0; $i < $ruleCnt; $i++ ) {
+				$rules[$i]->genCSS( $context, $output );
+			}
+
+			$output->add( '}' );
+			Less_Environment::$tabLevel--;
+			return;
+		}
+
+		// Non-compressed
+		$tabSetStr = "\n" . str_repeat( Less_Parser::$options['indentation'], Less_Environment::$tabLevel - 1 );
+		$tabRuleStr = $tabSetStr . Less_Parser::$options['indentation'];
+		if ( !$ruleCnt ) {
+			$output->add( " {" . $tabSetStr . '}' );
+		} else {
+			$output->add( " {" . $tabRuleStr );
+			$rules[0]->genCSS( $context, $output );
+			for ( $i = 1; $i < $ruleCnt; $i++ ) {
+				$output->add( $tabRuleStr );
+				$rules[$i]->genCSS( $context, $output );
+			}
+			$output->add( $tabSetStr . '}' );
+		}
+		Less_Environment::$tabLevel--;
+	}
 
 	public function markReferenced() {
 		$this->isReferenced = true;

@@ -68,13 +68,10 @@ class Less_Tree_Expression extends Less_Tree implements Less_Tree_HasValueProper
 		return $returnValue;
 	}
 
-	/**
-	 * @see Less_Tree::genCSS
-	 */
-	public function genCSS( $output ) {
+	public function genCSS( ?Less_Environment $context, $output ) {
 		$val_len = count( $this->value );
 		for ( $i = 0; $i < $val_len; $i++ ) {
-			$this->value[$i]->genCSS( $output );
+			$this->value[$i]->genCSS( $context, $output );
 			if ( !$this->noSpacing && ( $i + 1 < $val_len ) ) {
 				// NOTE: Comma handling backported from Less.js 4.2.1 (T386077)
 				// Local variable helps phan to infer types on this condition
