@@ -1420,21 +1420,27 @@ class Less_Parser {
 	 *	 filter: progid:DXImageTransform.Microsoft.Alpha( *opacity=50* )
 	 *
 	 * @return Less_Tree_Assignment|null
-	 * @see less-2.5.3.js#parsers.entities.assignment
+	 * @see less-3.13.1.js#parsers.entities.assignment
 	 */
 	private function parseEntitiesAssignment() {
+		$this->save();
 		$key = $this->matchReg( '/\\G\w+(?=\s?=)/' );
 		if ( !$key ) {
+			$this->restore();
 			return;
 		}
 
 		if ( !$this->matchChar( '=' ) ) {
+			$this->restore();
 			return;
 		}
 
 		$value = $this->parseEntity();
 		if ( $value ) {
+			$this->forget();
 			return new Less_Tree_Assignment( $key, $value );
+		} else {
+			$this->restore();
 		}
 	}
 
