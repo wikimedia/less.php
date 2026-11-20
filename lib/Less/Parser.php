@@ -662,7 +662,8 @@ class Less_Parser {
 				}
 
 			} elseif ( self::$options['cache_method'] === 'serialize' && file_exists( $cache_file ) ) {
-				$cache = unserialize( file_get_contents( $cache_file ) );
+				$cache = unserialize( file_get_contents( $cache_file ),
+					[ 'allowed_classes' => $this->getRuleClasses() ] );
 				if ( $cache ) {
 					touch( $cache_file );
 					$this->unsetInput();
@@ -693,6 +694,52 @@ class Less_Parser {
 		}
 
 		return $rules;
+	}
+
+	/**
+	 * Get the list of classes that the parse cache can contain.
+	 *
+	 * The list contains all non-abstract Less_Tree subclasses.
+	 * ParserTest makes sure that the list stays complete.
+	 */
+	private function getRuleClasses(): array {
+		return [
+			Less_Tree_Anonymous::class,
+			Less_Tree_Assignment::class,
+			Less_Tree_AtRule::class,
+			Less_Tree_Attribute::class,
+			Less_Tree_Call::class,
+			Less_Tree_Color::class,
+			Less_Tree_Comment::class,
+			Less_Tree_Condition::class,
+			Less_Tree_Declaration::class,
+			Less_Tree_DetachedRuleset::class,
+			Less_Tree_Dimension::class,
+			Less_Tree_Element::class,
+			Less_Tree_Expression::class,
+			Less_Tree_Extend::class,
+			Less_Tree_Import::class,
+			Less_Tree_JavaScript::class,
+			Less_Tree_Keyword::class,
+			Less_Tree_Media::class,
+			Less_Tree_Mixin_Call::class,
+			Less_Tree_Mixin_Definition::class,
+			Less_Tree_NamespaceValue::class,
+			Less_Tree_NameValue::class,
+			Less_Tree_Negative::class,
+			Less_Tree_Operation::class,
+			Less_Tree_Paren::class,
+			Less_Tree_Property::class,
+			Less_Tree_Quoted::class,
+			Less_Tree_Ruleset::class,
+			Less_Tree_Selector::class,
+			Less_Tree_UnicodeDescriptor::class,
+			Less_Tree_Unit::class,
+			Less_Tree_Url::class,
+			Less_Tree_Value::class,
+			Less_Tree_Variable::class,
+			Less_Tree_VariableCall::class,
+		];
 	}
 
 	/**

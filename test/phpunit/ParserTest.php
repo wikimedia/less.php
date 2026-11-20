@@ -313,6 +313,55 @@ CSS;
 		$this->assertEquals( $expected, $css );
 	}
 
+	public function testSerializeCacheRoundTrip() {
+		$lessFile = self::$fixturesDir . '/bootstrap-3.2/less/bootstrap.less';
+		$options = [
+			'cache_dir' => self::$cacheDir,
+			'cache_method' => 'serialize',
+		];
+
+		// The first parse writes the cache files.
+		$parser = new Less_Parser( $options );
+		$parser->parseFile( $lessFile );
+		$expected = $parser->getCss();
+		$this->assertNotEmpty(
+			glob( self::$cacheDir . '/*.lesscache' ),
+			'The first parse writes cache files'
+		);
+
+		// The second parse reads the cache files.
+		$parser = new Less_Parser( $options );
+		$parser->parseFile( $lessFile );
+		$this->assertSame( $expected, $parser->getCss(), 'The cached parse gives the same CSS' );
+	}
+
+	public function testRuleClassesContainAllTreeClasses() {
+		$libDir = dirname( __DIR__, 2 ) . '/lib';
+		$treeClasses = [];
+		$files = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator( "$libDir/Less/Tree", FilesystemIterator::SKIP_DOTS )
+		);
+		foreach ( $files as $file ) {
+			if ( $file->getExtension() !== 'php' ) {
+				continue;
+			}
+			// Use the PSR-0 naming rule to get the class name from the path.
+			$relPath = substr( $file->getPathname(), strlen( $libDir ) + 1, -4 );
+			$class = str_replace( '/', '_', $relPath );
+			if ( is_subclass_of( $class, Less_Tree::class )
+				&& !( new ReflectionClass( $class ) )->isAbstract()
+			) {
+				$treeClasses[] = $class;
+			}
+		}
+		$this->assertNotEmpty( $treeClasses );
+
+		$ruleClasses = ( new ReflectionMethod( Less_Parser::class, 'getRuleClasses' ) )
+			->invoke( new Less_Parser() );
+
+		$this->assertEqualsCanonicalizing( $treeClasses, $ruleClasses );
+	}
+
 	public function testModifyVars() {
 		$lessCode = <<<CSS
 			div{
